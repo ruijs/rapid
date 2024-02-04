@@ -6,7 +6,7 @@ export default {
   code: "",
   type: "RESTful",
   method: "get",
-  endpoint: "/api/me",
+  endpoint: "/me",
   handlers: [
     {
       code: "getMyProfile",

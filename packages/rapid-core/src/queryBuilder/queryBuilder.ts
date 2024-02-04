@@ -32,6 +32,7 @@ const relationalOperatorsMap = new Map<EntityFilterRelationalOperators, string>(
 
 
 export interface BuildQueryContext {
+  builder: QueryBuilder;
   params: any[];
 }
 
@@ -63,6 +64,7 @@ export default class QueryBuilder {
 
   select(model: RpdDataModel, options: FindEntityOptions) {
     const ctx: BuildQueryContext = {
+      builder: this,
       params: [],
     };
     let { properties, filters, orderBy, pagination } = options;
@@ -107,6 +109,7 @@ export default class QueryBuilder {
 
   count(model: RpdDataModel, options: CountEntityOptions) {
     const ctx: BuildQueryContext = {
+      builder: this,
       params: [],
     };
     let { filters } = options;
@@ -128,6 +131,7 @@ export default class QueryBuilder {
   insert(model: RpdDataModel, options: CreateEntityOptions) {
     const params: any[] = [];
     const ctx: BuildQueryContext = {
+      builder: this,
       params,
     };
     const { entity } = options;
@@ -171,6 +175,7 @@ export default class QueryBuilder {
   update(model: RpdDataModel, options: UpdateEntityOptions) {
     const params: any[] = [];
     const ctx: BuildQueryContext = {
+      builder: this,
       params,
     };
     let { entity, filters } = options;
@@ -218,6 +223,7 @@ export default class QueryBuilder {
   delete(model: RpdDataModel, options: DeleteEntityOptions) {
     const params: any[] = [];
     const ctx: BuildQueryContext = {
+      builder: this,
       params,
     };
     let { filters } = options;
@@ -305,7 +311,7 @@ function buildUnaryFilterQuery(
   ctx: BuildQueryContext,
   filter: FindEntityUnaryFilterOptions,
 ) {
-  let command = this.quoteObject(filter.field);
+  let command = ctx.builder.quoteObject(filter.field);
   if (filter.operator === "null") {
     command += " IS NULL";
   } else {
@@ -318,7 +324,7 @@ function buildInFilterQuery(
   ctx: BuildQueryContext,
   filter: FindEntitySetFilterOptions,
 ) {
-  let command = this.quoteObject(filter.field);
+  let command = ctx.builder.quoteObject(filter.field);
 
   if (filter.operator === "in") {
     command += " = ";
@@ -335,7 +341,7 @@ function buildContainsFilterQuery(
   ctx: BuildQueryContext,
   filter: FindEntityRelationalFilterOptions,
 ) {
-  let command = this.quoteObject(filter.field);
+  let command = ctx.builder.quoteObject(filter.field);
 
   command += " LIKE ";
   ctx.params.push(`%${filter.value}%`);
@@ -348,7 +354,7 @@ function buildNotContainsFilterQuery(
   ctx: BuildQueryContext,
   filter: FindEntityRelationalFilterOptions,
 ) {
-  let command = this.quoteObject(filter.field);
+  let command = ctx.builder.quoteObject(filter.field);
 
   command += " NOT LIKE ";
   ctx.params.push(`%${filter.value}%`);
@@ -361,7 +367,7 @@ function buildStartsWithFilterQuery(
   ctx: BuildQueryContext,
   filter: FindEntityRelationalFilterOptions,
 ) {
-  let command = this.quoteObject(filter.field);
+  let command = ctx.builder.quoteObject(filter.field);
 
   command += " LIKE ";
   ctx.params.push(`${filter.value}%`);
@@ -374,7 +380,7 @@ function buildNotStartsWithFilterQuery(
   ctx: BuildQueryContext,
   filter: FindEntityRelationalFilterOptions,
 ) {
-  let command = this.quoteObject(filter.field);
+  let command = ctx.builder.quoteObject(filter.field);
 
   command += " NOT LIKE ";
   ctx.params.push(`${filter.value}%`);
@@ -387,7 +393,7 @@ function buildEndsWithFilterQuery(
   ctx: BuildQueryContext,
   filter: FindEntityRelationalFilterOptions,
 ) {
-  let command = this.quoteObject(filter.field);
+  let command = ctx.builder.quoteObject(filter.field);
 
   command += " LIKE ";
   ctx.params.push(`%${filter.value}`);
@@ -400,7 +406,7 @@ function buildNotEndsWithFilterQuery(
   ctx: BuildQueryContext,
   filter: FindEntityRelationalFilterOptions,
 ) {
-  let command = this.quoteObject(filter.field);
+  let command = ctx.builder.quoteObject(filter.field);
 
   command += " NOT LIKE ";
   ctx.params.push(`%${filter.value}`);
@@ -413,7 +419,7 @@ function buildRelationalFilterQuery(
   ctx: BuildQueryContext,
   filter: FindEntityRelationalFilterOptions,
 ) {
-  let command = this.quoteObject(filter.field);
+  let command = ctx.builder.quoteObject(filter.field);
 
   command += relationalOperatorsMap.get(filter.operator);
 

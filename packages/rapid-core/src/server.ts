@@ -63,6 +63,41 @@ export class RapidServer implements IRpdServer {
     return this.#applicationConfig;
   }
 
+  appendApplicationConfig(config: Partial<RpdApplicationConfig>) {
+    const { models, routes } = config;
+    if (models) {
+      for (const model of models) {
+        const originalModel = _.find(this.#applicationConfig.models, (item) => item.singularCode == model.singularCode);
+        if (originalModel) {
+          originalModel.name = model.name;
+          const originalProperties = originalModel.properties;
+          for (const property of model.properties) {
+            const originalProperty = _.find(originalProperties, (item) => item.code == property.code);
+            if (originalProperty) {
+              originalProperty.name = property.name;
+            } else {
+              originalProperties.push(property);
+            }
+          }
+        } else {
+          this.#applicationConfig.models.push(model);
+        }
+      }
+    }
+
+    if (routes) {
+      for (const route of routes) {
+        const originalRoute = _.find(this.#applicationConfig.routes, (item) => item.code == route.code);
+        if (originalRoute) {
+          originalRoute.name = route.name;
+          originalRoute.handlers = route.handlers;
+        } else {
+          this.#applicationConfig.routes.push(route);
+        }
+      }
+    }
+  }
+
   registerHttpHandler(
     plugin: IPluginInstance,
     options: IPluginHttpHandler,
@@ -89,7 +124,7 @@ export class RapidServer implements IRpdServer {
       throw new Error(`Data model ${namespace}.${singularCode} not found.`);
     }
 
-    const dataAccessor = new DataAccessor<T>({
+    const dataAccessor = new DataAccessor<T>(this.#databaseAccessor, {
       model,
       queryBuilder: this.queryBuilder as QueryBuilder,
     });
@@ -186,6 +221,7 @@ export class RapidServer implements IRpdServer {
 
   async handleRequest(request: Request, next: Next) {
     const routeContext = new RouteContext(new RapidRequest(request));
+    console.log('routeContext', routeContext)
     await this.#buildedRoutes(routeContext, next);
     return routeContext.response.getResponse();
   }

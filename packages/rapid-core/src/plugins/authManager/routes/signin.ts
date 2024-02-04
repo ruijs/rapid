@@ -6,7 +6,7 @@ export default {
   code: "",
   type: "RESTful",
   method: "post",
-  endpoint: "/api/signin",
+  endpoint: "/signin",
   handlers: [
     {
       code: "createSession",

@@ -44,9 +44,9 @@ export async function configureModels(
   server: IRpdServer,
   applicationConfig: RpdApplicationConfig,
 ) {
-  for (const model of pluginConfig.models) {
-    applicationConfig.models.push(model);
-  }
+  server.appendApplicationConfig({
+    models: pluginConfig.models,
+  });
 }
 
 export async function registerEventHandlers(server: IRpdServer) {

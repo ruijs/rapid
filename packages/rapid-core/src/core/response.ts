@@ -40,8 +40,8 @@ export class RapidResponse {
 
   constructor(body?: BodyInit, init?: ResponseInit) {
     this.body = body;
-    this.headers = new Headers(init.headers);
-    this.status = init.status;
+    this.headers = new Headers(init?.headers);
+    this.status = init?.status;
   }
 
   json(

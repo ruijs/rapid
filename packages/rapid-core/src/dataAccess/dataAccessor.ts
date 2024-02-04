@@ -20,7 +20,8 @@ export default class DataAccessor<T = any> implements IRpdDataAccessor<T> {
   #queryBuilder: QueryBuilder;
   #databaseAccessor: IDatabaseAccessor;
 
-  constructor(options: IDataAccessorOptions) {
+  constructor(databaseAccessor: IDatabaseAccessor, options: IDataAccessorOptions) {
+    this.#databaseAccessor = databaseAccessor;
     this.#queryBuilder = options.queryBuilder;
     this.#model = options.model;
   }

@@ -80,7 +80,7 @@ const routeConfigs: {
   },
   {
     code: "updateById",
-    method: "post",
+    method: "patch",
     endpoint: "/:id",
     handlerCode: "updateCollectionEntityById",
   },
@@ -127,7 +127,7 @@ export async function configureRoutes(
         code: `${namespace}.${singularCode}.${routeConfig.code}`,
         type: "RESTful",
         method: routeConfig.method,
-        endpoint: `/api/${namespace}/${pluralCode}${routeConfig.endpoint}`,
+        endpoint: `/${namespace}/${pluralCode}${routeConfig.endpoint}`,
         handlers: [
           {
             code: routeConfig.handlerCode,

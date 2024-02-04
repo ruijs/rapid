@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "lerna run build",
-    "dev": "lerna run --parallel dev",
+    "dev": "pnpm build && pnpm install && pnpm --filter=rapid-example-express dev",
     "test": "lerna run test"
   },
   "devDependencies": {

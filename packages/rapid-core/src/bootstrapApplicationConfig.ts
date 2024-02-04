@@ -487,7 +487,7 @@ export default {
       code: "meta.model.list",
       type: "RESTful",
       method: "get",
-      endpoint: "/meta/models",
+      endpoint: "/_meta/models",
       handlers: [
         {
           code: "listMetaModels",
@@ -500,7 +500,7 @@ export default {
       code: "meta.model.getDetail",
       type: "RESTful",
       method: "get",
-      endpoint: "/meta/models/:namespace/:singularCode",
+      endpoint: "/_meta/models/:namespace/:singularCode",
       handlers: [
         {
           code: "getMetaModelDetail",
@@ -513,7 +513,7 @@ export default {
       code: "meta.route.list",
       type: "RESTful",
       method: "get",
-      endpoint: "/meta/routes",
+      endpoint: "/_meta/routes",
       handlers: [
         {
           code: "listMetaRoutes",

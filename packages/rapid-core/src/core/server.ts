@@ -24,6 +24,7 @@ export interface IRpdServer {
     options: GetDataAccessorOptions,
   ): IRpdDataAccessor<T>;
   getApplicationConfig(): RpdApplicationConfig;
+  appendApplicationConfig(config: Partial<RpdApplicationConfig>);
   getModel(options: GetModelOptions): RpdDataModel | undefined;
   registerEventHandler<K extends keyof RpdServerEventTypes>(
     eventName: K,

@@ -18,8 +18,13 @@ export class RouteContext {
     this.request = request;
     this.state = {};
     this.response = new RapidResponse();
+
+    // `method` and `path` are used by `koa-tree-router` to match route
+    this.method = request.method;
+    this.path = request.url.pathname;
   }
 
+  // `koa-tree-router` uses this method to set headers
   set(headerName: string, headerValue: string) {
     this.response.headers.set(headerName, headerValue);
   }

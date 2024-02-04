@@ -155,10 +155,10 @@ export async function configureModels(
   applicationConfig: RpdApplicationConfig,
 ) {
   try {
-    const models = await listCollections(server, applicationConfig);
-    applicationConfig.models.push(...models);
+    const models: RpdDataModel[] = await listCollections(server, applicationConfig);
+    server.appendApplicationConfig({ models });
   } catch (ex) {
-    console.warn("Failed to loading existing meta of models.", ex.message);
+    console.warn("Failed to loading existing meta of models.", ex);
   }
 }
 

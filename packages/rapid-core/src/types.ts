@@ -1,4 +1,5 @@
 export type RapidServerConfig = {
+  baseUrl?: string;
   sessionCookieName: string;
   jwtKey: string;
   localFileStoragePath: string;
@@ -303,7 +304,7 @@ export interface RpdRoute {
   handlers: RpdHttpHandler[];
 }
 
-export type RpdHttpMethod = "get" | "post" | "put" | "delete";
+export type RpdHttpMethod = "get" | "post" | "put" | "delete" | "patch";
 
 export interface RpdHttpHandler {
   code: string;

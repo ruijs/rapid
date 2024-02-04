@@ -8,7 +8,7 @@ export type RequestHandler = (
   next: express.NextFunction
 ) => Promise<void>;
 
-export function createRequestHandler(server: IRpdServer) : RequestHandler {
+export function createRapidRequestHandler(server: IRpdServer) : RequestHandler {
   return async (
     req: express.Request,
     res: express.Response,

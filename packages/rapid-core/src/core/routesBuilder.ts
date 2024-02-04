@@ -12,13 +12,24 @@ export async function buildRoutes(
 ) {
   const router = new Router();
 
+  let baseUrl = server.config.baseUrl;
+  if (baseUrl) {
+    if (baseUrl.endsWith('/')) {
+      baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+    }
+  } else {
+    baseUrl = "";
+  }
+
   applicationConfig.routes.forEach((routeConfig) => {
     if (routeConfig.type !== "RESTful") {
       return;
     }
 
+    const routePath = baseUrl + routeConfig.endpoint;
+
     (router as any)[routeConfig.method](
-      routeConfig.endpoint,
+      routePath,
       async (routerContext: RouteContext, next: Next) => {
         const { request, params } = routerContext;
 
