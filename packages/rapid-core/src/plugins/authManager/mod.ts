@@ -38,14 +38,14 @@ export async function configureModels(
   server: IRpdServer,
   applicationConfig: RpdApplicationConfig,
 ) {
-  applicationConfig.models.push(...pluginModels);
+  server.appendApplicationConfig({ models: pluginModels });
 }
 
 export async function configureRoutes(
   server: IRpdServer,
   applicationConfig: RpdApplicationConfig,
 ) {
-  applicationConfig.routes.push(...pluginRoutes);
+  server.appendApplicationConfig({ routes: pluginRoutes });
 }
 
 export async function onApplicationLoaded(

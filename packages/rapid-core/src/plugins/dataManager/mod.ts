@@ -9,6 +9,7 @@ import {
   IPluginInstance,
   RpdApplicationConfig,
   RpdHttpMethod,
+  RpdRoute,
   RunEntityHttpHandlerOptions,
 } from "~/types";
 
@@ -115,7 +116,8 @@ export async function configureRoutes(
   server: IRpdServer,
   applicationConfig: RpdApplicationConfig,
 ) {
-  const { routes, models } = applicationConfig;
+  const { models } = applicationConfig;
+  const routes: RpdRoute[] = [];
 
   models.forEach((model) => {
     const { namespace, singularCode, pluralCode } = model;
@@ -140,6 +142,8 @@ export async function configureRoutes(
       });
     });
   });
+
+  server.appendApplicationConfig({ routes });
 }
 
 export async function onApplicationLoaded(

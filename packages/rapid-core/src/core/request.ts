@@ -1,9 +1,9 @@
+import qs from "qs";
+
 export const GlobalRequest = global.Request;
 
-
-
 export interface RapidRequestBody {
-  type: "form-data" | "json";
+  type: "form-data" | "json" | "form";
   value: any;
 }
 
@@ -14,41 +14,55 @@ export class RapidRequest {
   method: string;
   url: URL;
   headers: Headers;
-  hasBody: boolean;
 
   constructor(req: Request) {
     this.#raw = req;
     this.method = req.method;
     this.url = new URL(req.url);
     this.headers = req.headers;
-    this.hasBody = false;
   }
 
-  body(): RapidRequestBody {
+  async parseBody(): Promise<void> {
     if (this.#bodyParsed) {
-      return this.#body;
+      console.warn("Request body has been parsed. 'parseBody()' method should not be called more than once.");
+      return;
     }
 
-    this.#bodyParsed = true;
-
-    if (this.method === "post" || this.method === "put" || this.method === "patch") {
-      this.hasBody = true;
-
+    const requestMethod = this.method;
+    if (requestMethod === "POST" || requestMethod === "PUT" || requestMethod === "PATCH") {
+      const req = this.#raw;
       const contentType = this.headers.get("Content-Type");
       if (contentType.includes("json")) {
         this.#body = {
           type: "json",
-          value: this.#raw.json(),
+          value: await req.json(),
         };
-      } else if (contentType.includes("application/x-www-form-urlencoded")) {
+      } else if (contentType.startsWith("application/x-www-form-urlencoded")) {
+        const bodyText = await req.text();
+        this.#body = {
+          type: "form",
+          value: qs.parse(bodyText),
+        }
+      } else if (contentType.startsWith("multipart/form-data")) {
         this.#body = {
           type: "form-data",
-          value: this.#raw.formData(),
+          value: await req.formData(),
         }
       }
+    } else {
+      this.#body = null;
     }
+    this.#bodyParsed = true;
+  }
 
-    this.#body = null;
+  get rawRequest(): Request {
+    return this.#raw;
+  }
+
+  get body(): RapidRequestBody {
+    if (!this.#bodyParsed) {
+      throw new Error("Request body not parsed, you should call 'parseBody()' method before getting the body.")
+    }
     return this.#body;
   }
 }

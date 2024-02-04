@@ -43,17 +43,19 @@ export async function buildRoutes(
         const requestMethod = request.method;
         if (
           (requestMethod === "POST" || requestMethod === "PUT" ||
-            requestMethod === "PATCH") && request.hasBody
+            requestMethod === "PATCH")
         ) {
-          const body = request.body();
-          if (body.type === "form-data") {
-            const formDataReader = body.value;
-            const formDataBody = await formDataReader.read({ maxFileSize: 1073741824 /* 1GB */});
-            Object.assign(input, {
-              formData: formDataBody
-            });
-          } else {
-            Object.assign(input, await body.value);
+          const body = request.body;
+          if (body) {
+            if (body.type === "form-data") {
+              const formDataReader = body.value;
+              const formDataBody = await formDataReader.read({ maxFileSize: 1073741824 /* 1GB */});
+              Object.assign(input, {
+                formData: formDataBody
+              });
+            } else {
+              Object.assign(input, body.value);
+            }
           }
         }
 
