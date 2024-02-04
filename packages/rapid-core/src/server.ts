@@ -22,16 +22,16 @@ import { IRpdServer } from "./core/server";
 import { buildRoutes } from "./core/routesBuilder";
 import { Next, RouteContext } from "./core/routeContext";
 import { RapidRequest } from "./core/request";
-
+import bootstrapApplicationConfig from "./bootstrapApplicationConfig";
 
 export interface InitServerOptions {
   databaseAccessor: IDatabaseAccessor;
   databaseConfig: IDatabaseConfig;
   serverConfig: RapidServerConfig;
-  applicationConfig: RpdApplicationConfig;
+  applicationConfig?: RpdApplicationConfig;
 }
 
-export default class RpdServer implements IRpdServer {
+export class RapidServer implements IRpdServer {
   #eventManager: EventManager;
   #middlewares: any[];
   #bootstrapApplicationConfig: RpdApplicationConfig;
@@ -46,7 +46,7 @@ export default class RpdServer implements IRpdServer {
   constructor(options: InitServerOptions) {
     this.#eventManager = new EventManager();
     this.#middlewares = [];
-    this.#bootstrapApplicationConfig = options.applicationConfig;
+    this.#bootstrapApplicationConfig = options.applicationConfig || bootstrapApplicationConfig;
 
     this.#applicationConfig = {} as RpdApplicationConfig;
     this.#httpHandlersMapByCode = new Map();

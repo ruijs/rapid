@@ -2,7 +2,6 @@ import { fixBigIntJSONSerialize } from "./polyfill";
 fixBigIntJSONSerialize();
 
 export * from "./types";
-export * as RpdServer from "./server";
 export * from "./server";
 
 export * from "./core/request";
