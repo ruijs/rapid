@@ -36,8 +36,6 @@ export async function handler(
     throw new Error(`${options.namespace}.${options.singularCode}  with id "${id}" was not found.`);
   }
 
-  console.log(mergedInput);
-
   const relationProperty = model.properties.find(e => e.code === property);
   if (!relationProperty) {
     throw new Error(`Property '${property}' was not found in ${options.namespace}.${options.singularCode}`);

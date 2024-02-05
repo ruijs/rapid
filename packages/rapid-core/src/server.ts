@@ -223,7 +223,6 @@ export class RapidServer implements IRpdServer {
     const rapidRequest = new RapidRequest(request);
     await rapidRequest.parseBody();
     const routeContext = new RouteContext(rapidRequest);
-    console.log('routeContext', routeContext)
     await this.#buildedRoutes(routeContext, next);
     return routeContext.response.getResponse();
   }
