@@ -4,6 +4,7 @@
   "scripts": {
     "build": "lerna run build",
     "dev": "pnpm build && pnpm install && pnpm --filter=rapid-example-express dev",
+    "start": "pnpm --filter=rapid-example-express dev",
     "test": "lerna run test"
   },
   "devDependencies": {

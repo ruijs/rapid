@@ -5,11 +5,11 @@ export default {
   name: "auth.signin",
   code: "",
   type: "RESTful",
-  method: "post",
+  method: "POST",
   endpoint: "/signin",
   handlers: [
     {
       code: "createSession",
     },
   ],
-} as RpdRoute;
+} satisfies RpdRoute;

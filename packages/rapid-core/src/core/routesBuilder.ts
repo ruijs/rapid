@@ -28,7 +28,7 @@ export async function buildRoutes(
 
     const routePath = baseUrl + routeConfig.endpoint;
 
-    (router as any)[routeConfig.method](
+    (router as any)[routeConfig.method.toLowerCase()](
       routePath,
       async (routerContext: RouteContext, next: Next) => {
         const { request, params } = routerContext;

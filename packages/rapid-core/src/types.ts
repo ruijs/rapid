@@ -304,11 +304,11 @@ export interface RpdRoute {
   handlers: RpdHttpHandler[];
 }
 
-export type RpdHttpMethod = "get" | "post" | "put" | "delete" | "patch";
+export type RpdHttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 export interface RpdHttpHandler {
   code: string;
-  config: any;
+  config?: any;
 }
 
 export interface IRpdDataAccessor<T = any> {

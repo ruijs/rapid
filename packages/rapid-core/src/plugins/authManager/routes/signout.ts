@@ -5,11 +5,11 @@ export default {
   name: "auth.signout",
   code: "",
   type: "RESTful",
-  method: "get",
+  method: "GET",
   endpoint: "/signout",
   handlers: [
     {
       code: "deleteSession",
     },
   ],
-} as RpdRoute;
+} satisfies RpdRoute;

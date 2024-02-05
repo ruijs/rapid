@@ -358,7 +358,7 @@ export default {
           columnName: "order_num",
           type: "integer",
           required: true,
-          defaultValue: 0,
+          defaultValue: '0',
         },
         {
           name: "name",
@@ -486,7 +486,7 @@ export default {
       name: "meta.model.list",
       code: "meta.model.list",
       type: "RESTful",
-      method: "get",
+      method: "GET",
       endpoint: "/_meta/models",
       handlers: [
         {
@@ -499,7 +499,7 @@ export default {
       name: "meta.model.getDetail",
       code: "meta.model.getDetail",
       type: "RESTful",
-      method: "get",
+      method: "GET",
       endpoint: "/_meta/models/:namespace/:singularCode",
       handlers: [
         {
@@ -512,7 +512,7 @@ export default {
       name: "meta.route.list",
       code: "meta.route.list",
       type: "RESTful",
-      method: "get",
+      method: "GET",
       endpoint: "/_meta/routes",
       handlers: [
         {
@@ -521,4 +521,4 @@ export default {
       ],
     },
   ],
-} as RpdApplicationConfig;
+} satisfies RpdApplicationConfig;

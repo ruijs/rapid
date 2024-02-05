@@ -5,11 +5,11 @@ export default {
   name: "auth.getMyProfile",
   code: "",
   type: "RESTful",
-  method: "get",
+  method: "GET",
   endpoint: "/me",
   handlers: [
     {
       code: "getMyProfile",
     },
   ],
-} as RpdRoute;
+} satisfies RpdRoute;
