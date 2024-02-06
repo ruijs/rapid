@@ -2,7 +2,7 @@ const process = require("process");
 const path = require("path");
 const express = require("express");
 const DatabaseAccessor = require("./database-accessor");
-const { RapidServer } = require('@ruiapp/rapid-core');
+const { RapidServer, createJwt, decodeJwt, generateJwtSecretKey } = require('@ruiapp/rapid-core');
 const { createRapidRequestHandler } = require('@ruiapp/rapid-express');
 
 exports.startServer = async () => {
@@ -19,7 +19,8 @@ exports.startServer = async () => {
     }
   };
 
-  const defaultJWTKey = "";
+  const defaultJWTKey = "DyYR1em73ZR5s3rUV32ek3FCZBMxE0YMjuPCvpyQKn+MhCQwlwCiN+8ghgTYcoijtLhKX4G93DPxsJOIuf/ub5qRi0lx5AnHEYGQ8c2zpxJ873viF7marKQ7k5dtBU83f0Oki3aeugSeAfYbOzeK49+LopkgjDeQikgLMyC4JFo=";
+
   const rapidConfig = {
     dbHost: env.get("DATABASE_HOST", "127.0.0.1"),
     dbPort: parseInt(env.get("DATABASE_PORT"), 10) || 5432,
@@ -68,6 +69,31 @@ exports.startServer = async () => {
   app.get("/", (req, res) => {
     res.send({
       status: 'ok',
+    });
+  })
+
+  
+  app.get("/jwt", async (req, res) => {
+    const secretKey = Buffer.from(defaultJWTKey, "base64");
+    const token = await createJwt({
+      iss: "authManager",
+      sub: "userAccessToken",
+      aud: "10000",
+      iat: Math.floor(Date.now() / 1000),
+      act: "rapid",
+    }, secretKey);
+
+    const jwt = decodeJwt(token);
+
+    res.send({
+      token,
+      jwt,
+    });
+  });
+
+  app.get("/gen-key", async (req, res) => {
+    res.send({
+      secretKey: await generateJwtSecretKey(),
     });
   })
 

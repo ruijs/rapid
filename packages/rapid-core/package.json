@@ -1,6 +1,6 @@
 {
   "name": "@ruiapp/rapid-core",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -12,6 +12,7 @@
   "author": "Fossil",
   "license": "MIT",
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.5",
     "@types/lodash": "^4.14.186",
     "@types/node": "^20.11.16",
     "rimraf": "^3.0.2",
@@ -20,9 +21,8 @@
     "rollup-plugin-typescript2": "^0.34.1",
     "typescript": "^4.8.4"
   },
-  "peerDependencies": {
-  },
   "dependencies": {
+    "jsonwebtoken": "^9.0.2",
     "koa-tree-router": "^0.12.1",
     "lodash": "^4.17.21",
     "qs": "^6.11.0"

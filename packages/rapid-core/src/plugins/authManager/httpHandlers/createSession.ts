@@ -1,6 +1,6 @@
 import { IPluginInstance } from "~/types";
 import { setCookie } from "~/deno-std/http/cookie";
-import { createJWT } from "~/utilities/jwtUtility";
+import { createJwt } from "~/utilities/jwtUtility";
 import { HttpHandlerContext } from "~/core/httpHandler";
 
 export interface UserAccessToken {
@@ -37,13 +37,14 @@ export async function handler(
     throw new Error("Wrong account or password.");
   }
 
-  const token = await createJWT({
+  const secretKey = Buffer.from(server.config.jwtKey, "base64");
+  const token = createJwt({
     iss: "authManager",
     sub: "userAccessToken",
     aud: "" + user.id,
     iat: new Date,
     act: user.login,
-  } as UserAccessToken);
+  } as UserAccessToken, secretKey);
 
   setCookie(response.headers, {
     name: ctx.server.config.sessionCookieName,
