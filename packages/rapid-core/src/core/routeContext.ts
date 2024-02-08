@@ -11,7 +11,6 @@ export class RouteContext {
   readonly state: Record<string, any>;
   method: string;
   path: string;
-  status: HttpStatus;
   params: Record<string, string>;
 
   constructor(request: RapidRequest) {

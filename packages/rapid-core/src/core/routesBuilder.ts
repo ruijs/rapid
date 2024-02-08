@@ -47,15 +47,7 @@ export async function buildRoutes(
         ) {
           const body = request.body;
           if (body) {
-            if (body.type === "form-data") {
-              const formDataReader = body.value;
-              const formDataBody = await formDataReader.read({ maxFileSize: 1073741824 /* 1GB */});
-              Object.assign(input, {
-                formData: formDataBody
-              });
-            } else {
-              Object.assign(input, body.value);
-            }
+            Object.assign(input, body.value);
           }
         }
 
@@ -84,12 +76,8 @@ export async function buildRoutes(
           }
         }
 
-        if (handlerContext.status) {
-          routerContext.status = handlerContext.status;
-        }
-
         if (!isNullOrUndefined(handlerContext.output)) {
-          routerContext.json(handlerContext.output);
+          routerContext.json(handlerContext.output, handlerContext.status);
         }
       },
     );

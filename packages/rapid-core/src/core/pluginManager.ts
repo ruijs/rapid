@@ -2,6 +2,7 @@ import { RpdApplicationConfig } from "~/types";
 import Plugin from "./plugin";
 import * as metaManager from "~/plugins/metaManager/mod";
 import * as dataManager from "~/plugins/dataManager/mod";
+import * as fileManager from "~/plugins/fileManager/mod";
 import * as routeManager from "~/plugins/routeManager/mod";
 import * as webhooks from "~/plugins/webhooks/mod";
 import * as authManager from "~/plugins/authManager/mod";
@@ -12,6 +13,7 @@ const plugins: IRpdServerPlugin[] = [];
 export async function loadPlugins() {
   plugins.push(metaManager);
   plugins.push(dataManager);
+  plugins.push(fileManager);
   plugins.push(routeManager);
   plugins.push(webhooks);
   plugins.push(authManager);

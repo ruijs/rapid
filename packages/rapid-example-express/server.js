@@ -1,15 +1,18 @@
 const process = require("process");
-const path = require("path");
 const express = require("express");
 const DatabaseAccessor = require("./database-accessor");
 const { RapidServer, createJwt, decodeJwt, generateJwtSecretKey } = require('@ruiapp/rapid-core');
 const { createRapidRequestHandler } = require('@ruiapp/rapid-express');
+
+require("dotenv/config");
 
 exports.startServer = async () => {
   const app = express();
 
   // http://expressjs.com/en/advanced/best-practice-security.html#at-a-minimum-disable-x-powered-by-header
   app.disable("x-powered-by");
+
+  app.use(express.static('public'))
 
   const envFromFile = {};
   const envFromProcess = process.env;
@@ -24,7 +27,7 @@ exports.startServer = async () => {
   const rapidConfig = {
     dbHost: env.get("DATABASE_HOST", "127.0.0.1"),
     dbPort: parseInt(env.get("DATABASE_PORT"), 10) || 5432,
-    dbName: env.get("DATABASE_NAME", "project_matrix"),
+    dbName: env.get("DATABASE_NAME", "rapid"),
     dbUser: env.get("DATABASE_USERNAME", "postgres"),
     dbPassword: env.get("DATABASE_PASSWORD", "postgres"),
     dbDefaultSchema: env.get("DATABASE_DEFAULT_SCHEMA") || 'public',
@@ -33,6 +36,7 @@ exports.startServer = async () => {
     jwtKey: env.get("JWT_KEY", defaultJWTKey),
     localFileStoragePath: env.get("LOCAL_FILE_STORAGE_PATH", "/data/rapid-data/local-storage"),
   };
+  console.log('rapidConfig:', rapidConfig);
 
   const databaseAccessor  = new DatabaseAccessor({
     host: rapidConfig.dbHost,

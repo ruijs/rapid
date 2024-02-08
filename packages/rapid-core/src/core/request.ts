@@ -1,4 +1,5 @@
 import qs from "qs";
+import { parseFormDataBody } from "./http/formDataParser";
 
 export const GlobalRequest = global.Request;
 
@@ -46,7 +47,7 @@ export class RapidRequest {
       } else if (contentType.startsWith("multipart/form-data")) {
         this.#body = {
           type: "form-data",
-          value: await req.formData(),
+          value: await parseFormDataBody(req),
         }
       }
     } else {
