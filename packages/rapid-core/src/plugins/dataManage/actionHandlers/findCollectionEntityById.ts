@@ -1,14 +1,14 @@
-import { RunEntityHttpHandlerOptions } from "~/types";
+import { RunEntityActionHandlerOptions } from "~/types";
 import { findEntity } from "~/dataAccess/entityManager";
-import { HttpHandlerContext } from "~/core/httpHandler";
+import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 
 export const code = "findCollectionEntityById";
 
 export async function handler(
   plugin: RapidPlugin,
-  ctx: HttpHandlerContext,
-  options: RunEntityHttpHandlerOptions,
+  ctx: ActionHandlerContext,
+  options: RunEntityActionHandlerOptions,
 ) {
   console.debug(`Running ${code} handler...`);
   const { server, input } = ctx;

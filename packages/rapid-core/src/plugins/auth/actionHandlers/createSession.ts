@@ -1,6 +1,6 @@
 import { setCookie } from "~/deno-std/http/cookie";
 import { createJwt } from "~/utilities/jwtUtility";
-import { HttpHandlerContext } from "~/core/httpHandler";
+import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 
 export interface UserAccessToken {
@@ -12,7 +12,7 @@ export const code = "createSession";
 
 export async function handler(
   plugin: RapidPlugin,
-  ctx: HttpHandlerContext,
+  ctx: ActionHandlerContext,
   options: any,
 ) {
   const { server, input, routerContext } = ctx;

@@ -7,7 +7,7 @@ import {
 } from "~/types";
 import { RpdServerPluginExtendingAbilities, RpdServerPluginConfigurableTargetOptions, RpdConfigurationItemOptions, IRpdServer, RapidPlugin } from "~/core/server";
 import { findEntities } from "../../dataAccess/entityManager";
-import * as httpProxy from "./httpHandlers/httpProxy";
+import * as httpProxy from "./actionHandlers/httpProxy";
 
 
 class RouteManager implements RapidPlugin {
@@ -37,8 +37,8 @@ class RouteManager implements RapidPlugin {
   async registerMiddlewares(server: IRpdServer): Promise<any> {
   }
 
-  async registerHttpHandlers(server: IRpdServer): Promise<any> {
-    server.registerHttpHandler(this, httpProxy);
+  async registerActionHandlers(server: IRpdServer): Promise<any> {
+    server.registerActionHandler(this, httpProxy);
   }
 
   async registerEventHandlers(server: IRpdServer): Promise<any> {

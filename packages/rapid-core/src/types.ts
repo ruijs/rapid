@@ -22,7 +22,7 @@ export interface IDatabaseAccessor {
 }
 
 
-export interface RunEntityHttpHandlerOptions {
+export interface RunEntityActionHandlerOptions {
   /** 模型所在的命名空间 */
   namespace: string;
   /** 模型Code的单数表示 */
@@ -298,12 +298,12 @@ export interface RpdRoute {
   type: "RESTful";
   method: RpdHttpMethod;
   endpoint: string;
-  handlers: RpdHttpHandler[];
+  actions: RpdRouteActionConfig[];
 }
 
 export type RpdHttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
-export interface RpdHttpHandler {
+export interface RpdRouteActionConfig {
   code: string;
   config?: any;
 }

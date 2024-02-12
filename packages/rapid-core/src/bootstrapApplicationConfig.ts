@@ -471,9 +471,9 @@ export default {
           required: true,
         },
         {
-          name: "handlers",
-          code: "handlers",
-          columnName: "handlers",
+          name: "actions",
+          code: "actions",
+          columnName: "actions",
           type: "json",
           required: true,
         },
@@ -488,7 +488,7 @@ export default {
       type: "RESTful",
       method: "GET",
       endpoint: "/_meta/models",
-      handlers: [
+      actions: [
         {
           code: "listMetaModels",
         },
@@ -501,7 +501,7 @@ export default {
       type: "RESTful",
       method: "GET",
       endpoint: "/_meta/models/:namespace/:singularCode",
-      handlers: [
+      actions: [
         {
           code: "getMetaModelDetail",
         },
@@ -514,7 +514,7 @@ export default {
       type: "RESTful",
       method: "GET",
       endpoint: "/_meta/routes",
-      handlers: [
+      actions: [
         {
           code: "listMetaRoutes",
         },

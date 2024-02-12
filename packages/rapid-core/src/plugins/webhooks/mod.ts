@@ -81,7 +81,7 @@ class WebhooksPlugin implements RapidPlugin {
   async registerMiddlewares(server: IRpdServer): Promise<any> {
   }
 
-  async registerHttpHandlers(server: IRpdServer): Promise<any> {
+  async registerActionHandlers(server: IRpdServer): Promise<any> {
   }
 
   async registerEventHandlers(server: IRpdServer): Promise<any> {

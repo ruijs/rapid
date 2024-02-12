@@ -1,12 +1,12 @@
-import { RunEntityHttpHandlerOptions } from "~/types";
+import { RunEntityActionHandlerOptions } from "~/types";
 import { mergeInput } from "~/helpers/inputHelper";
 import { isRelationProperty } from "~/utilities/rapidUtility";
-import { HttpHandlerContext } from "~/core/httpHandler";
+import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 
-export const code = "addEntityRelations";
+export const code = "removeEntityRelations";
 
-interface AddEntityRelationsInput {
+interface RemoveEntityRelationsInput {
   id: number;
   property: string;
   relations: {id?: number, [k: string]: any}[];
@@ -14,8 +14,8 @@ interface AddEntityRelationsInput {
 
 export async function handler(
   plugin: RapidPlugin,
-  ctx: HttpHandlerContext,
-  options: RunEntityHttpHandlerOptions,
+  ctx: ActionHandlerContext,
+  options: RunEntityActionHandlerOptions,
 ) {
   const { server, input } = ctx;
   const { queryBuilder } = server;
@@ -31,11 +31,13 @@ export async function handler(
   const dataAccessor = server.getDataAccessor(options);
   const model = dataAccessor.getModel();
 
-  const {id, property, relations} = mergedInput as AddEntityRelationsInput;
+  const {id, property, relations} = mergedInput as RemoveEntityRelationsInput;
   const row = await dataAccessor.findById(id);
   if (!row) {
     throw new Error(`${options.namespace}.${options.singularCode}  with id "${id}" was not found.`);
   }
+
+  console.log(mergedInput);
 
   const relationProperty = model.properties.find(e => e.code === property);
   if (!relationProperty) {
@@ -48,12 +50,8 @@ export async function handler(
 
   if (relationProperty.linkTableName) {
     for (const relation of relations) {
-      const command = `INSERT INTO ${queryBuilder.quoteTable({schema:relationProperty.linkSchema, tableName: relationProperty.linkTableName})} (${queryBuilder.quoteObject(relationProperty.selfIdColumnName!)}, ${queryBuilder.quoteObject(relationProperty.targetIdColumnName!)})
-  SELECT $1, $2 WHERE NOT EXISTS (
-    SELECT ${queryBuilder.quoteObject(relationProperty.selfIdColumnName!)}, ${queryBuilder.quoteObject(relationProperty.targetIdColumnName!)}
-      FROM ${queryBuilder.quoteTable({schema:relationProperty.linkSchema, tableName: relationProperty.linkTableName})}
-      WHERE ${queryBuilder.quoteObject(relationProperty.selfIdColumnName!)}=$1 AND ${queryBuilder.quoteObject(relationProperty.targetIdColumnName!)}=$2
-    )`;
+      const command = `DELETE FROM ${queryBuilder.quoteTable({schema:relationProperty.linkSchema, tableName: relationProperty.linkTableName})}
+  WHERE ${queryBuilder.quoteObject(relationProperty.selfIdColumnName!)}=$1 AND ${queryBuilder.quoteObject(relationProperty.targetIdColumnName!)}=$2;`;
       const params = [id, relation.id];
       await server.queryDatabaseObject(command, params);
     }
@@ -62,7 +60,7 @@ export async function handler(
   ctx.output = {};
 
   server.emitEvent(
-    "entity.addRelations",
+    "entity.removeRelations",
     plugin,
     {
       namespace: options.namespace,

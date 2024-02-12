@@ -2,7 +2,7 @@ import { RpdApplicationConfig } from "~/types";
 import { IRpdServer, RapidPlugin } from "./server";
 import { Next, RouteContext } from "./routeContext";
 
-export interface HttpHandlerContext {
+export interface ActionHandlerContext {
   routerContext: RouteContext;
   next: Next;
   server: IRpdServer;
@@ -12,18 +12,12 @@ export interface HttpHandlerContext {
   status?: Response["status"];
 }
 
-export type PluginHttpHandler = (
-  plugin: RapidPlugin,
-  ctx: HttpHandlerContext,
+export type ActionHandler = (
+  ctx: ActionHandlerContext,
   options: any,
 ) => void | Promise<void>;
 
-export type HttpRequestHandler = (
-  ctx: HttpHandlerContext,
-  options: any,
-) => void | Promise<void>;
-
-export interface IPluginHttpHandler {
+export interface IPluginActionHandler {
   code: string;
-  handler: PluginHttpHandler;
+  handler: (plugin: RapidPlugin, ctx: ActionHandlerContext, options: any) => void | Promise<void>;
 }

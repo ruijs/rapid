@@ -8,7 +8,7 @@ import {
 } from "~/types";
 import { IRpdServer, RapidPlugin, RpdConfigurationItemOptions, RpdServerPluginConfigurableTargetOptions, RpdServerPluginExtendingAbilities } from "~/core/server";
 
-import pluginHttpHandlers from "./httpHandlers";
+import pluginActionHandlers from "./actionHandlers";
 import pluginModels from "./models";
 import pluginRoutes from "./routes";
 
@@ -40,9 +40,9 @@ class AuthManager implements RapidPlugin {
   async registerMiddlewares(server: IRpdServer): Promise<any> {
   }
 
-  async registerHttpHandlers(server: IRpdServer): Promise<any> {
-    for (const httpHandler of pluginHttpHandlers) {
-      server.registerHttpHandler(this, httpHandler);
+  async registerActionHandlers(server: IRpdServer): Promise<any> {
+    for (const actionHandler of pluginActionHandlers) {
+      server.registerActionHandler(this, actionHandler);
     }
   }
 

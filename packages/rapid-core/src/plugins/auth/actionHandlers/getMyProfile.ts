@@ -1,12 +1,12 @@
 import { findEntity } from "~/dataAccess/entityManager";
-import { HttpHandlerContext } from "~/core/httpHandler";
+import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 
 export const code = "getMyProfile";
 
 export async function handler(
   plugin: RapidPlugin,
-  ctx: HttpHandlerContext,
+  ctx: ActionHandlerContext,
   options: any,
 ) {
   const { server, input, routerContext } = ctx;

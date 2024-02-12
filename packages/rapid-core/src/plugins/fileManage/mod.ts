@@ -6,9 +6,9 @@ import {
   RpdApplicationConfig,
 } from "~/types";
 
-import * as downloadDocumentHttpHandler from "./httpHandlers/downloadDocument";
-import * as downloadFileHttpHandler from "./httpHandlers/downloadFile";
-import * as uploadFileHttpHandler from "./httpHandlers/uploadFile";
+import * as downloadDocumentActionHandler from "./actionHandlers/downloadDocument";
+import * as downloadFileActionHandler from "./actionHandlers/downloadFile";
+import * as uploadFileActionHandler from "./actionHandlers/uploadFile";
 import { IRpdServer, RapidPlugin, RpdConfigurationItemOptions, RpdServerPluginConfigurableTargetOptions, RpdServerPluginExtendingAbilities } from "~/core/server";
 
 
@@ -39,10 +39,10 @@ class FileManager implements RapidPlugin {
   async registerMiddlewares(server: IRpdServer): Promise<any> {
   }
 
-  async registerHttpHandlers(server: IRpdServer): Promise<any> {
-    server.registerHttpHandler(this, downloadDocumentHttpHandler);
-    server.registerHttpHandler(this, downloadFileHttpHandler);
-    server.registerHttpHandler(this, uploadFileHttpHandler);
+  async registerActionHandlers(server: IRpdServer): Promise<any> {
+    server.registerActionHandler(this, downloadDocumentActionHandler);
+    server.registerActionHandler(this, downloadFileActionHandler);
+    server.registerActionHandler(this, uploadFileActionHandler);
   }
 
   async registerEventHandlers(server: IRpdServer): Promise<any> {

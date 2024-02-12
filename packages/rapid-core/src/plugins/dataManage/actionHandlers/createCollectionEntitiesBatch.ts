@@ -1,16 +1,16 @@
-import { RunEntityHttpHandlerOptions } from "~/types";
+import { RunEntityActionHandlerOptions } from "~/types";
 import { mergeInput } from "~/helpers/inputHelper";
 import { createEntity } from "~/dataAccess/entityManager";
 import { isArray } from "lodash";
-import { HttpHandlerContext } from "~/core/httpHandler";
+import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 
 export const code = "createCollectionEntitiesBatch";
 
 export async function handler(
   plugin: RapidPlugin,
-  ctx: HttpHandlerContext,
-  options: RunEntityHttpHandlerOptions,
+  ctx: ActionHandlerContext,
+  options: RunEntityActionHandlerOptions,
 ) {
   const { server, input } = ctx;
   const { defaultInput, fixedInput } = options;

@@ -16,7 +16,7 @@ import {
 import QueryBuilder from "./queryBuilder/queryBuilder";
 import PluginManager from "./core/pluginManager";
 import EventManager from "./core/eventManager";
-import { HttpRequestHandler, IPluginHttpHandler } from "./core/httpHandler";
+import { ActionHandler, IPluginActionHandler } from "./core/actionHandler";
 import { IRpdServer, RapidPlugin } from "./core/server";
 import { buildRoutes } from "./core/routesBuilder";
 import { Next, RouteContext } from "./core/routeContext";
@@ -38,7 +38,7 @@ export class RapidServer implements IRpdServer {
   #middlewares: any[];
   #bootstrapApplicationConfig: RpdApplicationConfig;
   #applicationConfig: RpdApplicationConfig;
-  #httpHandlersMapByCode: Map<string, HttpRequestHandler>;
+  #actionHandlersMapByCode: Map<string, ActionHandler>;
   #databaseAccessor: IDatabaseAccessor;
   queryBuilder: IQueryBuilder;
   config: RapidServerConfig;
@@ -52,7 +52,7 @@ export class RapidServer implements IRpdServer {
     this.#bootstrapApplicationConfig = options.applicationConfig || bootstrapApplicationConfig;
 
     this.#applicationConfig = {} as RpdApplicationConfig;
-    this.#httpHandlersMapByCode = new Map();
+    this.#actionHandlersMapByCode = new Map();
     this.#databaseAccessor = options.databaseAccessor;
 
     this.queryBuilder = new QueryBuilder({
@@ -95,7 +95,7 @@ export class RapidServer implements IRpdServer {
         const originalRoute = _.find(this.#applicationConfig.routes, (item) => item.code == route.code);
         if (originalRoute) {
           originalRoute.name = route.name;
-          originalRoute.handlers = route.handlers;
+          originalRoute.actions = route.actions;
         } else {
           this.#applicationConfig.routes.push(route);
         }
@@ -103,16 +103,16 @@ export class RapidServer implements IRpdServer {
     }
   }
 
-  registerHttpHandler(
+  registerActionHandler(
     plugin: RapidPlugin,
-    options: IPluginHttpHandler,
+    options: IPluginActionHandler,
   ) {
     const handler = _.bind(options.handler, null, plugin);
-    this.#httpHandlersMapByCode.set(options.code, handler);
+    this.#actionHandlersMapByCode.set(options.code, handler);
   }
 
-  getHttpHandlerByCode(code: string) {
-    return this.#httpHandlersMapByCode.get(code);
+  getActionHandlerByCode(code: string) {
+    return this.#actionHandlersMapByCode.get(code);
   }
 
   registerMiddleware(middleware: any) {
@@ -178,7 +178,7 @@ export class RapidServer implements IRpdServer {
     await pluginManager.initPlugins();
 
     await pluginManager.registerMiddlewares();
-    await pluginManager.registerHttpHandlers();
+    await pluginManager.registerActionHandlers();
     await pluginManager.registerEventHandlers();
     await pluginManager.registerMessageHandlers();
     await pluginManager.registerTaskProcessors();

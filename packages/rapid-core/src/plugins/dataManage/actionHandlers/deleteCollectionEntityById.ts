@@ -1,14 +1,14 @@
-import { RunEntityHttpHandlerOptions } from "~/types";
+import { RunEntityActionHandlerOptions } from "~/types";
 import { mapDbRowToEntity } from "~/dataAccess/entityMapper";
-import { HttpHandlerContext } from "~/core/httpHandler";
+import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 
 export const code = "deleteCollectionEntityById";
 
 export async function handler(
   plugin: RapidPlugin,
-  ctx: HttpHandlerContext,
-  options: RunEntityHttpHandlerOptions,
+  ctx: ActionHandlerContext,
+  options: RunEntityActionHandlerOptions,
 ) {
   console.debug(`Running ${code} handler...`);
   const { server, input } = ctx;

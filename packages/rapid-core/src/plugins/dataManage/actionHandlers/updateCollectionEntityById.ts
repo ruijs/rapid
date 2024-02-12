@@ -1,17 +1,17 @@
-import { RunEntityHttpHandlerOptions } from "~/types";
+import { RunEntityActionHandlerOptions } from "~/types";
 import { getEntityPartChanges } from "~/helpers/entityHelpers";
 import { mergeInput } from "~/helpers/inputHelper";
 import { updateEntityById } from "~/dataAccess/entityManager";
 import { mapDbRowToEntity } from "~/dataAccess/entityMapper";
-import { HttpHandlerContext } from "~/core/httpHandler";
+import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 
 export const code = "updateCollectionEntityById";
 
 export async function handler(
   plugin: RapidPlugin,
-  ctx: HttpHandlerContext,
-  options: RunEntityHttpHandlerOptions,
+  ctx: ActionHandlerContext,
+  options: RunEntityActionHandlerOptions,
 ) {
   const { server, input } = ctx;
   const { defaultInput, fixedInput } = options;

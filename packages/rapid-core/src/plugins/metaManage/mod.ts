@@ -17,9 +17,9 @@ import {
 } from "~/types";
 import { IRpdServer, RapidPlugin, RpdConfigurationItemOptions, RpdServerPluginConfigurableTargetOptions, RpdServerPluginExtendingAbilities } from "~/core/server";
 
-import * as listMetaModels from "./httpHandlers/listMetaModels";
-import * as listMetaRoutes from "./httpHandlers/listMetaRoutes";
-import * as getMetaModelDetail from "./httpHandlers/getMetaModelDetail";
+import * as listMetaModels from "./actionHandlers/listMetaModels";
+import * as listMetaRoutes from "./actionHandlers/listMetaRoutes";
+import * as getMetaModelDetail from "./actionHandlers/getMetaModelDetail";
 import { isRelationProperty } from "~/utilities/rapidUtility";
 
 class MetaManager implements RapidPlugin {
@@ -49,10 +49,10 @@ class MetaManager implements RapidPlugin {
   async registerMiddlewares(server: IRpdServer): Promise<any> {
   }
 
-  async registerHttpHandlers(server: IRpdServer): Promise<any> {
-    server.registerHttpHandler(this, listMetaModels);
-    server.registerHttpHandler(this, listMetaRoutes);
-    server.registerHttpHandler(this, getMetaModelDetail);
+  async registerActionHandlers(server: IRpdServer): Promise<any> {
+    server.registerActionHandler(this, listMetaModels);
+    server.registerActionHandler(this, listMetaRoutes);
+    server.registerActionHandler(this, getMetaModelDetail);
   }
 
   async registerEventHandlers(server: IRpdServer): Promise<any> {

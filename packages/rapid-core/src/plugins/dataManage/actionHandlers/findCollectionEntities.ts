@@ -1,19 +1,19 @@
 import * as _ from "lodash";
-import { FindEntityOptions, RunEntityHttpHandlerOptions } from "~/types";
-import runCollectionEntityHttpHandler from "~/helpers/runCollectionEntityHttpHandler";
+import { FindEntityOptions, RunEntityActionHandlerOptions } from "~/types";
+import runCollectionEntityActionHandler from "~/helpers/runCollectionEntityActionHandler";
 import { findEntities } from "~/dataAccess/entityManager";
 import { removeFiltersWithNullValue } from "~/dataAccess/filterHelper";
-import { HttpHandlerContext } from "~/core/httpHandler";
+import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 
 export const code = "findCollectionEntities";
 
 export async function handler(
   plugin: RapidPlugin,
-  ctx: HttpHandlerContext,
-  options: RunEntityHttpHandlerOptions,
+  ctx: ActionHandlerContext,
+  options: RunEntityActionHandlerOptions,
 ) {
-  await runCollectionEntityHttpHandler(
+  await runCollectionEntityActionHandler(
     ctx,
     options,
     code,

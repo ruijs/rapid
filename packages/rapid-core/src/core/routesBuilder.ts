@@ -1,6 +1,6 @@
 import Router from "koa-tree-router";
 import qs from "qs";
-import { HttpHandlerContext } from "~/core/httpHandler";
+import { ActionHandlerContext } from "~/core/actionHandler";
 import { IRpdServer } from "~/core/server";
 import { RpdApplicationConfig } from "~/types";
 import { isNullOrUndefined } from "~/utilities/typeUtility";
@@ -56,7 +56,7 @@ export async function buildRoutes(
         console.debug(`${requestMethod} ${request.url.toString()}`);
         console.debug(`input: ${JSON.stringify(input)}`);
 
-        let handlerContext: HttpHandlerContext = {
+        let handlerContext: ActionHandlerContext = {
           routerContext,
           next,
           server,
@@ -64,8 +64,8 @@ export async function buildRoutes(
           input,
         };
 
-        for (const handlerConfig of routeConfig.handlers) {
-          const handler = server.getHttpHandlerByCode(handlerConfig.code);
+        for (const handlerConfig of routeConfig.actions) {
+          const handler = server.getActionHandlerByCode(handlerConfig.code);
           if (!handler) {
             throw new Error("Unknown handler: " + handlerConfig.code);
           }

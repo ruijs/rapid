@@ -1,4 +1,4 @@
-import { HttpHandlerContext } from "~/core/httpHandler";
+import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 import { setCookie } from "~/deno-std/http/cookie";
 
@@ -6,7 +6,7 @@ export const code = "deleteSession";
 
 export async function handler(
   plugin: RapidPlugin,
-  ctx: HttpHandlerContext,
+  ctx: ActionHandlerContext,
   options: any,
 ) {
   const { server, input, routerContext } = ctx;

@@ -9,19 +9,19 @@ import {
   RpdApplicationConfig,
   RpdHttpMethod,
   RpdRoute,
-  RunEntityHttpHandlerOptions,
+  RunEntityActionHandlerOptions,
 } from "~/types";
 
-import * as findCollectionEntitiesHttpHandler from "./httpHandlers/findCollectionEntities";
-import * as findCollectionEntityById from "./httpHandlers/findCollectionEntityById";
-import * as countCollectionEntities from "./httpHandlers/countCollectionEntities";
-import * as createCollectionEntity from "./httpHandlers/createCollectionEntity";
-import * as createCollectionEntitiesBatch from "./httpHandlers/createCollectionEntitiesBatch";
-import * as updateCollectionEntityById from "./httpHandlers/updateCollectionEntityById";
-import * as deleteCollectionEntityById from "./httpHandlers/deleteCollectionEntityById";
-import * as addEntityRelations from "./httpHandlers/addEntityRelations";
-import * as removeEntityRelations from "./httpHandlers/removeEntityRelations";
-import * as queryDatabase from "./httpHandlers/queryDatabase";
+import * as findCollectionEntities from "./actionHandlers/findCollectionEntities";
+import * as findCollectionEntityById from "./actionHandlers/findCollectionEntityById";
+import * as countCollectionEntities from "./actionHandlers/countCollectionEntities";
+import * as createCollectionEntity from "./actionHandlers/createCollectionEntity";
+import * as createCollectionEntitiesBatch from "./actionHandlers/createCollectionEntitiesBatch";
+import * as updateCollectionEntityById from "./actionHandlers/updateCollectionEntityById";
+import * as deleteCollectionEntityById from "./actionHandlers/deleteCollectionEntityById";
+import * as addEntityRelations from "./actionHandlers/addEntityRelations";
+import * as removeEntityRelations from "./actionHandlers/removeEntityRelations";
+import * as queryDatabase from "./actionHandlers/queryDatabase";
 import { RpdServerPluginExtendingAbilities, RpdServerPluginConfigurableTargetOptions, RpdConfigurationItemOptions, IRpdServer, RapidPlugin } from "~/core/server";
 
 
@@ -114,17 +114,17 @@ class DataManager implements RapidPlugin {
   async registerMiddlewares(server: IRpdServer): Promise<any> {
   }
 
-  async registerHttpHandlers(server: IRpdServer): Promise<any> {
-    server.registerHttpHandler(this, findCollectionEntitiesHttpHandler);
-    server.registerHttpHandler(this, findCollectionEntityById);
-    server.registerHttpHandler(this, countCollectionEntities);
-    server.registerHttpHandler(this, createCollectionEntity);
-    server.registerHttpHandler(this, createCollectionEntitiesBatch);
-    server.registerHttpHandler(this, updateCollectionEntityById);
-    server.registerHttpHandler(this, addEntityRelations);
-    server.registerHttpHandler(this, removeEntityRelations);
-    server.registerHttpHandler(this, deleteCollectionEntityById);
-    server.registerHttpHandler(this, queryDatabase);
+  async registerActionHandlers(server: IRpdServer): Promise<any> {
+    server.registerActionHandler(this, findCollectionEntities);
+    server.registerActionHandler(this, findCollectionEntityById);
+    server.registerActionHandler(this, countCollectionEntities);
+    server.registerActionHandler(this, createCollectionEntity);
+    server.registerActionHandler(this, createCollectionEntitiesBatch);
+    server.registerActionHandler(this, updateCollectionEntityById);
+    server.registerActionHandler(this, addEntityRelations);
+    server.registerActionHandler(this, removeEntityRelations);
+    server.registerActionHandler(this, deleteCollectionEntityById);
+    server.registerActionHandler(this, queryDatabase);
   }
 
   async registerEventHandlers(server: IRpdServer): Promise<any> {
@@ -160,13 +160,13 @@ class DataManager implements RapidPlugin {
           type: "RESTful",
           method: routeConfig.method,
           endpoint: `/${namespace}/${pluralCode}${routeConfig.endpoint}`,
-          handlers: [
+          actions: [
             {
               code: routeConfig.handlerCode,
               config: {
                 namespace,
                 singularCode,
-              } as RunEntityHttpHandlerOptions,
+              } as RunEntityActionHandlerOptions,
             },
           ],
         });

@@ -33,10 +33,10 @@ class PluginManager {
   }
 
   /** 注册接口动作处理程序 */
-  async registerHttpHandlers() {
+  async registerActionHandlers() {
     for (const plugin of this.#plugins) {
-      if (plugin.registerHttpHandlers) {
-        await plugin.registerHttpHandlers(this.#server);
+      if (plugin.registerActionHandlers) {
+        await plugin.registerActionHandlers(this.#server);
       }
     }
   }

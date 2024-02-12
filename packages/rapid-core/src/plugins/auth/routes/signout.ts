@@ -7,7 +7,7 @@ export default {
   type: "RESTful",
   method: "GET",
   endpoint: "/signout",
-  handlers: [
+  actions: [
     {
       code: "deleteSession",
     },

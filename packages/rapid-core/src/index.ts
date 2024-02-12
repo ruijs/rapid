@@ -7,6 +7,8 @@ export * from "./server";
 export * from "./core/request";
 export * from "./core/routeContext";
 export * from "./core/server";
+export * from "./core/http-types";
+export * from "./core/actionHandler";
 
 export * from "./utilities/jwtUtility";
 

@@ -1,14 +1,14 @@
 import * as _ from "lodash";
 import { RunQueryDatabaseHandlerOptions } from "~/types";
 import { mergeInput } from "~/helpers/inputHelper";
-import { HttpHandlerContext } from "~/core/httpHandler";
+import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 
 export const code = "queryDatabase";
 
 export async function handler(
   plugin: RapidPlugin,
-  ctx: HttpHandlerContext,
+  ctx: ActionHandlerContext,
   options: RunQueryDatabaseHandlerOptions,
 ) {
   const { server, input } = ctx;

@@ -1,11 +1,11 @@
-import { HttpHandlerContext } from "~/core/httpHandler";
+import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 
 export const code = "listMetaModels";
 
 export async function handler(
   plugin: RapidPlugin,
-  ctx: HttpHandlerContext,
+  ctx: ActionHandlerContext,
   options: any,
 ) {
   const { applicationConfig } = ctx;

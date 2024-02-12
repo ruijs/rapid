@@ -1,5 +1,5 @@
 import path from "path";
-import { HttpHandlerContext } from "~/core/httpHandler";
+import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 import { readFile } from "~/utilities/fsUtility";
 
@@ -7,7 +7,7 @@ export const code = "downloadDocument";
 
 export async function handler(
   plugin: RapidPlugin,
-  ctx: HttpHandlerContext,
+  ctx: ActionHandlerContext,
   options: any,
 ) {
   const { server, applicationConfig, routerContext, input } = ctx;

@@ -1,16 +1,16 @@
 import * as _ from "lodash";
-import { IRpdDataAccessor, RunEntityHttpHandlerOptions } from "~/types";
+import { IRpdDataAccessor, RunEntityActionHandlerOptions } from "~/types";
 import { mergeInput } from "./inputHelper";
-import { HttpHandlerContext } from "~/core/httpHandler";
+import { ActionHandlerContext } from "~/core/actionHandler";
 
 type DataAccessHandler = (
   dataAccessor: IRpdDataAccessor,
   input: any,
 ) => Promise<any>;
 
-export default async function runCollectionEntityHttpHandler(
-  ctx: HttpHandlerContext,
-  options: RunEntityHttpHandlerOptions,
+export default async function runCollectionEntityActionHandler(
+  ctx: ActionHandlerContext,
+  options: RunEntityActionHandlerOptions,
   code: string,
   handleDataAccess: DataAccessHandler,
 ) {

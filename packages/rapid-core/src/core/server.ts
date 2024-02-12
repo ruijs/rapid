@@ -1,5 +1,5 @@
 import { GetDataAccessorOptions, GetModelOptions, IDatabaseConfig, IQueryBuilder, IRpdDataAccessor, RapidServerConfig, RpdApplicationConfig, RpdDataModel, RpdServerEventTypes } from "~/types";
-import { IPluginHttpHandler, HttpRequestHandler } from "./httpHandler";
+import { IPluginActionHandler, ActionHandler } from "./actionHandler";
 import { Next } from "./routeContext";
 
 export interface IRpdServer {
@@ -15,11 +15,11 @@ export interface IRpdServer {
     params?: unknown[] | Record<string, unknown>,
   ) => Promise<any[]>;
   registerMiddleware(middleware: any): void;
-  registerHttpHandler(
+  registerActionHandler(
     plugin: RapidPlugin,
-    options: IPluginHttpHandler,
+    options: IPluginActionHandler,
   ): void;
-  getHttpHandlerByCode(code: string): HttpRequestHandler | undefined;
+  getActionHandlerByCode(code: string): ActionHandler | undefined;
   getDataAccessor<T = any>(
     options: GetDataAccessorOptions,
   ): IRpdDataAccessor<T>;
@@ -75,7 +75,7 @@ export type RpdServerPluginExtendingAbilities =
   | /** 是指提供处理网络请求的middleware的能力。 */ "extendMiddleware"
   | /** 是指增加系统中的集合的能力。 */ "extendModel"
   | /** 是指可以对模型增加属性的能力。 */ "extendProperty"
-  | /** 是指增加接口动作的能力。 */ "extendHttpHandler"
+  | /** 是指增加接口动作的能力。 */ "extendActionHandler"
   | /** 是指增加或者修改接口定义的能力。 */ "extendRoute"
   | /** 是指对实体数据进行标准化的能力。 */ "normalizeEntity"
   | /** 处理事件总线发送过来的事件的能力。 */ "handleEvent"
@@ -104,7 +104,7 @@ export interface RapidPlugin {
   /** 注册中间件 */
   registerMiddlewares(server: IRpdServer): Promise<any>;
   /** 注册接口动作处理程序 */
-  registerHttpHandlers(server: IRpdServer): Promise<any>;
+  registerActionHandlers(server: IRpdServer): Promise<any>;
   /** 注册事件处理程序 */
   registerEventHandlers(server: IRpdServer): Promise<any>;
   /** 注册消息处理程序 */

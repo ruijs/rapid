@@ -1,13 +1,13 @@
 import path from "path";
 import { readFile } from "~/utilities/fsUtility";
-import { HttpHandlerContext } from "~/core/httpHandler";
+import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 
 export const code = "downloadFile";
 
 export async function handler(
   plugin: RapidPlugin,
-  ctx: HttpHandlerContext,
+  ctx: ActionHandlerContext,
   options: any,
 ) {
   const { server, applicationConfig, routerContext, input } = ctx;

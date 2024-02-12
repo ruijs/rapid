@@ -7,7 +7,7 @@ export default {
   type: "RESTful",
   method: "GET",
   endpoint: "/me",
-  handlers: [
+  actions: [
     {
       code: "getMyProfile",
     },

@@ -1,6 +1,6 @@
 import { v1 as uuidv1 } from "uuid";
 import { appendFile } from "~/utilities/fsUtility";
-import { HttpHandlerContext } from "~/core/httpHandler";
+import { ActionHandlerContext } from "~/core/actionHandler";
 import path from "path";
 import { isArray } from "lodash";
 import { RapidPlugin } from "~/core/server";
@@ -9,7 +9,7 @@ export const code = "uploadFile";
 
 export async function handler(
   plugin: RapidPlugin,
-  ctx: HttpHandlerContext,
+  ctx: ActionHandlerContext,
   options: any,
 ) {
   const { server, applicationConfig, routerContext, input } = ctx;
