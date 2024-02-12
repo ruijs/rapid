@@ -1,3 +1,5 @@
+import { RapidPlugin } from "./core/server";
+
 export type RapidServerConfig = {
   baseUrl?: string;
   sessionCookieName: string;
@@ -60,11 +62,11 @@ export interface GetModelOptions {
 }
 
 export type RpdServerEventTypes = {
-  "entity.create": [IPluginInstance, RpdEntityCreateEventPayload];
-  "entity.update": [IPluginInstance, RpdEntityUpdateEventPayload];
-  "entity.delete": [IPluginInstance, RpdEntityDeleteEventPayload];
-  "entity.addRelations": [IPluginInstance, RpdEntityAddRelationsEventPayload];
-  "entity.removeRelations": [IPluginInstance, RpdEntityRemoveRelationsEventPayload];
+  "entity.create": [RapidPlugin, RpdEntityCreateEventPayload];
+  "entity.update": [RapidPlugin, RpdEntityUpdateEventPayload];
+  "entity.delete": [RapidPlugin, RpdEntityDeleteEventPayload];
+  "entity.addRelations": [RapidPlugin, RpdEntityAddRelationsEventPayload];
+  "entity.removeRelations": [RapidPlugin, RpdEntityRemoveRelationsEventPayload];
 };
 
 export interface RpdEntityCreateEventPayload {
@@ -284,13 +286,8 @@ export interface RpdDataModelExtension {
   config: any;
 }
 
-
-export interface IPluginInstance {
-  getName(): string;
-}
-
 export type EventHandler<T = any> = (
-  sender: IPluginInstance,
+  sender: RapidPlugin,
   payload: T,
 ) => void;
 

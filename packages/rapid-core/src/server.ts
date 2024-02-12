@@ -5,7 +5,6 @@ import {
   GetModelOptions,
   IDatabaseAccessor,
   IDatabaseConfig,
-  IPluginInstance,
   IQueryBuilder,
   IRpdDataAccessor,
   RpdApplicationConfig,
@@ -15,10 +14,10 @@ import {
 } from "./types";
 
 import QueryBuilder from "./queryBuilder/queryBuilder";
-import * as pluginManager from "./core/pluginManager";
+import PluginManager from "./core/pluginManager";
 import EventManager from "./core/eventManager";
 import { HttpRequestHandler, IPluginHttpHandler } from "./core/httpHandler";
-import { IRpdServer } from "./core/server";
+import { IRpdServer, RapidPlugin } from "./core/server";
 import { buildRoutes } from "./core/routesBuilder";
 import { Next, RouteContext } from "./core/routeContext";
 import { RapidRequest } from "./core/request";
@@ -29,9 +28,12 @@ export interface InitServerOptions {
   databaseConfig: IDatabaseConfig;
   serverConfig: RapidServerConfig;
   applicationConfig?: RpdApplicationConfig;
+  plugins?: RapidPlugin[];
 }
 
 export class RapidServer implements IRpdServer {
+  #pluginManager: PluginManager;
+  #plugins: RapidPlugin[];
   #eventManager: EventManager;
   #middlewares: any[];
   #bootstrapApplicationConfig: RpdApplicationConfig;
@@ -44,6 +46,7 @@ export class RapidServer implements IRpdServer {
   #buildedRoutes: (ctx: any, next: any) => any;
 
   constructor(options: InitServerOptions) {
+    this.#pluginManager = new PluginManager(this);
     this.#eventManager = new EventManager();
     this.#middlewares = [];
     this.#bootstrapApplicationConfig = options.applicationConfig || bootstrapApplicationConfig;
@@ -57,6 +60,8 @@ export class RapidServer implements IRpdServer {
     });
     this.databaseConfig = options.databaseConfig;
     this.config = options.serverConfig;
+
+    this.#plugins = options.plugins || [];
   }
 
   getApplicationConfig() {
@@ -99,7 +104,7 @@ export class RapidServer implements IRpdServer {
   }
 
   registerHttpHandler(
-    plugin: IPluginInstance,
+    plugin: RapidPlugin,
     options: IPluginHttpHandler,
   ) {
     const handler = _.bind(options.handler, null, plugin);
@@ -149,7 +154,7 @@ export class RapidServer implements IRpdServer {
 
   async emitEvent<K extends keyof RpdServerEventTypes>(
     eventName: K,
-    sender: IPluginInstance,
+    sender: RapidPlugin,
     payload: RpdServerEventTypes[K][1],
   ) {
     console.log(`Emit event "${eventName}"`, payload);
@@ -167,15 +172,16 @@ export class RapidServer implements IRpdServer {
 
   async start() {
     console.log("Starting rapid server...");
-    await pluginManager.loadPlugins();
+    const pluginManager = this.#pluginManager;
+    await pluginManager.loadPlugins(this.#plugins);
 
-    await pluginManager.initPlugins(this);
+    await pluginManager.initPlugins();
 
-    await pluginManager.registerMiddlewares(this);
-    await pluginManager.registerHttpHandlers(this);
-    await pluginManager.registerEventHandlers(this);
-    await pluginManager.registerMessageHandlers(this);
-    await pluginManager.registerTaskProcessors(this);
+    await pluginManager.registerMiddlewares();
+    await pluginManager.registerHttpHandlers();
+    await pluginManager.registerEventHandlers();
+    await pluginManager.registerMessageHandlers();
+    await pluginManager.registerTaskProcessors();
 
     await this.configureApplication();
 
@@ -189,6 +195,7 @@ export class RapidServer implements IRpdServer {
       this.#bootstrapApplicationConfig,
     ) as RpdApplicationConfig;
 
+    const pluginManager = this.#pluginManager;
     await pluginManager.onLoadingApplication(this, this.#applicationConfig);
     await pluginManager.configureModels(this, this.#applicationConfig);
     await pluginManager.configureModelProperties(this, this.#applicationConfig);

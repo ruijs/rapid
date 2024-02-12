@@ -1,5 +1,5 @@
-import { IPluginInstance, RpdApplicationConfig } from "~/types";
-import { IRpdServer } from "./server";
+import { RpdApplicationConfig } from "~/types";
+import { IRpdServer, RapidPlugin } from "./server";
 import { Next, RouteContext } from "./routeContext";
 
 export interface HttpHandlerContext {
@@ -13,7 +13,7 @@ export interface HttpHandlerContext {
 }
 
 export type PluginHttpHandler = (
-  plugin: IPluginInstance,
+  plugin: RapidPlugin,
   ctx: HttpHandlerContext,
   options: any,
 ) => void | Promise<void>;

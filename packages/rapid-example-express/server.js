@@ -1,7 +1,18 @@
 const process = require("process");
 const express = require("express");
 const DatabaseAccessor = require("./database-accessor");
-const { RapidServer, createJwt, decodeJwt, generateJwtSecretKey } = require('@ruiapp/rapid-core');
+const {
+  RapidServer,
+  createJwt,
+  decodeJwt,
+  generateJwtSecretKey,
+  MetaManagePlugin,
+  DataManagePlugin,
+  RouteManagePlugin,
+  WebhooksPlugin,
+  AuthPlugin,
+  FileManagePlugin
+} = require('@ruiapp/rapid-core');
 const { createRapidRequestHandler } = require('@ruiapp/rapid-express');
 
 require("dotenv/config");
@@ -62,6 +73,14 @@ exports.startServer = async () => {
       jwtKey: rapidConfig.jwtKey,
       localFileStoragePath: rapidConfig.localFileStoragePath,
     },
+    plugins: [
+      new MetaManagePlugin(),
+      new DataManagePlugin(),
+      new RouteManagePlugin(),
+      new WebhooksPlugin(),
+      new AuthPlugin(),
+      new FileManagePlugin(),
+    ]
   });
   await rapidServer.start();
 

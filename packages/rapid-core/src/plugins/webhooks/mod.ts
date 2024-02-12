@@ -4,23 +4,17 @@
 
 import * as _ from "lodash";
 import {
-  IPluginInstance,
   RpdApplicationConfig,
   RpdEntityCreateEventPayload,
   RpdEntityDeleteEventPayload,
   RpdEntityUpdateEventPayload,
   RpdServerEventTypes,
 } from "~/types";
-import { RpdServerPluginExtendingAbilities, RpdServerPluginConfigurableTargetOptions, RpdConfigurationItemOptions, IRpdServer } from "~/core/server";
+import { RpdServerPluginExtendingAbilities, RpdServerPluginConfigurableTargetOptions, RpdConfigurationItemOptions, IRpdServer, RapidPlugin } from "~/core/server";
 import { fetchWithTimeout } from "~/utilities/httpUtility";
 import { findEntities } from "~/dataAccess/entityManager";
 import pluginConfig from "./pluginConfig";
 
-export const code = "webhooks";
-export const description = "webhooks";
-export const extendingAbilities: RpdServerPluginExtendingAbilities[] = [];
-export const configurableTargets: RpdServerPluginConfigurableTargetOptions[] = [];
-export const configurations: RpdConfigurationItemOptions[] = [];
 
 export interface Webhook {
   name: string;
@@ -33,96 +27,6 @@ export interface Webhook {
   enabled: boolean;
 }
 
-let _plugin: IPluginInstance;
-let webhooks: Webhook[];
-
-export async function initPlugin(plugin: IPluginInstance, server: IRpdServer) {
-  _plugin = plugin;
-}
-
-export async function configureModels(
-  server: IRpdServer,
-  applicationConfig: RpdApplicationConfig,
-) {
-  server.appendApplicationConfig({
-    models: pluginConfig.models,
-  });
-}
-
-export async function registerEventHandlers(server: IRpdServer) {
-  const events: (keyof RpdServerEventTypes)[] = [
-    "entity.create",
-    "entity.update",
-    "entity.delete",
-  ];
-  for (const event of events) {
-    server.registerEventHandler(
-      event,
-      handleEntityEvent.bind(null, server, event),
-    );
-  }
-}
-
-async function handleEntityEvent(
-  server: IRpdServer,
-  event: keyof RpdServerEventTypes,
-  sender: IPluginInstance,
-  payload:
-    | RpdEntityCreateEventPayload
-    | RpdEntityUpdateEventPayload
-    | RpdEntityDeleteEventPayload,
-) {
-  if (sender === _plugin) {
-    return;
-  }
-
-  if (payload.namespace === "sys" && payload.modelSingularCode === "webhook") {
-    webhooks = await listWebhooks(server);
-    return;
-  }
-
-  // We will not trigger webhooks if entity changed is in "meta" or "sys" namespaces.
-  if (payload.namespace === "meta" || payload.namespace === "sys") {
-    return;
-  }
-
-  for (const webhook of webhooks) {
-    if (_.indexOf(webhook.events, event) === -1) {
-      continue;
-    }
-
-    if (
-      webhook.namespace != payload.namespace ||
-      webhook.modelSingularCode !== payload.modelSingularCode
-    ) {
-      continue;
-    }
-
-    console.debug(`Triggering webhook. ${webhook.url}`);
-    // TODO: It's better to trigger webhook through message queue.
-    try {
-      await fetchWithTimeout(webhook.url, {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-          "x-webhook-secret": webhook.secret || "",
-        },
-        body: JSON.stringify({ event, payload }),
-      });
-    } catch (err) {
-      console.warn(new Error("Failed to call webhook. " + err.message));
-      console.warn(err);
-    }
-  }
-}
-
-export async function onApplicationLoaded(
-  server: IRpdServer,
-  applicationConfig: RpdApplicationConfig,
-) {
-  console.log("[webhooks.onApplicationLoaded] loading webhooks");
-  webhooks = await listWebhooks(server);
-}
 
 function listWebhooks(
   server: IRpdServer,
@@ -142,3 +46,139 @@ function listWebhooks(
     ],
   });
 }
+
+
+class WebhooksPlugin implements RapidPlugin {
+  #webhooks: Webhook[];
+
+  constructor() {
+    this.#webhooks = [];
+  }
+
+  get code(): string {
+    return "webhooks";
+  }
+
+  get description(): string {
+    return null;
+  }
+
+  get extendingAbilities(): RpdServerPluginExtendingAbilities[] {
+    return [];
+  }
+
+  get configurableTargets(): RpdServerPluginConfigurableTargetOptions[] {
+    return [];
+  }
+
+  get configurations(): RpdConfigurationItemOptions[] {
+    return [];
+  }
+
+  async initPlugin(server: IRpdServer): Promise<any> {
+  }
+
+  async registerMiddlewares(server: IRpdServer): Promise<any> {
+  }
+
+  async registerHttpHandlers(server: IRpdServer): Promise<any> {
+  }
+
+  async registerEventHandlers(server: IRpdServer): Promise<any> {
+    const events: (keyof RpdServerEventTypes)[] = [
+      "entity.create",
+      "entity.update",
+      "entity.delete",
+    ];
+    for (const event of events) {
+      server.registerEventHandler(
+        event,
+        this.handleEntityEvent.bind(this, server, event),
+      );
+    }
+  }
+
+  async registerMessageHandlers(server: IRpdServer): Promise<any> {
+  }
+
+  async registerTaskProcessors(server: IRpdServer): Promise<any> {
+  }
+
+  async onLoadingApplication(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
+  }
+
+  async configureModels(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
+    server.appendApplicationConfig({
+      models: pluginConfig.models,
+    });
+  }
+
+  async configureModelProperties(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
+  }
+
+  async configureRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
+  }
+
+  async onApplicationLoaded(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
+    console.log("[webhooks.onApplicationLoaded] loading webhooks");
+    this.#webhooks = await listWebhooks(server);
+  }
+
+  async onApplicationReady(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
+  }
+
+  async handleEntityEvent(
+    server: IRpdServer,
+    event: keyof RpdServerEventTypes,
+    sender: RapidPlugin,
+    payload:
+      | RpdEntityCreateEventPayload
+      | RpdEntityUpdateEventPayload
+      | RpdEntityDeleteEventPayload,
+  ) {
+    if (sender === this) {
+      return;
+    }
+
+    if (payload.namespace === "sys" && payload.modelSingularCode === "webhook") {
+      this.#webhooks = await listWebhooks(server);
+      return;
+    }
+
+    // We will not trigger webhooks if entity changed is in "meta" or "sys" namespaces.
+    if (payload.namespace === "meta" || payload.namespace === "sys") {
+      return;
+    }
+
+    for (const webhook of this.#webhooks) {
+      if (_.indexOf(webhook.events, event) === -1) {
+        continue;
+      }
+
+      if (
+        webhook.namespace != payload.namespace ||
+        webhook.modelSingularCode !== payload.modelSingularCode
+      ) {
+        continue;
+      }
+
+      console.debug(`Triggering webhook. ${webhook.url}`);
+      // TODO: It's better to trigger webhook through message queue.
+      try {
+        await fetchWithTimeout(webhook.url, {
+          method: "post",
+          headers: {
+            "Content-Type": "application/json",
+            "x-webhook-secret": webhook.secret || "",
+          },
+          body: JSON.stringify({ event, payload }),
+        });
+      } catch (err) {
+        console.warn(new Error("Failed to call webhook. " + err.message));
+        console.warn(err);
+      }
+    }
+  }
+}
+
+export default WebhooksPlugin;

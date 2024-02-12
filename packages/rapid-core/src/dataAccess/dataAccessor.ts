@@ -56,7 +56,7 @@ export default class DataAccessor<T = any> implements IRpdDataAccessor<T> {
   }
 
   async find(options: FindEntityOptions): Promise<T[]> {
-    console.debug("DataAccessor.find() with options:", options);
+    console.debug(`DataAccessor '${this.#model.singularCode}' find with options:`, options);
     const query = this.#queryBuilder.select(this.#model, options);
     return await this.#databaseAccessor.queryDatabaseObject(query.command, query.params);
   }
