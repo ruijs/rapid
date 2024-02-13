@@ -42,7 +42,7 @@ export async function handler(
     iss: "authManager",
     sub: "userAccessToken",
     aud: "" + user.id,
-    iat: new Date,
+    iat: Math.floor(Date.now() / 1000),
     act: user.login,
   } as UserAccessToken, secretKey);
 
