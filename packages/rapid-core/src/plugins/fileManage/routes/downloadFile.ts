@@ -1,15 +1,15 @@
 import { RpdRoute } from "~/types";
 
 export default {
-  namespace: "auth",
-  name: "auth.signout",
-  code: "auth.signout",
+  namespace: "ecm",
+  name: "ecm.downloadFile",
+  code: "ecm.downloadFile",
   type: "RESTful",
   method: "GET",
-  endpoint: "/signout",
+  endpoint: "/download/file",
   actions: [
     {
-      code: "deleteSession",
+      code: "downloadFile",
     },
   ],
 } satisfies RpdRoute;

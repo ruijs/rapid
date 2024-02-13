@@ -1,15 +1,15 @@
 import { RpdRoute } from "~/types";
 
 export default {
-  namespace: "auth",
-  name: "auth.signin",
-  code: "auth.signin",
+  namespace: "ecm",
+  name: "ecm.uploadFile",
+  code: "ecm.uploadFile",
   type: "RESTful",
   method: "POST",
-  endpoint: "/signin",
+  endpoint: "/upload",
   actions: [
     {
-      code: "createSession",
+      code: "uploadFile",
     },
   ],
 } satisfies RpdRoute;

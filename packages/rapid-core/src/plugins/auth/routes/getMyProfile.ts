@@ -3,7 +3,7 @@ import { RpdRoute } from "~/types";
 export default {
   namespace: "auth",
   name: "auth.getMyProfile",
-  code: "",
+  code: "auth.getMyProfile",
   type: "RESTful",
   method: "GET",
   endpoint: "/me",
