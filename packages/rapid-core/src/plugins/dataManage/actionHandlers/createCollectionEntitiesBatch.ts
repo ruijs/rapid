@@ -1,6 +1,5 @@
 import { RunEntityActionHandlerOptions } from "~/types";
 import { mergeInput } from "~/helpers/inputHelper";
-import { createEntity } from "~/dataAccess/entityManager";
 import { isArray } from "lodash";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
@@ -35,8 +34,8 @@ export async function handler(
       mergedEntity.createdBy = userId;
     }
 
-    const dataAccessor = server.getDataAccessor(options);
-    const newEntity = await createEntity(server, dataAccessor, {
+    const entityManager = server.getEntityManager(options.singularCode);
+    const newEntity = await entityManager.createEntity({
       entity: mergedEntity,
     });
 

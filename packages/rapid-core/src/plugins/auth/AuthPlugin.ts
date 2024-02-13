@@ -96,9 +96,13 @@ class AuthPlugin implements RapidPlugin {
       token = request.cookies[server.config.sessionCookieName];
     }
 
-    const tokenPayload = verifyJwt(token, server.config.jwtKey);
-    routeContext.state.userId = tokenPayload.aud as string;
-    routeContext.state.userLogin = tokenPayload.act as string;
+    try {
+      const tokenPayload = verifyJwt(token, server.config.jwtKey);
+      routeContext.state.userId = tokenPayload.aud as string;
+      routeContext.state.userLogin = tokenPayload.act as string;
+    } catch (err) {
+      console.warn(err);
+    }
   }
 }
 

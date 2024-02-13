@@ -22,6 +22,7 @@ import { buildRoutes } from "./core/routesBuilder";
 import { Next, RouteContext } from "./core/routeContext";
 import { RapidRequest } from "./core/request";
 import bootstrapApplicationConfig from "./bootstrapApplicationConfig";
+import EntityManager from "./dataAccess/entityManager";
 
 export interface InitServerOptions {
   databaseAccessor: IDatabaseAccessor;
@@ -40,6 +41,8 @@ export class RapidServer implements IRpdServer {
   #applicationConfig: RpdApplicationConfig;
   #actionHandlersMapByCode: Map<string, ActionHandler>;
   #databaseAccessor: IDatabaseAccessor;
+  #cachedDataAccessors: Map<string, DataAccessor>;
+  #cachedEntityManager: Map<string, EntityManager>;
   queryBuilder: IQueryBuilder;
   config: RapidServerConfig;
   databaseConfig: IDatabaseConfig;
@@ -54,6 +57,8 @@ export class RapidServer implements IRpdServer {
     this.#applicationConfig = {} as RpdApplicationConfig;
     this.#actionHandlersMapByCode = new Map();
     this.#databaseAccessor = options.databaseAccessor;
+    this.#cachedDataAccessors = new Map();
+    this.#cachedEntityManager = new Map();
 
     this.queryBuilder = new QueryBuilder({
       dbDefaultSchema: options.databaseConfig.dbDefaultSchema,
@@ -123,16 +128,22 @@ export class RapidServer implements IRpdServer {
     options: GetDataAccessorOptions,
   ): IRpdDataAccessor<T> {
     const { namespace, singularCode } = options;
-    // TODO: Should reuse the and DataAccessor instance
+
+    let dataAccessor = this.#cachedDataAccessors.get(singularCode);
+    if (dataAccessor) {
+      return dataAccessor;
+    }
+
     const model = this.getModel(options);
     if (!model) {
       throw new Error(`Data model ${namespace}.${singularCode} not found.`);
     }
 
-    const dataAccessor = new DataAccessor<T>(this.#databaseAccessor, {
+    dataAccessor = new DataAccessor<T>(this.#databaseAccessor, {
       model,
       queryBuilder: this.queryBuilder as QueryBuilder,
     });
+    this.#cachedDataAccessors.set(singularCode, dataAccessor);
     return dataAccessor;
   }
 
@@ -142,6 +153,18 @@ export class RapidServer implements IRpdServer {
     }
 
     return this.#applicationConfig?.models.find((e) => e.singularCode === options.singularCode);
+  }
+
+  getEntityManager<TEntity = any>(singularCode: string): EntityManager<TEntity> {
+    let entityManager = this.#cachedEntityManager.get(singularCode);
+    if (entityManager) {
+      return entityManager;
+    }
+
+    const dataAccessor = this.getDataAccessor({ singularCode });
+    entityManager = new EntityManager(this, dataAccessor);
+    this.#cachedEntityManager.set(singularCode, entityManager);
+    return entityManager;
   }
 
   registerEventHandler<K extends keyof RpdServerEventTypes>(

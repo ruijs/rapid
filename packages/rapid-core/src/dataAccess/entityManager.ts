@@ -1,5 +1,7 @@
 import * as _ from "lodash";
 import {
+  CountEntityOptions,
+  CountEntityResult,
   CreateEntityOptions,
   EntityFilterOperators,
   EntityFilterOptions,
@@ -29,7 +31,7 @@ function convertToDataAccessOrderBy(model: RpdDataModel, orderByList?: FindEntit
   })
 }
 
-export async function findEntities(
+async function findEntities(
   server: IRpdServer,
   dataAccessor: IRpdDataAccessor,
   options: FindEntityOptions,
@@ -159,7 +161,7 @@ export async function findEntities(
   return entities.map(item => mapDbRowToEntity(model, item));
 }
 
-export async function findEntity(
+async function findEntity(
   server: IRpdServer,
   dataAccessor: IRpdDataAccessor,
   options: FindEntityOptions,
@@ -396,7 +398,7 @@ function findOneRelatedEntitiesViaIdPropertyCode(
   return dataAccessor.find(findEntityOptions);
 }
 
-export async function createEntity(
+async function createEntity(
   server: IRpdServer,
   dataAccessor: IRpdDataAccessor,
   options: CreateEntityOptions,
@@ -527,8 +529,7 @@ export async function createEntity(
   return newEntity;
 }
 
-
-export async function updateEntityById(
+async function updateEntityById(
   server: IRpdServer,
   dataAccessor: IRpdDataAccessor,
   options: UpdateEntityByIdOptions,
@@ -648,4 +649,54 @@ export async function updateEntityById(
   }
 
   return updatedEntity;
+}
+
+export default class EntityManager<TEntity=any> {
+  #server: IRpdServer;
+  #dataAccessor: IRpdDataAccessor;
+
+  constructor(server: IRpdServer, dataAccessor: IRpdDataAccessor) {
+    this.#server = server;
+    this.#dataAccessor = dataAccessor;
+  }
+
+  async findEntities(options: FindEntityOptions): Promise<TEntity[]> {
+    return await findEntities(this.#server, this.#dataAccessor, options);
+  }
+
+  async findEntity(options: FindEntityOptions): Promise<TEntity | null> {
+    return await findEntity(this.#server, this.#dataAccessor, options);
+  }
+
+  async findById(id: any): Promise<TEntity | null> {
+    return await this.findEntity({
+      filters: [
+        {
+          operator: "eq",
+          field: "id",
+          value: id,
+        }
+      ]
+    });
+  }
+
+  async createEntity(options: CreateEntityOptions): Promise<TEntity> {
+    return await createEntity(this.#server, this.#dataAccessor, options);
+  }
+
+  async updateEntityById(options: UpdateEntityByIdOptions): Promise<TEntity> {
+    return await updateEntityById(this.#server, this.#dataAccessor, options);
+  }
+
+  async count(options: CountEntityOptions): Promise<CountEntityResult> {
+    return await this.#dataAccessor.count(options);
+  }
+
+  async deleteById(id: any): Promise<void> {
+    return await this.#dataAccessor.deleteById(id);
+  }
+
+  getModel(): RpdDataModel {
+    return this.#dataAccessor.getModel();
+  }
 }

@@ -6,7 +6,6 @@ import {
   RpdApplicationConfig,
 } from "~/types";
 import { RpdServerPluginExtendingAbilities, RpdServerPluginConfigurableTargetOptions, RpdConfigurationItemOptions, IRpdServer, RapidPlugin } from "~/core/server";
-import { findEntities } from "../../dataAccess/entityManager";
 import * as httpProxy from "./actionHandlers/httpProxy";
 
 
@@ -65,12 +64,8 @@ class RouteManager implements RapidPlugin {
 
   async configureRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
     try {
-      const dataAccessor = server.getDataAccessor({
-        namespace: "meta",
-        singularCode: "route",
-      });
-    
-      const routes = await findEntities(server, dataAccessor, {
+      const entityManager = server.getEntityManager("route");
+      const routes = await entityManager.findEntities({
         orderBy: [
           { field: "endpoint" },
         ],

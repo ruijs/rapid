@@ -13,17 +13,17 @@ export async function handler(
   console.debug(`Running ${code} handler...`);
   const { server, input } = ctx;
 
-  const dataAccessor = server.getDataAccessor(options);
+  const entityManager = server.getEntityManager(options.singularCode);
   const id = input.id;
-  const row = await dataAccessor.findById(id);
+  const row = await entityManager.findById(id);
   if (!row) {
     ctx.status = 200;
     return;
   }
 
-  await dataAccessor.deleteById(id);
+  await entityManager.deleteById(id);
 
-  const entity = mapDbRowToEntity(dataAccessor.getModel(), row);
+  const entity = mapDbRowToEntity(entityManager.getModel(), row);
 
   server.emitEvent(
     "entity.delete",

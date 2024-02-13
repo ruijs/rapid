@@ -1,6 +1,5 @@
 import { RunEntityActionHandlerOptions } from "~/types";
 import { mergeInput } from "~/helpers/inputHelper";
-import { createEntity } from "~/dataAccess/entityManager";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 
@@ -26,8 +25,8 @@ export async function handler(
     input.createdBy = userId;
   }
 
-  const dataAccessor = server.getDataAccessor(options);
-  const output = await createEntity(server, dataAccessor, {
+  const entityManager = server.getEntityManager(options.singularCode);
+  const output = await entityManager.createEntity({
     entity: input,
   });
   ctx.output = output;

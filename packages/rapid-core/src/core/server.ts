@@ -1,6 +1,7 @@
 import { GetDataAccessorOptions, GetModelOptions, IDatabaseConfig, IQueryBuilder, IRpdDataAccessor, RapidServerConfig, RpdApplicationConfig, RpdDataModel, RpdServerEventTypes } from "~/types";
 import { IPluginActionHandler, ActionHandler } from "./actionHandler";
 import { Next, RouteContext } from "./routeContext";
+import EntityManager from "~/dataAccess/entityManager";
 
 export interface IRpdServer {
   config: RapidServerConfig;
@@ -23,6 +24,7 @@ export interface IRpdServer {
   getDataAccessor<T = any>(
     options: GetDataAccessorOptions,
   ): IRpdDataAccessor<T>;
+  getEntityManager<TEntity = any>(singularCode: string): EntityManager<TEntity>;
   getApplicationConfig(): RpdApplicationConfig;
   appendApplicationConfig(config: Partial<RpdApplicationConfig>);
   getModel(options: GetModelOptions): RpdDataModel | undefined;

@@ -1,4 +1,3 @@
-import { findEntity } from "~/dataAccess/entityManager";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 
@@ -22,11 +21,8 @@ export async function handler(
     return;
   }
 
-  const userDataAccessor = server.getDataAccessor({
-    singularCode: "oc_user",
-  });
-
-  const user = await findEntity(server, userDataAccessor, {
+  const entityManager = server.getEntityManager("oc_user");
+  const user = await entityManager.findEntity({
     filters: [
       {
         operator: "eq",

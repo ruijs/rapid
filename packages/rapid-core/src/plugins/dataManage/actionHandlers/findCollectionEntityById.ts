@@ -1,5 +1,4 @@
 import { RunEntityActionHandlerOptions } from "~/types";
-import { findEntity } from "~/dataAccess/entityManager";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 
@@ -14,18 +13,10 @@ export async function handler(
   const { server, input } = ctx;
   const { id } = input;
 
-  const dataAccessor = server.getDataAccessor(options);
-  const user = await findEntity(ctx.server, dataAccessor, {
-    filters: [
-      {
-        operator: "eq",
-        field: "id",
-        value: id,
-      }
-    ],
-  });
-  if (!user) {
+  const entityManager = server.getEntityManager(options.singularCode);
+  const entity = await entityManager.findById(id);
+  if (!entity) {
     throw new Error(`${options.namespace}.${options.singularCode} with id "${id}" was not found.`);
   }
-  ctx.output = user;
+  ctx.output = entity;
 }

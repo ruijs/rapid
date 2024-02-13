@@ -3,7 +3,6 @@
  */
 
 import * as _ from "lodash";
-import { findEntities } from "~/dataAccess/entityManager";
 import {
   IQueryBuilder,
   QuoteTableOptions,
@@ -206,13 +205,10 @@ function listCollections(
   server: IRpdServer,
   applicationConfig: RpdApplicationConfig,
 ) {
-  const dataAccessor = server.getDataAccessor({
-    namespace: "meta",
-    singularCode: "model",
-  });
-  const model = dataAccessor.getModel();
+  const entityManager = server.getEntityManager("model");
+  const model = entityManager.getModel();
 
-  return findEntities(server, dataAccessor, {
+  return entityManager.findEntities({
     properties: model.properties.map((item) => item.code),
   });
 }

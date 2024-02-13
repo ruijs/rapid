@@ -15,9 +15,9 @@ export async function handler(
     ctx,
     options,
     code,
-    (dataAccessor, input) => {
+    (entityManager, input) => {
       input.filters = removeFiltersWithNullValue(input.filters);
-      return dataAccessor.count(input);
+      return entityManager.count(input);
     },
   );
 }

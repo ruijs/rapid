@@ -416,6 +416,10 @@ export interface CountEntityOptions {
   filters?: EntityFilterOptions[];
 }
 
+export interface CountEntityResult {
+  count: number;
+}
+
 export interface CreateEntityOptions {
   entity: any;
 }

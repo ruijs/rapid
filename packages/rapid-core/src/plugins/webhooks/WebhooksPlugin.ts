@@ -12,7 +12,6 @@ import {
 } from "~/types";
 import { RpdServerPluginExtendingAbilities, RpdServerPluginConfigurableTargetOptions, RpdConfigurationItemOptions, IRpdServer, RapidPlugin } from "~/core/server";
 import { fetchWithTimeout } from "~/utilities/httpUtility";
-import { findEntities } from "~/dataAccess/entityManager";
 import pluginConfig from "./pluginConfig";
 
 
@@ -31,12 +30,8 @@ export interface Webhook {
 function listWebhooks(
   server: IRpdServer,
 ) {
-  const dataAccessor = server.getDataAccessor({
-    namespace: "sys",
-    singularCode: "webhook",
-  });
-
-  return findEntities(server, dataAccessor, {
+  const entityManager = server.getEntityManager("webhook");
+  return entityManager.findEntities({
     filters: [
       {
         field: "enabled",

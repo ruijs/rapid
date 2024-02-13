@@ -1,7 +1,6 @@
 import { RunEntityActionHandlerOptions } from "~/types";
 import { getEntityPartChanges } from "~/helpers/entityHelpers";
 import { mergeInput } from "~/helpers/inputHelper";
-import { updateEntityById } from "~/dataAccess/entityManager";
 import { mapDbRowToEntity } from "~/dataAccess/entityMapper";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
@@ -23,21 +22,21 @@ export async function handler(
   console.debug(`fixedInput: ${JSON.stringify(fixedInput)}`);
   console.debug(`mergedInput: ${JSON.stringify(mergedInput)}`);
 
-  const dataAccessor = server.getDataAccessor(options);
+  const entityManager = server.getEntityManager(options.singularCode);
   const id = mergedInput.id;
-  const row = await dataAccessor.findById(id);
+  const row = await entityManager.findById(id);
   if (!row) {
     throw new Error(`${options.namespace}.${options.singularCode}  with id "${id}" was not found.`);
   }
 
-  const entity = mapDbRowToEntity(dataAccessor.getModel(), row);
+  const entity = mapDbRowToEntity(entityManager.getModel(), row);
   const changes = getEntityPartChanges(entity, mergedInput);
   if (!changes) {
     ctx.output = entity;
     return;
   }
 
-  const output = await updateEntityById(server, dataAccessor, { id, entity, changes });
+  const output = await entityManager.updateEntityById({ id, entity, changes });
   ctx.output = output;
 
   server.emitEvent(
