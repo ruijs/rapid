@@ -5,13 +5,14 @@ const {
   RapidServer,
   createJwt,
   decodeJwt,
+  verifyJwt,
   generateJwtSecretKey,
   MetaManagePlugin,
   DataManagePlugin,
   RouteManagePlugin,
   WebhooksPlugin,
   AuthPlugin,
-  FileManagePlugin
+  FileManagePlugin,
 } = require('@ruiapp/rapid-core');
 const { createRapidRequestHandler } = require('@ruiapp/rapid-express');
 
@@ -106,11 +107,14 @@ exports.startServer = async () => {
       act: "rapid",
     }, secretKey);
 
+    const payload = verifyJwt(token, secretKey);
+
     const jwt = decodeJwt(token);
 
     res.send({
       token,
       jwt,
+      payload,
     });
   });
 
