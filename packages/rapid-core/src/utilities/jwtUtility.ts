@@ -1,4 +1,4 @@
-import { sign, verify, decode, Secret } from "jsonwebtoken";
+import { sign, verify, decode, Secret, JwtPayload } from "jsonwebtoken";
 import { encode as base64Encode } from "~/deno-std/encoding/base64";
 import crypto from "crypto";
 
@@ -8,10 +8,10 @@ export function createJwt(payload: Record<string, any>, secret: Secret) {
   });
 }
 
-export function verifyJwt(token: string, secret: Secret) {
+export function verifyJwt(token: string, secret: Secret): JwtPayload {
   return verify(token, secret, {
     algorithms: ['HS512'],
-  });
+  }) as JwtPayload;
 }
 
 export function decodeJwt(token: string) {

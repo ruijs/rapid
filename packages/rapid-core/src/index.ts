@@ -14,9 +14,9 @@ export * from "./utilities/jwtUtility";
 
 export * as bootstrapApplicationConfig from "./bootstrapApplicationConfig";
 
-export { default as MetaManagePlugin } from "./plugins/metaManage/mod";
-export { default as DataManagePlugin } from "./plugins/dataManage/mod";
-export { default as RouteManagePlugin } from "./plugins/routeManage/mod";
-export { default as WebhooksPlugin } from "./plugins/webhooks/mod";
-export { default as AuthPlugin } from "./plugins/auth/mod";
-export { default as FileManagePlugin } from "./plugins/fileManage/mod";
+export { default as MetaManagePlugin } from "./plugins/metaManage/MetaManagePlugin";
+export { default as DataManagePlugin } from "./plugins/dataManage/DataManagePlugin";
+export { default as RouteManagePlugin } from "./plugins/routeManage/RouteManagePlugin";
+export { default as WebhooksPlugin } from "./plugins/webhooks/WebhooksPlugin";
+export { default as AuthPlugin } from "./plugins/auth/AuthPlugin";
+export { default as FileManagePlugin } from "./plugins/fileManage/FileManagePlugin";

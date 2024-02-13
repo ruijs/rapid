@@ -15,9 +15,9 @@ export function createRapidRequestHandler(server: IRpdServer) : RequestHandler {
     next: express.NextFunction
   ) => {
     try {
-      let request = createRapidRequest(req, res);
+      let request = createStandardRequest(req, res);
       let response: Response = await server.handleRequest(request, next as any);;
-      await sendRapidResponse(res, response);
+      await sendStandardResponse(res, response);
     } catch (error: unknown) {
       // Express doesn't support async functions, so we have to pass along the
       // error manually using next().
@@ -46,7 +46,7 @@ export function createRapidHeaders(
   return headers;
 }
 
-export function createRapidRequest(
+export function createStandardRequest(
   req: express.Request,
   res: express.Response
 ): Request {
@@ -77,24 +77,24 @@ export function createRapidRequest(
   return new Request(url.href, init);
 }
 
-export async function sendRapidResponse(
-  res: express.Response,
-  rapidResponse: Response
+export async function sendStandardResponse(
+  nodeResponse: express.Response,
+  standardResponse: Response
 ): Promise<void> {
-  res.statusMessage = rapidResponse.statusText;
-  res.status(rapidResponse.status);
+  nodeResponse.statusMessage = standardResponse.statusText;
+  nodeResponse.status(standardResponse.status);
 
-  for (let [key, value] of rapidResponse.headers.entries()) {
-    res.append(key, value);
+  for (let [key, value] of standardResponse.headers.entries()) {
+    nodeResponse.append(key, value);
   }
 
-  if (rapidResponse.headers.get("Content-Type")?.match(/text\/event-stream/i)) {
-    res.flushHeaders();
+  if (standardResponse.headers.get("Content-Type")?.match(/text\/event-stream/i)) {
+    nodeResponse.flushHeaders();
   }
 
-  if (rapidResponse.body) {
-    await writeReadableStreamToWritable(rapidResponse.body, res);
+  if (standardResponse.body) {
+    await writeReadableStreamToWritable(standardResponse.body, nodeResponse);
   } else {
-    res.end();
+    nodeResponse.end();
   }
 }

@@ -1,5 +1,6 @@
 import qs from "qs";
 import { parseFormDataBody } from "./http/formDataParser";
+import { getCookies } from "~/deno-std/http/cookie";
 
 export const GlobalRequest = global.Request;
 
@@ -12,15 +13,16 @@ export class RapidRequest {
   #raw: Request;
   #bodyParsed: boolean;
   #body: RapidRequestBody;
+  #headers: Headers;
+  #parsedCookies: Record<string, string>;
   method: string;
   url: URL;
-  headers: Headers;
 
   constructor(req: Request) {
     this.#raw = req;
     this.method = req.method;
     this.url = new URL(req.url);
-    this.headers = req.headers;
+    this.#headers = req.headers;
   }
 
   async parseBody(): Promise<void> {
@@ -32,7 +34,7 @@ export class RapidRequest {
     const requestMethod = this.method;
     if (requestMethod === "POST" || requestMethod === "PUT" || requestMethod === "PATCH") {
       const req = this.#raw;
-      const contentType = this.headers.get("Content-Type");
+      const contentType = this.#headers.get("Content-Type");
       if (contentType.includes("json")) {
         this.#body = {
           type: "json",
@@ -58,6 +60,17 @@ export class RapidRequest {
 
   get rawRequest(): Request {
     return this.#raw;
+  }
+
+  get headers(): Headers {
+    return this.#headers;
+  }
+
+  get cookies(): Record<string, string> {
+    if (!this.#parsedCookies) {
+      this.#parsedCookies = getCookies(this.#headers);
+    }
+    return this.#parsedCookies;
   }
 
   get body(): RapidRequestBody {

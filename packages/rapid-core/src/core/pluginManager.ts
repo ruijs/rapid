@@ -1,5 +1,6 @@
 import { RpdApplicationConfig } from "~/types";
 import { IRpdServer, RapidPlugin } from "./server";
+import { RouteContext } from "./routeContext";
 
 class PluginManager {
   #server: IRpdServer;
@@ -136,6 +137,18 @@ class PluginManager {
     for (const plugin of this.#plugins) {
       if (plugin.onApplicationReady) {
         await plugin.onApplicationReady(server, applicationConfig);
+      }
+    }
+  }
+
+  /** 在接收到HTTP请求，准备路由上下文时调用。 */
+  async onPrepareRouteContext(
+    server: IRpdServer,
+    routeContext: RouteContext,
+  ) {
+    for (const plugin of this.#plugins) {
+      if (plugin.onPrepareRouteContext) {
+        await plugin.onPrepareRouteContext(server, routeContext);
       }
     }
   }

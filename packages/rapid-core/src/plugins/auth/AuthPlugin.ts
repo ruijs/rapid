@@ -11,9 +11,11 @@ import { IRpdServer, RapidPlugin, RpdConfigurationItemOptions, RpdServerPluginCo
 import pluginActionHandlers from "./actionHandlers";
 import pluginModels from "./models";
 import pluginRoutes from "./routes";
+import { RouteContext } from "~/core/routeContext";
+import { verifyJwt } from "~/utilities/jwtUtility";
 
 
-class AuthManager implements RapidPlugin {
+class AuthPlugin implements RapidPlugin {
   get code(): string {
     return "authManager";
   }
@@ -75,6 +77,29 @@ class AuthManager implements RapidPlugin {
 
   async onApplicationReady(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
   }
+
+  async onPrepareRouteContext(server: IRpdServer, routeContext: RouteContext) {
+    const request = routeContext.request;
+    let token: string;
+
+    const headers = request.headers;
+    // No Authorization header
+    if (headers.has("Authorization")) {
+      // Authorization header has no Bearer or no token
+      const authHeader = headers.get("Authorization")!;
+      if (!authHeader.startsWith("Bearer ") || authHeader.length <= 7) {
+        throw new Error('AUTHORIZATION_HEADER_INVALID');
+      }
+
+      token = authHeader.slice(7);
+    } else {
+      token = request.cookies[server.config.sessionCookieName];
+    }
+
+    const tokenPayload = verifyJwt(token, server.config.jwtKey);
+    routeContext.state.userId = tokenPayload.aud as string;
+    routeContext.state.userLogin = tokenPayload.act as string;
+  }
 }
 
-export default AuthManager;
+export default AuthPlugin;

@@ -1,6 +1,6 @@
 import { GetDataAccessorOptions, GetModelOptions, IDatabaseConfig, IQueryBuilder, IRpdDataAccessor, RapidServerConfig, RpdApplicationConfig, RpdDataModel, RpdServerEventTypes } from "~/types";
 import { IPluginActionHandler, ActionHandler } from "./actionHandler";
-import { Next } from "./routeContext";
+import { Next, RouteContext } from "./routeContext";
 
 export interface IRpdServer {
   config: RapidServerConfig;
@@ -100,28 +100,29 @@ export interface RapidPlugin {
   /** 插件的全局配置项 */
   get configurations(): RpdConfigurationItemOptions[];
   /** 初始化插件时调用。插件可以在此时进行一些内部对象的初始化工作。 */
-  initPlugin(server: IRpdServer): Promise<any>;
+  initPlugin?: (server: IRpdServer) => Promise<any>;
   /** 注册中间件 */
-  registerMiddlewares(server: IRpdServer): Promise<any>;
+  registerMiddlewares?: (server: IRpdServer) => Promise<any>;
   /** 注册接口动作处理程序 */
-  registerActionHandlers(server: IRpdServer): Promise<any>;
+  registerActionHandlers?: (server: IRpdServer) => Promise<any>;
   /** 注册事件处理程序 */
-  registerEventHandlers(server: IRpdServer): Promise<any>;
+  registerEventHandlers?: (server: IRpdServer) => Promise<any>;
   /** 注册消息处理程序 */
-  registerMessageHandlers(server: IRpdServer): Promise<any>;
+  registerMessageHandlers?: (server: IRpdServer) => Promise<any>;
   /** 注册任务处理程序 */
-  registerTaskProcessors(server: IRpdServer): Promise<any>;
+  registerTaskProcessors?: (server: IRpdServer) => Promise<any>;
   /** 在加载应用前调用。 */
-  onLoadingApplication(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any>;
+  onLoadingApplication?: (server: IRpdServer, applicationConfig: RpdApplicationConfig) => Promise<any>;
   /** 配置数据集合 */
-  configureModels(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any>;
+  configureModels?: (server: IRpdServer, applicationConfig: RpdApplicationConfig) => Promise<any>;
   /** 配置模型属性 */
-  configureModelProperties(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any>;
+  configureModelProperties?: (server: IRpdServer, applicationConfig: RpdApplicationConfig) => Promise<any>;
   /** 配置路由 */
-  configureRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any>;
+  configureRoutes?: (server: IRpdServer, applicationConfig: RpdApplicationConfig) => Promise<any>;
   /** 在应用配置加载完成后调用。此时插件可以进行一些数据的初始化工作。 */
-  onApplicationLoaded(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any>;
+  onApplicationLoaded?: (server: IRpdServer, applicationConfig: RpdApplicationConfig) => Promise<any>;
   /** 在应用准备完成后调用。此时服务器已经可以处理网络请求，可以对外广播消息。 */
-  onApplicationReady(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any>;
+  onApplicationReady?: (server: IRpdServer, applicationConfig: RpdApplicationConfig) => Promise<any>;
+  /** 在接收到HTTP请求，准备路由上下文时调用。 */
+  onPrepareRouteContext?: (server: IRpdServer, routeContext: RouteContext) => Promise<any>;
 }
-
