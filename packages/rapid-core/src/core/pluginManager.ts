@@ -71,84 +71,77 @@ class PluginManager {
 
   /** 在加载应用前调用。 */
   async onLoadingApplication(
-    server: IRpdServer,
     applicationConfig: RpdApplicationConfig,
   ) {
     for (const plugin of this.#plugins) {
       if (plugin.onLoadingApplication) {
-        await plugin.onLoadingApplication(server, applicationConfig);
+        await plugin.onLoadingApplication(this.#server, applicationConfig);
       }
     }
   }
 
   /** 配置数据模型 */
   async configureModels(
-    server: IRpdServer,
     applicationConfig: RpdApplicationConfig,
   ) {
     for (const plugin of this.#plugins) {
       if (plugin.configureModels) {
-        await plugin.configureModels(server, applicationConfig);
+        await plugin.configureModels(this.#server, applicationConfig);
       }
     }
   }
 
   /** 配置模型属性 */
   async configureModelProperties(
-    server: IRpdServer,
     applicationConfig: RpdApplicationConfig,
   ) {
     for (const plugin of this.#plugins) {
       if (plugin.configureModelProperties) {
-        await plugin.configureModelProperties(server, applicationConfig);
+        await plugin.configureModelProperties(this.#server, applicationConfig);
       }
     }
   }
 
   /** 配置路由 */
   async configureRoutes(
-    server: IRpdServer,
     applicationConfig: RpdApplicationConfig,
   ) {
     for (const plugin of this.#plugins) {
       if (plugin.configureRoutes) {
-        await plugin.configureRoutes(server, applicationConfig);
+        await plugin.configureRoutes(this.#server, applicationConfig);
       }
     }
   }
 
   /** 在应用配置加载完成后调用。此时插件可以进行一些数据的初始化工作。 */
   async onApplicationLoaded(
-    server: IRpdServer,
     applicationConfig: RpdApplicationConfig,
   ) {
     for (const plugin of this.#plugins) {
       if (plugin.onApplicationLoaded) {
-        await plugin.onApplicationLoaded(server, applicationConfig);
+        await plugin.onApplicationLoaded(this.#server, applicationConfig);
       }
     }
   }
 
   /** 在应用准备完成后调用。此时服务器已经可以处理网络请求。 */
   async onApplicationReady(
-    server: IRpdServer,
     applicationConfig: RpdApplicationConfig,
   ) {
     for (const plugin of this.#plugins) {
       if (plugin.onApplicationReady) {
-        await plugin.onApplicationReady(server, applicationConfig);
+        await plugin.onApplicationReady(this.#server, applicationConfig);
       }
     }
   }
 
   /** 在接收到HTTP请求，准备路由上下文时调用。 */
   async onPrepareRouteContext(
-    server: IRpdServer,
     routeContext: RouteContext,
   ) {
     for (const plugin of this.#plugins) {
       if (plugin.onPrepareRouteContext) {
-        await plugin.onPrepareRouteContext(server, routeContext);
+        await plugin.onPrepareRouteContext(this.#server, routeContext);
       }
     }
   }

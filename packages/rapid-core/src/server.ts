@@ -186,7 +186,7 @@ export class RapidServer implements IRpdServer {
     await this.configureApplication();
 
     console.log(`Application ready.`);
-    await pluginManager.onApplicationReady(this, this.#applicationConfig);
+    await pluginManager.onApplicationReady(this.#applicationConfig);
   }
 
   async configureApplication() {
@@ -196,14 +196,14 @@ export class RapidServer implements IRpdServer {
     ) as RpdApplicationConfig;
 
     const pluginManager = this.#pluginManager;
-    await pluginManager.onLoadingApplication(this, this.#applicationConfig);
-    await pluginManager.configureModels(this, this.#applicationConfig);
-    await pluginManager.configureModelProperties(this, this.#applicationConfig);
-    await pluginManager.configureRoutes(this, this.#applicationConfig);
+    await pluginManager.onLoadingApplication(this.#applicationConfig);
+    await pluginManager.configureModels(this.#applicationConfig);
+    await pluginManager.configureModelProperties(this.#applicationConfig);
+    await pluginManager.configureRoutes(this.#applicationConfig);
 
     // TODO: check application configuration.
 
-    await pluginManager.onApplicationLoaded(this, this.#applicationConfig);
+    await pluginManager.onApplicationLoaded(this.#applicationConfig);
 
     this.#buildedRoutes = await buildRoutes(this, this.#applicationConfig);
   }
@@ -230,6 +230,7 @@ export class RapidServer implements IRpdServer {
     const rapidRequest = new RapidRequest(request);
     await rapidRequest.parseBody();
     const routeContext = new RouteContext(rapidRequest);
+    this.#pluginManager.onPrepareRouteContext(routeContext);
 
     await this.#buildedRoutes(routeContext, next);
     return routeContext.response.getResponse();
