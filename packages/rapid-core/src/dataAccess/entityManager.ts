@@ -107,7 +107,7 @@ async function findEntities(
           _.forEach(entities, (entity: any) => {
             entity[relationProperty.code] = _.filter(relationLinks, (link: any) => {
               return link[relationProperty.selfIdColumnName!] == entity["id"];
-            }).map(link => mapDbRowToEntity(targetModel, link.targetEntity));
+            }).map(link => mapDbRowToEntity(targetModel, link.targetEntity, false));
           });
         }
       } else {
@@ -147,7 +147,7 @@ async function findEntities(
               (relatedEntity: any) => {
                 return relatedEntity[relationProperty.selfIdColumnName!] == entity.id;
               },
-            ).map(item => mapDbRowToEntity(targetModel!, item));
+            ).map(item => mapDbRowToEntity(targetModel!, item, false));
           } else {
             entity[relationProperty.code] = mapDbRowToEntity(targetModel!, _.find(
               relatedEntities,
@@ -155,13 +155,13 @@ async function findEntities(
                 // TODO: id property code should be configurable.
                 return relatedEntity["id"] == entity[relationProperty.targetIdColumnName!];
               },
-            ));
+            ), false);
           }
         });
       }
     }
   }
-  return entities.map(item => mapDbRowToEntity(model, item));
+  return entities.map(item => mapDbRowToEntity(model, item, options.keepNonPropertyFields));
 }
 
 async function findEntity(
@@ -177,6 +177,7 @@ async function findById(
   server: IRpdServer,
   dataAccessor: IRpdDataAccessor,
   id: any,
+  keepNonPropertyFields: boolean = false
 ): Promise<any> {
   return await findEntity(server, dataAccessor, {
     filters: [
@@ -185,7 +186,8 @@ async function findById(
         field: "id",
         value: id,
       }
-    ]
+    ],
+    keepNonPropertyFields,
   });
 }
 
@@ -468,8 +470,7 @@ async function createEntity(
   }
 
   const newRow = await dataAccessor.create(row);
-  const newEntity = mapDbRowToEntity(model, newRow);
-
+  const newEntity = mapDbRowToEntity(model, newRow, false);
 
   // save many-relation properties
   for (const property of manyRelationPropertiesToCreate) {
@@ -717,8 +718,8 @@ export default class EntityManager<TEntity=any> {
     return await findEntity(this.#server, this.#dataAccessor, options);
   }
 
-  async findById(id: any): Promise<TEntity | null> {
-    return await findById(this.#server, this.#dataAccessor, id);
+  async findById(id: any, keepNonPropertyFields: boolean = false): Promise<TEntity | null> {
+    return await findById(this.#server, this.#dataAccessor, id, keepNonPropertyFields);
   }
 
   async createEntity(options: CreateEntityOptions, plugin: RapidPlugin): Promise<TEntity> {
@@ -748,7 +749,7 @@ export default class EntityManager<TEntity=any> {
 
   async deleteById(id: any, plugin: RapidPlugin): Promise<void> {
     const model = this.getModel();
-    const entity = await this.findById(id);
+    const entity = await this.findById(id, true);
     if (!entity) {
       return;
     }

@@ -1,5 +1,4 @@
 import { RunEntityActionHandlerOptions } from "~/types";
-import { mapDbRowToEntity } from "~/dataAccess/entityMapper";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 
@@ -17,4 +16,5 @@ export async function handler(
   await entityManager.deleteById(input.id, plugin);
 
   ctx.status = 200;
+  ctx.output = {};
 }

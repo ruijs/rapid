@@ -370,6 +370,7 @@ export interface FindEntityOptions {
   orderBy?: FindEntityOrderByOptions[];
   pagination?: FindEntityPaginationOptions;
   properties?: string[] | Record<string, any>;
+  keepNonPropertyFields?: boolean;
 }
 
 export interface FindEntityRelationalFilterOptions {

@@ -3,7 +3,7 @@ import { isRelationProperty } from "~/utilities/rapidUtility";
 
 // TODO Generate mapper and cache it.
 
-export function mapDbRowToEntity(model: RpdDataModel, row: any) {
+export function mapDbRowToEntity(model: RpdDataModel, row: any, keepNonPropertyFields: boolean) {
   if (!row) {
     return null;
   }
@@ -25,12 +25,18 @@ export function mapDbRowToEntity(model: RpdDataModel, row: any) {
       if (property) {
         isRelationProp = true;
         propertyName = property.code;
+      } else if (keepNonPropertyFields) {
+        propertyName = columnName;
       }
     }
 
     if (isRelationProp) {
-      if (row[propertyName] && !result[propertyName]) {
-        result[propertyName] = row[propertyName];
+      if (row[propertyName]) {
+        if (!result[propertyName]) {
+          result[propertyName] = row[propertyName];
+        }
+      } else if (keepNonPropertyFields) {
+        result[columnName] = row[columnName];
       }
     } else {
       if (!result[propertyName]) {
