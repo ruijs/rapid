@@ -22,3 +22,5 @@ export { default as AuthPlugin } from "./plugins/auth/AuthPlugin";
 export { default as FileManagePlugin } from "./plugins/fileManage/FileManagePlugin";
 export { default as ServerOperationPlugin } from "./plugins/serverOperation/ServerOperationPlugin";
 export * from "./plugins/serverOperation/ServerOperationPluginTypes";
+export { default as EntityWatchPlugin } from "./plugins/entityWatch/EntityWatchPlugin";
+export * from "./plugins/entityWatch/EntityWatchPluginTypes";

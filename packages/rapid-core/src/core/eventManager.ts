@@ -1,7 +1,6 @@
 import { EventEmitter } from "events";
-import { RpdServerEventTypes as EventTypes } from "~/types";
 
-export default class EventManager {
+export default class EventManager<EventTypes extends Record<string, any[]>> {
   #eventEmitter: EventEmitter;
 
   constructor() {
@@ -12,10 +11,10 @@ export default class EventManager {
     eventName: K,
     listener: (...args: EventTypes[K]) => void,
   ) {
-    this.#eventEmitter.on(eventName, listener);
+    this.#eventEmitter.on(eventName as string, listener);
   }
 
   emit<K extends keyof EventTypes>(eventName: K, ...args: EventTypes[K]) {
-    return this.#eventEmitter.emit(eventName, ...args);
+    return this.#eventEmitter.emit(eventName as string, ...args);
   }
 }

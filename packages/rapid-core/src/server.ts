@@ -35,7 +35,7 @@ export interface InitServerOptions {
 export class RapidServer implements IRpdServer {
   #pluginManager: PluginManager;
   #plugins: RapidPlugin[];
-  #eventManager: EventManager;
+  #eventManager: EventManager<RpdServerEventTypes>;
   #middlewares: any[];
   #bootstrapApplicationConfig: RpdApplicationConfig;
   #applicationConfig: RpdApplicationConfig;
