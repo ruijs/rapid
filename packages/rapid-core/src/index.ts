@@ -20,3 +20,5 @@ export { default as RouteManagePlugin } from "./plugins/routeManage/RouteManageP
 export { default as WebhooksPlugin } from "./plugins/webhooks/WebhooksPlugin";
 export { default as AuthPlugin } from "./plugins/auth/AuthPlugin";
 export { default as FileManagePlugin } from "./plugins/fileManage/FileManagePlugin";
+export { default as ServerOperationPlugin } from "./plugins/serverOperation/ServerOperationPlugin";
+export * from "./plugins/serverOperation/ServerOperationPluginTypes";
