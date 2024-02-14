@@ -431,10 +431,21 @@ export interface UpdateEntityOptions {
 
 export interface UpdateEntityByIdOptions {
   id: any;
-  entity: any;
-  changes: any;
+  entityToSave: any;
 }
 
 export interface DeleteEntityOptions {
   filters?: EntityFilterOptions[];
+}
+
+export interface AddEntityRelationsOptions {
+  id: number;
+  property: string;
+  relations: {id?: number, [k: string]: any}[];
+}
+
+export interface RemoveEntityRelationsOptions {
+  id: number;
+  property: string;
+  relations: {id?: number, [k: string]: any}[];
 }

@@ -14,26 +14,7 @@ export async function handler(
   const { server, input } = ctx;
 
   const entityManager = server.getEntityManager(options.singularCode);
-  const id = input.id;
-  const row = await entityManager.findById(id);
-  if (!row) {
-    ctx.status = 200;
-    return;
-  }
-
-  await entityManager.deleteById(id);
-
-  const entity = mapDbRowToEntity(entityManager.getModel(), row);
-
-  server.emitEvent(
-    "entity.delete",
-    plugin,
-    {
-      namespace: options.namespace,
-      modelSingularCode: options.singularCode,
-      before: entity,
-    },
-  );
+  await entityManager.deleteById(input.id, plugin);
 
   ctx.status = 200;
 }

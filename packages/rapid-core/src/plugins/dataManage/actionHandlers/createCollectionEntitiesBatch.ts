@@ -37,21 +37,10 @@ export async function handler(
     const entityManager = server.getEntityManager(options.singularCode);
     const newEntity = await entityManager.createEntity({
       entity: mergedEntity,
-    });
-
-    server.emitEvent(
-      "entity.create",
-      plugin,
-      {
-        namespace: options.namespace,
-        modelSingularCode: options.singularCode,
-        after: newEntity,
-      },
-    );
+    }, plugin);
 
     output.push(newEntity);
   }
 
   ctx.output = output;
-
 }

@@ -1,5 +1,6 @@
 import * as _ from "lodash";
 import {
+  AddEntityRelationsOptions,
   CountEntityOptions,
   CountEntityResult,
   CreateEntityOptions,
@@ -8,6 +9,7 @@ import {
   FindEntityOptions,
   FindEntityOrderByOptions,
   IRpdDataAccessor,
+  RemoveEntityRelationsOptions,
   RpdDataModel,
   RpdDataModelProperty,
   UpdateEntityByIdOptions,
@@ -16,7 +18,8 @@ import { isNullOrUndefined } from "~/utilities/typeUtility";
 import { mapDbRowToEntity, mapEntityToDbRow } from "./entityMapper";
 import { mapPropertyNameToColumnName } from "./propertyMapper";
 import { isRelationProperty } from "~/utilities/rapidUtility";
-import { IRpdServer } from "~/core/server";
+import { IRpdServer, RapidPlugin } from "~/core/server";
+import { getEntityPartChanges } from "~/helpers/entityHelpers";
 
 function convertToDataAccessOrderBy(model: RpdDataModel, orderByList?: FindEntityOrderByOptions[]) {
   if (!orderByList) {
@@ -533,9 +536,23 @@ async function updateEntityById(
   server: IRpdServer,
   dataAccessor: IRpdDataAccessor,
   options: UpdateEntityByIdOptions,
+  plugin: RapidPlugin
 ) {
   const model = dataAccessor.getModel();
-  const { id, entity, changes } = options;
+  const { id, entityToSave } = options;
+  if (!id) {
+    throw new Error("Id is required when updating an entity.")
+  }
+
+  const entity = await this.findById(id);
+  if (!entity) {
+    throw new Error(`${model.namespace}.${model.singularCode}  with id "${id}" was not found.`);
+  }
+
+  const changes = getEntityPartChanges(entity, entityToSave);
+  if (!changes) {
+    return entity;
+  }
 
   const oneRelationPropertiesToUpdate: RpdDataModelProperty[] = [];
   const manyRelationPropertiesToUpdate: RpdDataModelProperty[] = [];
@@ -648,6 +665,18 @@ async function updateEntityById(
     updatedEntity[property.code] = relatedEntities;
   }
 
+  
+  server.emitEvent(
+    "entity.update",
+    plugin,
+    {
+      namespace: model.namespace,
+      modelSingularCode: model.singularCode,
+      before: entity,
+      after: updatedEntity,
+      changes: changes,
+    },
+  );
   return updatedEntity;
 }
 
@@ -658,6 +687,10 @@ export default class EntityManager<TEntity=any> {
   constructor(server: IRpdServer, dataAccessor: IRpdDataAccessor) {
     this.#server = server;
     this.#dataAccessor = dataAccessor;
+  }
+
+  getModel(): RpdDataModel {
+    return this.#dataAccessor.getModel();
   }
 
   async findEntities(options: FindEntityOptions): Promise<TEntity[]> {
@@ -680,23 +713,133 @@ export default class EntityManager<TEntity=any> {
     });
   }
 
-  async createEntity(options: CreateEntityOptions): Promise<TEntity> {
-    return await createEntity(this.#server, this.#dataAccessor, options);
+  async createEntity(options: CreateEntityOptions, plugin: RapidPlugin): Promise<TEntity> {
+    const model = this.getModel();
+    const newEntity = await createEntity(this.#server, this.#dataAccessor, options);
+
+    this.#server.emitEvent(
+      "entity.create",
+      plugin,
+      {
+        namespace: model.namespace,
+        modelSingularCode: model.singularCode,
+        after: newEntity,
+      },
+    );
+
+    return newEntity;
   }
 
-  async updateEntityById(options: UpdateEntityByIdOptions): Promise<TEntity> {
-    return await updateEntityById(this.#server, this.#dataAccessor, options);
+  async updateEntityById(options: UpdateEntityByIdOptions, plugin: RapidPlugin): Promise<TEntity> {
+    return await updateEntityById(this.#server, this.#dataAccessor, options, plugin);
   }
 
   async count(options: CountEntityOptions): Promise<CountEntityResult> {
     return await this.#dataAccessor.count(options);
   }
 
-  async deleteById(id: any): Promise<void> {
-    return await this.#dataAccessor.deleteById(id);
+  async deleteById(id: any, plugin: RapidPlugin): Promise<void> {
+    const model = this.getModel();
+    const entity = await this.findById(id);
+    if (!entity) {
+      return;
+    }
+
+    await this.#dataAccessor.deleteById(id);
+    this.#server.emitEvent(
+      "entity.delete",
+      plugin,
+      {
+        namespace: model.namespace,
+        modelSingularCode: model.singularCode,
+        before: entity,
+      },
+    );
   }
 
-  getModel(): RpdDataModel {
-    return this.#dataAccessor.getModel();
+  async addRelations(options: AddEntityRelationsOptions, plugin: RapidPlugin): Promise<void> {
+    const model = this.getModel();
+    const {id, property, relations} = options;
+    const entity = await this.findById(id);
+    if (!entity) {
+      throw new Error(`${model.namespace}.${model.singularCode}  with id "${id}" was not found.`);
+    }
+
+    const relationProperty = model.properties.find(e => e.code === property);
+    if (!relationProperty) {
+      throw new Error(`Property '${property}' was not found in ${model.namespace}.${model.singularCode}`);
+    }
+
+    if (!(isRelationProperty(relationProperty) && relationProperty.relation === "many")) {
+      throw new Error(`Operation 'addRelations' is only supported on property of 'many' relation`);
+    }
+
+    const server = this.#server;
+    const { queryBuilder } = server;
+    if (relationProperty.linkTableName) {
+      for (const relation of relations) {
+        const command = `INSERT INTO ${queryBuilder.quoteTable({schema:relationProperty.linkSchema, tableName: relationProperty.linkTableName})} (${queryBuilder.quoteObject(relationProperty.selfIdColumnName!)}, ${queryBuilder.quoteObject(relationProperty.targetIdColumnName!)})
+    SELECT $1, $2 WHERE NOT EXISTS (
+      SELECT ${queryBuilder.quoteObject(relationProperty.selfIdColumnName!)}, ${queryBuilder.quoteObject(relationProperty.targetIdColumnName!)}
+        FROM ${queryBuilder.quoteTable({schema:relationProperty.linkSchema, tableName: relationProperty.linkTableName})}
+        WHERE ${queryBuilder.quoteObject(relationProperty.selfIdColumnName!)}=$1 AND ${queryBuilder.quoteObject(relationProperty.targetIdColumnName!)}=$2
+      )`;
+        const params = [id, relation.id];
+        await server.queryDatabaseObject(command, params);
+      }
+    }
+
+    server.emitEvent(
+      "entity.addRelations",
+      plugin,
+      {
+        namespace: model.namespace,
+        modelSingularCode: model.singularCode,
+        entity,
+        property,
+        relations,
+      },
+    );
+  }
+
+  async removeRelations(options: RemoveEntityRelationsOptions, plugin: RapidPlugin): Promise<void> {
+    const model = this.getModel();
+    const {id, property, relations} = options;
+    const entity = await this.findById(id);
+    if (!entity) {
+      throw new Error(`${model.namespace}.${model.singularCode}  with id "${id}" was not found.`);
+    }
+
+    const relationProperty = model.properties.find(e => e.code === property);
+    if (!relationProperty) {
+      throw new Error(`Property '${property}' was not found in ${model.namespace}.${model.singularCode}`);
+    }
+
+    if (!(isRelationProperty(relationProperty) && relationProperty.relation === "many")) {
+      throw new Error(`Operation 'removeRelations' is only supported on property of 'many' relation`);
+    }
+
+    const server = this.#server;
+    const { queryBuilder } = server;
+    if (relationProperty.linkTableName) {
+      for (const relation of relations) {
+        const command = `DELETE FROM ${queryBuilder.quoteTable({schema:relationProperty.linkSchema, tableName: relationProperty.linkTableName})}
+    WHERE ${queryBuilder.quoteObject(relationProperty.selfIdColumnName!)}=$1 AND ${queryBuilder.quoteObject(relationProperty.targetIdColumnName!)}=$2;`;
+        const params = [id, relation.id];
+        await server.queryDatabaseObject(command, params);
+      }
+    }
+
+    server.emitEvent(
+      "entity.removeRelations",
+      plugin,
+      {
+        namespace: model.namespace,
+        modelSingularCode: model.singularCode,
+        entity,
+        property,
+        relations,
+      },
+    );
   }
 }

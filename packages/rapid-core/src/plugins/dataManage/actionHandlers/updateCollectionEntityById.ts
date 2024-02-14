@@ -23,31 +23,7 @@ export async function handler(
   console.debug(`mergedInput: ${JSON.stringify(mergedInput)}`);
 
   const entityManager = server.getEntityManager(options.singularCode);
-  const id = mergedInput.id;
-  const row = await entityManager.findById(id);
-  if (!row) {
-    throw new Error(`${options.namespace}.${options.singularCode}  with id "${id}" was not found.`);
-  }
 
-  const entity = mapDbRowToEntity(entityManager.getModel(), row);
-  const changes = getEntityPartChanges(entity, mergedInput);
-  if (!changes) {
-    ctx.output = entity;
-    return;
-  }
-
-  const output = await entityManager.updateEntityById({ id, entity, changes });
+  const output = await entityManager.updateEntityById({ id: mergedInput.id, entityToSave: mergedInput }, plugin);
   ctx.output = output;
-
-  server.emitEvent(
-    "entity.update",
-    plugin,
-    {
-      namespace: options.namespace,
-      modelSingularCode: options.singularCode,
-      before: entity,
-      after: output,
-      changes: changes,
-    },
-  );
 }

@@ -28,16 +28,6 @@ export async function handler(
   const entityManager = server.getEntityManager(options.singularCode);
   const output = await entityManager.createEntity({
     entity: input,
-  });
+  }, plugin);
   ctx.output = output;
-
-  server.emitEvent(
-    "entity.create",
-    plugin,
-    {
-      namespace: options.namespace,
-      modelSingularCode: options.singularCode,
-      after: output,
-    },
-  );
 }
