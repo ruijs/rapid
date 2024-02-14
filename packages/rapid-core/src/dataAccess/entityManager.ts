@@ -173,6 +173,22 @@ async function findEntity(
   return _.first(entities);
 }
 
+async function findById(
+  server: IRpdServer,
+  dataAccessor: IRpdDataAccessor,
+  id: any,
+): Promise<any> {
+  return await findEntity(server, dataAccessor, {
+    filters: [
+      {
+        operator: "eq",
+        field: "id",
+        value: id,
+      }
+    ]
+  });
+}
+
 async function replaceFiltersWithFiltersOperator(
   server: IRpdServer,
   model: RpdDataModel,
@@ -544,7 +560,7 @@ async function updateEntityById(
     throw new Error("Id is required when updating an entity.")
   }
 
-  const entity = await this.findById(id);
+  const entity = await findById(server, dataAccessor, id);
   if (!entity) {
     throw new Error(`${model.namespace}.${model.singularCode}  with id "${id}" was not found.`);
   }
@@ -702,15 +718,7 @@ export default class EntityManager<TEntity=any> {
   }
 
   async findById(id: any): Promise<TEntity | null> {
-    return await this.findEntity({
-      filters: [
-        {
-          operator: "eq",
-          field: "id",
-          value: id,
-        }
-      ]
-    });
+    return await findById(this.#server, this.#dataAccessor, id);
   }
 
   async createEntity(options: CreateEntityOptions, plugin: RapidPlugin): Promise<TEntity> {
