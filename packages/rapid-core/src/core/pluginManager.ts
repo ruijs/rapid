@@ -20,7 +20,9 @@ class PluginManager {
   /** 初始化插件时调用。 */
   async initPlugins() {
     for (const plugin of this.#plugins) {
-      await plugin.initPlugin(this.#server);
+      if (plugin.initPlugin) {
+        await plugin.initPlugin(this.#server);
+      }
     }
   }
 
