@@ -1,7 +1,6 @@
 import type { RpdEntityCreateEventPayload, RpdServerEventTypes } from "~/types";
-
 import { IRpdServer, RapidPlugin, RpdConfigurationItemOptions, RpdServerPluginConfigurableTargetOptions, RpdServerPluginExtendingAbilities } from "~/core/server";
-import { EntityWatchHandlerContext, EntityWatchPluginInitOptions, EntityWatcher } from "./EntityWatchPluginTypes";
+import { EntityWatchHandlerContext, EntityWatchPluginInitOptions } from "./EntityWatchPluginTypes";
 import EventManager from "~/core/eventManager";
 
 class EntityWatchPlugin implements RapidPlugin {

@@ -1,7 +1,16 @@
 import { IRpdServer } from "~/core/server";
 import { RpdServerEventTypes } from "~/types";
 
-export interface EntityWatcher<TEventName extends keyof RpdServerEventTypes> {
+export type EntityWatcherType =
+  | EntityWatcher<"entity.create">
+  | EntityWatcher<"entity.update">
+  | EntityWatcher<"entity.delete">
+  | EntityWatcher<"entity.addRelations">
+  | EntityWatcher<"entity.removeRelations">
+  | EntityWatcher<any>
+  ;
+
+export interface EntityWatcher<TEventName extends keyof RpdServerEventTypes = any> {
   eventName: TEventName;
   modelSingularCode: string;
   handler: EntityWatchHandler<TEventName>;
@@ -15,5 +24,5 @@ export type EntityWatchHandlerContext<TEventName extends keyof RpdServerEventTyp
 }
 
 export interface EntityWatchPluginInitOptions {
-  watchers: EntityWatcher<keyof RpdServerEventTypes>[];
+  watchers: EntityWatcherType[];
 }
