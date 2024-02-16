@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 import { FindEntityOptions, RunEntityActionHandlerOptions } from "~/types";
 import runCollectionEntityActionHandler from "~/helpers/runCollectionEntityActionHandler";
 import { removeFiltersWithNullValue } from "~/dataAccess/filterHelper";

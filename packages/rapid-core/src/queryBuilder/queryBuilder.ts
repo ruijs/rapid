@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import { find } from "lodash";
 import {
   CountEntityOptions,
   DeleteEntityOptions,
@@ -148,7 +148,7 @@ export default class QueryBuilder {
 
       let property: RpdDataModelProperty | null = null;
       if (model) {
-        property = _.find(
+        property = find(
           model.properties,
           (e: RpdDataModelProperty) => e.code === propertyName,
         );
@@ -192,7 +192,7 @@ export default class QueryBuilder {
 
       let property: RpdDataModelProperty | null = null;
       if (model) {
-        property = _.find(
+        property = find(
           model.properties,
           (e: RpdDataModelProperty) => (e.columnName || e.code) === propertyName,
         );

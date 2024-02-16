@@ -2,7 +2,6 @@
  * Meta manager plugin
  */
 
-import * as _ from "lodash";
 import {
   IQueryBuilder,
   QuoteTableOptions,
@@ -20,6 +19,7 @@ import * as listMetaModels from "./actionHandlers/listMetaModels";
 import * as listMetaRoutes from "./actionHandlers/listMetaRoutes";
 import * as getMetaModelDetail from "./actionHandlers/getMetaModelDetail";
 import { isRelationProperty } from "~/utilities/rapidUtility";
+import { find } from "lodash";
 
 class MetaManager implements RapidPlugin {
   get code(): string {
@@ -246,7 +246,7 @@ async function syncDatabaseSchema(
 
     const expectedTableSchema = model.schema || server.databaseConfig.dbDefaultSchema;
     const expectedTableName = model.tableName;
-    const tableInDb = _.find(tablesInDb, { table_schema: expectedTableSchema, table_name: expectedTableName});
+    const tableInDb = find(tablesInDb, { table_schema: expectedTableSchema, table_name: expectedTableName});
     if (!tableInDb) {
       await server.queryDatabaseObject(`CREATE TABLE IF NOT EXISTS ${queryBuilder.quoteTable(model)} ()`, []);
     }
@@ -268,7 +268,7 @@ async function syncDatabaseSchema(
             console.warn(`Cannot find target model with singular code "${property.targetSingularCode}".`)
           }
 
-          const columnInDb: ColumnInformation | undefined = _.find(columnsInDb, {
+          const columnInDb: ColumnInformation | undefined = find(columnsInDb, {
             table_schema: model.schema || "public",
             table_name: model.tableName,
             column_name: property.targetIdColumnName!,
@@ -286,7 +286,7 @@ async function syncDatabaseSchema(
           }
         } else if (property.relation === "many") {
           if (property.linkTableName) {
-            const tableInDb = _.find(tablesInDb, { table_schema: property.linkSchema || server.databaseConfig.dbDefaultSchema, table_name: property.linkTableName});
+            const tableInDb = find(tablesInDb, { table_schema: property.linkSchema || server.databaseConfig.dbDefaultSchema, table_name: property.linkTableName});
             if (!tableInDb) {
               columnDDL = generateLinkTableDDL(queryBuilder, {
                 linkSchema: property.linkSchema,
@@ -302,7 +302,7 @@ async function syncDatabaseSchema(
               continue;
             }
 
-            const columnInDb: ColumnInformation | undefined = _.find(columnsInDb, {
+            const columnInDb: ColumnInformation | undefined = find(columnsInDb, {
               table_schema: targetModel.schema || "public",
               table_name: targetModel.tableName,
               column_name: property.selfIdColumnName!,
@@ -328,7 +328,7 @@ async function syncDatabaseSchema(
         }
       } else {
         const columnName = property.columnName || property.code;
-        const columnInDb: ColumnInformation | undefined = _.find(columnsInDb, {
+        const columnInDb: ColumnInformation | undefined = find(columnsInDb, {
           table_schema: model.schema || "public",
           table_name: model.tableName,
           column_name: columnName,

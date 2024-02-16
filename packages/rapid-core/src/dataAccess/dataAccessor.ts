@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 import {
   CountEntityOptions,
   FindEntityOptions,
@@ -9,6 +8,7 @@ import {
   IDatabaseAccessor,
 } from "~/types";
 import QueryBuilder from "~/queryBuilder/queryBuilder";
+import { first, set } from "lodash";
 
 export interface IDataAccessorOptions {
   model: RpdDataModel;
@@ -36,7 +36,7 @@ export default class DataAccessor<T = any> implements IRpdDataAccessor<T> {
     };
     const query = this.#queryBuilder.insert(this.#model, options);
     const result = await this.#databaseAccessor.queryDatabaseObject(query.command, query.params);
-    return _.first(result);
+    return first(result);
   }
 
   async updateById(id: any, entity: Partial<T>): Promise<{ count: number }> {
@@ -52,7 +52,7 @@ export default class DataAccessor<T = any> implements IRpdDataAccessor<T> {
     };
     const query = this.#queryBuilder.update(this.#model, options);
     const result = await this.#databaseAccessor.queryDatabaseObject(query.command, query.params);
-    return _.first(result);
+    return first(result);
   }
 
   async find(options: FindEntityOptions): Promise<T[]> {
@@ -62,9 +62,9 @@ export default class DataAccessor<T = any> implements IRpdDataAccessor<T> {
   }
 
   async findOne(options: FindEntityOptions): Promise<T> {
-    _.set(options, "pagination.limit", 1);
+    set(options, "pagination.limit", 1);
     const list = await this.find(options);
-    return _.first(list);
+    return first(list);
   }
 
   async findById(id: any): Promise<T | null> {
@@ -79,14 +79,14 @@ export default class DataAccessor<T = any> implements IRpdDataAccessor<T> {
     };
     const query = this.#queryBuilder.select(this.#model, options);
     const result = await this.#databaseAccessor.queryDatabaseObject(query.command, query.params);
-    return _.first(result);
+    return first(result);
   }
 
   async count(options: CountEntityOptions): Promise<any> {
     const query = this.#queryBuilder.count(this.#model, options);
     const result = await this.#databaseAccessor.queryDatabaseObject(query.command, query.params);
 
-    const row = _.first(result);
+    const row = first(result);
     if (row) {
       return row;
     }

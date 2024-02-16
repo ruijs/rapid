@@ -4,7 +4,6 @@
  * - routes for manage data in database.
  */
 
-import * as _ from "lodash";
 import {
   RpdApplicationConfig,
   RpdHttpMethod,

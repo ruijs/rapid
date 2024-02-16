@@ -2,7 +2,6 @@
  * Webhooks plugin
  */
 
-import * as _ from "lodash";
 import {
   RpdApplicationConfig,
   RpdEntityCreateEventPayload,
@@ -13,6 +12,7 @@ import {
 import { RpdServerPluginExtendingAbilities, RpdServerPluginConfigurableTargetOptions, RpdConfigurationItemOptions, IRpdServer, RapidPlugin } from "~/core/server";
 import { fetchWithTimeout } from "~/utilities/httpUtility";
 import pluginConfig from "./pluginConfig";
+import { indexOf } from "lodash";
 
 
 export interface Webhook {
@@ -146,7 +146,7 @@ class WebhooksPlugin implements RapidPlugin {
     }
 
     for (const webhook of this.#webhooks) {
-      if (_.indexOf(webhook.events, event) === -1) {
+      if (indexOf(webhook.events, event) === -1) {
         continue;
       }
 

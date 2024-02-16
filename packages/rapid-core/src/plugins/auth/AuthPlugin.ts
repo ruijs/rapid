@@ -2,7 +2,6 @@
  * Auth manager plugin
  */
 
-import * as _ from "lodash";
 import {
   RpdApplicationConfig,
 } from "~/types";
