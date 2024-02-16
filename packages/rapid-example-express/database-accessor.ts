@@ -1,8 +1,8 @@
-const { Pool } = require('pg');
+import { Pool } from "pg";
 
-module.exports = class databaseAccessor {
-   #pool = null;
-   constructor(options) {
+export default class databaseAccessor {
+   #pool: Pool;
+   constructor(options: any) {
       this.#pool = new Pool({
          host: options.host,
          port: options.port,
@@ -13,7 +13,7 @@ module.exports = class databaseAccessor {
       });
    }
 
-   async queryDatabaseObject(sql, params) {
+   async queryDatabaseObject(sql: any, params: any) {
       const res = await this.#pool.query(sql, params)
       return res.rows;
    }

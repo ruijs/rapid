@@ -1,7 +1,7 @@
-const process = require("process");
-const express = require("express");
-const DatabaseAccessor = require("./database-accessor");
-const {
+import process from "process";
+import express from "express";
+import DatabaseAccessor from "./database-accessor";
+import {
   RapidServer,
   createJwt,
   decodeJwt,
@@ -14,12 +14,12 @@ const {
   AuthPlugin,
   FileManagePlugin,
   EntityAccessControlPlugin,
-} = require('@ruiapp/rapid-core');
-const { createRapidRequestHandler } = require('@ruiapp/rapid-express');
+} from '@ruiapp/rapid-core';
+import { createRapidRequestHandler } from '@ruiapp/rapid-express';
 
-require("dotenv/config");
+import "dotenv/config";
 
-exports.startServer = async () => {
+export async function startServer() {
   const app = express();
 
   // http://expressjs.com/en/advanced/best-practice-security.html#at-a-minimum-disable-x-powered-by-header
@@ -27,10 +27,10 @@ exports.startServer = async () => {
 
   app.use(express.static('public'))
 
-  const envFromFile = {};
+  const envFromFile: any = {};
   const envFromProcess = process.env;
   const env = {
-    get: (name, defaultValue = "") => {
+    get: (name: string, defaultValue = "") => {
       return envFromFile[name] || envFromProcess[name] || defaultValue;
     }
   };

@@ -5,15 +5,20 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "program": "${workspaceFolder}\\packages\\rapid-example-express\\server.js",
-      "outFiles": [
-        "${workspaceFolder}/**/*.js"
+      "type": "node",
+      "cwd": "${workspaceFolder}/packages/rapid-example-express",
+      "program": "index.ts",
+      "runtimeExecutable": "node.exe",
+      "runtimeArgs": [
+        "./node_modules/ts-node/dist/bin-esm.js",
+        "--project",
+        "./tsconfig.json",
+        "-r",
+        "dotenv/config",
+        "-r",
+        "tsconfig-paths/register"
       ]
     }
   ]
