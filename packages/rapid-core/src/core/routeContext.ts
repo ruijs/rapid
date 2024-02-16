@@ -12,6 +12,7 @@ export class RouteContext {
   method: string;
   path: string;
   params: Record<string, string>;
+  routeConfig: any;
 
   constructor(request: RapidRequest) {
     this.request = request;

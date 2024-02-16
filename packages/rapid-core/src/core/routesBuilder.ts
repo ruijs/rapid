@@ -5,6 +5,7 @@ import { IRpdServer } from "~/core/server";
 import { RpdApplicationConfig } from "~/types";
 import { isNullOrUndefined } from "~/utilities/typeUtility";
 import { Next, RouteContext } from "./routeContext";
+import { cloneDeep } from "lodash";
 
 export async function buildRoutes(
   server: IRpdServer,
@@ -31,6 +32,7 @@ export async function buildRoutes(
     (router as any)[routeConfig.method.toLowerCase()](
       routePath,
       async (routerContext: RouteContext, next: Next) => {
+        routerContext.routeConfig = cloneDeep(routeConfig);
         const { request, params } = routerContext;
 
         let search = request.url.search;
@@ -64,13 +66,16 @@ export async function buildRoutes(
           input,
         };
 
-        for (const handlerConfig of routeConfig.actions) {
-          const handler = server.getActionHandlerByCode(handlerConfig.code);
+        await server.beforeRunRouteActions(handlerContext);
+
+        for (const actionConfig of routeConfig.actions) {
+          const actionCode = actionConfig.code;
+          const handler = server.getActionHandlerByCode(actionCode);
           if (!handler) {
-            throw new Error("Unknown handler: " + handlerConfig.code);
+            throw new Error("Unknown handler: " + actionCode);
           }
 
-          const result = handler(handlerContext, handlerConfig.config);
+          const result = handler(handlerContext, actionConfig.config);
           if (result instanceof Promise) {
             await result;
           }

@@ -34,45 +34,14 @@ class FileManager implements RapidPlugin {
     return [];
   }
 
-  async initPlugin(server: IRpdServer): Promise<any> {
-  }
-
-  async registerMiddlewares(server: IRpdServer): Promise<any> {
-  }
-
   async registerActionHandlers(server: IRpdServer): Promise<any> {
     server.registerActionHandler(this, downloadDocumentActionHandler);
     server.registerActionHandler(this, downloadFileActionHandler);
     server.registerActionHandler(this, uploadFileActionHandler);
   }
 
-  async registerEventHandlers(server: IRpdServer): Promise<any> {
-  }
-
-  async registerMessageHandlers(server: IRpdServer): Promise<any> {
-  }
-
-  async registerTaskProcessors(server: IRpdServer): Promise<any> {
-  }
-
-  async onLoadingApplication(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
-
-  async configureModels(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
-
-  async configureModelProperties(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
-
   async configureRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
     server.appendApplicationConfig({ routes: pluginRoutes });
-  }
-
-  async onApplicationLoaded(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-    console.log("fileManager.onApplicationLoaded");
-  }
-
-  async onApplicationReady(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
   }
 }
 

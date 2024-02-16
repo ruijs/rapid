@@ -1,6 +1,7 @@
 import { RpdApplicationConfig } from "~/types";
 import { IRpdServer, RapidPlugin } from "./server";
 import { RouteContext } from "./routeContext";
+import { ActionHandlerContext } from "./actionHandler";
 
 class PluginManager {
   #server: IRpdServer;
@@ -144,6 +145,17 @@ class PluginManager {
     for (const plugin of this.#plugins) {
       if (plugin.onPrepareRouteContext) {
         await plugin.onPrepareRouteContext(this.#server, routeContext);
+      }
+    }
+  }
+
+  /** 在接收到HTTP请求，执行 actions 前调用。 */
+  async beforeRunRouteActions(
+    handlerContext: ActionHandlerContext,
+  ) {
+    for (const plugin of this.#plugins) {
+      if (plugin.beforeRunRouteActions) {
+        await plugin.beforeRunRouteActions(this.#server, handlerContext);
       }
     }
   }

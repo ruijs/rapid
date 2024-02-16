@@ -13,6 +13,7 @@ const {
   WebhooksPlugin,
   AuthPlugin,
   FileManagePlugin,
+  EntityAccessControlPlugin,
 } = require('@ruiapp/rapid-core');
 const { createRapidRequestHandler } = require('@ruiapp/rapid-express');
 
@@ -81,6 +82,7 @@ exports.startServer = async () => {
       new WebhooksPlugin(),
       new AuthPlugin(),
       new FileManagePlugin(),
+      new EntityAccessControlPlugin(),
     ]
   });
   await rapidServer.start();

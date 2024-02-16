@@ -133,6 +133,19 @@ export interface RpdDataModel {
   tableName: string;
   properties: RpdDataModelProperty[];
   extensions?: RpdDataModelExtension[];
+  permissionPolicies?: RpdDataModelPermissionPolicies;
+}
+
+export interface RpdDataModelPermissionPolicies {
+  find?: PermissionPolicy;
+  create?: PermissionPolicy;
+  update?: PermissionPolicy;
+  delete?: PermissionPolicy;
+}
+
+export interface PermissionPolicy {
+  any?: string[];
+  all?: string[];
 }
 
 export interface RpdDataModelProperty {

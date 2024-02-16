@@ -24,3 +24,4 @@ export { default as ServerOperationPlugin } from "./plugins/serverOperation/Serv
 export * from "./plugins/serverOperation/ServerOperationPluginTypes";
 export { default as EntityWatchPlugin } from "./plugins/entityWatch/EntityWatchPlugin";
 export * from "./plugins/entityWatch/EntityWatchPluginTypes";
+export { default as EntityAccessControlPlugin } from "./plugins/entityAccessControl/EntityAccessControlPlugin";

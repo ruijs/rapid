@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 import DataAccessor from "./dataAccess/dataAccessor";
 import {
   GetDataAccessorOptions,
@@ -11,18 +10,20 @@ import {
   RpdDataModel,
   RpdServerEventTypes,
   RapidServerConfig,
+  RpdDataModelProperty,
 } from "./types";
 
 import QueryBuilder from "./queryBuilder/queryBuilder";
 import PluginManager from "./core/pluginManager";
 import EventManager from "./core/eventManager";
-import { ActionHandler, IPluginActionHandler } from "./core/actionHandler";
+import { ActionHandler, ActionHandlerContext, IPluginActionHandler } from "./core/actionHandler";
 import { IRpdServer, RapidPlugin } from "./core/server";
 import { buildRoutes } from "./core/routesBuilder";
 import { Next, RouteContext } from "./core/routeContext";
 import { RapidRequest } from "./core/request";
 import bootstrapApplicationConfig from "./bootstrapApplicationConfig";
 import EntityManager from "./dataAccess/entityManager";
+import { bind, cloneDeep, find, merge, omit } from "lodash";
 
 export interface InitServerOptions {
   databaseAccessor: IDatabaseAccessor;
@@ -77,12 +78,13 @@ export class RapidServer implements IRpdServer {
     const { models, routes } = config;
     if (models) {
       for (const model of models) {
-        const originalModel = _.find(this.#applicationConfig.models, (item) => item.singularCode == model.singularCode);
+        const originalModel = find(this.#applicationConfig.models, (item) => item.singularCode == model.singularCode);
         if (originalModel) {
+          merge(originalModel, omit(model, ["id", "maintainedBy", "namespace", "singularCode", "pluralCode", "schema", "tableName", "properties", "extensions"]));
           originalModel.name = model.name;
           const originalProperties = originalModel.properties;
           for (const property of model.properties) {
-            const originalProperty = _.find(originalProperties, (item) => item.code == property.code);
+            const originalProperty = find(originalProperties, (item) => item.code == property.code);
             if (originalProperty) {
               originalProperty.name = property.name;
             } else {
@@ -97,7 +99,7 @@ export class RapidServer implements IRpdServer {
 
     if (routes) {
       for (const route of routes) {
-        const originalRoute = _.find(this.#applicationConfig.routes, (item) => item.code == route.code);
+        const originalRoute = find(this.#applicationConfig.routes, (item) => item.code == route.code);
         if (originalRoute) {
           originalRoute.name = route.name;
           originalRoute.actions = route.actions;
@@ -108,11 +110,28 @@ export class RapidServer implements IRpdServer {
     }
   }
 
+  appendModelProperties(modelSingularCode: string, properties: RpdDataModelProperty[]) {
+    const originalModel = find(this.#applicationConfig.models, (item) => item.singularCode == modelSingularCode);
+    if (!originalModel) {
+      throw new Error(`Cannot append model properties. Model '${modelSingularCode}' was not found.`);
+    }
+
+    const originalProperties = originalModel.properties;
+    for (const property of properties) {
+      const originalProperty = find(originalProperties, (item) => item.code == property.code);
+      if (originalProperty) {
+        originalProperty.name = property.name;
+      } else {
+        originalProperties.push(property);
+      }
+    }
+  }
+
   registerActionHandler(
     plugin: RapidPlugin,
     options: IPluginActionHandler,
   ) {
-    const handler = _.bind(options.handler, null, plugin);
+    const handler = bind(options.handler, null, plugin);
     this.#actionHandlersMapByCode.set(options.code, handler);
   }
 
@@ -213,8 +232,7 @@ export class RapidServer implements IRpdServer {
   }
 
   async configureApplication() {
-    this.#applicationConfig = _.merge(
-      {},
+    this.#applicationConfig = cloneDeep(
       this.#bootstrapApplicationConfig,
     ) as RpdApplicationConfig;
 
@@ -253,9 +271,13 @@ export class RapidServer implements IRpdServer {
     const rapidRequest = new RapidRequest(request);
     await rapidRequest.parseBody();
     const routeContext = new RouteContext(rapidRequest);
-    this.#pluginManager.onPrepareRouteContext(routeContext);
+    await this.#pluginManager.onPrepareRouteContext(routeContext);
 
     await this.#buildedRoutes(routeContext, next);
     return routeContext.response.getResponse();
+  }
+
+  async beforeRunRouteActions(handlerContext: ActionHandlerContext) {
+    await this.#pluginManager.beforeRunRouteActions(handlerContext);
   }
 }

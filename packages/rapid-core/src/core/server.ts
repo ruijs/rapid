@@ -1,5 +1,5 @@
-import { GetDataAccessorOptions, GetModelOptions, IDatabaseConfig, IQueryBuilder, IRpdDataAccessor, RapidServerConfig, RpdApplicationConfig, RpdDataModel, RpdServerEventTypes } from "~/types";
-import { IPluginActionHandler, ActionHandler } from "./actionHandler";
+import { GetDataAccessorOptions, GetModelOptions, IDatabaseConfig, IQueryBuilder, IRpdDataAccessor, RapidServerConfig, RpdApplicationConfig, RpdDataModel, RpdDataModelProperty, RpdServerEventTypes } from "~/types";
+import { IPluginActionHandler, ActionHandler, ActionHandlerContext } from "./actionHandler";
 import { Next, RouteContext } from "./routeContext";
 import EntityManager from "~/dataAccess/entityManager";
 
@@ -27,6 +27,7 @@ export interface IRpdServer {
   getEntityManager<TEntity = any>(singularCode: string): EntityManager<TEntity>;
   getApplicationConfig(): RpdApplicationConfig;
   appendApplicationConfig(config: Partial<RpdApplicationConfig>);
+  appendModelProperties(modelSingularCode: string, properties: RpdDataModelProperty[]);
   getModel(options: GetModelOptions): RpdDataModel | undefined;
   registerEventHandler<K extends keyof RpdServerEventTypes>(
     eventName: K,
@@ -38,6 +39,7 @@ export interface IRpdServer {
     payload: RpdServerEventTypes[K][1],
   ): void;
   handleRequest(request: Request, next: Next): Promise<Response>;
+  beforeRunRouteActions(handlerContext: ActionHandlerContext): Promise<void>;
 }
 
 
@@ -127,4 +129,6 @@ export interface RapidPlugin {
   onApplicationReady?: (server: IRpdServer, applicationConfig: RpdApplicationConfig) => Promise<any>;
   /** 在接收到HTTP请求，准备路由上下文时调用。 */
   onPrepareRouteContext?: (server: IRpdServer, routeContext: RouteContext) => Promise<any>;
+  /** 在接收到HTTP请求，执行 actions 前调用。 */
+  beforeRunRouteActions?: (server: IRpdServer, handlerContext: ActionHandlerContext) => Promise<any>;
 }
