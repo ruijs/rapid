@@ -9,6 +9,8 @@ import {
 } from "~/types";
 import QueryBuilder from "~/queryBuilder/queryBuilder";
 import { first, set } from "lodash";
+import { IRpdServer } from "~/core/server";
+import { Logger } from "~/facilities/log/LogFacility";
 
 export interface IDataAccessorOptions {
   model: RpdDataModel;
@@ -16,11 +18,13 @@ export interface IDataAccessorOptions {
 }
 
 export default class DataAccessor<T = any> implements IRpdDataAccessor<T> {
+  #logger: Logger;
   #model: RpdDataModel;
   #queryBuilder: QueryBuilder;
   #databaseAccessor: IDatabaseAccessor;
 
-  constructor(databaseAccessor: IDatabaseAccessor, options: IDataAccessorOptions) {
+  constructor(server: IRpdServer, databaseAccessor: IDatabaseAccessor, options: IDataAccessorOptions) {
+    this.#logger = server.getLogger();
     this.#databaseAccessor = databaseAccessor;
     this.#queryBuilder = options.queryBuilder;
     this.#model = options.model;
@@ -56,7 +60,7 @@ export default class DataAccessor<T = any> implements IRpdDataAccessor<T> {
   }
 
   async find(options: FindEntityOptions): Promise<T[]> {
-    console.debug(`DataAccessor '${this.#model.singularCode}' find with options:`, options);
+    this.#logger.debug(`Finding '${this.#model.singularCode}' entity.`, { options });
     const query = this.#queryBuilder.select(this.#model, options);
     return await this.#databaseAccessor.queryDatabaseObject(query.command, query.params);
   }

@@ -2,11 +2,13 @@ import { GetDataAccessorOptions, GetModelOptions, IDatabaseConfig, IQueryBuilder
 import { IPluginActionHandler, ActionHandler, ActionHandlerContext } from "./actionHandler";
 import { Next, RouteContext } from "./routeContext";
 import EntityManager from "~/dataAccess/entityManager";
+import { Logger } from "~/facilities/log/LogFacility";
 
 export interface IRpdServer {
   config: RapidServerConfig;
   databaseConfig: IDatabaseConfig;
   queryBuilder: IQueryBuilder;
+  getLogger(): Logger;
   queryDatabaseObject: (
     sql: string,
     params?: unknown[] | Record<string, unknown>,

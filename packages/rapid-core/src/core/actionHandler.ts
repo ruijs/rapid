@@ -1,8 +1,10 @@
 import { RpdApplicationConfig } from "~/types";
 import { IRpdServer, RapidPlugin } from "./server";
 import { Next, RouteContext } from "./routeContext";
+import { Logger } from "~/facilities/log/LogFacility";
 
 export interface ActionHandlerContext {
+  logger: Logger;
   routerContext: RouteContext;
   next: Next;
   server: IRpdServer;

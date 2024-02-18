@@ -30,12 +30,6 @@ class RouteManager implements RapidPlugin {
     return [];
   }
 
-  async initPlugin(server: IRpdServer): Promise<any> {
-  }
-
-  async registerMiddlewares(server: IRpdServer): Promise<any> {
-  }
-
   async registerActionHandlers(server: IRpdServer): Promise<any> {
     server.registerActionHandler(this, httpProxy);
   }
@@ -47,23 +41,10 @@ class RouteManager implements RapidPlugin {
     // server.registerEventHandler("entity.delete", handleEntityEvent.bind(null, server))
   }
 
-  async registerMessageHandlers(server: IRpdServer): Promise<any> {
-  }
-
-  async registerTaskProcessors(server: IRpdServer): Promise<any> {
-  }
-
-  async onLoadingApplication(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
-
-  async configureModels(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
-
-  async configureModelProperties(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
-
   async configureRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
+    const logger = server.getLogger();
     try {
+      logger.info("Loading meta of routes...");
       const entityManager = server.getEntityManager("route");
       const routes = await entityManager.findEntities({
         orderBy: [
@@ -71,16 +52,9 @@ class RouteManager implements RapidPlugin {
         ],
       });
       applicationConfig.routes.push(...routes);
-    } catch (ex) {
-      console.warn("Failed to loading existing meta of routes.", ex.message);
+    } catch (error) {
+      logger.crit("Failed to load meta of routes.", { error });
     }
-  }
-
-  async onApplicationLoaded(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-    console.log("[routeManager.onApplicationLoaded] onApplicationLoaded");
-  }
-
-  async onApplicationReady(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
   }
 }
 

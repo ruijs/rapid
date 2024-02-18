@@ -10,7 +10,8 @@ export async function handler(
   ctx: ActionHandlerContext,
   options: RunProxyHandlerOptions,
 ) {
-  console.debug(`Running ${code} handler...`);
+  const { logger } = ctx;
+  logger.debug(`Running ${code} handler...`);
 
   await doProxy(ctx.routerContext, options);
 }

@@ -24,8 +24,10 @@ import { RapidRequest } from "./core/request";
 import bootstrapApplicationConfig from "./bootstrapApplicationConfig";
 import EntityManager from "./dataAccess/entityManager";
 import { bind, cloneDeep, find, merge, omit } from "lodash";
+import { Logger } from "./facilities/log/LogFacility";
 
 export interface InitServerOptions {
+  logger: Logger;
   databaseAccessor: IDatabaseAccessor;
   databaseConfig: IDatabaseConfig;
   serverConfig: RapidServerConfig;
@@ -34,6 +36,7 @@ export interface InitServerOptions {
 }
 
 export class RapidServer implements IRpdServer {
+  #logger: Logger;
   #pluginManager: PluginManager;
   #plugins: RapidPlugin[];
   #eventManager: EventManager<RpdServerEventTypes>;
@@ -50,6 +53,8 @@ export class RapidServer implements IRpdServer {
   #buildedRoutes: (ctx: any, next: any) => any;
 
   constructor(options: InitServerOptions) {
+    this.#logger = options.logger;
+
     this.#pluginManager = new PluginManager(this);
     this.#eventManager = new EventManager();
     this.#middlewares = [];
@@ -68,6 +73,10 @@ export class RapidServer implements IRpdServer {
     this.config = options.serverConfig;
 
     this.#plugins = options.plugins || [];
+  }
+
+  getLogger(): Logger {
+    return this.#logger;
   }
 
   getApplicationConfig() {
@@ -158,7 +167,7 @@ export class RapidServer implements IRpdServer {
       throw new Error(`Data model ${namespace}.${singularCode} not found.`);
     }
 
-    dataAccessor = new DataAccessor<T>(this.#databaseAccessor, {
+    dataAccessor = new DataAccessor<T>(this, this.#databaseAccessor, {
       model,
       queryBuilder: this.queryBuilder as QueryBuilder,
     });
@@ -199,7 +208,7 @@ export class RapidServer implements IRpdServer {
     sender: RapidPlugin,
     payload: RpdServerEventTypes[K][1],
   ) {
-    console.log(`Emit event "${eventName}"`, payload);
+    this.#logger.debug(`Emitting '${eventName}' event.`, { eventName, payload });
     await this.#eventManager.emit<K>(eventName, sender, payload as any);
 
     // TODO: should move this logic into metaManager
@@ -213,7 +222,7 @@ export class RapidServer implements IRpdServer {
   }
 
   async start() {
-    console.log("Starting rapid server...");
+    this.#logger.info("Starting rapid server...");
     const pluginManager = this.#pluginManager;
     await pluginManager.loadPlugins(this.#plugins);
 
@@ -227,7 +236,7 @@ export class RapidServer implements IRpdServer {
 
     await this.configureApplication();
 
-    console.log(`Application ready.`);
+    this.#logger.info(`Rapid server ready.`);
     await pluginManager.onApplicationReady(this.#applicationConfig);
   }
 
@@ -250,14 +259,19 @@ export class RapidServer implements IRpdServer {
   }
 
   async queryDatabaseObject(sql: string, params?: unknown[] | Record<string,unknown>) : Promise<any[]> {
-    return await this.#databaseAccessor.queryDatabaseObject(sql, params);
+    try {
+      return await this.#databaseAccessor.queryDatabaseObject(sql, params);
+    } catch (err) {
+      this.#logger.error("Failed to query database object.", { errorMessage: err.message, sql, params });
+      throw err;
+    }
   }
 
   async tryQueryDatabaseObject(sql: string, params?: unknown[] | Record<string,unknown>) : Promise<any[]> {
     try {
       return await this.queryDatabaseObject(sql, params);
     } catch (err) {
-      console.error(err.message);
+      this.#logger.error("Failed to query database object.", { errorMessage: err.message, sql, params });
     }
 
     return [];
@@ -268,9 +282,9 @@ export class RapidServer implements IRpdServer {
   }
 
   async handleRequest(request: Request, next: Next) {
-    const rapidRequest = new RapidRequest(request);
+    const rapidRequest = new RapidRequest(this, request);
     await rapidRequest.parseBody();
-    const routeContext = new RouteContext(rapidRequest);
+    const routeContext = new RouteContext(this, rapidRequest);
     await this.#pluginManager.onPrepareRouteContext(routeContext);
 
     await this.#buildedRoutes(routeContext, next);

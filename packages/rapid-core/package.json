@@ -1,6 +1,6 @@
 {
   "name": "@ruiapp/rapid-core",
-  "version": "0.1.20",
+  "version": "0.1.21",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -27,5 +27,8 @@
     "lodash": "^4.17.21",
     "qs": "^6.11.0",
     "uuid": "^9.0.1"
+  },
+  "peerDependencies": {
+    "winston": "^3.11.0"
   }
 }

@@ -18,8 +18,9 @@ import {
 import { createRapidRequestHandler } from '@ruiapp/rapid-express';
 
 import "dotenv/config";
+import { Logger } from "winston";
 
-export async function startServer() {
+export async function startServer(logger: Logger) {
   const app = express();
 
   // http://expressjs.com/en/advanced/best-practice-security.html#at-a-minimum-disable-x-powered-by-header
@@ -49,7 +50,7 @@ export async function startServer() {
     jwtKey: env.get("JWT_KEY", defaultJWTKey),
     localFileStoragePath: env.get("LOCAL_FILE_STORAGE_PATH", "/data/rapid-data/local-storage"),
   };
-  console.log('rapidConfig:', rapidConfig);
+  logger.info('Starting server...', { rapidConfig });
 
   const databaseAccessor  = new DatabaseAccessor({
     host: rapidConfig.dbHost,
@@ -61,6 +62,7 @@ export async function startServer() {
   });
 
   const rapidServer = new RapidServer({
+    logger,
     databaseAccessor,
     databaseConfig: {
       dbHost: rapidConfig.dbHost,
@@ -128,6 +130,6 @@ export async function startServer() {
 
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
-    console.log(`Express server listening on port ${port}`);
+    logger.info("Express server listening on port %d", port);
   });
 }

@@ -42,12 +42,6 @@ class MetaManager implements RapidPlugin {
     return [];
   }
 
-  async initPlugin(server: IRpdServer): Promise<any> {
-  }
-
-  async registerMiddlewares(server: IRpdServer): Promise<any> {
-  }
-
   async registerActionHandlers(server: IRpdServer): Promise<any> {
     server.registerActionHandler(this, listMetaModels);
     server.registerActionHandler(this, listMetaRoutes);
@@ -69,36 +63,19 @@ class MetaManager implements RapidPlugin {
     );
   }
 
-  async registerMessageHandlers(server: IRpdServer): Promise<any> {
-  }
-
-  async registerTaskProcessors(server: IRpdServer): Promise<any> {
-  }
-
-  async onLoadingApplication(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
-
   async configureModels(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
+    const logger = server.getLogger();
     try {
+      logger.info("Loading meta of models...");
       const models: RpdDataModel[] = await listCollections(server, applicationConfig);
       server.appendApplicationConfig({ models });
-    } catch (ex) {
-      console.warn("Failed to loading existing meta of models.", ex);
+    } catch (error) {
+      logger.crit("Failed to load meta of models.", { error });
     }
   }
 
-  async configureModelProperties(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
-
-  async configureRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
-
   async onApplicationLoaded(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-    console.log("metaManager.onApplicationLoaded");
     await syncDatabaseSchema(server, applicationConfig);
-  }
-
-  async onApplicationReady(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
   }
 }
 
@@ -236,13 +213,14 @@ async function syncDatabaseSchema(
   server: IRpdServer,
   applicationConfig: RpdApplicationConfig,
 ) {
-  console.log("Synchronizing database schema...");
+  const logger = server.getLogger();
+  logger.info("Synchronizing database schema...");
   const sqlQueryTableInformations = `SELECT table_schema, table_name FROM information_schema.tables`;
   const tablesInDb: TableInformation[] = await server.queryDatabaseObject(sqlQueryTableInformations);
   const { queryBuilder } = server;
 
   for (const model of applicationConfig.models) {
-    console.debug(`Checking data table for '${model.namespace}.${model.singularCode}'...`);
+    logger.debug(`Checking data table for '${model.namespace}.${model.singularCode}'...`);
 
     const expectedTableSchema = model.schema || server.databaseConfig.dbDefaultSchema;
     const expectedTableName = model.tableName;
@@ -257,7 +235,7 @@ async function syncDatabaseSchema(
   const columnsInDb: ColumnInformation[] = await server.queryDatabaseObject(sqlQueryColumnInformations, []);
 
   for (const model of applicationConfig.models) {
-    console.debug(`Checking data columns for '${model.namespace}.${model.singularCode}'...`);
+    logger.debug(`Checking data columns for '${model.namespace}.${model.singularCode}'...`);
 
     for (const property of model.properties) {
       let columnDDL;
@@ -265,7 +243,7 @@ async function syncDatabaseSchema(
         if (property.relation === "one") {
           const targetModel = applicationConfig.models.find(item => item.singularCode === property.targetSingularCode);
           if (!targetModel) {
-            console.warn(`Cannot find target model with singular code "${property.targetSingularCode}".`)
+            logger.warn(`Cannot find target model with singular code "${property.targetSingularCode}".`)
           }
 
           const columnInDb: ColumnInformation | undefined = find(columnsInDb, {
@@ -298,7 +276,7 @@ async function syncDatabaseSchema(
           } else {
             const targetModel = applicationConfig.models.find(item => item.singularCode === property.targetSingularCode);
             if (!targetModel) {
-              console.warn(`Cannot find target model with singular code "${property.targetSingularCode}".`)
+              logger.warn(`Cannot find target model with singular code "${property.targetSingularCode}".`)
               continue;
             }
 
@@ -398,7 +376,6 @@ function generateCreateColumnDDL(queryBuilder: IQueryBuilder, options: {
   } else {
     const columnType = pgPropertyTypeColumnMap[options.type];
     if (!columnType) {
-      console.log('options', options);
       throw new Error(`Property type "${options.type}" is not supported.`);
     }
     columnDDL += ` ${columnType}`;

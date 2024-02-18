@@ -1,6 +1,8 @@
 import qs from "qs";
 import { parseFormDataBody } from "./http/formDataParser";
 import { getCookies } from "~/deno-std/http/cookie";
+import { IRpdServer } from "./server";
+import { Logger } from "~/facilities/log/LogFacility";
 
 export const GlobalRequest = global.Request;
 
@@ -10,6 +12,7 @@ export interface RapidRequestBody {
 }
 
 export class RapidRequest {
+  #logger: Logger;
   #raw: Request;
   #bodyParsed: boolean;
   #body: RapidRequestBody;
@@ -18,7 +21,8 @@ export class RapidRequest {
   method: string;
   url: URL;
 
-  constructor(req: Request) {
+  constructor(server: IRpdServer, req: Request) {
+    this.#logger = server.getLogger();
     this.#raw = req;
     this.method = req.method;
     this.url = new URL(req.url);
@@ -27,7 +31,7 @@ export class RapidRequest {
 
   async parseBody(): Promise<void> {
     if (this.#bodyParsed) {
-      console.warn("Request body has been parsed. 'parseBody()' method should not be called more than once.");
+      this.#logger.warn("Request body has been parsed. 'parseBody()' method should not be called more than once.");
       return;
     }
 

@@ -107,12 +107,6 @@ class DataManager implements RapidPlugin {
     return [];
   }
 
-  async initPlugin(server: IRpdServer): Promise<any> {
-  }
-
-  async registerMiddlewares(server: IRpdServer): Promise<any> {
-  }
-
   async registerActionHandlers(server: IRpdServer): Promise<any> {
     server.registerActionHandler(this, findCollectionEntities);
     server.registerActionHandler(this, findCollectionEntityById);
@@ -124,24 +118,6 @@ class DataManager implements RapidPlugin {
     server.registerActionHandler(this, removeEntityRelations);
     server.registerActionHandler(this, deleteCollectionEntityById);
     server.registerActionHandler(this, queryDatabase);
-  }
-
-  async registerEventHandlers(server: IRpdServer): Promise<any> {
-  }
-
-  async registerMessageHandlers(server: IRpdServer): Promise<any> {
-  }
-
-  async registerTaskProcessors(server: IRpdServer): Promise<any> {
-  }
-
-  async onLoadingApplication(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
-
-  async configureModels(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
-
-  async configureModelProperties(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
   }
 
   async configureRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
@@ -173,13 +149,6 @@ class DataManager implements RapidPlugin {
     });
   
     server.appendApplicationConfig({ routes });
-  }
-
-  async onApplicationLoaded(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-    console.log("[dataManager.onApplicationLoaded]");
-  }
-
-  async onApplicationReady(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
   }
 }
 

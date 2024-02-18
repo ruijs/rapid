@@ -10,15 +10,11 @@ export async function handler(
   ctx: ActionHandlerContext,
   options: RunEntityActionHandlerOptions,
 ) {
-  const { server, input } = ctx;
+  const { logger, server, input } = ctx;
+
   const { defaultInput, fixedInput } = options;
-
-  console.debug(`Running ${code} handler...`);
-
-  console.debug(`defaultInput: ${JSON.stringify(defaultInput)}`);
   const mergedInput = mergeInput(defaultInput, input, fixedInput);
-  console.debug(`fixedInput: ${JSON.stringify(fixedInput)}`);
-  console.debug(`mergedInput: ${JSON.stringify(mergedInput)}`);
+  logger.debug(`Running ${code} handler...`, { defaultInput, fixedInput, mergedInput });
 
   const userId = ctx.routerContext.state?.userId;
   if (userId) {

@@ -11,23 +11,19 @@ export async function handler(
   ctx: ActionHandlerContext,
   options: RunEntityActionHandlerOptions,
 ) {
-  const { server, input } = ctx;
-  const { defaultInput, fixedInput } = options;
+  const { logger, server, input } = ctx;
 
-  console.debug(`Running ${code} handler...`);
+  const { defaultInput, fixedInput } = options;
+  logger.debug(`Running ${code} handler...`, { defaultInput, fixedInput, input });
 
   const { entities } = input;
   if (!isArray(entities)) {
     throw new Error("input.entities should be an array.");
   }
 
-  console.debug(`defaultInput: ${JSON.stringify(defaultInput)}`);
-  console.debug(`fixedInput: ${JSON.stringify(fixedInput)}`);
-
   const output: any[] = [];
   for(const entity of entities) {
     const mergedEntity = mergeInput(defaultInput?.entity || {}, entity, fixedInput?.entity);
-    console.debug(`mergedEntity: ${JSON.stringify(mergedEntity)}`);
 
     const userId = ctx.routerContext.state?.userId;
     if (userId) {

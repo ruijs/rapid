@@ -43,6 +43,9 @@ class EntityAccessControlPlugin implements RapidPlugin {
   }
 
   async configureRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
+    const logger = server.getLogger();
+    logger.info("Configuring entity access checking policies...")
+
     const model = find(applicationConfig.models, (item) => item.singularCode === "model");
     if (!model) {
       return;

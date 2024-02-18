@@ -2,10 +2,13 @@ import { isArray, isObject } from "lodash";
 import { RapidRequest } from "./request";
 import { RapidResponse } from "./response";
 import { HttpStatus, ResponseData } from "./http-types";
+import { IRpdServer } from "./server";
+import { Logger } from "~/facilities/log/LogFacility";
 
 export type Next = () => Promise<void>;
 
 export class RouteContext {
+  #logger: Logger;
   readonly request: RapidRequest;
   readonly response: RapidResponse;
   readonly state: Record<string, any>;
@@ -14,7 +17,8 @@ export class RouteContext {
   params: Record<string, string>;
   routeConfig: any;
 
-  constructor(request: RapidRequest) {
+  constructor(server: IRpdServer, request: RapidRequest) {
+    this.#logger = server.getLogger();
     this.request = request;
     this.state = {};
     this.response = new RapidResponse();

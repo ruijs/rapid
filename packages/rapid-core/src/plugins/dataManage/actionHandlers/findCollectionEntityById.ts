@@ -9,8 +9,8 @@ export async function handler(
   ctx: ActionHandlerContext,
   options: RunEntityActionHandlerOptions,
 ) {
-  console.debug(`Running ${code} handler...`);
-  const { server, input } = ctx;
+  const { logger, server, input } = ctx;
+  logger.debug(`Running ${code} handler...`, { input });
   const { id } = input;
 
   const entityManager = server.getEntityManager(options.singularCode);

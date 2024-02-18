@@ -35,46 +35,18 @@ class AuthPlugin implements RapidPlugin {
     return [];
   }
 
-  async initPlugin(server: IRpdServer): Promise<any> {
-  }
-
-  async registerMiddlewares(server: IRpdServer): Promise<any> {
-  }
-
   async registerActionHandlers(server: IRpdServer): Promise<any> {
     for (const actionHandler of pluginActionHandlers) {
       server.registerActionHandler(this, actionHandler);
     }
   }
 
-  async registerEventHandlers(server: IRpdServer): Promise<any> {
-  }
-
-  async registerMessageHandlers(server: IRpdServer): Promise<any> {
-  }
-
-  async registerTaskProcessors(server: IRpdServer): Promise<any> {
-  }
-
-  async onLoadingApplication(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
-
   async configureModels(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
     server.appendApplicationConfig({ models: pluginModels });
   }
 
-  async configureModelProperties(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
-
   async configureRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
     server.appendApplicationConfig({ routes: pluginRoutes });
-  }
-
-  async onApplicationLoaded(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-    console.log("authManager.onApplicationLoaded");
-  }
-
-  async onApplicationReady(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
   }
 
   async onPrepareRouteContext(server: IRpdServer, routeContext: RouteContext) {
@@ -100,8 +72,9 @@ class AuthPlugin implements RapidPlugin {
       const tokenPayload = verifyJwt(token, secretKey);
       routeContext.state.userId = tokenPayload.aud as string;
       routeContext.state.userLogin = tokenPayload.act as string;
-    } catch (err) {
-      console.warn(err);
+    } catch (error) {
+      const logger = server.getLogger();
+      logger.debug("Verify JWT failed.", { error });
     }
   }
 }

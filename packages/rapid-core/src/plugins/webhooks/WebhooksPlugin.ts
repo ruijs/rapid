@@ -30,16 +30,23 @@ export interface Webhook {
 function listWebhooks(
   server: IRpdServer,
 ) {
-  const entityManager = server.getEntityManager("webhook");
-  return entityManager.findEntities({
-    filters: [
-      {
-        field: "enabled",
-        operator: "eq",
-        value: true,
-      },
-    ],
-  });
+  const logger = server.getLogger();
+  logger.info("Loading meta of webhooks...");
+
+  try {
+    const entityManager = server.getEntityManager("webhook");
+    return entityManager.findEntities({
+      filters: [
+        {
+          field: "enabled",
+          operator: "eq",
+          value: true,
+        },
+      ],
+    });
+  } catch (error) {
+    logger.crit("Failed to load meta of webhooks.", { error });
+  }
 }
 
 
@@ -70,15 +77,6 @@ class WebhooksPlugin implements RapidPlugin {
     return [];
   }
 
-  async initPlugin(server: IRpdServer): Promise<any> {
-  }
-
-  async registerMiddlewares(server: IRpdServer): Promise<any> {
-  }
-
-  async registerActionHandlers(server: IRpdServer): Promise<any> {
-  }
-
   async registerEventHandlers(server: IRpdServer): Promise<any> {
     const events: (keyof RpdServerEventTypes)[] = [
       "entity.create",
@@ -91,15 +89,6 @@ class WebhooksPlugin implements RapidPlugin {
         this.handleEntityEvent.bind(this, server, event),
       );
     }
-  }
-
-  async registerMessageHandlers(server: IRpdServer): Promise<any> {
-  }
-
-  async registerTaskProcessors(server: IRpdServer): Promise<any> {
-  }
-
-  async onLoadingApplication(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
   }
 
   async configureModels(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
@@ -115,7 +104,6 @@ class WebhooksPlugin implements RapidPlugin {
   }
 
   async onApplicationLoaded(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-    console.log("[webhooks.onApplicationLoaded] loading webhooks");
     this.#webhooks = await listWebhooks(server);
   }
 
@@ -145,6 +133,8 @@ class WebhooksPlugin implements RapidPlugin {
       return;
     }
 
+    const logger = server.getLogger();
+
     for (const webhook of this.#webhooks) {
       if (indexOf(webhook.events, event) === -1) {
         continue;
@@ -157,8 +147,9 @@ class WebhooksPlugin implements RapidPlugin {
         continue;
       }
 
-      console.debug(`Triggering webhook. ${webhook.url}`);
+      logger.debug(`Triggering webhook. ${webhook.url}`);
       // TODO: It's better to trigger webhook through message queue.
+      const requestBody = { event, payload };
       try {
         await fetchWithTimeout(webhook.url, {
           method: "post",
@@ -166,11 +157,10 @@ class WebhooksPlugin implements RapidPlugin {
             "Content-Type": "application/json",
             "x-webhook-secret": webhook.secret || "",
           },
-          body: JSON.stringify({ event, payload }),
+          body: JSON.stringify(requestBody),
         });
-      } catch (err) {
-        console.warn(new Error("Failed to call webhook. " + err.message));
-        console.warn(err);
+      } catch (error) {
+        logger.error("Failed to call webhook.", { error, webhookUrl: webhook.url, requestBody });
       }
     }
   }

@@ -14,15 +14,11 @@ export default async function runCollectionEntityActionHandler(
   code: string,
   handleEntityAction: EntityActionHandler,
 ) {
-  const { server, input } = ctx;
+  const { logger, server, input } = ctx;
+
   const { defaultInput, fixedInput } = options;
-
-  console.debug(`Running ${code} handler...`);
-
-  console.debug(`defaultInput: ${JSON.stringify(defaultInput)}`);
   const mergedInput = mergeInput(defaultInput, input, fixedInput);
-  console.debug(`fixedInput: ${JSON.stringify(fixedInput)}`);
-  console.debug(`mergedInput: ${JSON.stringify(mergedInput)}`);
+  logger.debug(`Running ${code} handler...`, { defaultInput, fixedInput, mergedInput });
 
   const entityManager = server.getEntityManager(options.singularCode);
   const result = handleEntityAction(entityManager, mergedInput);

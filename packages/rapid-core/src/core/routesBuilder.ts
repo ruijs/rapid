@@ -11,6 +11,7 @@ export async function buildRoutes(
   server: IRpdServer,
   applicationConfig: RpdApplicationConfig,
 ) {
+  const logger = server.getLogger();
   const router = new Router();
 
   let baseUrl = server.config.baseUrl;
@@ -55,10 +56,14 @@ export async function buildRoutes(
 
         // Normalize input value
 
-        console.debug(`${requestMethod} ${request.url.toString()}`);
-        console.debug(`input: ${JSON.stringify(input)}`);
+        logger.debug("Processing rapid request.", {
+          method: requestMethod,
+          url: request.url.toString(),
+          input
+        });
 
         let handlerContext: ActionHandlerContext = {
+          logger,
           routerContext,
           next,
           server,
