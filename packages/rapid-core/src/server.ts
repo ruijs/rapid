@@ -23,8 +23,9 @@ import { Next, RouteContext } from "./core/routeContext";
 import { RapidRequest } from "./core/request";
 import bootstrapApplicationConfig from "./bootstrapApplicationConfig";
 import EntityManager from "./dataAccess/entityManager";
-import { bind, cloneDeep, find, merge, omit } from "lodash";
+import { bind, cloneDeep, find, forEach, merge, omit } from "lodash";
 import { Logger } from "./facilities/log/LogFacility";
+import { FacilityFactory } from "./core/facility";
 
 export interface InitServerOptions {
   logger: Logger;
@@ -32,11 +33,13 @@ export interface InitServerOptions {
   databaseConfig: IDatabaseConfig;
   serverConfig: RapidServerConfig;
   applicationConfig?: RpdApplicationConfig;
+  facilityFactories?: FacilityFactory[];
   plugins?: RapidPlugin[];
 }
 
 export class RapidServer implements IRpdServer {
   #logger: Logger;
+  #facilityFactories: Map<string, FacilityFactory>;
   #pluginManager: PluginManager;
   #plugins: RapidPlugin[];
   #eventManager: EventManager<RpdServerEventTypes>;
@@ -54,6 +57,13 @@ export class RapidServer implements IRpdServer {
 
   constructor(options: InitServerOptions) {
     this.#logger = options.logger;
+
+    this.#facilityFactories = new Map();
+    if (options.facilityFactories) {
+      forEach(options.facilityFactories, (factory) => {
+        this.registerFacilityFactory(factory);
+      })
+    }
 
     this.#pluginManager = new PluginManager(this);
     this.#eventManager = new EventManager();
@@ -256,6 +266,23 @@ export class RapidServer implements IRpdServer {
     await pluginManager.onApplicationLoaded(this.#applicationConfig);
 
     this.#buildedRoutes = await buildRoutes(this, this.#applicationConfig);
+  }
+
+  registerFacilityFactory(factory: FacilityFactory) {
+    this.#facilityFactories.set(factory.name, factory);
+  }
+
+  async getFacility<TFacility=any>(name: string, options?: any, nullIfUnknownFacility?: boolean): Promise<TFacility> {
+    const factory = this.#facilityFactories.get(name);
+    if (!factory) {
+      if (nullIfUnknownFacility) {
+        return null;
+      } else {
+        throw new Error(`Failed to get facility. Unknown facility name: ${name}`);
+      }
+    }
+
+    return await factory.createFacility(this, options);
   }
 
   async queryDatabaseObject(sql: string, params?: unknown[] | Record<string,unknown>) : Promise<any[]> {

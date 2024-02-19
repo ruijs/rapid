@@ -3,12 +3,18 @@ import { IPluginActionHandler, ActionHandler, ActionHandlerContext } from "./act
 import { Next, RouteContext } from "./routeContext";
 import EntityManager from "~/dataAccess/entityManager";
 import { Logger } from "~/facilities/log/LogFacility";
+import { FacilityFactory } from "./facility";
 
 export interface IRpdServer {
   config: RapidServerConfig;
   databaseConfig: IDatabaseConfig;
   queryBuilder: IQueryBuilder;
   getLogger(): Logger;
+
+  registerFacilityFactory(factory: FacilityFactory);
+
+  getFacility<TFacility=any>(name: string, options?: any): Promise<TFacility>;
+
   queryDatabaseObject: (
     sql: string,
     params?: unknown[] | Record<string, unknown>,
