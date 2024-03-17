@@ -38,7 +38,7 @@ export class RapidRequest {
     const requestMethod = this.method;
     if (requestMethod === "POST" || requestMethod === "PUT" || requestMethod === "PATCH") {
       const req = this.#raw;
-      const contentType = this.#headers.get("Content-Type");
+      const contentType = this.#headers.get("Content-Type") || "application/json";
       if (contentType.includes("json")) {
         this.#body = {
           type: "json",
