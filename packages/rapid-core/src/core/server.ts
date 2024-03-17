@@ -43,8 +43,8 @@ export interface IRpdServer {
   ): this;
   emitEvent<K extends keyof RpdServerEventTypes>(
     eventName: K,
-    sender: RapidPlugin,
     payload: RpdServerEventTypes[K][1],
+    sender?: RapidPlugin,
   ): void;
   handleRequest(request: Request, next: Next): Promise<Response>;
   beforeRunRouteActions(handlerContext: ActionHandlerContext): Promise<void>;

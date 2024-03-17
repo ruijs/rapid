@@ -215,8 +215,8 @@ export class RapidServer implements IRpdServer {
 
   async emitEvent<K extends keyof RpdServerEventTypes>(
     eventName: K,
-    sender: RapidPlugin,
     payload: RpdServerEventTypes[K][1],
+    sender?: RapidPlugin,
   ) {
     this.#logger.debug(`Emitting '${eventName}' event.`, { eventName, payload });
     await this.#eventManager.emit<K>(eventName, sender, payload as any);

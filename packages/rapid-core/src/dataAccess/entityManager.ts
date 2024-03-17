@@ -553,7 +553,7 @@ async function updateEntityById(
   server: IRpdServer,
   dataAccessor: IRpdDataAccessor,
   options: UpdateEntityByIdOptions,
-  plugin: RapidPlugin
+  plugin?: RapidPlugin
 ) {
   const model = dataAccessor.getModel();
   const { id, entityToSave } = options;
@@ -685,7 +685,6 @@ async function updateEntityById(
   
   server.emitEvent(
     "entity.update",
-    plugin,
     {
       namespace: model.namespace,
       modelSingularCode: model.singularCode,
@@ -693,6 +692,7 @@ async function updateEntityById(
       after: updatedEntity,
       changes: changes,
     },
+    plugin,
   );
   return updatedEntity;
 }
@@ -722,24 +722,24 @@ export default class EntityManager<TEntity=any> {
     return await findById(this.#server, this.#dataAccessor, id, keepNonPropertyFields);
   }
 
-  async createEntity(options: CreateEntityOptions, plugin: RapidPlugin): Promise<TEntity> {
+  async createEntity(options: CreateEntityOptions, plugin?: RapidPlugin): Promise<TEntity> {
     const model = this.getModel();
     const newEntity = await createEntity(this.#server, this.#dataAccessor, options);
 
     this.#server.emitEvent(
       "entity.create",
-      plugin,
       {
         namespace: model.namespace,
         modelSingularCode: model.singularCode,
         after: newEntity,
       },
+      plugin,
     );
 
     return newEntity;
   }
 
-  async updateEntityById(options: UpdateEntityByIdOptions, plugin: RapidPlugin): Promise<TEntity> {
+  async updateEntityById(options: UpdateEntityByIdOptions, plugin?: RapidPlugin): Promise<TEntity> {
     return await updateEntityById(this.#server, this.#dataAccessor, options, plugin);
   }
 
@@ -747,7 +747,7 @@ export default class EntityManager<TEntity=any> {
     return await this.#dataAccessor.count(options);
   }
 
-  async deleteById(id: any, plugin: RapidPlugin): Promise<void> {
+  async deleteById(id: any, plugin?: RapidPlugin): Promise<void> {
     const model = this.getModel();
     const entity = await this.findById(id, true);
     if (!entity) {
@@ -757,16 +757,16 @@ export default class EntityManager<TEntity=any> {
     await this.#dataAccessor.deleteById(id);
     this.#server.emitEvent(
       "entity.delete",
-      plugin,
       {
         namespace: model.namespace,
         modelSingularCode: model.singularCode,
         before: entity,
       },
+      plugin,
     );
   }
 
-  async addRelations(options: AddEntityRelationsOptions, plugin: RapidPlugin): Promise<void> {
+  async addRelations(options: AddEntityRelationsOptions, plugin?: RapidPlugin): Promise<void> {
     const model = this.getModel();
     const {id, property, relations} = options;
     const entity = await this.findById(id);
@@ -800,7 +800,6 @@ export default class EntityManager<TEntity=any> {
 
     server.emitEvent(
       "entity.addRelations",
-      plugin,
       {
         namespace: model.namespace,
         modelSingularCode: model.singularCode,
@@ -808,10 +807,11 @@ export default class EntityManager<TEntity=any> {
         property,
         relations,
       },
+      plugin,
     );
   }
 
-  async removeRelations(options: RemoveEntityRelationsOptions, plugin: RapidPlugin): Promise<void> {
+  async removeRelations(options: RemoveEntityRelationsOptions, plugin?: RapidPlugin): Promise<void> {
     const model = this.getModel();
     const {id, property, relations} = options;
     const entity = await this.findById(id);
@@ -841,7 +841,6 @@ export default class EntityManager<TEntity=any> {
 
     server.emitEvent(
       "entity.removeRelations",
-      plugin,
       {
         namespace: model.namespace,
         modelSingularCode: model.singularCode,
@@ -849,6 +848,7 @@ export default class EntityManager<TEntity=any> {
         property,
         relations,
       },
+      plugin,
     );
   }
 }
