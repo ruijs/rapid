@@ -1,4 +1,4 @@
-import type { Rock, RockChildrenConfig, RockConfig, RockEvent } from "@ruiapp/move-style";
+import { handleComponentEvent, type Rock, type RockChildrenConfig, type RockConfig, type RockEvent } from "@ruiapp/move-style";
 import { renderRock, renderRockChildren } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./RapidEntityListMeta";
 import type { RapidEntityListRockConfig, RapidEntityListState } from "./rapid-entity-list-types";
@@ -187,6 +187,7 @@ export default {
             $action: "setVars",
             $exps: {
               [`vars.${props.$id}-selectedIds`]: "$event.args[0]",
+              [`vars.${props.$id}-selectedRecords`]: "$event.args[1]",
             }
           },
           {
@@ -225,21 +226,31 @@ export default {
         {
           $action: "script",
           script: async (event: RockEvent) => {
-            const scope = event.scope;
+            const { framework, page, scope } = event;
             let nextSelectedIds = [];
-            const recordId = event.args.record.id;
+            let nextSelectedRecords = [];
+            const { record } = event.args;
+            const recordId = record.id;
             if (selectionMode === "single") {
               nextSelectedIds.push(recordId);
+              nextSelectedRecords.push(record);
             } else if (selectionMode === "multiple") {
               const currentSelectedIds = scope.vars[`${props.$id}-selectedIds`] || [];
+              const currentSelectedRecords = scope.vars[`${props.$id}-selectedRecords`] || [];
               if (findIndex(currentSelectedIds, item => item === recordId) === -1) {
                 nextSelectedIds = [...currentSelectedIds, recordId];
+                nextSelectedRecords = [...currentSelectedRecords, record];
               } else {
-                nextSelectedIds = reject(currentSelectedIds, item => item === recordId);
+                nextSelectedRecords = reject(currentSelectedRecords, item => item.id === recordId);
               }
             }
             scope.setVars({
               [`${props.$id}-selectedIds`]: nextSelectedIds,
+              [`${props.$id}-selectedRecords`]: nextSelectedRecords,
+            });
+            handleComponentEvent("onSelectedIdsChange", framework, page as any, scope, props, props.onSelectedIdsChange, {
+              selectedIds: nextSelectedIds,
+              selectedRecords: nextSelectedRecords,
             });
           }
         },
