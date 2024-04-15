@@ -2,7 +2,7 @@ import type { Rock, RockChildrenConfig, RockConfig, RockEvent } from "@ruiapp/mo
 import { renderRock, renderRockChildren } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./RapidEntityListMeta";
 import type { RapidEntityListRockConfig, RapidEntityListState } from "./rapid-entity-list-types";
-import { filter, find, forEach, map, merge, set, uniq } from "lodash";
+import { filter, find, findIndex, forEach, map, reject, set, uniq } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import type { RapidToolbarRockConfig } from "../rapid-toolbar/rapid-toolbar-types";
@@ -178,9 +178,10 @@ export default {
     }
 
     let rowSelection = null;
-    if (props.selectionMode && props.selectionMode !== "none") {
+    const selectionMode = props.selectionMode || "multiple";
+    if (selectionMode !== "none") {
       rowSelection = {
-        type: props.selectionMode === "multiple" ? "checkbox" : "radio",
+        type: selectionMode === "multiple" ? "checkbox" : "radio",
         onChange: [
           {
             $action: "setVars",
@@ -206,7 +207,9 @@ export default {
       $exps: {
         dataSource: `$scope.stores.${dataSourceCode}.data?.list`,
         pagination: props.pageSize > 0 ? `{pageSize: ${props.pageSize}, current: $scope.vars["${`stores-${dataSourceCode}-pageNum`}"], total: $scope.stores.${dataSourceCode}.data?.total}` : "false",
-        // "rowSelection.selectedRowKeys": `$scope.vars['${props.$id}-selectedIds']`,
+        ...(selectionMode !== "none" ? {
+          "rowSelection.selectedRowKeys": `$scope.vars['${props.$id}-selectedIds']`
+        } : {}),
       },
       size: "small",
       rowKey: "id",
@@ -218,6 +221,29 @@ export default {
       listIdField: props.listIdField,
       listParentField: props.listParentField,
       treeChildrenField: props.treeChildrenField,
+      onRowClick: [
+        {
+          $action: "script",
+          script: async (event: RockEvent) => {
+            const scope = event.scope;
+            let nextSelectedIds = [];
+            const recordId = event.args.record.id;
+            if (selectionMode === "single") {
+              nextSelectedIds.push(recordId);
+            } else if (selectionMode === "multiple") {
+              const currentSelectedIds = scope.vars[`${props.$id}-selectedIds`] || [];
+              if (findIndex(currentSelectedIds, item => item === recordId) === -1) {
+                nextSelectedIds = [...currentSelectedIds, recordId];
+              } else {
+                nextSelectedIds = reject(currentSelectedIds, item => item === recordId);
+              }
+            }
+            scope.setVars({
+              [`${props.$id}-selectedIds`]: nextSelectedIds,
+            });
+          }
+        },
+      ],
       onChange: [
         {
           $action: "script",

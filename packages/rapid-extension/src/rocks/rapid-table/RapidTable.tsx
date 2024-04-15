@@ -1,4 +1,4 @@
-import { MoveStyleUtils, Rock  } from "@ruiapp/move-style";
+import { MoveStyleUtils, Rock, handleComponentEvent  } from "@ruiapp/move-style";
 import { toRenderRockSlot, convertToEventHandlers, convertToSlotProps } from "@ruiapp/react-renderer";
 import { Table, TableProps } from "antd";
 import { ColumnType } from "antd/lib/table/interface";
@@ -8,6 +8,7 @@ import { RapidTableRockConfig } from "./rapid-table-types";
 
 export default {
   Renderer(context, props: RapidTableRockConfig) {
+    const { framework, page, scope } = context;
     const tableColumns = map(props.columns, (column) => {
       return {
         ...MoveStyleUtils.omitSystemRockConfigFields(column),
@@ -50,7 +51,19 @@ export default {
       },
     };
 
-    return <Table {...antdProps}></Table>
+    const onRow: TableProps<any>["onRow"] = (record) => {
+      return {
+        onClick: (event) => {
+          if (props.onRowClick) {
+            handleComponentEvent("onRowClick", framework, page, scope, props, props.onRowClick, { record });
+          }
+        }
+      }
+    }
+
+    return <Table {...antdProps}
+      onRow={onRow}
+    ></Table>
   },
 
   ...RapidTableMeta
