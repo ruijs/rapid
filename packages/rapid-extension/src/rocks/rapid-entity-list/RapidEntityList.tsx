@@ -241,6 +241,7 @@ export default {
                 nextSelectedIds = [...currentSelectedIds, recordId];
                 nextSelectedRecords = [...currentSelectedRecords, record];
               } else {
+                nextSelectedIds = reject(currentSelectedIds, item => item === recordId);
                 nextSelectedRecords = reject(currentSelectedRecords, item => item.id === recordId);
               }
             }

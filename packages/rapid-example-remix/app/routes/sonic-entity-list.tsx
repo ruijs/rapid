@@ -83,6 +83,16 @@ const rapidPage: RapidPage = {
   permissionCheck: {any: []},
   view: [
     {
+      $type: "htmlElement",
+      htmlTag: "h2",
+      children: [
+        {
+          $type: "text",
+          text: "selectionMode: multiple",
+        },
+      ]
+    },
+    {
       $type: "sonicEntityList",
       entityCode: "OcRole",
       viewMode: "table",
