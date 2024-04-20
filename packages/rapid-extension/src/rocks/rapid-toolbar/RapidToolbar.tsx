@@ -8,10 +8,12 @@ export default {
   $type: "rapidToolbar",
 
   Renderer(context, props: RapidToolbarRockConfig) {
+    const { extraClassName } = props;
+    const className = extraClassName ? "rui-toolbar " + extraClassName : extraClassName;
     const rockConfig: RockConfig = {
       $id: props.$id,
       $type: "box",
-      className: "rui-toolbar",
+      className,
       children: [
         {
           $id: `${props.$id}-items`,

@@ -3,6 +3,7 @@ import type { RapidFormItemType, RapidSearchFormItemConfig } from "../rapid-form
 import { RapidActionBase, RapidActionButton, RapidActionButtonBase } from "../../types/rapid-action-types";
 
 export type RapidToolbarConfig = {
+  extraClassName?: "";
   items?: RockConfig[];
   extras?: RockConfig[];
 }
