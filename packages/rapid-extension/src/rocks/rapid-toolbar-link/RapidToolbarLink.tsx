@@ -15,6 +15,7 @@ export default {
       type: props.actionStyle,
       danger: props.danger,
       icon: props.icon ? { $type: "antdIcon", name: props.icon } : null,
+      size: props.size,
       href: props.url,
       children: {
         $type: "htmlElement",

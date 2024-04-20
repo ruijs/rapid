@@ -34,6 +34,7 @@ export type RapidActionButtonBase = RapidActionBase & {
   actionStyle?: "default" | "primary" | "dashed" | "text" | "link"
   danger?: boolean;
   ghost?: boolean;
+  size?: "small" | "middle" | "large";
 }
 
 export type RapidActionButton = RapidActionButtonBase & {
