@@ -17,12 +17,14 @@ export default {
       if (file) {
         if (file.status === "done") {
           if (props.onUploaded) {
-            const eventArgs = {
-              name: file.name,
-              key: file.response.fileKey,
-              size: file.size,
-              type: file.type,
-            };
+            const eventArgs = [
+              {
+                name: file.name,
+                key: file.response.fileKey,
+                size: file.size,
+                type: file.type,
+              }
+            ];
 
             handleComponentEvent("onUploaded", context.framework, context.page, context.scope, props, props.onUploaded, eventArgs);
           }

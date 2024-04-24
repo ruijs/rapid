@@ -15,9 +15,11 @@ export default {
         props._state.scope,
         props,
         props.main.onSelectedIdsChange,
-        {
-          selectedIds: message.payload.selectedIds
-        }
+        [
+          {
+            selectedIds: message.payload.selectedIds
+          },
+        ],
       )
     }
   },
@@ -28,8 +30,8 @@ export default {
         $action: "setVars",
         scopeId: `${props.$id}-scope`,
         $exps: {
-          "vars.activeId": "_.first($event.args.selectedIds)",
-          "vars.activeRecord": "_.first($event.args.selectedRecords)",
+          "vars.activeId": "_.first($event.args[0].selectedIds)",
+          "vars.activeRecord": "_.first($event.args[0].selectedRecords)",
         }
       },
       {
@@ -107,7 +109,7 @@ export default {
         //     {
         //       $action: "setVars",
         //       $exps: {
-        //         "vars.activeId": "$event.args.activeId",
+        //         "vars.activeId": "$event.args[0].activeId",
         //       }
         //     },
         //   ]

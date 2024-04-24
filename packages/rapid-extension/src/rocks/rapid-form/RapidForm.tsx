@@ -31,10 +31,10 @@ export default {
       state.form.setFieldsValue(message.payload);
     } else if (message.name === "resetFields") {
       state.form.resetFields();
-      handleComponentEvent("onFormRefresh", message.framework, message.page as any, state.scope, props, props.onFormRefresh, {form: state.form});
+      handleComponentEvent("onFormRefresh", message.framework, message.page as any, state.scope, props, props.onFormRefresh, [{form: state.form}]);
     } else if (message.name === "refreshView") {
       state.form.resetFields();
-      handleComponentEvent("onFormRefresh", message.framework, message.page as any, state.scope, props, props.onFormRefresh, {form: state.form});
+      handleComponentEvent("onFormRefresh", message.framework, message.page as any, state.scope, props, props.onFormRefresh, [{form: state.form}]);
     }
   },
 

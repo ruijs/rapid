@@ -55,7 +55,7 @@ export default {
       return {
         onClick: (event) => {
           if (props.onRowClick) {
-            handleComponentEvent("onRowClick", framework, page, scope, props, props.onRowClick, { record });
+            handleComponentEvent("onRowClick", framework, page, scope, props, props.onRowClick, [{ record }]);
           }
         }
       }

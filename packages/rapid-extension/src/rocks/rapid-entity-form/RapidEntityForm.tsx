@@ -335,7 +335,7 @@ export default {
         $action: "script",
         script: async (event: RockEvent) => {
           if (formConfig.onSaveSuccess) {
-            await handleComponentEvent("onSaveSuccess", event.framework, event.page as any, event.scope, event.sender, formConfig.onSaveSuccess, null);
+            await handleComponentEvent("onSaveSuccess", event.framework, event.page as any, event.scope, event.sender, formConfig.onSaveSuccess, []);
           }
         }
       }

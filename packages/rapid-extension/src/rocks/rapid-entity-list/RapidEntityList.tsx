@@ -195,7 +195,7 @@ export default {
             eventName: "onSelectedIdsChange",
             handlers: props.onSelectedIdsChange,
             $exps: {
-              args: "{selectedIds: $event.args[0], selectedRecords: $event.args[1]}",
+              args: "[{selectedIds: $event.args[0], selectedRecords: $event.args[1]}]",
             }
           }
         ]
@@ -229,7 +229,7 @@ export default {
             const { framework, page, scope } = event;
             let nextSelectedIds = [];
             let nextSelectedRecords = [];
-            const { record } = event.args;
+            const { record } = event.args[0];
             const recordId = record.id;
             if (selectionMode === "single") {
               nextSelectedIds.push(recordId);
@@ -249,10 +249,12 @@ export default {
               [`${props.$id}-selectedIds`]: nextSelectedIds,
               [`${props.$id}-selectedRecords`]: nextSelectedRecords,
             });
-            handleComponentEvent("onSelectedIdsChange", framework, page as any, scope, props, props.onSelectedIdsChange, {
-              selectedIds: nextSelectedIds,
-              selectedRecords: nextSelectedRecords,
-            });
+            handleComponentEvent("onSelectedIdsChange", framework, page as any, scope, props, props.onSelectedIdsChange, [
+              {
+                selectedIds: nextSelectedIds,
+                selectedRecords: nextSelectedRecords,
+              }
+            ]);
           }
         },
       ],

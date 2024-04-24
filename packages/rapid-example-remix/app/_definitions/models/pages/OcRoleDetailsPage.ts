@@ -116,7 +116,7 @@ const page: RapidPage = {
                       },
                       $exps: {
                         "data.id": "$rui.parseQuery().id",
-                        "data.relations": "_.map($event.args.selectedIds, function(id) {return {id: id}})",
+                        "data.relations": "_.map($event.args[0].selectedIds, function(id) {return {id: id}})",
                       },
                     },
                     {

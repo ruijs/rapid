@@ -30,7 +30,7 @@ export default {
               Modal.confirm({
                 title: confirmText,
                 onOk: async () => {
-                  handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, null);
+                  handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, []);
                 },
               });
             }

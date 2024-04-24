@@ -79,8 +79,8 @@ export default {
               $action: "setVars",
               scopeId: `${props.$id}-scope`,
               $exps: {
-                "vars.selectedIds": "$event.args.selectedIds",
-                "vars.selectedRecords": "$event.args.selectedRecords",
+                "vars.selectedIds": "$event.args[0].selectedIds",
+                "vars.selectedRecords": "$event.args[0].selectedRecords",
               }
             }
           ]
@@ -92,7 +92,7 @@ export default {
           eventName: "onSelected",
           handlers: props.onSelected,
           $exps: {
-            args: "{selectedIds: $scope.vars.selectedIds, selectedRecords: $scope.vars.selectedRecords}",
+            args: "[{selectedIds: $scope.vars.selectedIds, selectedRecords: $scope.vars.selectedRecords}]",
           }
         },
         {
