@@ -18,6 +18,12 @@ export * from "./utils/format-utility";
 
 export { default as RapidExtensionSetting } from "./RapidExtensionSetting";
 
+export { EntityStoreConfig, EntityStore } from "./stores/entity-store";
+
+export * from "./rock-generators/generateRockConfigOfError";
+export * from "./rock-generators/generateRuiPageConfigOfError";
+export * from "./rock-generators/generateAntdIcon";
+
 export * from "./rapid-types";
 export * from "./rocks/rapid-text-renderer/rapid-text-renderer-types";
 export * from "./rocks/rapid-json-renderer/rapid-json-renderer-types";
