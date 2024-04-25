@@ -222,7 +222,7 @@ export default {
       listIdField: props.listIdField,
       listParentField: props.listParentField,
       treeChildrenField: props.treeChildrenField,
-      onRowClick: [
+      onRowClick: props.selectOnClickRow ? [
         {
           $action: "script",
           script: async (event: RockEvent) => {
@@ -257,7 +257,7 @@ export default {
             ]);
           }
         },
-      ],
+      ] : null,
       onChange: [
         {
           $action: "script",

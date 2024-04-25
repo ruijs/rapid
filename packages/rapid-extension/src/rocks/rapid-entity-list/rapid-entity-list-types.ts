@@ -87,6 +87,11 @@ export interface RapidEntityListConfig {
    */
   tableProps?: Record<string, any>;
 
+  /**
+   * 是否在点击行时选中
+   */
+  selectOnClickRow?: boolean;
+
   onSelectedIdsChange?: RockEventHandlerConfig;
 }
 
