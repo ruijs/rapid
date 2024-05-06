@@ -602,7 +602,8 @@ async function updateEntityById(
   if (Object.keys(row).length) {
     updatedRow = await dataAccessor.updateById(id, row);
   }
-  const updatedEntity = Object.assign({}, entity, updatedRow);
+  let updatedEntity = mapDbRowToEntity(model, updatedRow, true);
+  updatedEntity = Object.assign({}, entity, updatedEntity);
 
   // save many-relation properties
   for (const property of manyRelationPropertiesToUpdate) {

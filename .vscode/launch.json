@@ -8,9 +8,9 @@
       "request": "launch",
       "name": "Launch Program",
       "type": "node",
-      "cwd": "${workspaceFolder}/packages/rapid-example-express",
+      "cwd": "${workspaceFolder}/packages/rapid-example-remix",
       "program": "index.ts",
-      "runtimeExecutable": "node.exe",
+      "runtimeExecutable": "node",
       "runtimeArgs": [
         "./node_modules/ts-node/dist/bin-esm.js",
         "--project",
