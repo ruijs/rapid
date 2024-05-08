@@ -152,7 +152,7 @@ export async function startServer() {
           mode: process.env.NODE_ENV,
         })
   );
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT || 8000;
 
   app.listen(port, () => {
     logger.info("Express server listening on port %d", port);

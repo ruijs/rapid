@@ -378,6 +378,11 @@ export type EntityFilterOptions =
   | FindEntityUnaryFilterOptions
   | FindEntityExistenceFilterOptions;
 
+export type  EntityNonRelationPropertyFilterOptions =
+  | FindEntityRelationalFilterOptions
+  | FindEntitySetFilterOptions
+  | FindEntityUnaryFilterOptions;
+
 export interface FindEntityOptions {
   filters?: EntityFilterOptions[];
   orderBy?: FindEntityOrderByOptions[];

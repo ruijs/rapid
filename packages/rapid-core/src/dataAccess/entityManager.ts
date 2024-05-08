@@ -5,6 +5,7 @@ import {
   CreateEntityOptions,
   EntityFilterOperators,
   EntityFilterOptions,
+  EntityNonRelationPropertyFilterOptions,
   FindEntityOptions,
   FindEntityOrderByOptions,
   IRpdDataAccessor,
@@ -335,6 +336,13 @@ async function replaceFiltersWithFiltersOperator(
         });
       }
     } else {
+      const property: RpdDataModelProperty = find(
+        model.properties,
+        (property: RpdDataModelProperty) => property.code === (filter as EntityNonRelationPropertyFilterOptions).field,
+      );
+      if (property) {
+        (filter as EntityNonRelationPropertyFilterOptions).field = property.columnName || property.code;
+      }
       replacedFilters.push(filter);
     }
   }
