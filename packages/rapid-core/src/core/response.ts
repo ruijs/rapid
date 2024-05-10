@@ -50,6 +50,7 @@ export class RapidResponse {
     headers?: HeadersInit,
   ) {
     const body = JSON.stringify(obj);
+    this.headers.set("Content-Type", "application/json");
     const responseHeaders = new Headers(this.headers);
     if (headers) {
       mergeHeaders(responseHeaders, headers);
