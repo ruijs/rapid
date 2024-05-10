@@ -17,6 +17,7 @@ export * as bootstrapApplicationConfig from "./bootstrapApplicationConfig";
 export { default as MetaManagePlugin } from "./plugins/metaManage/MetaManagePlugin";
 export { default as DataManagePlugin } from "./plugins/dataManage/DataManagePlugin";
 export { default as RouteManagePlugin } from "./plugins/routeManage/RouteManagePlugin";
+export { default as SequencePlugin } from "./plugins/sequence/SequencePlugin";
 export { default as WebhooksPlugin } from "./plugins/webhooks/WebhooksPlugin";
 export { default as AuthPlugin } from "./plugins/auth/AuthPlugin";
 export { default as FileManagePlugin } from "./plugins/fileManage/FileManagePlugin";
