@@ -7,5 +7,5 @@ if (global.process) {
 }
 
 export default {
-  apiBase: env.BACKEND_URL ? `${env.BACKEND_URL}/api` : "http://localhost:3000/api",
+  apiBase: env.BACKEND_URL ? `${env.BACKEND_URL}/api` : "http://localhost:8000/api",
 }

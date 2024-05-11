@@ -1,4 +1,4 @@
-import { RpdApplicationConfig } from "~/types";
+import { CreateEntityOptions, RpdApplicationConfig, RpdDataModel } from "~/types";
 import { IRpdServer, RapidPlugin } from "./server";
 import { RouteContext } from "./routeContext";
 import { ActionHandlerContext } from "./actionHandler";
@@ -156,6 +156,18 @@ class PluginManager {
     for (const plugin of this.#plugins) {
       if (plugin.beforeRunRouteActions) {
         await plugin.beforeRunRouteActions(this.#server, handlerContext);
+      }
+    }
+  }
+
+  /** 在创建实体前调用。 */
+  async beforeCreateEntity(
+    model: RpdDataModel,
+    options: CreateEntityOptions,
+  ) {
+    for (const plugin of this.#plugins) {
+      if (plugin.beforeCreateEntity) {
+        await plugin.beforeCreateEntity(this.#server, model, options);
       }
     }
   }

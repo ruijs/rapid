@@ -189,3 +189,58 @@ export interface OcUser {
  * 用户
  */
 export type SaveOcUserInput = Omit<OcUser, 'id' | 'createdAt' | 'createdBy' | 'updatedAt' | 'updatedBy'>;
+
+/**
+ * 任务
+ */
+export interface PmTask {
+  /**
+   * id
+   */
+  id: number;
+  /**
+   * code
+   */
+  code: string;
+  /**
+   * 标题
+   */
+  title?: string;
+  /**
+   * 描述
+   */
+  description?: string;
+  /**
+   * 是否完成
+   */
+  done?: boolean;
+  /**
+   * 创建时间
+   */
+  createdAt?: string;
+  /**
+   * 创建人
+   */
+  createdBy?: Partial<OcUser>;
+  /**
+   * 更新时间
+   */
+  updatedAt?: string;
+  /**
+   * 更新人
+   */
+  updatedBy?: Partial<OcUser>;
+  /**
+   * 删除时间
+   */
+  deletedAt?: string;
+  /**
+   * 删除人
+   */
+  detetedBy?: Partial<OcUser>;
+}
+
+/**
+ * 任务
+ */
+export type SavePmTaskInput = Omit<PmTask, 'id' | 'createdAt' | 'createdBy' | 'updatedAt' | 'updatedBy'>;

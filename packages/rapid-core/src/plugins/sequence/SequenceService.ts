@@ -2,6 +2,7 @@ import { IRpdServer } from "~/core/server";
 import { SequenceSegmentConfig } from "~/types";
 import segmentResolvers from "./segments";
 import { find } from "lodash";
+import { SequenceRuleConfig } from "./sequence-types";
 
 export interface GenerateSequenceNumbersInput {
   ruleCode: string;
@@ -45,7 +46,7 @@ export async function generateSn(server: IRpdServer, input: GenerateSequenceNumb
     throw new Error(`Failed to generate sequence number. Sequence with code '${sequenceRule.code}' not found.`);
   }
 
-  const sequenceConfig = sequenceRule.config;
+  const sequenceConfig: SequenceRuleConfig = sequenceRule.config;
   if (!sequenceConfig || !sequenceConfig.segments) {
     throw new Error("Failed to generate sequence number. Sequence not configured.");
   }
@@ -54,9 +55,9 @@ export async function generateSn(server: IRpdServer, input: GenerateSequenceNumb
     let sequenceNumber: string = "";
 
     for (const segmentConfig of sequenceConfig.segments) {
-      const segmentResolver = find(segmentResolvers, (item) => item.segmentType === segmentConfig.type);
+      const segmentResolver: SegmentResolver = find(segmentResolvers, (item) => item.segmentType === segmentConfig.type);
       if (!segmentResolver) {
-        // unkown segment type
+        // TODO: deal with unkown segment type
         continue;
       }
 

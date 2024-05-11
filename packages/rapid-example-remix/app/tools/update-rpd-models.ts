@@ -7,7 +7,7 @@ const env = process.env;
 
 const updateOptions: RapidModelsUpdateOptions = {
   appDataDirLocation: path.join(process.cwd(), 'app', '.benzene-data'),
-  rapidApiUrl: env.RAPID_API_URL || 'http://127.0.0.1:3000/api',
+  rapidApiUrl: env.RAPID_API_URL || 'http://127.0.0.1:8000/api',
   entities: EntityModels,
   dataDictionaries: DataDictionaryModels,
 };

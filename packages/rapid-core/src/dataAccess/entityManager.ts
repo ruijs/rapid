@@ -733,6 +733,9 @@ export default class EntityManager<TEntity=any> {
 
   async createEntity(options: CreateEntityOptions, plugin?: RapidPlugin): Promise<TEntity> {
     const model = this.getModel();
+
+    await this.#server.beforeCreateEntity(model, options);
+
     const newEntity = await createEntity(this.#server, this.#dataAccessor, options);
 
     this.#server.emitEvent(

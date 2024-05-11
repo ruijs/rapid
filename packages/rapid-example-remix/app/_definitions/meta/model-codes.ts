@@ -2,6 +2,7 @@ export const entitySingularCodes = [
   'oc_department',
   'oc_role',
   'oc_user',
+  'pm_task',
 ] as const;
 export type TEntitySingularCodes = typeof entitySingularCodes[number];
 
@@ -44,6 +45,19 @@ const entityFieldCodes = {
     'email',
     'department',
     'roles',
+    'createdAt',
+    'createdBy',
+    'updatedAt',
+    'updatedBy',
+    'deletedAt',
+    'detetedBy',
+  ],
+  'PmTask': [
+    'id',
+    'code',
+    'title',
+    'description',
+    'done',
     'createdAt',
     'createdBy',
     'updatedAt',
