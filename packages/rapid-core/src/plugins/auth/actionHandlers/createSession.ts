@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import { setCookie } from "~/deno-std/http/cookie";
 import { createJwt } from "~/utilities/jwtUtility";
 import { ActionHandlerContext } from "~/core/actionHandler";
@@ -34,7 +35,12 @@ export async function handler(
   });
 
   if (!user) {
-    throw new Error("Wrong account or password.");
+    throw new Error("用户名或密码错误。");
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw new Error("用户名或密码错误。");
   }
 
   const secretKey = Buffer.from(server.config.jwtKey, "base64");
