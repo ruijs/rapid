@@ -312,10 +312,19 @@ export class RapidServer implements IRpdServer {
   async handleRequest(request: Request, next: Next) {
     const rapidRequest = new RapidRequest(this, request);
     await rapidRequest.parseBody();
-    const routeContext = new RouteContext(this, rapidRequest);
-    await this.#pluginManager.onPrepareRouteContext(routeContext);
+    const routeContext: RouteContext = new RouteContext(this, rapidRequest);
 
-    await this.#buildedRoutes(routeContext, next);
+    try {
+      await this.#pluginManager.onPrepareRouteContext(routeContext);
+      await this.#buildedRoutes(routeContext, next);
+    } catch (ex) {
+      this.#logger.error('handle request error:', ex)
+      routeContext.response.json({
+        error: {
+          message: ex.message || ex,
+        },
+      }, 500);
+    }
     return routeContext.response.getResponse();
   }
 
