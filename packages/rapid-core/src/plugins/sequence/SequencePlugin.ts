@@ -13,8 +13,7 @@ import { IRpdServer, RapidPlugin, RpdConfigurationItemOptions, RpdServerPluginCo
 import pluginActionHandlers from "./actionHandlers";
 import pluginModels from "./models";
 import pluginRoutes from "./routes";
-import { RouteContext } from "~/core/routeContext";
-import { PropertySequenceConfig } from "./sequence-types";
+import { PropertySequenceConfig } from "./SequencePluginTypes";
 import { isNull, isUndefined } from "lodash";
 import { generateSn } from "./SequenceService";
 
@@ -94,7 +93,6 @@ class SequencePlugin implements RapidPlugin {
   }
 
   async beforeCreateEntity(server: IRpdServer, model: RpdDataModel, options: CreateEntityOptions) {
-    debugger;
     const entity = options.entity;
     for (const property of model.properties) {
       const sequenceConfig: PropertySequenceConfig = property.config?.sequence;
