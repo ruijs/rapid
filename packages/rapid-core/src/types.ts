@@ -525,8 +525,8 @@ export type SequenceParameterSegmentConfig = {
 
 export type SequenceAutoIncrementSegmentConfig = {
   type: "autoIncrement",
-  scope: string;
-  period: "forever" | "day" | "month" | "year";
+  scope?: string;
+  period?: "forever" | "day" | "month" | "year";
   padding?: string;
   length?: number;
 }
