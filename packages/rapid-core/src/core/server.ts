@@ -1,4 +1,4 @@
-import { CreateEntityOptions, GetDataAccessorOptions, GetModelOptions, IDatabaseConfig, IQueryBuilder, IRpdDataAccessor, RapidServerConfig, RpdApplicationConfig, RpdDataModel, RpdDataModelProperty, RpdServerEventTypes } from "~/types";
+import { CreateEntityOptions, GetDataAccessorOptions, GetModelOptions, IDatabaseConfig, IQueryBuilder, IRpdDataAccessor, RapidServerConfig, RpdApplicationConfig, RpdDataModel, RpdDataModelProperty, RpdServerEventTypes, UpdateEntityByIdOptions } from "~/types";
 import { IPluginActionHandler, ActionHandler, ActionHandlerContext } from "./actionHandler";
 import { Next, RouteContext } from "./routeContext";
 import EntityManager from "~/dataAccess/entityManager";
@@ -49,6 +49,7 @@ export interface IRpdServer {
   handleRequest(request: Request, next: Next): Promise<Response>;
   beforeRunRouteActions(handlerContext: ActionHandlerContext): Promise<void>;
   beforeCreateEntity(model: RpdDataModel, options: CreateEntityOptions): Promise<void>;
+  beforeUpdateEntity(model: RpdDataModel, options: UpdateEntityByIdOptions): Promise<void>;
 }
 
 
@@ -142,4 +143,6 @@ export interface RapidPlugin {
   beforeRunRouteActions?: (server: IRpdServer, handlerContext: ActionHandlerContext) => Promise<any>;
   /** 在创建实体前调用。 */
   beforeCreateEntity?: (server: IRpdServer, model: RpdDataModel, options: CreateEntityOptions) => Promise<any>;
+  /** 在更新实体前调用。 */
+  beforeUpdateEntity?: (server: IRpdServer, model: RpdDataModel, options: UpdateEntityByIdOptions) => Promise<any>;
 }

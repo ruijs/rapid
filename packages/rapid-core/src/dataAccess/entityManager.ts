@@ -574,6 +574,8 @@ async function updateEntityById(
     throw new Error(`${model.namespace}.${model.singularCode}  with id "${id}" was not found.`);
   }
 
+  await server.beforeUpdateEntity(model, options);
+
   const changes = getEntityPartChanges(entity, entityToSave);
   if (!changes) {
     return entity;

@@ -12,6 +12,7 @@ import {
   RapidServerConfig,
   RpdDataModelProperty,
   CreateEntityOptions,
+  UpdateEntityByIdOptions,
 } from "./types";
 
 import QueryBuilder from "./queryBuilder/queryBuilder";
@@ -334,5 +335,9 @@ export class RapidServer implements IRpdServer {
 
   async beforeCreateEntity(model: RpdDataModel, options: CreateEntityOptions) {
     await this.#pluginManager.beforeCreateEntity(model, options);
+  }
+  
+  async beforeUpdateEntity(model: RpdDataModel, options: UpdateEntityByIdOptions) {
+    await this.#pluginManager.beforeUpdateEntity(model, options);
   }
 }
