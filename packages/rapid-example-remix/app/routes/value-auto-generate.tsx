@@ -67,7 +67,7 @@ const formConfig: Partial<RapidEntityFormConfig> = {
     },
     {
       type: 'auto',
-      code: 'done',
+      code: 'state',
     },
   ],
 }
@@ -134,11 +134,33 @@ const rapidPage: RapidPage = {
         },
         {
           type: 'auto',
-          code: 'done',
+          code: 'state',
           width: '100px',
         },
       ],
       actions: [
+        {
+          $type: "rapidTableAction",
+          code: "finish",
+          actionText: "完成任务",
+          $exps: {
+            // _hidden: "$slot.record.state !== 'done'",
+          },
+          onAction: [
+            {
+              $action: "sendHttpRequest",
+              method: "PATCH",
+              data: { $operation: { type: "finish" } },
+              $exps: {
+                url: `"/api/app/pm_tasks/" + $event.sender['data-record-id']`,
+              },
+            },
+            {
+              $action: "loadStoreData",
+              storeName: "list",
+            },
+          ],
+        },
         {
           $type: "sonicRecordActionEditEntity",
           code: 'edit',

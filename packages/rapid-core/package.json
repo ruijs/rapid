@@ -29,7 +29,8 @@
     "koa-tree-router": "^0.12.1",
     "lodash": "^4.17.21",
     "qs": "^6.11.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "xstate": "^5.13.0"
   },
   "peerDependencies": {
     "winston": "^3.11.0"

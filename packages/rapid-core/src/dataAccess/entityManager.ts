@@ -574,12 +574,14 @@ async function updateEntityById(
     throw new Error(`${model.namespace}.${model.singularCode}  with id "${id}" was not found.`);
   }
 
-  await server.beforeUpdateEntity(model, options);
-
-  const changes = getEntityPartChanges(entity, entityToSave);
-  if (!changes) {
+  let changes = getEntityPartChanges(entity, entityToSave);
+  if (!changes && !options.operation) {
     return entity;
   }
+
+  options.entityToSave = changes || {};
+  await server.beforeUpdateEntity(model, options, entity);
+  changes = options.entityToSave;
 
   const oneRelationPropertiesToUpdate: RpdDataModelProperty[] = [];
   const manyRelationPropertiesToUpdate: RpdDataModelProperty[] = [];
@@ -693,7 +695,6 @@ async function updateEntityById(
     updatedEntity[property.code] = relatedEntities;
   }
 
-  
   server.emitEvent(
     "entity.update",
     {

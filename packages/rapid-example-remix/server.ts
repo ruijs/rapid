@@ -18,6 +18,7 @@ import {
   AuthPlugin,
   FileManagePlugin,
   ServerOperationPlugin,
+  StateMachinePlugin,
   EntityWatchPlugin,
 } from '@ruiapp/rapid-core';
 import { createRapidRequestHandler } from '@ruiapp/rapid-express';
@@ -126,6 +127,7 @@ export async function startServer() {
       new ServerOperationPlugin({
         operations: serverOperations,
       }),
+      new StateMachinePlugin(),
       new EntityWatchPlugin({
         watchers: entityWatchers,
       }),

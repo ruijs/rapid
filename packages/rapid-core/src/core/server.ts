@@ -49,7 +49,7 @@ export interface IRpdServer {
   handleRequest(request: Request, next: Next): Promise<Response>;
   beforeRunRouteActions(handlerContext: ActionHandlerContext): Promise<void>;
   beforeCreateEntity(model: RpdDataModel, options: CreateEntityOptions): Promise<void>;
-  beforeUpdateEntity(model: RpdDataModel, options: UpdateEntityByIdOptions): Promise<void>;
+  beforeUpdateEntity(model: RpdDataModel, options: UpdateEntityByIdOptions, currentEntity: any): Promise<void>;
 }
 
 
@@ -144,5 +144,5 @@ export interface RapidPlugin {
   /** 在创建实体前调用。 */
   beforeCreateEntity?: (server: IRpdServer, model: RpdDataModel, options: CreateEntityOptions) => Promise<any>;
   /** 在更新实体前调用。 */
-  beforeUpdateEntity?: (server: IRpdServer, model: RpdDataModel, options: UpdateEntityByIdOptions) => Promise<any>;
+  beforeUpdateEntity?: (server: IRpdServer, model: RpdDataModel, options: UpdateEntityByIdOptions, currentEntity: any) => Promise<any>;
 }

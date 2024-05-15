@@ -18,6 +18,17 @@ export type PublishState =
   ;
 
 /**
+ * 任务状态
+ */
+export type TaskState =
+  | 'pending'
+  | 'processing'
+  | 'done'
+  | 'closed'
+  | 'reopened'
+  ;
+
+/**
  * 未删除/已删除状态
  */
 export type UndeletedDeletedState =

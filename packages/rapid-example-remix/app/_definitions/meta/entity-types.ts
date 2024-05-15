@@ -211,9 +211,9 @@ export interface PmTask {
    */
   description?: string;
   /**
-   * 是否完成
+   * 状态
    */
-  done?: boolean;
+  state?: string;
   /**
    * 创建时间
    */

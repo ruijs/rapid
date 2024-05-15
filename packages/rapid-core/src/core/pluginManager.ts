@@ -176,10 +176,11 @@ class PluginManager {
   async beforeUpdateEntity(
     model: RpdDataModel,
     options: UpdateEntityByIdOptions,
+    currentEntity: any,
   ) {
     for (const plugin of this.#plugins) {
       if (plugin.beforeUpdateEntity) {
-        await plugin.beforeUpdateEntity(this.#server, model, options);
+        await plugin.beforeUpdateEntity(this.#server, model, options, currentEntity);
       }
     }
   }

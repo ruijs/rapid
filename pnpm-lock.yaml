@@ -38,6 +38,9 @@ importers:
       winston:
         specifier: ^3.11.0
         version: 3.11.0
+      xstate:
+        specifier: ^5.13.0
+        version: 5.13.0
     devDependencies:
       '@types/jsonwebtoken':
         specifier: ^9.0.5
@@ -13706,6 +13709,10 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /xstate@5.13.0:
+    resolution: {integrity: sha512-Z0om784N5u8sAzUvQJBa32jiTCIGGF/2ZsmKkerQEqeeUktAeOMK20FIHFUMywC4GcAkNksSvaeX7lwoRNXPEQ==}
+    dev: false
 
   /xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}

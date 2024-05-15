@@ -24,9 +24,44 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       type: 'text',
     },
     {
-      code: 'done',
-      name: '是否完成',
-      type: 'boolean',
+      code: 'state',
+      name: '状态',
+      type: 'option',
+      dataDictionary: 'TaskState',
+      defaultValue: "'pending'",
+      config: {
+        stateMachine: {
+          enabled: true,
+          config: {
+            states: {
+              done: {
+                on: {
+                  close: "closed",
+                  reopen: "reopened"
+                }
+              },
+              closed: {},
+              pending: {
+                on: {
+                  start: "processing"
+                }
+              },
+              reopened: {
+                on: {
+                  start: "processing"
+                }
+              },
+              processing: {
+                on: {
+                  pause: "pending",
+                  finish: "done"
+                }
+              }
+            },
+            initial: "pending"
+          }
+        }
+      }
     },
   ],
 };

@@ -57,7 +57,7 @@ const entityFieldCodes = {
     'code',
     'title',
     'description',
-    'done',
+    'state',
     'createdAt',
     'createdBy',
     'updatedAt',

@@ -337,7 +337,7 @@ export class RapidServer implements IRpdServer {
     await this.#pluginManager.beforeCreateEntity(model, options);
   }
   
-  async beforeUpdateEntity(model: RpdDataModel, options: UpdateEntityByIdOptions) {
-    await this.#pluginManager.beforeUpdateEntity(model, options);
+  async beforeUpdateEntity(model: RpdDataModel, options: UpdateEntityByIdOptions, currentEntity: any) {
+    await this.#pluginManager.beforeUpdateEntity(model, options, currentEntity);
   }
 }
