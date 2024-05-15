@@ -14,8 +14,9 @@ import pluginActionHandlers from "./actionHandlers";
 import pluginModels from "./models";
 import pluginRoutes from "./routes";
 import { PropertySequenceConfig } from "./SequencePluginTypes";
-import { isNull, isUndefined } from "lodash";
+import { isEqual } from "lodash";
 import { generateSn } from "./SequenceService";
+import { isNullOrUndefined } from "~/utilities/typeUtility";
 
 
 class SequencePlugin implements RapidPlugin {
@@ -57,10 +58,10 @@ class SequencePlugin implements RapidPlugin {
     const models = server.getApplicationConfig().models;
     for (const model of models) {
       for (const property of model.properties) {
-        const sequenceConfig: PropertySequenceConfig = property.config?.sequence;
-        if (sequenceConfig) {
+        const propertySequenceConfig: PropertySequenceConfig = property.config?.sequence;
+        if (propertySequenceConfig) {
           const ruleCode = getSequenceRuleCode(model, property);
-          const ruleConfig = sequenceConfig.ruleConfig;
+          const ruleConfig = propertySequenceConfig.config;
 
           const sequenceRuleDataAccessor = server.getDataAccessor({
             singularCode: "sequence_rule",
@@ -76,7 +77,7 @@ class SequencePlugin implements RapidPlugin {
           });
 
           if (sequenceRule) {
-            if (JSON.stringify(sequenceRule.config) !== JSON.stringify(ruleConfig)) {
+            if (isEqual(sequenceRule.config, ruleConfig)) {
               await sequenceRuleDataAccessor.updateById(sequenceRule.id, {
                 config: ruleConfig,
               });
@@ -98,16 +99,16 @@ class SequencePlugin implements RapidPlugin {
       const sequenceConfig: PropertySequenceConfig = property.config?.sequence;
       const propertyValue = entity[property.code];
       if (sequenceConfig &&
-        sequenceConfig.autoGenerate &&
-        (isUndefined(propertyValue) || isNull(propertyValue))
+        sequenceConfig.enabled &&
+        isNullOrUndefined(propertyValue)
       ) {
         const ruleCode = getSequenceRuleCode(model, property);
-        const sns = await generateSn(server, {
+        const numbers = await generateSn(server, {
           ruleCode,
           amount: 1,
           parameters: entity,
         });
-        entity[property.code] = sns[0];
+        entity[property.code] = numbers[0];
       }
     }
   }

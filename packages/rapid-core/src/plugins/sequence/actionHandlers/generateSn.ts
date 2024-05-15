@@ -18,7 +18,6 @@ export async function handler(
   const { response } = routerContext;
   
   const input: GenerateSequenceNumbersInput = ctx.input;
-  const { parameters, amount } = input;
 
   if (options?.ruleCode) {
     input.ruleCode = options.ruleCode;
