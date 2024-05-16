@@ -1,8 +1,7 @@
 import { IRpdServer } from "~/core/server";
-import { SequenceSegmentConfig } from "~/types";
 import segmentResolvers from "./segments";
 import { find } from "lodash";
-import { SequenceRuleConfig } from "./SequencePluginTypes";
+import { SequenceRuleConfig, SequenceSegmentConfig } from "./SequencePluginTypes";
 
 export interface GenerateSequenceNumbersInput {
   ruleCode: string;

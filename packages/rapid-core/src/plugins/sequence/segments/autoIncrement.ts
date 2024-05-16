@@ -1,9 +1,9 @@
-import { SequenceAutoIncrementSegmentConfig } from "~/types";
 import { GenerateSequenceNumbersInput } from "../SequenceService";
 import { padSegment } from "../segment-utility";
 import { IRpdServer } from "~/core/server";
 import { get } from "lodash";
 import dayjs from "dayjs";
+import { SequenceAutoIncrementSegmentConfig } from "../SequencePluginTypes";
 
 export const segmentType = "autoIncrement";
 

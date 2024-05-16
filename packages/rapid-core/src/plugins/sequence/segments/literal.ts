@@ -1,4 +1,4 @@
-import { SequenceLiteralSegmentConfig } from "~/types";
+import { SequenceLiteralSegmentConfig } from "../SequencePluginTypes";
 import { GenerateSequenceNumbersInput } from "../SequenceService";
 import { IRpdServer } from "~/core/server";
 

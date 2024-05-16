@@ -1,4 +1,4 @@
-import { SequenceYearSegmentConfig } from "~/types";
+import { SequenceYearSegmentConfig } from "../SequencePluginTypes";
 import { GenerateSequenceNumbersInput } from "../SequenceService";
 import { padSegment } from "../segment-utility";
 import { IRpdServer } from "~/core/server";

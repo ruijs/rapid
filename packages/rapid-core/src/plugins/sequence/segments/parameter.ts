@@ -1,4 +1,4 @@
-import { SequenceParameterSegmentConfig } from "~/types";
+import { SequenceParameterSegmentConfig } from "../SequencePluginTypes";
 import { GenerateSequenceNumbersInput } from "../SequenceService";
 import { padSegment } from "../segment-utility";
 import { get } from "lodash";

@@ -1,4 +1,4 @@
-import { SequenceMonthSegmentConfig } from "~/types";
+import { SequenceMonthSegmentConfig } from "../SequencePluginTypes";
 import { GenerateSequenceNumbersInput } from "../SequenceService";
 import { padSegment } from "../segment-utility";
 import { IRpdServer } from "~/core/server";
