@@ -20,11 +20,13 @@ import {
   ServerOperationPlugin,
   StateMachinePlugin,
   EntityWatchPlugin,
+  CronJobPlugin,
 } from '@ruiapp/rapid-core';
 import { createRapidRequestHandler } from '@ruiapp/rapid-express';
 
 import serverOperations from "./app/_definitions/meta/server-operations";
 import entityWatchers from "./app/_definitions/meta/entity-watchers";
+import cronJobs from "./app/_definitions/meta/cron-jobs";
 
 import "dotenv/config";
 
@@ -130,6 +132,9 @@ export async function startServer() {
       new StateMachinePlugin(),
       new EntityWatchPlugin({
         watchers: entityWatchers,
+      }),
+      new CronJobPlugin({
+        jobs: cronJobs,
       }),
     ],
   });

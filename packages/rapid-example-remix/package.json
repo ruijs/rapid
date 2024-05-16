@@ -60,7 +60,7 @@
   "devDependencies": {
     "@remix-run/dev": "^1.19.3",
     "@remix-run/eslint-config": "^1.19.3",
-    "@ruiapp/rapid-configure-tools": "^0.0.8",
+    "@ruiapp/rapid-configure-tools": "^0.1.1",
     "@types/compression": "^1.7.5",
     "@types/express": "^4.17.21",
     "@types/lodash": "^4.14.200",

@@ -1,5 +1,6 @@
 import type {
   EnabledDisabledState,
+  TaskState,
 } from "./data-dictionary-types";
 /**
  * 部门
@@ -213,7 +214,7 @@ export interface PmTask {
   /**
    * 状态
    */
-  state?: string;
+  state?: TaskState;
   /**
    * 创建时间
    */

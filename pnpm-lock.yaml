@@ -252,8 +252,8 @@ importers:
         specifier: ^1.19.3
         version: 1.19.3(eslint@8.57.0)(react@18.2.0)(typescript@4.9.5)
       '@ruiapp/rapid-configure-tools':
-        specifier: ^0.0.8
-        version: 0.0.8(@ruiapp/rapid-extension@packages+rapid-extension)(axios-cookiejar-support@4.0.7)(axios@1.6.8)(lodash@4.17.21)(tough-cookie@4.1.3)
+        specifier: ^0.1.1
+        version: 0.1.1(@ruiapp/rapid-extension@packages+rapid-extension)(axios-cookiejar-support@4.0.7)(axios@1.6.8)(lodash@4.17.21)(tough-cookie@4.1.3)
       '@types/compression':
         specifier: ^1.7.5
         version: 1.7.5
@@ -4212,10 +4212,10 @@ packages:
       - debug
     dev: false
 
-  /@ruiapp/rapid-configure-tools@0.0.8(@ruiapp/rapid-extension@packages+rapid-extension)(axios-cookiejar-support@4.0.7)(axios@1.6.8)(lodash@4.17.21)(tough-cookie@4.1.3):
-    resolution: {integrity: sha512-M8tmE6tgcnhb1F9za4bc9f6o9rCp+YY0FvHf4P3yzwMCdl3LJjw6+CxSCuF9l3qS2rDEN10UDZwfdqf0G/1OZg==}
+  /@ruiapp/rapid-configure-tools@0.1.1(@ruiapp/rapid-extension@packages+rapid-extension)(axios-cookiejar-support@4.0.7)(axios@1.6.8)(lodash@4.17.21)(tough-cookie@4.1.3):
+    resolution: {integrity: sha512-LDkahHajvZE05TXDmpV6bIfs0YvRUsvYmkW3pfXBLASxfQtc6z6ZlC1f7p4+2s/cHb7QsZxUoEUpTyZ256jdSQ==}
     peerDependencies:
-      '@ruiapp/rapid-extension': ^0.0.17
+      '@ruiapp/rapid-extension': ^0.1.0
       axios: ^1.1.2
       axios-cookiejar-support: ^4.0.7
       lodash: ^4.17.21

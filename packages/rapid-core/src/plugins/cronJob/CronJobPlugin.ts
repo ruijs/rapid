@@ -76,9 +76,11 @@ class CronJobPlugin implements RapidPlugin {
       const jobInstance = cron.CronJob.from({
         cronTime: job.cronTime,
         onTick: async () => {
+          server.getLogger().info(`Executing cron job '${job.code}'...`);
           await this.executeJob(server, job);
         },
       });
+      jobInstance.start();
     }
   }
 
