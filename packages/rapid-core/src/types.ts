@@ -62,17 +62,33 @@ export interface GetModelOptions {
 }
 
 export type RpdServerEventTypes = {
+  "entity.beforeCreate": [RapidPlugin, RpdEntityBeforeCreateEventPayload];
   "entity.create": [RapidPlugin, RpdEntityCreateEventPayload];
+  "entity.beforeUpdate": [RapidPlugin, RpdEntityBeforeUpdateEventPayload];
   "entity.update": [RapidPlugin, RpdEntityUpdateEventPayload];
+  "entity.beforeDelete": [RapidPlugin, RpdEntityBeforeDeleteEventPayload];
   "entity.delete": [RapidPlugin, RpdEntityDeleteEventPayload];
   "entity.addRelations": [RapidPlugin, RpdEntityAddRelationsEventPayload];
   "entity.removeRelations": [RapidPlugin, RpdEntityRemoveRelationsEventPayload];
 };
 
+export interface RpdEntityBeforeCreateEventPayload {
+  namespace: string;
+  modelSingularCode: string;
+  before: any;
+}
+
 export interface RpdEntityCreateEventPayload {
   namespace: string;
   modelSingularCode: string;
   after: any;
+}
+
+export interface RpdEntityBeforeUpdateEventPayload {
+  namespace: string;
+  modelSingularCode: string;
+  before: any;
+  changes: any;
 }
 
 export interface RpdEntityUpdateEventPayload {
@@ -81,6 +97,12 @@ export interface RpdEntityUpdateEventPayload {
   before: any;
   after: any;
   changes: any;
+}
+
+export interface RpdEntityBeforeDeleteEventPayload {
+  namespace: string;
+  modelSingularCode: string;
+  before: any;
 }
 
 export interface RpdEntityDeleteEventPayload {

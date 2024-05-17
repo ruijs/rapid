@@ -431,9 +431,22 @@ async function createEntity(
   server: IRpdServer,
   dataAccessor: IRpdDataAccessor,
   options: CreateEntityOptions,
+  plugin?: RapidPlugin
 ) {
   const model = dataAccessor.getModel();
   const { entity } = options;
+
+  await server.beforeCreateEntity(model, options);
+
+  await server.emitEvent(
+    "entity.beforeCreate",
+    {
+      namespace: model.namespace,
+      modelSingularCode: model.singularCode,
+      before: entity,
+    },
+    plugin,
+  );
 
   const oneRelationPropertiesToCreate: RpdDataModelProperty[] = [];
   const manyRelationPropertiesToCreate: RpdDataModelProperty[] = [];
@@ -553,6 +566,15 @@ async function createEntity(
     }
   }
 
+  await server.emitEvent(
+    "entity.create",
+    {
+      namespace: model.namespace,
+      modelSingularCode: model.singularCode,
+      after: newEntity,
+    },
+    plugin,
+  );
 
   return newEntity;
 }
@@ -581,6 +603,18 @@ async function updateEntityById(
 
   options.entityToSave = changes || {};
   await server.beforeUpdateEntity(model, options, entity);
+
+  await server.emitEvent(
+    "entity.beforeUpdate",
+    {
+      namespace: model.namespace,
+      modelSingularCode: model.singularCode,
+      before: entity,
+      changes: options.entityToSave,
+    },
+    plugin,
+  );
+
   changes = options.entityToSave;
 
   const oneRelationPropertiesToUpdate: RpdDataModelProperty[] = [];
@@ -695,7 +729,7 @@ async function updateEntityById(
     updatedEntity[property.code] = relatedEntities;
   }
 
-  server.emitEvent(
+  await server.emitEvent(
     "entity.update",
     {
       namespace: model.namespace,
@@ -737,19 +771,7 @@ export default class EntityManager<TEntity=any> {
   async createEntity(options: CreateEntityOptions, plugin?: RapidPlugin): Promise<TEntity> {
     const model = this.getModel();
 
-    await this.#server.beforeCreateEntity(model, options);
-
-    const newEntity = await createEntity(this.#server, this.#dataAccessor, options);
-
-    this.#server.emitEvent(
-      "entity.create",
-      {
-        namespace: model.namespace,
-        modelSingularCode: model.singularCode,
-        after: newEntity,
-      },
-      plugin,
-    );
+    const newEntity = await createEntity(this.#server, this.#dataAccessor, options, plugin);
 
     return newEntity;
   }
@@ -769,8 +791,19 @@ export default class EntityManager<TEntity=any> {
       return;
     }
 
+    await this.#server.emitEvent(
+      "entity.beforeDelete",
+      {
+        namespace: model.namespace,
+        modelSingularCode: model.singularCode,
+        before: entity,
+      },
+      plugin,
+    );
+
     await this.#dataAccessor.deleteById(id);
-    this.#server.emitEvent(
+
+    await this.#server.emitEvent(
       "entity.delete",
       {
         namespace: model.namespace,
@@ -813,7 +846,7 @@ export default class EntityManager<TEntity=any> {
       }
     }
 
-    server.emitEvent(
+    await server.emitEvent(
       "entity.addRelations",
       {
         namespace: model.namespace,
@@ -854,7 +887,7 @@ export default class EntityManager<TEntity=any> {
       }
     }
 
-    server.emitEvent(
+    await server.emitEvent(
       "entity.removeRelations",
       {
         namespace: model.namespace,
