@@ -21,12 +21,12 @@ export async function handler(
     delete mergedInput.$operation;
   }
 
-  const stateProperty = mergedInput.$stateProperty;
-  if (stateProperty) {
-    delete mergedInput.$stateProperty;
+  const stateProperties = mergedInput.$stateProperties;
+  if (stateProperties) {
+    delete mergedInput.$stateProperties;
   }
 
   const entityManager = server.getEntityManager(options.singularCode);
-  const output = await entityManager.updateEntityById({ id: mergedInput.id, entityToSave: mergedInput, operation, stateProperty }, plugin);
+  const output = await entityManager.updateEntityById({ id: mergedInput.id, entityToSave: mergedInput, operation, stateProperties }, plugin);
   ctx.output = output;
 }

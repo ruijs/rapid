@@ -127,12 +127,17 @@ class StateMachinePlugin implements RapidPlugin {
   async beforeUpdateEntity(server: IRpdServer, model: RpdDataModel, options: UpdateEntityByIdOptions, currentEntity: any) {
     const entity = options.entityToSave;
 
+    const stateMachineEnabledProperties: RpdDataModelProperty[] = [];
     for (const property of model.properties) {
       const isStateMachineEnabled = get(property.config, "stateMachine.enabled", false);
-      const isTransferControlEnabled = get(property.config, "stateMachine.transferControl", false);
-      if (isStateMachineEnabled && isTransferControlEnabled && !isNullOrUndefined(entity[property.code])
-      ) {
-        throw new Error(`You're not allowed to change '${property.code}' property directly when transfer control is enabled, do an operation instead.`);
+
+      if (isStateMachineEnabled) {
+        stateMachineEnabledProperties.push(property);
+
+        const isTransferControlEnabled = get(property.config, "stateMachine.transferControl", false);
+        if (isTransferControlEnabled && !isNullOrUndefined(entity[property.code])) {
+          throw new Error(`You're not allowed to change '${property.code}' property directly when transfer control is enabled, do an operation instead.`);
+        }
       }
     }
 
@@ -140,32 +145,35 @@ class StateMachinePlugin implements RapidPlugin {
       return;
     }
 
-    const stateMachineEnabledProperties = filter(model.properties, (property) => get(property.config, "stateMachine.enabled", false)) as RpdDataModelProperty[];
-    let stateMachineEnabledProperty = first(stateMachineEnabledProperties);
-    if (options.stateProperty) {
-      stateMachineEnabledProperty = find(stateMachineEnabledProperties, (property) => property.code === options.stateProperty);
+    let statePropertiesToUpdate: RpdDataModelProperty[];
+    const statePropertyCodes = options.stateProperties;
+    if (statePropertyCodes && statePropertyCodes.length) {
+      statePropertiesToUpdate = filter(stateMachineEnabledProperties, (property) => statePropertyCodes.includes(property.code));
+    } else {
+      statePropertiesToUpdate = stateMachineEnabledProperties;
     }
 
-    if (!stateMachineEnabledProperty) {
+    if (!statePropertiesToUpdate.length) {
       throw new Error(`State machine property not found.`);
     }
 
-    const machineConfig = get(stateMachineEnabledProperty.config, "stateMachine.config", null);
-    if (!machineConfig) {
-      throw new Error(`State machine of property '${stateMachineEnabledProperty.code}' not configured.`);
+    for (const statePropertyToUpdate of statePropertiesToUpdate) {
+      const machineConfig = get(statePropertyToUpdate.config, "stateMachine.config", null);
+      if (!machineConfig) {
+        throw new Error(`State machine of property '${statePropertyToUpdate.code}' not configured.`);
+      }
+      machineConfig.id = getStateMachineCode(model, statePropertyToUpdate);
+  
+      const nextSnapshot = await getStateMachineNextSnapshot(server, {
+        machineConfig,
+        context: {},
+        currentState: currentEntity[statePropertyToUpdate.code],
+        event: options.operation,
+      });
+  
+      entity[statePropertyToUpdate.code] = nextSnapshot.value;
     }
-    machineConfig.id = getStateMachineCode(model, stateMachineEnabledProperty);
-
-    const nextSnapshot = await getStateMachineNextSnapshot(server, {
-      machineConfig,
-      context: {},
-      currentState: currentEntity[stateMachineEnabledProperty.code],
-      event: options.operation,
-    });
-
-    entity[stateMachineEnabledProperty.code] = nextSnapshot.value;
   }
-
 }
 
 function getStateMachineCode(model: RpdDataModel, property: RpdDataModelProperty) {

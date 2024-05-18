@@ -474,7 +474,7 @@ export interface UpdateEntityByIdOptions {
   id: any;
   entityToSave: any;
   operation?: any;
-  stateProperty?: string;
+  stateProperties?: string[];
 }
 
 export interface DeleteEntityOptions {
