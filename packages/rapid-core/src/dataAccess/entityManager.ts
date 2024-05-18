@@ -491,7 +491,7 @@ async function createEntity(
   }
 
   const newRow = await dataAccessor.create(row);
-  const newEntity = mapDbRowToEntity(model, newRow, false);
+  const newEntity = mapDbRowToEntity(model, newRow, true);
 
   // save many-relation properties
   for (const property of manyRelationPropertiesToCreate) {
