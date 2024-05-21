@@ -615,7 +615,7 @@ async function updateEntityById(
     plugin,
   );
 
-  changes = options.entityToSave;
+  changes = getEntityPartChanges(entity, options.entityToSave);
 
   const oneRelationPropertiesToUpdate: RpdDataModelProperty[] = [];
   const manyRelationPropertiesToUpdate: RpdDataModelProperty[] = [];
