@@ -135,13 +135,13 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity) {
     {
       name: '删除时间',
       code: 'deletedAt',
-      columnName: 'deteted_at',
+      columnName: 'deleted_at',
       type: 'datetime',
       required: false,
     },
     {
       name: '删除人',
-      code: 'detetedBy',
+      code: 'deletedBy',
       type: 'relation',
       relation: 'one',
       targetSingularCode: 'oc_user',
