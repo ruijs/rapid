@@ -22,23 +22,23 @@ export default {
     };
 
     if (onAction) {
-      if (confirmText) {
-        rockConfig.onClick = [
-          {
-            $action: "script",
-            script: (event: RockEvent) => {
+      rockConfig.onClick = [
+        {
+          $action: "script",
+          script: (event: RockEvent) => {
+            if (confirmText) {
               Modal.confirm({
                 title: confirmText,
                 onOk: async () => {
                   handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, [record]);
                 },
               });
+            } else {
+              handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, [record]);
             }
-          }
-        ]
-      } else {
-        rockConfig.onClick = props.onAction;
-      }
+          },
+        },
+      ];
     }
 
     return renderRock({context, rockConfig});
