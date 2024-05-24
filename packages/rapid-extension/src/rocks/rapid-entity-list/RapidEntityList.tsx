@@ -160,6 +160,7 @@ export default {
 
     if (!props.hideActionsColumn) {
       forEach(props.actions, (recordActionConfig) => {
+        set(recordActionConfig, "$exps.record", "$slot.record");
         set(recordActionConfig, "$exps.recordId", "$slot.record.id");
       });
 

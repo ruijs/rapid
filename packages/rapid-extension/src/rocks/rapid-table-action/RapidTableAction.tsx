@@ -9,7 +9,7 @@ export default {
   $type: "rapidTableAction",
 
   Renderer(context, props) {
-    const {recordId, actionText, confirmText, onAction } = props;
+    const {record, recordId, actionText, confirmText, onAction } = props;
     const rockConfig: RockConfig = {
       $id: `${props.$id}-anchor`,
       $type: 'anchor',
@@ -30,7 +30,7 @@ export default {
               Modal.confirm({
                 title: confirmText,
                 onOk: async () => {
-                  handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, []);
+                  handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, [record]);
                 },
               });
             }
