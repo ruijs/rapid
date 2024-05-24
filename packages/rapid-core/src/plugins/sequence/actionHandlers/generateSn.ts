@@ -1,6 +1,6 @@
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
-import { GenerateSequenceNumbersInput, GenerateSequenceNumbersOutput, generateSn } from "../SequenceService";
+import SequenceService, { GenerateSequenceNumbersInput, GenerateSequenceNumbersOutput } from "../SequenceService";
 
 export interface GenerateSequenceNumbersOptions {
   ruleCode: string;
@@ -27,7 +27,9 @@ export async function handler(
     throw new Error(`Rule code is required when generating sequence numbers.`);
   }
 
-  const sequences = await generateSn(server, input);
+  const sequenceService = server.getService<SequenceService>("sequenceService");
+
+  const sequences = await sequenceService.generateSn(server, input);
 
   ctx.output = {
     sequences,

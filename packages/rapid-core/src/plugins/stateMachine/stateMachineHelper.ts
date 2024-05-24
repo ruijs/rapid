@@ -1,8 +1,7 @@
-import { IRpdServer } from "~/core/server";
 import { DefaultStateMachineSnapshot, GetStateMachineNextSnapshotOptions, TryGetStateMachineNextSnapshotResult } from "./StateMachinePluginTypes";
 import { createMachine, getInitialSnapshot, getNextSnapshot } from "xstate";
 
-export async function getStateMachineNextSnapshot(server: IRpdServer, options: GetStateMachineNextSnapshotOptions) {
+export async function getStateMachineNextSnapshot(options: GetStateMachineNextSnapshotOptions) {
   const { machineConfig, currentState, event } = options;
   machineConfig.initial = currentState;
 
@@ -17,7 +16,7 @@ export async function getStateMachineNextSnapshot(server: IRpdServer, options: G
   return nextSnapshot;
 }
 
-export async function tryGetStateMachineNextSnapshot(server: IRpdServer, options: GetStateMachineNextSnapshotOptions): Promise<TryGetStateMachineNextSnapshotResult> {
+export async function tryGetStateMachineNextSnapshot(options: GetStateMachineNextSnapshotOptions): Promise<TryGetStateMachineNextSnapshotResult> {
   const { machineConfig, currentState, event } = options;
   machineConfig.initial = currentState;
 

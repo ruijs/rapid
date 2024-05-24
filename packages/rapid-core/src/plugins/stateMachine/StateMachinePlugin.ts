@@ -17,7 +17,7 @@ import pluginRoutes from "./routes";
 import { filter, find, first, get, isEqual } from "lodash";
 import { PropertyStateMachineConfig } from "./StateMachinePluginTypes";
 import { isNullOrUndefined } from "~/utilities/typeUtility";
-import { getStateMachineNextSnapshot } from "./StateMachineService";
+import { getStateMachineNextSnapshot } from "./stateMachineHelper";
 
 
 class StateMachinePlugin implements RapidPlugin {
@@ -164,7 +164,7 @@ class StateMachinePlugin implements RapidPlugin {
       }
       machineConfig.id = getStateMachineCode(model, statePropertyToUpdate);
   
-      const nextSnapshot = await getStateMachineNextSnapshot(server, {
+      const nextSnapshot = await getStateMachineNextSnapshot({
         machineConfig,
         context: {},
         currentState: currentEntity[statePropertyToUpdate.code],

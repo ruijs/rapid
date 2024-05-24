@@ -105,6 +105,18 @@ class PluginManager {
     }
   }
 
+
+  /** 配置服务 */
+  async configureServices(
+    applicationConfig: RpdApplicationConfig,
+  ) {
+    for (const plugin of this.#plugins) {
+      if (plugin.configureServices) {
+        await plugin.configureServices(this.#server, applicationConfig);
+      }
+    }
+  }
+
   /** 配置路由 */
   async configureRoutes(
     applicationConfig: RpdApplicationConfig,

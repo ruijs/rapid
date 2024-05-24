@@ -52,6 +52,7 @@ export class RapidServer implements IRpdServer {
   #databaseAccessor: IDatabaseAccessor;
   #cachedDataAccessors: Map<string, DataAccessor>;
   #cachedEntityManager: Map<string, EntityManager>;
+  #services: Map<string, any>;
   queryBuilder: IQueryBuilder;
   config: RapidServerConfig;
   databaseConfig: IDatabaseConfig;
@@ -77,6 +78,8 @@ export class RapidServer implements IRpdServer {
     this.#databaseAccessor = options.databaseAccessor;
     this.#cachedDataAccessors = new Map();
     this.#cachedEntityManager = new Map();
+
+    this.#services = new Map();
 
     this.queryBuilder = new QueryBuilder({
       dbDefaultSchema: options.databaseConfig.dbDefaultSchema,
@@ -233,6 +236,14 @@ export class RapidServer implements IRpdServer {
     // }
   }
 
+  registerService(name: string, service: any) {
+    this.#services.set(name, service);
+  }
+
+  getService<TService>(name: string): TService {
+    return this.#services.get(name);
+  }
+
   async start() {
     this.#logger.info("Starting rapid server...");
     const pluginManager = this.#pluginManager;
@@ -261,6 +272,7 @@ export class RapidServer implements IRpdServer {
     await pluginManager.onLoadingApplication(this.#applicationConfig);
     await pluginManager.configureModels(this.#applicationConfig);
     await pluginManager.configureModelProperties(this.#applicationConfig);
+    await pluginManager.configureServices(this.#applicationConfig);
     await pluginManager.configureRoutes(this.#applicationConfig);
 
     // TODO: check application configuration.

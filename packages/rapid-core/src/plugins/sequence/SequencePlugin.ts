@@ -15,11 +15,17 @@ import pluginModels from "./models";
 import pluginRoutes from "./routes";
 import { PropertySequenceConfig } from "./SequencePluginTypes";
 import { isEqual } from "lodash";
-import { generateSn } from "./SequenceService";
+import SequenceService from "./SequenceService";
 import { isNullOrUndefined } from "~/utilities/typeUtility";
 
 
 class SequencePlugin implements RapidPlugin {
+  #sequenceService!: SequenceService;
+
+  get sequenceService() {
+    return this.#sequenceService;
+  }
+
   get code(): string {
     return "sequencePlugin";
   }
@@ -48,6 +54,11 @@ class SequencePlugin implements RapidPlugin {
 
   async configureModels(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
     server.appendApplicationConfig({ models: pluginModels });
+  }
+  
+  async configureServices(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
+    this.#sequenceService = new SequenceService(server);
+    server.registerService("sequenceService", this.#sequenceService);
   }
 
   async configureRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
@@ -103,7 +114,7 @@ class SequencePlugin implements RapidPlugin {
         isNullOrUndefined(propertyValue)
       ) {
         const ruleCode = getSequenceRuleCode(model, property);
-        const numbers = await generateSn(server, {
+        const numbers = await this.#sequenceService.generateSn(server, {
           ruleCode,
           amount: 1,
           parameters: entity,

@@ -1,7 +1,7 @@
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 import { SendStateMachineEventInput, SendStateMachineEventOptions } from "../StateMachinePluginTypes";
-import { getStateMachineNextSnapshot } from "../StateMachineService";
+import { getStateMachineNextSnapshot } from "../stateMachineHelper";
 
 export const code = "sendStateMachineEvent";
 
@@ -42,7 +42,7 @@ export async function handler(
 
   stateMachine.config.id = input.code;
 
-  const snapshot = await getStateMachineNextSnapshot(server, {
+  const snapshot = await getStateMachineNextSnapshot({
     machineConfig: stateMachine.config,
     context: input.context,
     currentState: input.currentState,

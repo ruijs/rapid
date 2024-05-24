@@ -33,6 +33,8 @@ export interface IRpdServer {
     options: GetDataAccessorOptions,
   ): IRpdDataAccessor<T>;
   getEntityManager<TEntity = any>(singularCode: string): EntityManager<TEntity>;
+  registerService(name: string, service: any);
+  getService<TService>(name: string): TService;
   getApplicationConfig(): RpdApplicationConfig;
   appendApplicationConfig(config: Partial<RpdApplicationConfig>);
   appendModelProperties(modelSingularCode: string, properties: RpdDataModelProperty[]);
@@ -131,6 +133,8 @@ export interface RapidPlugin {
   configureModels?: (server: IRpdServer, applicationConfig: RpdApplicationConfig) => Promise<any>;
   /** 配置模型属性 */
   configureModelProperties?: (server: IRpdServer, applicationConfig: RpdApplicationConfig) => Promise<any>;
+  /** 配置服务 */
+  configureServices?: (server: IRpdServer, applicationConfig: RpdApplicationConfig) => Promise<any>;
   /** 配置路由 */
   configureRoutes?: (server: IRpdServer, applicationConfig: RpdApplicationConfig) => Promise<any>;
   /** 在应用配置加载完成后调用。此时插件可以进行一些数据的初始化工作。 */
