@@ -347,6 +347,9 @@ export default {
             $action: "script",
             script: async (event: RockEvent) => {
               message.error(`保存失败：${event.args[0].message}`);
+              if (formConfig.onSaveError) {
+                await handleComponentEvent("onSaveError", event.framework, event.page as any, event.scope, event.sender, formConfig.onSaveError, [event.args[0]]);
+              }
             }
           }
         ]

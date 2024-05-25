@@ -84,6 +84,7 @@ export default {
               $action: "setVars",
               vars: {
                 "modal-newEntity-open": false,
+                "modal-saving": false,
               }
             },
             {
@@ -91,9 +92,23 @@ export default {
               storeName: "list",
             },
           ],
-        }
+          onSaveError: [
+            {
+              $action: "setVars",
+              vars: {
+                "modal-saving": false,
+              }
+            },
+          ],
+        },
       ],
       onOk: [
+        {
+          $action: "setVars",
+          vars: {
+            "modal-saving": true,
+          }
+        },
         {
           $action: "sendComponentMessage",
           componentId: props.$id,
@@ -137,17 +152,20 @@ export default {
               $action: "setVars",
               vars: {
                 "modal-editEntity-open": false,
-              }
-            },
-            {
-              $action: "setVars",
-              vars: {
                 "modal-saving": false,
               }
             },
             {
               $action: "loadStoreData",
               storeName: "list",
+            },
+          ],
+          onSaveError: [
+            {
+              $action: "setVars",
+              vars: {
+                "modal-saving": false,
+              }
             },
           ],
         }

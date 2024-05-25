@@ -31,6 +31,10 @@ export interface RapidEntityFormConfig extends RapidFormConfig {
   onFormRefresh?: RockEventHandlerConfig;
 
   onValuesChange?: RockEventHandlerConfig;
+
+  onSaveSuccess?: RockEventHandlerConfig;
+
+  onSaveError?: RockEventHandlerConfig;
 }
 
 export interface RapidEntityFormRockConfig extends ContainerRockConfig, RapidEntityFormConfig {
