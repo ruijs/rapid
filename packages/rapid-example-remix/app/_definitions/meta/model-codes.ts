@@ -19,7 +19,7 @@ const entityFieldCodes = {
     'updatedAt',
     'updatedBy',
     'deletedAt',
-    'detetedBy',
+    'deletedBy',
   ],
   'OcRole': [
     'id',
@@ -33,7 +33,7 @@ const entityFieldCodes = {
     'updatedAt',
     'updatedBy',
     'deletedAt',
-    'detetedBy',
+    'deletedBy',
   ],
   'OcUser': [
     'id',
@@ -50,7 +50,7 @@ const entityFieldCodes = {
     'updatedAt',
     'updatedBy',
     'deletedAt',
-    'detetedBy',
+    'deletedBy',
   ],
   'PmTask': [
     'id',
@@ -63,7 +63,7 @@ const entityFieldCodes = {
     'updatedAt',
     'updatedBy',
     'deletedAt',
-    'detetedBy',
+    'deletedBy',
   ],
 } as const;
 export type TEntityFieldCodes = typeof entityFieldCodes;

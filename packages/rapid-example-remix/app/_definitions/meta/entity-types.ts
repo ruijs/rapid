@@ -53,7 +53,7 @@ export interface OcDepartment {
   /**
    * 删除人
    */
-  detetedBy?: Partial<OcUser>;
+  deletedBy?: Partial<OcUser>;
 }
 
 /**
@@ -112,7 +112,7 @@ export interface OcRole {
   /**
    * 删除人
    */
-  detetedBy?: Partial<OcUser>;
+  deletedBy?: Partial<OcUser>;
 }
 
 /**
@@ -183,7 +183,7 @@ export interface OcUser {
   /**
    * 删除人
    */
-  detetedBy?: Partial<OcUser>;
+  deletedBy?: Partial<OcUser>;
 }
 
 /**
@@ -206,7 +206,7 @@ export interface PmTask {
   /**
    * 标题
    */
-  title?: string;
+  title: string;
   /**
    * 描述
    */
@@ -238,7 +238,7 @@ export interface PmTask {
   /**
    * 删除人
    */
-  detetedBy?: Partial<OcUser>;
+  deletedBy?: Partial<OcUser>;
 }
 
 /**

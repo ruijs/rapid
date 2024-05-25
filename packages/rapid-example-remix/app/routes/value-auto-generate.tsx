@@ -60,6 +60,7 @@ const formConfig: Partial<RapidEntityFormConfig> = {
     {
       type: 'auto',
       code: 'title',
+      required: false,
     },
     {
       type: 'textarea',

@@ -12,6 +12,7 @@ import type { RapidFormItemConfig, RapidFormItemType } from "../rapid-form-item/
 import type { RapidFormRockConfig } from "../rapid-form/rapid-form-types";
 import type { RapidSelectConfig } from "../rapid-select/rapid-select-types";
 import { RapidOptionFieldRendererConfig } from "../rapid-option-field-renderer/rapid-option-field-renderer-types";
+import { message } from "antd";
 
 
 const fieldTypeToFormItemTypeMap: Record<RapidFieldType, RapidFormItemType | null> = {
@@ -330,15 +331,26 @@ export default {
         entityPluralCode: mainEntity.pluralCode,
         entityId: props.entityId,
         fixedFields: props.fixedFields,
-      },
-      {
-        $action: "script",
-        script: async (event: RockEvent) => {
-          if (formConfig.onSaveSuccess) {
-            await handleComponentEvent("onSaveSuccess", event.framework, event.page as any, event.scope, event.sender, formConfig.onSaveSuccess, []);
+        onSuccess: [
+          {
+            $action: "script",
+            script: async (event: RockEvent) => {
+              message.success("保存成功。");
+              if (formConfig.onSaveSuccess) {
+                await handleComponentEvent("onSaveSuccess", event.framework, event.page as any, event.scope, event.sender, formConfig.onSaveSuccess, [event.args[0]]);
+              }
+            }
           }
-        }
-      }
+        ],
+        onError: [
+          {
+            $action: "script",
+            script: async (event: RockEvent) => {
+              message.error(`保存失败：${event.args[0].message}`);
+            }
+          }
+        ]
+      },
     ];
 
     const rockConfig: RapidFormRockConfig = {
