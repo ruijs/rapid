@@ -1,4 +1,4 @@
-import type { RapidPage } from '@ruiapp/rapid-extension';
+import type { RapidCheckboxListFormInputConfig, RapidPage } from '@ruiapp/rapid-extension';
 
 const page: RapidPage = {
   code: 'oc_role_details',
@@ -44,14 +44,17 @@ const page: RapidPage = {
               layout: 'vertical',
               items: [
                 {
-                  type: 'select',
+                  type: 'auto',
                   code: 'actions',
                   label: null,
                   multipleValues: true,
+                  formControlType: "rapidCheckboxListFormInput",
                   formControlProps: {
                     listDataSourceCode: "sysActions",
-                    listTextField: "name",
-                  }
+                    listTextFieldName: "name",
+                    groupsDataSourceCode: "sysActionGroups",
+                    groupByFieldName: "group.id",
+                  } satisfies RapidCheckboxListFormInputConfig,
                 },
               ],
               actions: [

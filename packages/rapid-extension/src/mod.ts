@@ -29,6 +29,7 @@ export * from "./rocks/rapid-text-renderer/rapid-text-renderer-types";
 export * from "./rocks/rapid-json-renderer/rapid-json-renderer-types";
 export * from "./rocks/rapid-link-renderer/rapid-link-renderer-types";
 export * from "./rocks/rapid-number-renderer/rapid-number-renderer-types";
+export * from "./rocks/rapid-checkbox-list-form-input/rapid-checkbox-list-form-input-types";
 export * from "./rocks/rapid-currency-renderer/rapid-currency-renderer-types";
 export * from "./rocks/rapid-date-picker/rapid-date-picker-types";
 export * from "./rocks/rapid-descriptions-renderer/rapid-descriptions-renderer-types";

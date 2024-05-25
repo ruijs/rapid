@@ -1,5 +1,6 @@
 import RapidArrayRenderer from "./rapid-array-renderer/RapidArrayRenderer";
 import RapidBoolRenderer from "./rapid-bool-renderer/RapidBoolRenderer";
+import RapidCheckboxListFormInput from "./rapid-checkbox-list-form-input/RapidCheckboxListFormInput";
 import RapidCurrencyRenderer from "./rapid-currency-renderer/RapidCurrencyRenderer";
 import RapidDatePicker from "./rapid-date-picker/RapidDatePicker";
 import RapidDateTimeRenderer from "./rapid-date-time-renderer/RapidDateTimeRenderer";
@@ -42,6 +43,7 @@ import SonicToolbarSelectEntityButton from "./sonic-toolbar-select-entity-button
 export default [
   RapidArrayRenderer,
   RapidBoolRenderer,
+  RapidCheckboxListFormInput,
   RapidCurrencyRenderer,
   RapidDatePicker,
   RapidDateTimeRenderer,

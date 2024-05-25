@@ -26,6 +26,7 @@ const formConfig: Partial<RapidEntityFormConfig> = {
     {
       type: 'auto',
       code: 'roles',
+      formControlType: "rapidCheckboxListFormInput",
       listDataFindOptions: {
         orderBy: [
           {

@@ -1,19 +1,20 @@
-import type { MetaFunction } from "@remix-run/node";
 import { Framework, Page, PageConfig } from "@ruiapp/move-style";
 import { Rui } from "@ruiapp/react-renderer";
 import { Rui as RuiRock, ErrorBoundary, Show, HtmlElement, Anchor, Box, Label, List, Scope, Text } from "@ruiapp/react-rocks";
 import AntdExtension from "@ruiapp/antd-extension";
 import MonacoExtension from "@ruiapp/monaco-extension";
 import RapidExtension, { rapidAppDefinition, RapidEntityFormConfig, RapidExtensionSetting, RapidPage } from '@ruiapp/rapid-extension';
-import _, { cloneDeep } from "lodash";
+import _, { cloneDeep, find } from "lodash";
 import qs from "qs";
-import { RuiLoggerProvider } from "../rui-logger";
-import EntityModels from "../_definitions/meta/entity-models";
-import DataDictionaryModels from "../_definitions/meta/data-dictionary-models";
+import { RuiLoggerProvider } from "../../rui-logger";
+import EntityModels from "../../_definitions/meta/entity-models";
+import DataDictionaryModels from "../../_definitions/meta/data-dictionary-models";
+import Pages from "../../_definitions/meta/page-models";
 import { useMemo } from "react";
 
 import antdStyles from 'antd/dist/antd.css';
 import appStyles from '~/styles/app.css';
+import { useParams } from "@remix-run/react";
 
 export function links() {
   return [antdStyles, appStyles].map((styles) => {
@@ -347,15 +348,27 @@ const rapidPage: RapidPage = {
 };
 
 export default function SonicEntityList() {
+  const params = useParams();
+  const pageCode = params.code || "";
+
   const page = useMemo(() => {
-    const ruiPageConfig: PageConfig = {
-      $id: "sonic-entity-list",
-      stores: [],
-      view: rapidPage.view,
-      eventSubscriptions: [],
-    };
+    const pageConfig = find(Pages, (page) => page.code === pageCode );
+    let ruiPageConfig: PageConfig;
+    if (pageConfig) {
+      ruiPageConfig = {
+        $id: pageConfig.code,
+        stores: pageConfig.stores,
+        view: pageConfig.view as any,
+        eventSubscriptions: pageConfig.eventSubscriptions,
+      }
+    } else {
+      ruiPageConfig = {
+        $id: pageCode,
+        view: [{ $type: "text", text: `Page with code '${pageCode}' was not configured.` }],
+      };
+    }
     return new Page(framework, ruiPageConfig);
-  }, []);
+  }, [pageCode]);
 
   return (
     <div className="rui-play-main-container-body">

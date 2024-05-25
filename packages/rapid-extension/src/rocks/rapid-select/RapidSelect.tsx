@@ -1,6 +1,7 @@
 import { MoveStyleUtils, Rock } from "@ruiapp/move-style";
 import { Select, SelectProps } from "antd";
 import { RapidSelectConfig } from "./rapid-select-types";
+import RapidSelectMeta from "./RapidSelectMeta";
 import { get, isObject, map } from "lodash";
 import { objectMatch } from "../../utils/object-utility";
 
@@ -84,4 +85,6 @@ export default {
 
     return <Select {...antdProps}></Select>
   },
+
+  ...RapidSelectMeta,
 } as Rock;
