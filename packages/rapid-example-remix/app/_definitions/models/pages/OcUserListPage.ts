@@ -39,8 +39,11 @@ const formConfig: Partial<RapidEntityFormConfig> = {
       }
     },
     {
-      type: 'auto',
+      type: 'radioList',
       code: 'state',
+      formControlProps: {
+        direction: "vertical"
+      }
     },
   ],
 }

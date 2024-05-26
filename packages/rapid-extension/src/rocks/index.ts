@@ -18,6 +18,7 @@ import RapidNumberRenderer from "./rapid-number-renderer/RapidNumberRenderer";
 import RapidObjectRenderer from "./rapid-object-renderer/RapidObjectRenderer";
 import RapidOptionFieldRenderer from "./rapid-option-field-renderer/RapidOptionFieldRenderer";
 import RapidPercentRenderer from "./rapid-percent-renderer/RapidPercentRenderer";
+import RapidRadioListFormInput from "./rapid-radio-list-form-input/RapidRadioListFormInput";
 import RapidReferenceRenderer from "./rapid-reference-renderer/RapidReferenceRenderer";
 import RapidSelect from "./rapid-select/RapidSelect";
 import RapidTableAction from "./rapid-table-action/RapidTableAction";
@@ -61,6 +62,7 @@ export default [
   RapidObjectRenderer,
   RapidOptionFieldRenderer,
   RapidPercentRenderer,
+  RapidRadioListFormInput,
   RapidReferenceRenderer,
   RapidSelect,
   RapidTable,
