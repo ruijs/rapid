@@ -1,5 +1,5 @@
 import type { SimpleRockConfig } from "@ruiapp/move-style";
-
+import { CSSProperties } from "react";
 
 export interface RapidCheckboxListFormInputConfig {
   /**
@@ -56,6 +56,41 @@ export interface RapidCheckboxListFormInputConfig {
    * 分组数据中作为文本展示的字段名。默认为`name`。
    */
   groupTextFieldName?: string;
+
+  /**
+   * 分组的 className
+   */
+  groupClassName?: string;
+
+  /**
+   * 分组的样式
+   */
+  groupStyle?: CSSProperties;
+
+  /**
+   * 分组标题的 className
+   */
+  groupTitleClassName?: string;
+
+  /**
+   * 分组标题的样式
+   */
+  groupTitleStyle?: CSSProperties;
+
+  /**
+   * 复选框列表的 className
+   */
+  itemListClassName?: string;
+
+  /**
+   * 复选框列表的样式
+   */
+  itemListStyle?: CSSProperties;
+
+  /**
+   * 复选框的排列方向
+   */
+  direction: "horizontal" | "vertical";
 }
 
 export type RapidCheckboxListFormInputRockConfig = SimpleRockConfig & RapidCheckboxListFormInputConfig;

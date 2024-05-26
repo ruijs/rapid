@@ -47,7 +47,6 @@ const page: RapidPage = {
                   type: 'auto',
                   code: 'actions',
                   label: null,
-                  multipleValues: true,
                   formControlType: "rapidCheckboxListFormInput",
                   formControlProps: {
                     listDataSourceCode: "sysActions",
