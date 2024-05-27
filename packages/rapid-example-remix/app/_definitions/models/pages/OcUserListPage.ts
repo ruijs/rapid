@@ -130,7 +130,78 @@ const page: RapidPage = {
           width: '150px',
         },
       ],
+      actionsColumnWidth: "200px",
       actions: [
+        {
+          $type: "rapidFormModalRecordAction",
+          code: "resetPassword",
+          actionText: "重置密码",
+          modalTitle: "重置密码",
+          form: {
+            $type: "rapidForm",
+            items: [
+              {
+                type: "password",
+                code: "password",
+                label: "新密码",
+                required: true,
+                rules: [
+                  // eslint-disable-next-line no-template-curly-in-string
+                  { required: true, message: "请输入${label}" },
+                ],
+              },
+            ],
+            onFinish: [
+              {
+                $action: "setVars",
+                vars: {
+                  "modal-saving": true,
+                }
+              },
+              {
+                $action: "sendHttpRequest",
+                url: `/api/resetPassword`,
+                method: "POST",
+                data: { password: "" },
+                onSuccess: [
+                  {
+                    $action: "setVars",
+                    vars: {
+                      "modal-open": false,
+                      "modal-saving": false,
+                    }
+                  },
+                  {
+                    $action: "antdToast",
+                    type: "success",
+                    content: "密码重置成功。",
+                  },
+                ],
+                onError: [
+                  {
+                    $action: "setVars",
+                    vars: {
+                      "modal-saving": false,
+                    }
+                  },
+                  {
+                    $action: "antdToast",
+                    type: "error",
+                    $exps: {
+                      content: "$event.args[0].message",
+                    },
+                  },
+                ],
+                $exps: {
+                  data: "$event.args[0]"
+                },
+              },
+            ],
+          },
+          $exps: {
+            "form.fixedFields.userId": "$slot.record.id",
+          },
+        },
         {
           $type: "sonicRecordActionEditEntity",
           code: 'edit',

@@ -143,7 +143,17 @@ export default {
         },
         ...(formActionRocks.length ? [formActionsRowConfig] : []),
       ],
-      onFinish: props.onFinish,
+      onFinish: [
+        {
+          $action: "script",
+          script: async (event: RockEvent) => {
+            if (props.onFinish) {
+              const formValues = Object.assign({}, event.args[0], props.fixedFields);
+              await handleComponentEvent("onFinish", event.framework, event.page as any, event.scope, event.sender, props.onFinish, [formValues]);
+            }
+          }
+        }
+      ],
       onValuesChange: {
         $action: "script",
         script: onValuesChange,

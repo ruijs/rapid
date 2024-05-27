@@ -80,6 +80,11 @@ export type RapidRecordActionBase = {
    */
   recordId?: string;
 
+  /**
+   * 当前记录
+   */
+  record?: Record<string, any>;
+
   onAction?: RockEventHandlerConfig;
   $exps?: RockPropExpressions;
 }

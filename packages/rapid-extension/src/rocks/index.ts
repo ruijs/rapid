@@ -10,10 +10,12 @@ import RapidDocumentFormControl from "./rapid-document-form-control/RapidDocumen
 import RapidEntityForm from "./rapid-entity-form/RapidEntityForm";
 import RapidEntityList from "./rapid-entity-list/RapidEntityList";
 import RapidFileSizeRenderer from "./rapid-file-size-renderer/RapidFileSizeRenderer";
-import RapidFormItem from "./rapid-form-item/RapidFormItem";
 import RapidForm from "./rapid-form/RapidForm";
+import RapidFormItem from "./rapid-form-item/RapidFormItem";
+import RapidFormModalRecordAction from "./rapid-form-modal-record-action/RapidFormModalRecordAction";
 import RapidJsonRenderer from "./rapid-json-renderer/RapidJsonRenderer";
 import RapidLinkRenderer from "./rapid-link-renderer/RapidLinkRenderer";
+import RapidModalRecordAction from "./rapid-modal-record-action/RapidModalRecordAction";
 import RapidNumberRenderer from "./rapid-number-renderer/RapidNumberRenderer";
 import RapidObjectRenderer from "./rapid-object-renderer/RapidObjectRenderer";
 import RapidOptionFieldRenderer from "./rapid-option-field-renderer/RapidOptionFieldRenderer";
@@ -56,8 +58,10 @@ export default [
   RapidFileSizeRenderer,
   RapidForm,
   RapidFormItem,
+  RapidFormModalRecordAction,
   RapidJsonRenderer,
   RapidLinkRenderer,
+  RapidModalRecordAction,
   RapidNumberRenderer,
   RapidObjectRenderer,
   RapidOptionFieldRenderer,
