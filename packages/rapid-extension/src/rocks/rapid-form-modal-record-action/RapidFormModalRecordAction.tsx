@@ -1,8 +1,9 @@
-import { MoveStyleUtils, type Rock, type RockConfig } from "@ruiapp/move-style";
+import { MoveStyleUtils, RuiEvent, handleComponentEvent, type Rock, type RockConfig } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidFormModalRecordActionMeta from "./RapidFormModalRecordActionMeta";
 import type { RapidFormModalRecordActionRockConfig } from "./rapid-form-modal-record-action-types";
 import { cloneDeep } from "lodash";
+import { message } from "antd";
 
 export default {
   onInit(context, props) {
@@ -16,6 +17,35 @@ export default {
     const formRockId = `${props.$id}-form-${props.$slot.index}`;
     const formRockConfig = cloneDeep(props.form);
     formRockConfig.$id = formRockId;
+    formRockConfig.onFinish = [
+      {
+        $action: "script",
+        script: async (event: RuiEvent) => {
+          event.scope.setVars({
+            "modal-saving": true,
+          });
+
+          try {
+            await handleComponentEvent("onModalOk", event.framework, event.page as any, event.scope, event.sender, props.onModalOk, [event.args[0]]);
+
+            event.scope.setVars({
+              "modal-saving": false,
+              "modal-open": false,
+            });
+            message.success(props.successMessage);
+          } catch (ex) {
+            event.scope.setVars({
+              "modal-saving": false,
+            });
+            let errMsg = ex.message;
+            if (props.errorMessage) {
+              errMsg = props.errorMessage + errMsg;
+            }
+            message.error(errMsg);
+          }
+        },
+      },
+    ];
 
     const actionLinkRockConfig: RockConfig = {
       ...MoveStyleUtils.omitSystemRockConfigFields(props),

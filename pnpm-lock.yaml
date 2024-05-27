@@ -146,23 +146,23 @@ importers:
         specifier: ^1.19.3
         version: 1.19.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@ruiapp/antd-extension':
-        specifier: ^0.1.28
-        version: 0.1.28(@ruiapp/move-style@0.1.26(lodash@4.17.21))(@ruiapp/react-renderer@0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        specifier: ^0.1.30
+        version: 0.1.30(@ruiapp/move-style@0.1.28(lodash@4.17.21))(@ruiapp/react-renderer@0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@ruiapp/designer-extension':
-        specifier: ^0.1.26
-        version: 0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(@ruiapp/react-renderer@0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        specifier: ^0.1.28
+        version: 0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(@ruiapp/react-renderer@0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@ruiapp/designer-hud':
         specifier: ^0.0.5
-        version: 0.0.5(@ruiapp/move-style@0.1.26(lodash@4.17.21))(@ruiapp/react-renderer@0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/node@18.19.14)(@types/react@18.2.78)(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 0.0.5(@ruiapp/move-style@0.1.28(lodash@4.17.21))(@ruiapp/react-renderer@0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/node@18.19.14)(@types/react@18.2.78)(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@ruiapp/echarts-extension':
-        specifier: ^0.1.26
-        version: 0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(@ruiapp/react-renderer@0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(echarts@5.5.0)(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        specifier: ^0.1.28
+        version: 0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(@ruiapp/react-renderer@0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(echarts@5.5.0)(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@ruiapp/monaco-extension':
-        specifier: ^0.1.26
-        version: 0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(@ruiapp/react-renderer@0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        specifier: ^0.1.28
+        version: 0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(@ruiapp/react-renderer@0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@ruiapp/move-style':
-        specifier: ^0.1.26
-        version: 0.1.26(lodash@4.17.21)
+        specifier: ^0.1.28
+        version: 0.1.28(lodash@4.17.21)
       '@ruiapp/rapid-core':
         specifier: workspace:^
         version: link:../rapid-core
@@ -173,11 +173,11 @@ importers:
         specifier: workspace:^
         version: link:../rapid-extension
       '@ruiapp/react-renderer':
-        specifier: ^0.1.26
-        version: 0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        specifier: ^0.1.28
+        version: 0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@ruiapp/react-rocks':
-        specifier: ^0.1.27
-        version: 0.1.27(@babel/runtime@7.24.4)(@ruiapp/move-style@0.1.26(lodash@4.17.21))(@ruiapp/react-renderer@0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(antd@4.24.15(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        specifier: ^0.1.29
+        version: 0.1.29(@babel/runtime@7.24.4)(@ruiapp/move-style@0.1.28(lodash@4.17.21))(@ruiapp/react-renderer@0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(antd@4.24.15(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       ahooks:
         specifier: ^3.7.10
         version: 3.7.11(react@18.2.0)
@@ -349,11 +349,11 @@ importers:
   packages/rapid-extension:
     dependencies:
       '@ruiapp/move-style':
-        specifier: ^0.1.26
-        version: 0.1.26(lodash@4.17.21)
+        specifier: ^0.1.28
+        version: 0.1.28(lodash@4.17.21)
       '@ruiapp/react-renderer':
-        specifier: ^0.1.26
-        version: 0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        specifier: ^0.1.28
+        version: 0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       axios:
         specifier: ^1.1.2
         version: 1.6.7
@@ -2187,20 +2187,20 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@ruiapp/antd-extension@0.1.28':
-    resolution: {integrity: sha512-MMu+WNP/2vrnMc8DOjRpEnlEjt7lnmXEAvwCwuPuSRDuJd+UIE2DiBAAo9xgYiCHqLACRYYQPI9RW+jsn1DF1Q==}
+  '@ruiapp/antd-extension@0.1.30':
+    resolution: {integrity: sha512-aYTnJ7Mb+OjJuHc117Fbqp2KgKf1NEWg7R4dI+TaHeFZjOPGSoRA/kxlqIzeb7+CQ627kJLTf3x/thpW3wyknQ==}
     peerDependencies:
-      '@ruiapp/move-style': ^0.1.26
-      '@ruiapp/react-renderer': ^0.1.26
+      '@ruiapp/move-style': ^0.1.28
+      '@ruiapp/react-renderer': ^0.1.28
       lodash: ^4.17.21
       react: ^18.2.0
       react-dom: ^18.2.0
 
-  '@ruiapp/designer-extension@0.1.26':
-    resolution: {integrity: sha512-mOf+v/J+4ICbP4vMY3dP/OkgFxIPt0xGMqy2AFdeg5P9pAfANWRLt980FniYEd+kNNW7w6xGOcnn+IkhdvBpNQ==}
+  '@ruiapp/designer-extension@0.1.28':
+    resolution: {integrity: sha512-2I4Tm/0TAJKHfpRoQevpLbzuf5Y0yuTnwPSfK2SXST+5baIfj6pYU2RTB/nI4DxJYsUOkHwniKdn8inDuryhaA==}
     peerDependencies:
-      '@ruiapp/move-style': ^0.1.26
-      '@ruiapp/react-renderer': ^0.1.26
+      '@ruiapp/move-style': ^0.1.28
+      '@ruiapp/react-renderer': ^0.1.28
       lodash: ^4.17.21
       react: ^18.2.0
       react-dom: ^18.2.0
@@ -2215,25 +2215,25 @@ packages:
       react: ^18.2.0
       react-dom: ^18.2.0
 
-  '@ruiapp/echarts-extension@0.1.26':
-    resolution: {integrity: sha512-pmekEw7KMiaBIxENuRodKTse0QgxFu48KpQRcrsholoKVhMGnmRzi7cOPBIp4+ascWDd17OKbNyvQi2x32RIAQ==}
+  '@ruiapp/echarts-extension@0.1.28':
+    resolution: {integrity: sha512-XSXHW2yWgaOJ3ocxEV5deWKrJZoi2XKTyvHyXT528s5IytOZMDB0PkNOe3PXfTP5gR2jsF76qbpSUUJ5Zd0LHg==}
     peerDependencies:
-      '@ruiapp/move-style': ^0.1.26
-      '@ruiapp/react-renderer': ^0.1.26
+      '@ruiapp/move-style': ^0.1.28
+      '@ruiapp/react-renderer': ^0.1.28
       lodash: ^4.17.21
       react: ^18.2.0
       react-dom: ^18.2.0
 
-  '@ruiapp/monaco-extension@0.1.26':
-    resolution: {integrity: sha512-QbPhpba8RaCu2KRZarQ9ULmeJsrcYzZZtcEu+C5ML/txhtjPYYNTU7gV85rNMAL1kCy1QpA3Kel+ljkbzZp9ww==}
+  '@ruiapp/monaco-extension@0.1.28':
+    resolution: {integrity: sha512-HsMlN5fY0j9TVEZtARo3EXN7kx2Bh9plhSAgIBI6bbWFCHOHPNXYrZ3b9QG/WMjKgTseLvqvOw3vV8tF7gWTcg==}
     peerDependencies:
-      '@ruiapp/move-style': ^0.1.26
-      '@ruiapp/react-renderer': ^0.1.26
+      '@ruiapp/move-style': ^0.1.28
+      '@ruiapp/react-renderer': ^0.1.28
       react: ^18.2.0
       react-dom: ^18.2.0
 
-  '@ruiapp/move-style@0.1.26':
-    resolution: {integrity: sha512-Gsif5ip17Pb0lYl31GsPCvNEVTffjZhSdmfr3oi3//0J5ngvVLJfn8DLHA/DkL6Z/8ub8EvJTqBZYdz8+8KhSQ==}
+  '@ruiapp/move-style@0.1.28':
+    resolution: {integrity: sha512-QomZhcTPYZXqkAHBNQbfNQD769neLxDcbC9pJHGShoIXq/hqAzqtUuwWrd2mCHvGVJkyZASGT/zJcjAeH8VX9w==}
     peerDependencies:
       lodash: ^4.17.21
 
@@ -2246,18 +2246,18 @@ packages:
       lodash: ^4.17.21
       tough-cookie: ^4.1.3
 
-  '@ruiapp/react-renderer@0.1.26':
-    resolution: {integrity: sha512-3boQcxKtZe3bMGByxAWguKGKK0+o8TbaNZHmiIwbjTNy5w1rCGklmsUsROgFjLndNrX7dKuQLlJqKy2l747C4Q==}
+  '@ruiapp/react-renderer@0.1.28':
+    resolution: {integrity: sha512-JzjBVbYI+4mQULgp9B/yi8pKuczZH1HeF4JZLcjXIP6Xa3Lg60cmmQtyrMOQ2Iy++7TJrav/6gB8HjYf7KWZjA==}
     peerDependencies:
-      '@ruiapp/move-style': ^0.1.26
+      '@ruiapp/move-style': ^0.1.28
       react: ^18.2.0
       react-dom: ^18.2.0
 
-  '@ruiapp/react-rocks@0.1.27':
-    resolution: {integrity: sha512-ss52LG0V4VD/zZAzgC4sfkszU9kgtO1zIZ+U9JHI8v3noq4BCkv3nmqaYkUK5ZIyuQ22eXPii8vKkfBJG/B/EA==}
+  '@ruiapp/react-rocks@0.1.29':
+    resolution: {integrity: sha512-EeHWw6bieeAMOBIT920l4ENEHxCbjuXZ/wa/qULIDs9Fnv07VdbtNkQND4KH3DJssBKpsJCKBq4ZyuG7S7fTYw==}
     peerDependencies:
-      '@ruiapp/move-style': ^0.1.26
-      '@ruiapp/react-renderer': ^0.1.26
+      '@ruiapp/move-style': ^0.1.28
+      '@ruiapp/react-renderer': ^0.1.28
       antd: 4.24.13
       lodash: ^4.17.21
       react: ^18.2.0
@@ -9438,26 +9438,26 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.14.2':
     optional: true
 
-  '@ruiapp/antd-extension@0.1.28(@ruiapp/move-style@0.1.26(lodash@4.17.21))(@ruiapp/react-renderer@0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@ruiapp/antd-extension@0.1.30(@ruiapp/move-style@0.1.28(lodash@4.17.21))(@ruiapp/react-renderer@0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
-      '@ruiapp/move-style': 0.1.26(lodash@4.17.21)
-      '@ruiapp/react-renderer': 0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@ruiapp/move-style': 0.1.28(lodash@4.17.21)
+      '@ruiapp/react-renderer': 0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       lodash: 4.17.21
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
-  '@ruiapp/designer-extension@0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(@ruiapp/react-renderer@0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@ruiapp/designer-extension@0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(@ruiapp/react-renderer@0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
-      '@ruiapp/move-style': 0.1.26(lodash@4.17.21)
-      '@ruiapp/react-renderer': 0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@ruiapp/move-style': 0.1.28(lodash@4.17.21)
+      '@ruiapp/react-renderer': 0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       lodash: 4.17.21
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
-  '@ruiapp/designer-hud@0.0.5(@ruiapp/move-style@0.1.26(lodash@4.17.21))(@ruiapp/react-renderer@0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/node@18.19.14)(@types/react@18.2.78)(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@ruiapp/designer-hud@0.0.5(@ruiapp/move-style@0.1.28(lodash@4.17.21))(@ruiapp/react-renderer@0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/node@18.19.14)(@types/react@18.2.78)(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
-      '@ruiapp/move-style': 0.1.26(lodash@4.17.21)
-      '@ruiapp/react-renderer': 0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@ruiapp/move-style': 0.1.28(lodash@4.17.21)
+      '@ruiapp/react-renderer': 0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       lodash: 4.17.21
       react: 18.2.0
       react-dnd: 16.0.1(@types/node@18.19.14)(@types/react@18.2.78)(react@18.2.0)
@@ -9469,10 +9469,10 @@ snapshots:
       - '@types/node'
       - '@types/react'
 
-  '@ruiapp/echarts-extension@0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(@ruiapp/react-renderer@0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(echarts@5.5.0)(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@ruiapp/echarts-extension@0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(@ruiapp/react-renderer@0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(echarts@5.5.0)(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
-      '@ruiapp/move-style': 0.1.26(lodash@4.17.21)
-      '@ruiapp/react-renderer': 0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@ruiapp/move-style': 0.1.28(lodash@4.17.21)
+      '@ruiapp/react-renderer': 0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       echarts-for-react: 3.0.2(echarts@5.5.0)(react@18.2.0)
       lodash: 4.17.21
       react: 18.2.0
@@ -9480,15 +9480,15 @@ snapshots:
     transitivePeerDependencies:
       - echarts
 
-  '@ruiapp/monaco-extension@0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(@ruiapp/react-renderer@0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@ruiapp/monaco-extension@0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(@ruiapp/react-renderer@0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
-      '@ruiapp/move-style': 0.1.26(lodash@4.17.21)
-      '@ruiapp/react-renderer': 0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@ruiapp/move-style': 0.1.28(lodash@4.17.21)
+      '@ruiapp/react-renderer': 0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       monaco-editor: 0.34.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
-  '@ruiapp/move-style@0.1.26(lodash@4.17.21)':
+  '@ruiapp/move-style@0.1.28(lodash@4.17.21)':
     dependencies:
       axios: 1.6.8
       events: 3.3.0
@@ -9505,16 +9505,16 @@ snapshots:
       lodash: 4.17.21
       tough-cookie: 4.1.3
 
-  '@ruiapp/react-renderer@0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@ruiapp/react-renderer@0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
-      '@ruiapp/move-style': 0.1.26(lodash@4.17.21)
+      '@ruiapp/move-style': 0.1.28(lodash@4.17.21)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
-  '@ruiapp/react-rocks@0.1.27(@babel/runtime@7.24.4)(@ruiapp/move-style@0.1.26(lodash@4.17.21))(@ruiapp/react-renderer@0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(antd@4.24.15(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@ruiapp/react-rocks@0.1.29(@babel/runtime@7.24.4)(@ruiapp/move-style@0.1.28(lodash@4.17.21))(@ruiapp/react-renderer@0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(antd@4.24.15(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(lodash@4.17.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
-      '@ruiapp/move-style': 0.1.26(lodash@4.17.21)
-      '@ruiapp/react-renderer': 0.1.26(@ruiapp/move-style@0.1.26(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@ruiapp/move-style': 0.1.28(lodash@4.17.21)
+      '@ruiapp/react-renderer': 0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@uiw/color-convert': 2.3.0(@babel/runtime@7.24.4)
       '@uiw/react-color-sketch': 2.3.0(@babel/runtime@7.24.4)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       antd: 4.24.15(react-dom@18.2.0(react@18.2.0))(react@18.2.0)

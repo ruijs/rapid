@@ -9,6 +9,10 @@ export interface RapidFormModalRecordActionConfig extends RapidTableActionConfig
 
   form: RockConfig;
 
+  successMessage?: string;
+
+  errorMessage?: string;
+
   onModalOk: RockEventHandlerConfig;
 
   onModalCancel: RockEventHandlerConfig;

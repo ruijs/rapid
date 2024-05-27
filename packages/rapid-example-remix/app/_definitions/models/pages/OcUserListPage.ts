@@ -151,53 +151,20 @@ const page: RapidPage = {
                 ],
               },
             ],
-            onFinish: [
-              {
-                $action: "setVars",
-                vars: {
-                  "modal-saving": true,
-                }
-              },
-              {
-                $action: "sendHttpRequest",
-                url: `/api/resetPassword`,
-                method: "POST",
-                data: { password: "" },
-                onSuccess: [
-                  {
-                    $action: "setVars",
-                    vars: {
-                      "modal-open": false,
-                      "modal-saving": false,
-                    }
-                  },
-                  {
-                    $action: "antdToast",
-                    type: "success",
-                    content: "密码重置成功。",
-                  },
-                ],
-                onError: [
-                  {
-                    $action: "setVars",
-                    vars: {
-                      "modal-saving": false,
-                    }
-                  },
-                  {
-                    $action: "antdToast",
-                    type: "error",
-                    $exps: {
-                      content: "$event.args[0].message",
-                    },
-                  },
-                ],
-                $exps: {
-                  data: "$event.args[0]"
-                },
-              },
-            ],
           },
+          successMessage: "密码重置成功。",
+          errorMessage: "密码重置失败。",
+          onModalOk: [
+            {
+              $action: "sendHttpRequest",
+              url: `/api/resetPassword`,
+              method: "POST",
+              data: { password: "" },
+              $exps: {
+                data: "$event.args[0]"
+              },
+            },
+          ],
           $exps: {
             "form.fixedFields.userId": "$slot.record.id",
           },

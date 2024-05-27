@@ -30,8 +30,8 @@
   },
   "peerDependencies": {
     "@ant-design/icons": "^4.7.0",
-    "@ruiapp/move-style": "^0.1.26",
-    "@ruiapp/react-renderer": "^0.1.26",
+    "@ruiapp/move-style": "^0.1.28",
+    "@ruiapp/react-renderer": "^0.1.28",
     "antd": "^4.23.6",
     "axios": "^1.1.2",
     "dayjs": "^1.11.7",
