@@ -7,7 +7,7 @@ import { IRpdServer } from "~/core/server";
 export const segmentType = "parameter";
 
 export async function resolveSegmentValue(server: IRpdServer, ruleCode: string, config: SequenceParameterSegmentConfig, input: GenerateSequenceNumbersInput): Promise<string> {
-  const segmentValue = get(input.parameters, config.parameterName, "");
+  const segmentValue = get(input.parameters, config.parameterName, config.defaultContent || "");
 
   return padSegment(
     segmentValue,

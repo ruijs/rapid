@@ -57,6 +57,7 @@ export type SequenceDayOfYearSegmentConfig = {
 export type SequenceParameterSegmentConfig = {
   type: "parameter",
   parameterName: string;
+  defaultContent?: string;
   padding?: string;
   length?: number;
 }
