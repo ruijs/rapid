@@ -116,6 +116,7 @@ export default {
             },
             $exps: {
               href: `$rui.execVarText('${url}', $slot.record)`,
+              ...(column.rendererProps?.$exps || {}),
             }
           };
         }
