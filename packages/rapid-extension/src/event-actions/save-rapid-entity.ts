@@ -1,4 +1,11 @@
-import { handleComponentEvent, type EventAction, type Framework, type Page, type RockEventHandlerConfig, type Scope } from "@ruiapp/move-style";
+import {
+  handleComponentEvent,
+  type EventAction,
+  type Framework,
+  type Page,
+  type RockEventHandlerConfig,
+  type Scope,
+} from "@ruiapp/move-style";
 import { message } from "antd";
 import rapidApi from "../rapidApi";
 import { AxiosResponse } from "axios";
@@ -6,23 +13,50 @@ import { AxiosResponse } from "axios";
 export interface RockEventHandlerSaveRapidEntity {
   $action: "saveRapidEntity";
   entityNamespace: string;
-  entityPluralCode: string; 
+  entityPluralCode: string;
+  customRequest?: {
+    baseUrl?: string;
+    url: string;
+    method: "patch" | "post" | "put";
+  };
   entityId?: string | number;
   fixedFields?: Record<string, any>;
   onSuccess?: RockEventHandlerConfig;
   onError?: RockEventHandlerConfig;
 }
 
-export async function saveRapidEntity(eventName: string, framework: Framework, page: Page, scope: Scope, sender: any, eventHandler: RockEventHandlerSaveRapidEntity, eventArgs: any) {
+export async function saveRapidEntity(
+  eventName: string,
+  framework: Framework,
+  page: Page,
+  scope: Scope,
+  sender: any,
+  eventHandler: RockEventHandlerSaveRapidEntity,
+  eventArgs: any
+) {
   const entity = eventArgs[0];
-  const { entityId, onSuccess, onError } = eventHandler;
+  const { entityId, onSuccess, onError, customRequest } = eventHandler;
   try {
     let res: AxiosResponse<any, any>;
     const requestData = Object.assign({}, entity, eventHandler.fixedFields);
-    if (entityId) {
-      res = await rapidApi.patch(`${eventHandler.entityNamespace}/${eventHandler.entityPluralCode}/${entityId}`, requestData);
+
+    if (customRequest?.url && customRequest?.method) {
+      res = await rapidApi[customRequest.method](
+        `${customRequest.baseUrl || ""}${customRequest.url}`,
+        requestData
+      );
     } else {
-      res = await rapidApi.post(`${eventHandler.entityNamespace}/${eventHandler.entityPluralCode}`, requestData);
+      if (entityId) {
+        res = await rapidApi.patch(
+          `${eventHandler.entityNamespace}/${eventHandler.entityPluralCode}/${entityId}`,
+          requestData
+        );
+      } else {
+        res = await rapidApi.post(
+          `${eventHandler.entityNamespace}/${eventHandler.entityPluralCode}`,
+          requestData
+        );
+      }
     }
 
     let isSuccessfull = false;
@@ -41,18 +75,42 @@ export async function saveRapidEntity(eventName: string, framework: Framework, p
 
     if (isSuccessfull) {
       if (onSuccess) {
-        await handleComponentEvent("onSuccess", framework, page, scope, sender, onSuccess, [res.data])
+        await handleComponentEvent(
+          "onSuccess",
+          framework,
+          page,
+          scope,
+          sender,
+          onSuccess,
+          [res.data]
+        );
       }
     } else {
       if (onError) {
-        await handleComponentEvent("onError", framework, page, scope, sender, onError, [err])
+        await handleComponentEvent(
+          "onError",
+          framework,
+          page,
+          scope,
+          sender,
+          onError,
+          [err]
+        );
       }
     }
 
     return res.data;
   } catch (err: any) {
     if (onError) {
-      await handleComponentEvent("onError", framework, page, scope, sender, onError, [err])
+      await handleComponentEvent(
+        "onError",
+        framework,
+        page,
+        scope,
+        sender,
+        onError,
+        [err]
+      );
     }
   }
 }
