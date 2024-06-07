@@ -25,7 +25,7 @@ export type RapidDataDictionary = {
   /**
    * 字典项值类型
    */
-  valueType: 'string' | 'integer';
+  valueType: "string" | "integer";
 
   /**
    * 字典级别
@@ -68,27 +68,9 @@ export type RapidDataDictionaryEntry = {
   description?: string;
 };
 
-export type RapidFieldType =
-  | 'text'
-  | 'boolean'
-  | 'integer'
-  | 'long'
-  | 'float'
-  | 'double'
-  | 'decimal'
-  | 'date'
-  | 'time'
-  | 'datetime'
-  | 'datetimetz'
-  | 'json'
-  | 'option'
-  | 'relation'
-  | 'relation[]';
+export type RapidFieldType = "text" | "boolean" | "integer" | "long" | "float" | "double" | "decimal" | "date" | "time" | "datetime" | "datetimetz" | "json" | "option" | "relation" | "relation[]";
 
-export type RapidEntity<
-  TEntitySingularCodes extends string = string,
-  TDictionaryCodes extends string = string,
-> = {
+export type RapidEntity<TEntitySingularCodes extends string = string, TDictionaryCodes extends string = string> = {
   /**
    * 表示仅用于描述实体，不在 Rapid 服务中注册
    */
@@ -143,10 +125,7 @@ export type RapidEntity<
 /**
  * 实体字段
  */
-export type RapidField<
-  TEntitySingularCodes extends string = string,
-  TDictionaryCodes extends string = string,
-> = {
+export type RapidField<TEntitySingularCodes extends string = string, TDictionaryCodes extends string = string> = {
   /**
    * 字段编码
    */
@@ -201,7 +180,7 @@ export type RapidField<
   /**
    * 关系类型。
    */
-  relation?: 'one' | 'many';
+  relation?: "one" | "many";
 
   /**
    * 关联对象的singular code
@@ -260,13 +239,7 @@ export interface SearchFormFilterConfiguration {
   filterFields?: string[];
 }
 
-
-export type EntityFilterOptions =
-  | FindEntityRelationalFilterOptions
-  | FindEntityLogicalFilterOptions
-  | FindEntityUnaryFilterOptions
-  | FindEntityExistenceFilterOptions;
-
+export type EntityFilterOptions = FindEntityRelationalFilterOptions | FindEntityLogicalFilterOptions | FindEntityUnaryFilterOptions | FindEntityExistenceFilterOptions;
 
 export interface FindEntityOptions {
   filters?: EntityFilterOptions[] | null;
@@ -312,42 +285,14 @@ export interface CountEntityOptions {
   filters?: EntityFilterOptions[];
 }
 
-export type EntityFilterOperators =
-  | EntityFilterLogicalOperators
-  | EntityFilterFieldOperators;
+export type EntityFilterOperators = EntityFilterLogicalOperators | EntityFilterFieldOperators;
 
-  export type EntityFilterFieldOperators =
-  | EntityFilterRelationalOperators
-  | EntityFilterUnaryOperators
-  | EntityFilterExistenceOperators;
+export type EntityFilterFieldOperators = EntityFilterRelationalOperators | EntityFilterUnaryOperators | EntityFilterExistenceOperators;
 
-export type EntityFilterRelationalOperators =
-  | "eq"
-  | "ne"
-  | "lt"
-  | "lte"
-  | "gt"
-  | "gte"
-  | "in"
-  | "notIn"
-  | "contains"
-  | "notContains"
-  | "containsCS"
-  | "notContainsCS"
-  | "startsWith"
-  | "notStartsWith"
-  | "endsWith"
-  | "notEndsWith";
+export type EntityFilterRelationalOperators = "eq" | "ne" | "lt" | "lte" | "gt" | "gte" | "in" | "notIn" | "contains" | "notContains" | "containsCS" | "notContainsCS" | "startsWith" | "notStartsWith" | "endsWith" | "notEndsWith";
 
-export type EntityFilterLogicalOperators =
-  | "or"
-  | "and";
+export type EntityFilterLogicalOperators = "or" | "and";
 
-export type EntityFilterUnaryOperators =
-  | "null"
-  | "notNull";
+export type EntityFilterUnaryOperators = "null" | "notNull";
 
-export type EntityFilterExistenceOperators =
-  | "exists"
-  | "notExists";
-
+export type EntityFilterExistenceOperators = "exists" | "notExists";

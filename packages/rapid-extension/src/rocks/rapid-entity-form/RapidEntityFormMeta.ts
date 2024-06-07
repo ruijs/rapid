@@ -1,7 +1,6 @@
 import type { RockMeta } from "@ruiapp/move-style";
 import RapidForm from "../rapid-form/RapidForm";
 
-
 export default {
   $type: "rapidEntityForm",
 
@@ -9,7 +8,5 @@ export default {
     ...RapidForm.slots,
   },
 
-  propertyPanels: [
-    ...RapidForm.propertyPanels!,
-  ]
+  propertyPanels: [...RapidForm.propertyPanels!],
 } as RockMeta;

@@ -5,11 +5,7 @@ import { getStateMachineNextSnapshot } from "../stateMachineHelper";
 
 export const code = "sendStateMachineEvent";
 
-export async function handler(
-  plugin: RapidPlugin,
-  ctx: ActionHandlerContext,
-  options: SendStateMachineEventOptions,
-) {
+export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: SendStateMachineEventOptions) {
   const { server, routerContext } = ctx;
   const { response } = routerContext;
 
@@ -32,8 +28,8 @@ export async function handler(
         operator: "eq",
         field: "code",
         value: input.code,
-      }
-    ]
+      },
+    ],
   });
 
   if (!stateMachine) {

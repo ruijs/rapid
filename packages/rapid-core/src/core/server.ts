@@ -13,25 +13,14 @@ export interface IRpdServer {
 
   registerFacilityFactory(factory: FacilityFactory);
 
-  getFacility<TFacility=any>(name: string, options?: any): Promise<TFacility>;
+  getFacility<TFacility = any>(name: string, options?: any): Promise<TFacility>;
 
-  queryDatabaseObject: (
-    sql: string,
-    params?: unknown[] | Record<string, unknown>,
-  ) => Promise<any[]>;
-  tryQueryDatabaseObject: (
-    sql: string,
-    params?: unknown[] | Record<string, unknown>,
-  ) => Promise<any[]>;
+  queryDatabaseObject: (sql: string, params?: unknown[] | Record<string, unknown>) => Promise<any[]>;
+  tryQueryDatabaseObject: (sql: string, params?: unknown[] | Record<string, unknown>) => Promise<any[]>;
   registerMiddleware(middleware: any): void;
-  registerActionHandler(
-    plugin: RapidPlugin,
-    options: IPluginActionHandler,
-  ): void;
+  registerActionHandler(plugin: RapidPlugin, options: IPluginActionHandler): void;
   getActionHandlerByCode(code: string): ActionHandler | undefined;
-  getDataAccessor<T = any>(
-    options: GetDataAccessorOptions,
-  ): IRpdDataAccessor<T>;
+  getDataAccessor<T = any>(options: GetDataAccessorOptions): IRpdDataAccessor<T>;
   getEntityManager<TEntity = any>(singularCode: string): EntityManager<TEntity>;
   registerService(name: string, service: any);
   getService<TService>(name: string): TService;
@@ -39,30 +28,15 @@ export interface IRpdServer {
   appendApplicationConfig(config: Partial<RpdApplicationConfig>);
   appendModelProperties(modelSingularCode: string, properties: RpdDataModelProperty[]);
   getModel(options: GetModelOptions): RpdDataModel | undefined;
-  registerEventHandler<K extends keyof RpdServerEventTypes>(
-    eventName: K,
-    listener: (...args: RpdServerEventTypes[K]) => void,
-  ): this;
-  emitEvent<K extends keyof RpdServerEventTypes>(
-    eventName: K,
-    payload: RpdServerEventTypes[K][1],
-    sender?: RapidPlugin,
-  ): void;
+  registerEventHandler<K extends keyof RpdServerEventTypes>(eventName: K, listener: (...args: RpdServerEventTypes[K]) => void): this;
+  emitEvent<K extends keyof RpdServerEventTypes>(eventName: K, payload: RpdServerEventTypes[K][1], sender?: RapidPlugin): void;
   handleRequest(request: Request, next: Next): Promise<Response>;
   beforeRunRouteActions(handlerContext: ActionHandlerContext): Promise<void>;
   beforeCreateEntity(model: RpdDataModel, options: CreateEntityOptions): Promise<void>;
   beforeUpdateEntity(model: RpdDataModel, options: UpdateEntityByIdOptions, currentEntity: any): Promise<void>;
 }
 
-
-
-export type RpdConfigurationItemTypes =
-  | "integer"
-  | "text"
-  | "boolean"
-  | "date"
-  | "datetime"
-  | "json";
+export type RpdConfigurationItemTypes = "integer" | "text" | "boolean" | "date" | "datetime" | "json";
 
 export interface RpdConfigurationItemOptions {
   /**

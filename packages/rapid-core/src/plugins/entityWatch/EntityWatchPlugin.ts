@@ -4,11 +4,11 @@ import { EntityWatchHandlerContext, EntityWatchPluginInitOptions } from "./Entit
 import EventManager from "~/core/eventManager";
 
 class EntityWatchPlugin implements RapidPlugin {
-  #createEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>
-  #updateEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>
-  #deleteEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>
-  #addRelationsEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>
-  #removeRelationsEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>
+  #createEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
+  #updateEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
+  #deleteEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
+  #addRelationsEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
+  #removeRelationsEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
 
   constructor(options: EntityWatchPluginInitOptions) {
     const { watchers } = options;
@@ -62,12 +62,7 @@ class EntityWatchPlugin implements RapidPlugin {
     server.registerEventHandler("entity.removeRelations", this.handleEntityEvent.bind(this, server, "entity.removeRelations"));
   }
 
-  handleEntityEvent(
-    server: IRpdServer,
-    eventName: keyof RpdServerEventTypes,
-    sender: RapidPlugin,
-    payload: RpdEntityCreateEventPayload
-    ) {
+  handleEntityEvent(server: IRpdServer, eventName: keyof RpdServerEventTypes, sender: RapidPlugin, payload: RpdEntityCreateEventPayload) {
     if (sender === this) {
       return;
     }

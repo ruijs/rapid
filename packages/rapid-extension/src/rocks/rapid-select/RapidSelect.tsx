@@ -12,7 +12,7 @@ export default {
     const { scope } = context;
     let dataList = props.listDataSource?.data?.list;
     if (props.listDataSourceCode) {
-      dataList = scope.stores[props.listDataSourceCode]?.data?.list
+      dataList = scope.stores[props.listDataSourceCode]?.data?.list;
     }
     const listTextFieldName = props.listTextFieldName || "name";
     const listValueFieldName = props.listValueFieldName || "id";
@@ -28,15 +28,15 @@ export default {
       return {
         label,
         value,
-      }
+      };
     });
 
     let selectedValue: string | string[];
     if (props.mode === "multiple") {
       if (props.valueFieldName) {
-        selectedValue = map(props.value, item => {
+        selectedValue = map(props.value, (item) => {
           if (isObject(item)) {
-            return get(item, props.valueFieldName)
+            return get(item, props.valueFieldName);
           }
           return item;
         });
@@ -63,10 +63,10 @@ export default {
         listFilterFields = [listTextFieldName];
       }
 
-      showSearch = true,
-      filterOption = (inputValue, option) => {
-        return objectMatch(option, inputValue, listFilterFields);
-      };
+      (showSearch = true),
+        (filterOption = (inputValue, option) => {
+          return objectMatch(option, inputValue, listFilterFields);
+        });
     }
 
     const antdProps: SelectProps<any> = {
@@ -83,7 +83,7 @@ export default {
       style: { width: "100%" },
     };
 
-    return <Select {...antdProps}></Select>
+    return <Select {...antdProps}></Select>;
   },
 
   ...RapidSelectMeta,

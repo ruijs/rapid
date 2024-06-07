@@ -7,11 +7,7 @@ import { RapidPlugin } from "~/core/server";
 
 export const code = "uploadFile";
 
-export async function handler(
-  plugin: RapidPlugin,
-  ctx: ActionHandlerContext,
-  options: any,
-) {
+export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: any) {
   const { server, applicationConfig, routerContext, input } = ctx;
   const { request, response } = routerContext;
 
@@ -22,12 +18,12 @@ export async function handler(
 
   if (!file) {
     ctx.status = 400;
-    ctx.output = { error: "File not found in request body."};
+    ctx.output = { error: "File not found in request body." };
     return;
   }
 
   const extName = path.extname(file.name);
-  const fileKey = `${uuidv1()}${extName}`
+  const fileKey = `${uuidv1()}${extName}`;
   const filePathName = path.join(server.config.localFileStoragePath, fileKey);
 
   const fileBuffer = await file.arrayBuffer();

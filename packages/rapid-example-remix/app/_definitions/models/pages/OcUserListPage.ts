@@ -19,62 +19,62 @@ const formConfig: Partial<RapidEntityFormConfig> = {
       type: 'treeSelect',
       code: 'department',
       formControlProps: {
-        listDataSourceCode: "departments",
-        listParentField: "parent.id"
-      }
+        listDataSourceCode: 'departments',
+        listParentField: 'parent.id',
+      },
     },
     {
       type: 'auto',
       code: 'roles',
-      formControlType: "rapidCheckboxListFormInput",
+      formControlType: 'rapidCheckboxListFormInput',
       formControlProps: {
-        direction: "vertical"
+        direction: 'vertical',
       },
       listDataFindOptions: {
         orderBy: [
           {
-            field: 'orderNum'
-          }
-        ]
-      }
+            field: 'orderNum',
+          },
+        ],
+      },
     },
     {
       type: 'radioList',
       code: 'state',
       formControlProps: {
-        direction: "vertical"
-      }
+        direction: 'vertical',
+      },
     },
   ],
-}
+};
 
 const page: RapidPage = {
   code: 'oc_user_list',
   name: '用户列表',
   title: '用户管理',
-  permissionCheck: {any: []},
+  permissionCheck: { any: [] },
   view: [
     {
-      $type: "sonicEntityList",
-      entityCode: "OcUser",
-      viewMode: "table",
+      $type: 'sonicEntityList',
+      entityCode: 'OcUser',
+      viewMode: 'table',
       listActions: [
         {
-          $type: "sonicToolbarNewEntityButton",
-          text: "新建",
-          icon: "PlusOutlined",
-          actionStyle: "primary",
-        }
+          $type: 'sonicToolbarNewEntityButton',
+          text: '新建',
+          icon: 'PlusOutlined',
+          actionStyle: 'primary',
+        },
       ],
       extraActions: [
         {
-          $type: "sonicToolbarFormItem",
-          formItemType: "search",
-          placeholder: "Search",
-          actionEventName: "onSearch",
-          filterMode: "contains",
-          filterFields: ["login", "name"],
-        }
+          $type: 'sonicToolbarFormItem',
+          formItemType: 'search',
+          placeholder: 'Search',
+          actionEventName: 'onSearch',
+          filterMode: 'contains',
+          filterFields: ['login', 'name'],
+        },
       ],
       pageSize: 20,
       columns: [
@@ -105,10 +105,10 @@ const page: RapidPage = {
           width: '250px',
           rendererProps: {
             item: {
-              $type: "rapidLinkRenderer",
-              url: "/pages/oc_role_details?id={{id}}",
-              text: "{{name}}",
-            }
+              $type: 'rapidLinkRenderer',
+              url: '/pages/oc_role_details?id={{id}}',
+              text: '{{name}}',
+            },
           },
         },
         {
@@ -121,8 +121,8 @@ const page: RapidPage = {
           code: 'createdBy',
           width: '150px',
           rendererProps: {
-            format: "{{name}}"
-          }
+            format: '{{name}}',
+          },
         },
         {
           type: 'auto',
@@ -130,102 +130,102 @@ const page: RapidPage = {
           width: '150px',
         },
       ],
-      actionsColumnWidth: "200px",
+      actionsColumnWidth: '200px',
       actions: [
         {
-          $type: "rapidFormModalRecordAction",
-          code: "resetPassword",
-          actionText: "重置密码",
-          modalTitle: "重置密码",
+          $type: 'rapidFormModalRecordAction',
+          code: 'resetPassword',
+          actionText: '重置密码',
+          modalTitle: '重置密码',
           form: {
-            $type: "rapidForm",
+            $type: 'rapidForm',
             items: [
               {
-                type: "password",
-                code: "password",
-                label: "新密码",
+                type: 'password',
+                code: 'password',
+                label: '新密码',
                 required: true,
                 rules: [
                   // eslint-disable-next-line no-template-curly-in-string
-                  { required: true, message: "请输入${label}" },
+                  { required: true, message: '请输入${label}' },
                 ],
               },
             ],
           },
-          successMessage: "密码重置成功。",
-          errorMessage: "密码重置失败。",
+          successMessage: '密码重置成功。',
+          errorMessage: '密码重置失败。',
           onModalOk: [
             {
-              $action: "sendHttpRequest",
+              $action: 'sendHttpRequest',
               url: `/api/resetPassword`,
-              method: "POST",
-              data: { password: "" },
+              method: 'POST',
+              data: { password: '' },
               $exps: {
-                data: "$event.args[0]"
+                data: '$event.args[0]',
               },
             },
           ],
           $exps: {
-            "form.fixedFields.userId": "$slot.record.id",
+            'form.fixedFields.userId': '$slot.record.id',
           },
         },
         {
-          $type: "sonicRecordActionEditEntity",
+          $type: 'sonicRecordActionEditEntity',
           code: 'edit',
-          actionType: "edit",
+          actionType: 'edit',
           actionText: '修改',
         },
         {
-          $type: "rapidTableAction",
-          code: "disable",
+          $type: 'rapidTableAction',
+          code: 'disable',
           actionText: '禁用',
           $exps: {
-            _hidden: "$slot.record.state !== 'enabled'"
+            _hidden: "$slot.record.state !== 'enabled'",
           },
           onAction: [
             {
-              $action: "sendHttpRequest",
-              method: "PATCH",
-              data: {state: 'disabled'},
+              $action: 'sendHttpRequest',
+              method: 'PATCH',
+              data: { state: 'disabled' },
               $exps: {
                 url: `"/api/app/oc_users/" + $event.sender['data-record-id']`,
-              }
+              },
             },
             {
-              $action: "loadStoreData",
-              storeName: "list",
-            }
-          ]
+              $action: 'loadStoreData',
+              storeName: 'list',
+            },
+          ],
         },
         {
-          $type: "rapidTableAction",
-          code: "enable",
+          $type: 'rapidTableAction',
+          code: 'enable',
           actionText: '启用',
           $exps: {
-            _hidden: "$slot.record.state === 'enabled'"
+            _hidden: "$slot.record.state === 'enabled'",
           },
           onAction: [
             {
-              $action: "sendHttpRequest",
-              method: "PATCH",
-              data: {state: 'enabled'},
+              $action: 'sendHttpRequest',
+              method: 'PATCH',
+              data: { state: 'enabled' },
               $exps: {
                 url: `"/api/app/oc_users/" + $event.sender['data-record-id']`,
-              }
+              },
             },
             {
-              $action: "loadStoreData",
-              storeName: "list",
-            }
-          ]
+              $action: 'loadStoreData',
+              storeName: 'list',
+            },
+          ],
         },
         {
-          $type: "sonicRecordActionDeleteEntity",
+          $type: 'sonicRecordActionDeleteEntity',
           code: 'delete',
           actionType: 'delete',
           actionText: '删除',
-          dataSourceCode: "list",
-          entityCode: "OcUser",
+          dataSourceCode: 'list',
+          entityCode: 'OcUser',
         },
       ],
       newForm: cloneDeep(formConfig),
@@ -252,18 +252,17 @@ const page: RapidPage = {
       },
       stores: [
         {
-          type: "entityStore",
-          name: "departments",
-          entityCode: "OcDepartment",
-          properties: ["id", "code", "name", "parent", "orderNum", "createdAt"],
-          filters: [
-          ],
+          type: 'entityStore',
+          name: 'departments',
+          entityCode: 'OcDepartment',
+          properties: ['id', 'code', 'name', 'parent', 'orderNum', 'createdAt'],
+          filters: [],
           orderBy: [
             {
               field: 'orderNum',
-            }
+            },
           ],
-        }
+        },
       ],
     },
   ],

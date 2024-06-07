@@ -2,18 +2,11 @@
  * Webhooks plugin
  */
 
-import {
-  RpdApplicationConfig,
-  RpdEntityCreateEventPayload,
-  RpdEntityDeleteEventPayload,
-  RpdEntityUpdateEventPayload,
-  RpdServerEventTypes,
-} from "~/types";
+import { RpdApplicationConfig, RpdEntityCreateEventPayload, RpdEntityDeleteEventPayload, RpdEntityUpdateEventPayload, RpdServerEventTypes } from "~/types";
 import { RpdServerPluginExtendingAbilities, RpdServerPluginConfigurableTargetOptions, RpdConfigurationItemOptions, IRpdServer, RapidPlugin } from "~/core/server";
 import { fetchWithTimeout } from "~/utilities/httpUtility";
 import pluginConfig from "./pluginConfig";
 import { indexOf } from "lodash";
-
 
 export interface Webhook {
   name: string;
@@ -26,10 +19,7 @@ export interface Webhook {
   enabled: boolean;
 }
 
-
-function listWebhooks(
-  server: IRpdServer,
-) {
+function listWebhooks(server: IRpdServer) {
   const logger = server.getLogger();
   logger.info("Loading meta of webhooks...");
 
@@ -48,7 +38,6 @@ function listWebhooks(
     logger.crit("Failed to load meta of webhooks.", { error });
   }
 }
-
 
 class WebhooksPlugin implements RapidPlugin {
   #webhooks: Webhook[];
@@ -78,16 +67,9 @@ class WebhooksPlugin implements RapidPlugin {
   }
 
   async registerEventHandlers(server: IRpdServer): Promise<any> {
-    const events: (keyof RpdServerEventTypes)[] = [
-      "entity.create",
-      "entity.update",
-      "entity.delete",
-    ];
+    const events: (keyof RpdServerEventTypes)[] = ["entity.create", "entity.update", "entity.delete"];
     for (const event of events) {
-      server.registerEventHandler(
-        event,
-        this.handleEntityEvent.bind(this, server, event),
-      );
+      server.registerEventHandler(event, this.handleEntityEvent.bind(this, server, event));
     }
   }
 
@@ -97,28 +79,17 @@ class WebhooksPlugin implements RapidPlugin {
     });
   }
 
-  async configureModelProperties(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
+  async configureModelProperties(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {}
 
-  async configureRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
+  async configureRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {}
 
   async onApplicationLoaded(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
     this.#webhooks = await listWebhooks(server);
   }
 
-  async onApplicationReady(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
+  async onApplicationReady(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {}
 
-  async handleEntityEvent(
-    server: IRpdServer,
-    event: keyof RpdServerEventTypes,
-    sender: RapidPlugin,
-    payload:
-      | RpdEntityCreateEventPayload
-      | RpdEntityUpdateEventPayload
-      | RpdEntityDeleteEventPayload,
-  ) {
+  async handleEntityEvent(server: IRpdServer, event: keyof RpdServerEventTypes, sender: RapidPlugin, payload: RpdEntityCreateEventPayload | RpdEntityUpdateEventPayload | RpdEntityDeleteEventPayload) {
     if (sender === this) {
       return;
     }
@@ -140,10 +111,7 @@ class WebhooksPlugin implements RapidPlugin {
         continue;
       }
 
-      if (
-        webhook.namespace != payload.namespace ||
-        webhook.modelSingularCode !== payload.modelSingularCode
-      ) {
+      if (webhook.namespace != payload.namespace || webhook.modelSingularCode !== payload.modelSingularCode) {
         continue;
       }
 

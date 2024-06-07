@@ -1,6 +1,6 @@
 import { RpdDataModel } from "~/types";
 
-export default     {
+export default {
   maintainedBy: "stateMachinePlugin",
   namespace: "svc",
   name: "state_machine",

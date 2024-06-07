@@ -1,6 +1,4 @@
 import { IPluginActionHandler } from "~/core/actionHandler";
 import * as sendStateMachineEvent from "./sendStateMachineEvent";
 
-export default [
-  sendStateMachineEvent,
-] satisfies IPluginActionHandler[];
+export default [sendStateMachineEvent] satisfies IPluginActionHandler[];

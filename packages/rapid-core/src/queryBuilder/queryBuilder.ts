@@ -19,17 +19,14 @@ import {
 const objLeftQuoteChar = '"';
 const objRightQuoteChar = '"';
 
-const relationalOperatorsMap = new Map<EntityFilterRelationalOperators, string>(
-  [
-    ["eq", "="],
-    ["ne", "<>"],
-    ["gt", ">"],
-    ["gte", ">="],
-    ["lt", "<"],
-    ["lte", "<="],
-  ],
-);
-
+const relationalOperatorsMap = new Map<EntityFilterRelationalOperators, string>([
+  ["eq", "="],
+  ["ne", "<>"],
+  ["gt", ">"],
+  ["gte", ">="],
+  ["lt", "<"],
+  ["lte", "<="],
+]);
 
 export interface BuildQueryContext {
   builder: QueryBuilder;
@@ -85,10 +82,12 @@ export default class QueryBuilder {
 
     if (orderBy && orderBy.length) {
       command += " ORDER BY ";
-      command += orderBy.map((item) => {
-        const quotedName = this.quoteObject(item.field);
-        return item.desc ? quotedName + " DESC" : quotedName;
-      }).join(", ");
+      command += orderBy
+        .map((item) => {
+          const quotedName = this.quoteObject(item.field);
+          return item.desc ? quotedName + " DESC" : quotedName;
+        })
+        .join(", ");
     }
 
     if (pagination) {
@@ -148,10 +147,7 @@ export default class QueryBuilder {
 
       let property: RpdDataModelProperty | null = null;
       if (model) {
-        property = find(
-          model.properties,
-          (e: RpdDataModelProperty) => e.code === propertyName,
-        );
+        property = find(model.properties, (e: RpdDataModelProperty) => e.code === propertyName);
       }
 
       if (property && property.type === "json") {
@@ -192,10 +188,7 @@ export default class QueryBuilder {
 
       let property: RpdDataModelProperty | null = null;
       if (model) {
-        property = find(
-          model.properties,
-          (e: RpdDataModelProperty) => (e.columnName || e.code) === propertyName,
-        );
+        property = find(model.properties, (e: RpdDataModelProperty) => (e.columnName || e.code) === propertyName);
       }
 
       if (property && property.type === "json") {
@@ -243,26 +236,16 @@ export default class QueryBuilder {
   }
 }
 
-export function buildFiltersQuery(
-  ctx: BuildQueryContext,
-  filters: EntityFilterOptions[],
-) {
+export function buildFiltersQuery(ctx: BuildQueryContext, filters: EntityFilterOptions[]) {
   return buildFilterQuery(0, ctx, {
     operator: "and",
     filters,
   });
 }
 
-function buildFilterQuery(
-  level: number,
-  ctx: BuildQueryContext,
-  filter: EntityFilterOptions,
-): string {
+function buildFilterQuery(level: number, ctx: BuildQueryContext, filter: EntityFilterOptions): string {
   const { operator } = filter;
-  if (
-    operator === "eq" || operator === "ne" || operator === "gt" ||
-    operator === "gte" || operator === "lt" || operator === "lte"
-  ) {
+  if (operator === "eq" || operator === "ne" || operator === "gt" || operator === "gte" || operator === "lt" || operator === "lte") {
     return buildRelationalFilterQuery(ctx, filter);
   } else if (operator === "and" || operator === "or") {
     return buildLogicalFilterQuery(level, ctx, filter);
@@ -287,11 +270,7 @@ function buildFilterQuery(
   }
 }
 
-function buildLogicalFilterQuery(
-  level: number,
-  ctx: BuildQueryContext,
-  filter: FindEntityLogicalFilterOptions,
-) {
+function buildLogicalFilterQuery(level: number, ctx: BuildQueryContext, filter: FindEntityLogicalFilterOptions) {
   let dbOperator;
   if (filter.operator === "and") {
     dbOperator = " AND ";
@@ -299,18 +278,14 @@ function buildLogicalFilterQuery(
     dbOperator = " OR ";
   }
 
-  let command = filter.filters.map(buildFilterQuery.bind(null, level + 1, ctx))
-    .join(dbOperator);
+  let command = filter.filters.map(buildFilterQuery.bind(null, level + 1, ctx)).join(dbOperator);
   if (level) {
     return `(${command})`;
   }
   return command;
 }
 
-function buildUnaryFilterQuery(
-  ctx: BuildQueryContext,
-  filter: FindEntityUnaryFilterOptions,
-) {
+function buildUnaryFilterQuery(ctx: BuildQueryContext, filter: FindEntityUnaryFilterOptions) {
   let command = ctx.builder.quoteObject(filter.field);
   if (filter.operator === "null") {
     command += " IS NULL";
@@ -320,10 +295,7 @@ function buildUnaryFilterQuery(
   return command;
 }
 
-function buildInFilterQuery(
-  ctx: BuildQueryContext,
-  filter: FindEntitySetFilterOptions,
-) {
+function buildInFilterQuery(ctx: BuildQueryContext, filter: FindEntitySetFilterOptions) {
   let command = ctx.builder.quoteObject(filter.field);
 
   if (filter.operator === "in") {
@@ -337,10 +309,7 @@ function buildInFilterQuery(
   return command;
 }
 
-function buildContainsFilterQuery(
-  ctx: BuildQueryContext,
-  filter: FindEntityRelationalFilterOptions,
-) {
+function buildContainsFilterQuery(ctx: BuildQueryContext, filter: FindEntityRelationalFilterOptions) {
   let command = ctx.builder.quoteObject(filter.field);
 
   command += " LIKE ";
@@ -350,10 +319,7 @@ function buildContainsFilterQuery(
   return command;
 }
 
-function buildNotContainsFilterQuery(
-  ctx: BuildQueryContext,
-  filter: FindEntityRelationalFilterOptions,
-) {
+function buildNotContainsFilterQuery(ctx: BuildQueryContext, filter: FindEntityRelationalFilterOptions) {
   let command = ctx.builder.quoteObject(filter.field);
 
   command += " NOT LIKE ";
@@ -363,10 +329,7 @@ function buildNotContainsFilterQuery(
   return command;
 }
 
-function buildStartsWithFilterQuery(
-  ctx: BuildQueryContext,
-  filter: FindEntityRelationalFilterOptions,
-) {
+function buildStartsWithFilterQuery(ctx: BuildQueryContext, filter: FindEntityRelationalFilterOptions) {
   let command = ctx.builder.quoteObject(filter.field);
 
   command += " LIKE ";
@@ -376,10 +339,7 @@ function buildStartsWithFilterQuery(
   return command;
 }
 
-function buildNotStartsWithFilterQuery(
-  ctx: BuildQueryContext,
-  filter: FindEntityRelationalFilterOptions,
-) {
+function buildNotStartsWithFilterQuery(ctx: BuildQueryContext, filter: FindEntityRelationalFilterOptions) {
   let command = ctx.builder.quoteObject(filter.field);
 
   command += " NOT LIKE ";
@@ -389,10 +349,7 @@ function buildNotStartsWithFilterQuery(
   return command;
 }
 
-function buildEndsWithFilterQuery(
-  ctx: BuildQueryContext,
-  filter: FindEntityRelationalFilterOptions,
-) {
+function buildEndsWithFilterQuery(ctx: BuildQueryContext, filter: FindEntityRelationalFilterOptions) {
   let command = ctx.builder.quoteObject(filter.field);
 
   command += " LIKE ";
@@ -402,10 +359,7 @@ function buildEndsWithFilterQuery(
   return command;
 }
 
-function buildNotEndsWithFilterQuery(
-  ctx: BuildQueryContext,
-  filter: FindEntityRelationalFilterOptions,
-) {
+function buildNotEndsWithFilterQuery(ctx: BuildQueryContext, filter: FindEntityRelationalFilterOptions) {
   let command = ctx.builder.quoteObject(filter.field);
 
   command += " NOT LIKE ";
@@ -415,10 +369,7 @@ function buildNotEndsWithFilterQuery(
   return command;
 }
 
-function buildRelationalFilterQuery(
-  ctx: BuildQueryContext,
-  filter: FindEntityRelationalFilterOptions,
-) {
+function buildRelationalFilterQuery(ctx: BuildQueryContext, filter: FindEntityRelationalFilterOptions) {
   let command = ctx.builder.quoteObject(filter.field);
 
   command += relationalOperatorsMap.get(filter.operator);

@@ -1,11 +1,11 @@
-import * as cron from 'cron';
+import * as cron from "cron";
 import type { RpdApplicationConfig } from "~/types";
 import pluginActionHandlers from "./actionHandlers";
 import pluginRoutes from "./routes";
 import { CronJobConfiguration, CronJobPluginInitOptions } from "./CronJobPluginTypes";
 import { IRpdServer, RapidPlugin, RpdConfigurationItemOptions, RpdServerPluginConfigurableTargetOptions, RpdServerPluginExtendingAbilities } from "~/core/server";
-import { ActionHandlerContext } from '~/core/actionHandler';
-import { find } from 'lodash';
+import { ActionHandlerContext } from "~/core/actionHandler";
+import { find } from "lodash";
 
 class CronJobPlugin implements RapidPlugin {
   #jobs: CronJobConfiguration[];
@@ -34,11 +34,9 @@ class CronJobPlugin implements RapidPlugin {
     return [];
   }
 
-  async initPlugin(server: IRpdServer): Promise<any> {
-  }
+  async initPlugin(server: IRpdServer): Promise<any> {}
 
-  async registerMiddlewares(server: IRpdServer): Promise<any> {
-  }
+  async registerMiddlewares(server: IRpdServer): Promise<any> {}
 
   async registerActionHandlers(server: IRpdServer): Promise<any> {
     for (const actionHandler of pluginActionHandlers) {
@@ -46,30 +44,23 @@ class CronJobPlugin implements RapidPlugin {
     }
   }
 
-  async registerEventHandlers(server: IRpdServer): Promise<any> {
-  }
+  async registerEventHandlers(server: IRpdServer): Promise<any> {}
 
-  async registerMessageHandlers(server: IRpdServer): Promise<any> {
-  }
+  async registerMessageHandlers(server: IRpdServer): Promise<any> {}
 
-  async registerTaskProcessors(server: IRpdServer): Promise<any> {
-  }
+  async registerTaskProcessors(server: IRpdServer): Promise<any> {}
 
-  async onLoadingApplication(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
+  async onLoadingApplication(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {}
 
-  async configureModels(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
+  async configureModels(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {}
 
-  async configureModelProperties(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
+  async configureModelProperties(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {}
 
   async configureRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
     server.appendApplicationConfig({ routes: pluginRoutes });
   }
 
-  async onApplicationLoaded(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
+  async onApplicationLoaded(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {}
 
   async onApplicationReady(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
     for (const job of this.#jobs) {

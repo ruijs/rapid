@@ -6,11 +6,7 @@ import { IRpdServer } from "~/core/server";
 export const segmentType = "dayOfMonth";
 
 export async function resolveSegmentValue(server: IRpdServer, ruleCode: string, config: SequenceDayOfMonthSegmentConfig, input: GenerateSequenceNumbersInput): Promise<string> {
-  const segmentValue = (new Date).getDate().toString();
+  const segmentValue = new Date().getDate().toString();
 
-  return padSegment(
-    segmentValue,
-    config.length || 2,
-    config.padding || "0",
-  );
+  return padSegment(segmentValue, config.length || 2, config.padding || "0");
 }

@@ -3,8 +3,7 @@ import { RockMeta } from "@ruiapp/move-style";
 export default {
   $type: "rapidNumberRenderer",
 
-  slots: {
-  },
+  slots: {},
 
   propertyPanels: [
     {

@@ -26,9 +26,9 @@ export default {
         },
         dataSource: value,
       };
-      return renderRock({context, rockConfig})
+      return renderRock({ context, rockConfig });
     } else if (format) {
-      return map(value, item => {
+      return map(value, (item) => {
         return MoveStyleUtils.fulfillVariablesInString(format, item);
       }).join(", ");
     }

@@ -14,5 +14,4 @@ export interface RapidModalRecordActionConfig extends RapidTableActionConfig {
   onModalCancel: RockEventHandlerConfig;
 }
 
-export interface RapidModalRecordActionRockConfig extends SimpleRockConfig, RapidModalRecordActionConfig {
-}
+export interface RapidModalRecordActionRockConfig extends SimpleRockConfig, RapidModalRecordActionConfig {}

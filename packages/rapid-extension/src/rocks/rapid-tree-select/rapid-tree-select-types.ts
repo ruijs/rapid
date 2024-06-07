@@ -3,7 +3,7 @@ import type { RockEventHandler, RockEventHandlerConfig, SimpleRockConfig } from 
 /**
  * 下拉树选择组件
  */
-export interface RapidTreeSelectConfig  extends SimpleRockConfig {
+export interface RapidTreeSelectConfig extends SimpleRockConfig {
   /**
    * 是否支持清除
    */

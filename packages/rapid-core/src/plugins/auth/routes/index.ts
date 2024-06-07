@@ -4,10 +4,4 @@ import resetPassword from "./resetPassword";
 import signin from "./signin";
 import signout from "./signout";
 
-export default [
-  changePassword,
-  getMyProfile,
-  resetPassword,
-  signin,
-  signout,
-]
+export default [changePassword, getMyProfile, resetPassword, signin, signout];

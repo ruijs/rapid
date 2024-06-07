@@ -6,7 +6,6 @@ export type RapidReferenceRendererConfig = {
   valueFieldName: string;
   textFieldName: string;
   itemRenderer?: RockConfig;
-}
+};
 
-export interface RapidReferenceRendererRockConfig extends SimpleRockConfig, RapidReferenceRendererConfig {
-}
+export interface RapidReferenceRendererRockConfig extends SimpleRockConfig, RapidReferenceRendererConfig {}

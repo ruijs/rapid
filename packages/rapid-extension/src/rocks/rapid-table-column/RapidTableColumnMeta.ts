@@ -9,7 +9,7 @@ export default {
       required: false,
       argumentsToProps: true,
       argumentNames: ["value", "record", "index"],
-    }
+    },
   },
 
   propertyPanels: [
@@ -55,7 +55,7 @@ export default {
               label: "actions",
               value: "actions",
             },
-          ]
+          ],
         },
 
         {
@@ -75,7 +75,7 @@ export default {
               label: "right",
               value: "right",
             },
-          ]
+          ],
         },
 
         {
@@ -90,7 +90,7 @@ export default {
           label: "sortable",
           propName: "sortable",
         },
-      ]
-    }
-  ]
+      ],
+    },
+  ],
 } as RockMeta;

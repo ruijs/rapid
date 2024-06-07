@@ -7,7 +7,7 @@ export default {
     itemRenderer: {
       allowMultiComponents: true,
       required: true,
-    }
+    },
   },
 
   propertyPanels: [

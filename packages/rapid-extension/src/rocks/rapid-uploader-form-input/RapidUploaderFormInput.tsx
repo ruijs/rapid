@@ -7,7 +7,6 @@ import { UploadOutlined } from "@ant-design/icons";
 import { isString } from "lodash";
 import { useCallback } from "react";
 
-
 export default {
   $type: "rapidUploaderFormInput",
 
@@ -23,7 +22,7 @@ export default {
                 key: file.response.fileKey,
                 size: file.size,
                 type: file.type,
-              }
+              },
             ];
 
             handleComponentEvent("onUploaded", context.framework, context.page, context.scope, props, props.onUploaded, eventArgs);
@@ -34,9 +33,11 @@ export default {
 
     const buttonText = props.buttonText || "选择文件";
 
-    return <Upload {...props.uploadProps} onChange={onUploadChange}>
-      <Button icon={<UploadOutlined />}>{buttonText.toString()}</Button>
-    </Upload>
+    return (
+      <Upload {...props.uploadProps} onChange={onUploadChange}>
+        <Button icon={<UploadOutlined />}>{buttonText.toString()}</Button>
+      </Upload>
+    );
   },
 
   ...RapidToolbarLinkMeta,

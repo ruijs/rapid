@@ -3,7 +3,6 @@ import RapidToolbarLinkMeta from "./RapidToolbarPageLinkMeta";
 import { renderRock } from "@ruiapp/react-renderer";
 import { RapidToolbarPageLinkRockConfig } from "./rapid-toolbar-page-link-types";
 
-
 export default {
   $type: "rapidToolbarPageLink",
 
@@ -30,7 +29,7 @@ export default {
     if (props.onAction) {
       rockConfig[actionEventName] = props.onAction;
     }
-    return renderRock({context, rockConfig});
+    return renderRock({ context, rockConfig });
   },
 
   ...RapidToolbarLinkMeta,

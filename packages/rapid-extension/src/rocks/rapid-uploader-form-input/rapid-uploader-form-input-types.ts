@@ -5,7 +5,6 @@ export type RapidUploaderFormInputConfig = {
   buttonText?: string;
 
   uploadProps: UploadProps;
-}
+};
 
-export interface RapidUploaderFormInputRockConfig extends SimpleRockConfig, RapidUploaderFormInputConfig {
-}
+export interface RapidUploaderFormInputRockConfig extends SimpleRockConfig, RapidUploaderFormInputConfig {}

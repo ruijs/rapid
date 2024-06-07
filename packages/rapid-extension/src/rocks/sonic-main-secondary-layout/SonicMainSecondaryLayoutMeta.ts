@@ -1,6 +1,5 @@
 import type { RockMeta } from "@ruiapp/move-style";
 
-
 export default {
   $type: "sonicMainSecondaryLayout",
 
@@ -16,6 +15,5 @@ export default {
     },
   },
 
-  propertyPanels: [
-  ]
+  propertyPanels: [],
 } as RockMeta;

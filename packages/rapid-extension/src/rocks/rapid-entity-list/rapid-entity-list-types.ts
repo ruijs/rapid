@@ -27,7 +27,7 @@ export interface RapidEntityListConfig {
   /**
    * 固定过滤器
    */
-  fixedFilters?: EntityFilterOptions[],
+  fixedFilters?: EntityFilterOptions[];
 
   /**
    * 排序规则
@@ -95,8 +95,7 @@ export interface RapidEntityListConfig {
   onSelectedIdsChange?: RockEventHandlerConfig;
 }
 
-export interface RapidEntityListRockConfig extends SimpleRockConfig, RapidEntityListConfig {
-}
+export interface RapidEntityListRockConfig extends SimpleRockConfig, RapidEntityListConfig {}
 
 export interface RapidEntityListState {
   selectedIds?: any[];

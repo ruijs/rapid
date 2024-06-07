@@ -6,11 +6,4 @@ import * as dayOfMonth from "./dayOfMonth";
 import * as parameter from "./parameter";
 import * as autoIncrement from "./autoIncrement";
 
-export default [
-  literal,
-  year,
-  month,
-  dayOfMonth,
-  parameter,
-  autoIncrement,
-] satisfies SegmentResolver[];
+export default [literal, year, month, dayOfMonth, parameter, autoIncrement] satisfies SegmentResolver[];

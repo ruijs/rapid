@@ -1,6 +1,6 @@
 import { RpdDataModel } from "~/types";
 
-export default     {
+export default {
   maintainedBy: "authManager",
   namespace: "auth",
   name: "access_token",

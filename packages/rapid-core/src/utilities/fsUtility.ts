@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from "fs";
 
 export async function readFile(path: string): Promise<Buffer> {
   return new Promise((resolve, reject) => {
@@ -8,8 +8,8 @@ export async function readFile(path: string): Promise<Buffer> {
       } else {
         resolve(data);
       }
-    })
-  })
+    });
+  });
 }
 
 export async function copyFile(fromPath: string, toPath: string): Promise<void> {
@@ -20,8 +20,8 @@ export async function copyFile(fromPath: string, toPath: string): Promise<void> 
       } else {
         resolve();
       }
-    })
-  })
+    });
+  });
 }
 
 export async function removeFile(path: string): Promise<void> {
@@ -32,8 +32,8 @@ export async function removeFile(path: string): Promise<void> {
       } else {
         resolve();
       }
-    })
-  })
+    });
+  });
 }
 
 export async function moveFile(fromPath: string, toPath: string): Promise<void> {
@@ -44,8 +44,8 @@ export async function moveFile(fromPath: string, toPath: string): Promise<void> 
       } else {
         resolve();
       }
-    })
-  })
+    });
+  });
 }
 
 export async function appendFile(path: string, data: ArrayBuffer): Promise<void> {
@@ -56,7 +56,6 @@ export async function appendFile(path: string, data: ArrayBuffer): Promise<void>
       } else {
         resolve();
       }
-    })
-  })
-
+    });
+  });
 }

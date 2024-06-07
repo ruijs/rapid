@@ -28,29 +28,22 @@ export type RapidActionBase = {
   actionEventName?: string;
 
   onAction?: RockEventHandlerConfig;
-}
+};
 
 export type RapidActionButtonBase = RapidActionBase & {
-  actionStyle?: "default" | "primary" | "dashed" | "text" | "link"
+  actionStyle?: "default" | "primary" | "dashed" | "text" | "link";
   danger?: boolean;
   ghost?: boolean;
   size?: "small" | "middle" | "large";
-}
+};
 
 export type RapidActionButton = RapidActionButtonBase & {
   actionType: "button";
-}
+};
 
-export type RapidRecordAction<TBlock> = 
-  | RapidRecordActionEdit<TBlock>
-  | RapidRecordActionDelete
-  | RapidRecordActionRequest
-  | RapidRecordActionLink
-  | RapidRecordActionPageLink
-  ;
+export type RapidRecordAction<TBlock> = RapidRecordActionEdit<TBlock> | RapidRecordActionDelete | RapidRecordActionRequest | RapidRecordActionLink | RapidRecordActionPageLink;
 
 export type RapidRecordActionBase = {
-
   code: string;
 
   icon?: string;
@@ -87,23 +80,24 @@ export type RapidRecordActionBase = {
 
   onAction?: RockEventHandlerConfig;
   $exps?: RockPropExpressions;
-}
+};
 
 export type RapidActionInteractionConfigBase<TRock> = {
-  interactionMode?: "drawer" | "modal",
+  interactionMode?: "drawer" | "modal";
   interactionContent?: TRock[];
   interactionContentFrom?: {
-    materialCode: string,
-  }
-}
-
-export type RapidRecordActionEdit<TRock> = RapidRecordActionBase & RapidActionInteractionConfigBase<TRock> & {
-  actionType: "edit";
+    materialCode: string;
+  };
 };
+
+export type RapidRecordActionEdit<TRock> = RapidRecordActionBase &
+  RapidActionInteractionConfigBase<TRock> & {
+    actionType: "edit";
+  };
 
 export type RapidRecordActionDelete = RapidRecordActionBase & {
   actionType: "delete";
-}
+};
 
 export type RapidRecordActionLink = RapidRecordActionBase & {
   actionType: "link";
@@ -112,7 +106,7 @@ export type RapidRecordActionLink = RapidRecordActionBase & {
    * 链接地址
    */
   url?: string;
-}
+};
 
 export type RapidRecordActionPageLink = RapidRecordActionBase & {
   actionType: "pageLink";
@@ -121,8 +115,8 @@ export type RapidRecordActionPageLink = RapidRecordActionBase & {
    * 链接页面
    */
   linkPageCode?: string;
-}
+};
 
 export type RapidRecordActionRequest = RapidRecordActionBase & {
   actionType: "request";
-}
+};

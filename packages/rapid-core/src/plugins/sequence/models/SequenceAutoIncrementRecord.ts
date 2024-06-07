@@ -1,6 +1,6 @@
 import { RpdDataModel } from "~/types";
 
-export default     {
+export default {
   maintainedBy: "sequencePlugin",
   namespace: "svc",
   name: "sequence_auto_increment_record",

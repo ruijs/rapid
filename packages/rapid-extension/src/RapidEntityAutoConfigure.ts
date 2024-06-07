@@ -1,12 +1,12 @@
-import { pick, map, defaultTo, snakeCase } from 'lodash';
-import pluralize from 'pluralize';
-import { RapidEntity, RapidField, RapidFieldType } from './types/rapid-entity-types';
+import { pick, map, defaultTo, snakeCase } from "lodash";
+import pluralize from "pluralize";
+import { RapidEntity, RapidField, RapidFieldType } from "./types/rapid-entity-types";
 
-export function getRapidFieldRelation(fieldType: RapidFieldType): RapidField['relation'] {
-  if (fieldType === 'relation') {
-    return 'one';
-  } else if (fieldType === 'relation[]') {
-    return 'many';
+export function getRapidFieldRelation(fieldType: RapidFieldType): RapidField["relation"] {
+  if (fieldType === "relation") {
+    return "one";
+  } else if (fieldType === "relation[]") {
+    return "many";
   }
 }
 
@@ -21,11 +21,9 @@ export function getRapidFieldRelation(fieldType: RapidFieldType): RapidField['re
  * - 自动设置`relation`为`one`或`many`。
  * - 将`required`默认设置为`false`。
  */
-export function autoConfigureRapidField(
-  sourceField: RapidField,
-): RapidField {
+export function autoConfigureRapidField(sourceField: RapidField): RapidField {
   const columnName =
-    sourceField.type === 'relation' || sourceField.type === 'relation[]'
+    sourceField.type === "relation" || sourceField.type === "relation[]"
       ? null // 关系属性不应该设置`columnName`
       : sourceField?.columnName || snakeCase(sourceField.code);
 
@@ -63,14 +61,12 @@ export function autoConfigureRapidField(
  * - 当没有指定`pluralCode`时，将其自动配置为实体`singularCode`字段的复数形式。
  * - 当没有指定`tableName`时，将其自动配置为实体`pluralCode`字段。
  */
-export function autoConfigureRapidEntity(
-  sourceEntity: RapidEntity,
-): RapidEntity {
+export function autoConfigureRapidEntity(sourceEntity: RapidEntity): RapidEntity {
   const singularCode = sourceEntity.singularCode || snakeCase(sourceEntity.code);
   const pluralCode = sourceEntity.pluralCode || pluralize(singularCode);
   const tableName = sourceEntity.tableName || pluralCode;
   let entity: RapidEntity = {
-    ...(pick(sourceEntity, ['code', 'name', 'description']) as any),
+    ...(pick(sourceEntity, ["code", "name", "description"]) as any),
 
     namespace: sourceEntity.namespace,
     singularCode,
@@ -90,9 +86,9 @@ export function autoConfigureRapidEntity(
 function autoConfigureRapidFields(sourceEntity: RapidEntity) {
   let idFields: RapidField[] = [
     {
-      name: 'id',
-      code: 'id',
-      type: 'integer',
+      name: "id",
+      code: "id",
+      type: "integer",
       required: true,
       autoIncrement: true,
     },
@@ -100,61 +96,57 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity) {
 
   let auditFields: RapidField[] = [
     {
-      name: '创建时间',
-      code: 'createdAt',
-      columnName: 'created_at',
-      type: 'datetime',
+      name: "创建时间",
+      code: "createdAt",
+      columnName: "created_at",
+      type: "datetime",
       required: false,
       defaultValue: "now()",
     },
     {
-      name: '创建人',
-      code: 'createdBy',
-      type: 'relation',
-      relation: 'one',
-      targetSingularCode: 'oc_user',
-      targetIdColumnName: 'creator_id',
+      name: "创建人",
+      code: "createdBy",
+      type: "relation",
+      relation: "one",
+      targetSingularCode: "oc_user",
+      targetIdColumnName: "creator_id",
       required: false,
     },
     {
-      name: '更新时间',
-      code: 'updatedAt',
-      columnName: 'updated_at',
-      type: 'datetime',
+      name: "更新时间",
+      code: "updatedAt",
+      columnName: "updated_at",
+      type: "datetime",
       required: false,
     },
     {
-      name: '更新人',
-      code: 'updatedBy',
-      type: 'relation',
-      relation: 'one',
-      targetSingularCode: 'oc_user',
-      targetIdColumnName: 'updater_id',
+      name: "更新人",
+      code: "updatedBy",
+      type: "relation",
+      relation: "one",
+      targetSingularCode: "oc_user",
+      targetIdColumnName: "updater_id",
       required: false,
     },
     {
-      name: '删除时间',
-      code: 'deletedAt',
-      columnName: 'deleted_at',
-      type: 'datetime',
+      name: "删除时间",
+      code: "deletedAt",
+      columnName: "deleted_at",
+      type: "datetime",
       required: false,
     },
     {
-      name: '删除人',
-      code: 'deletedBy',
-      type: 'relation',
-      relation: 'one',
-      targetSingularCode: 'oc_user',
-      targetIdColumnName: 'deleter_id',
+      name: "删除人",
+      code: "deletedBy",
+      type: "relation",
+      relation: "one",
+      targetSingularCode: "oc_user",
+      targetIdColumnName: "deleter_id",
       required: false,
     },
   ];
 
   const userDefinedFields = map(sourceEntity.fields, autoConfigureRapidField);
 
-  return [
-    ...idFields,
-    ...userDefinedFields,
-    ...auditFields,
-  ];
+  return [...idFields, ...userDefinedFields, ...auditFields];
 }

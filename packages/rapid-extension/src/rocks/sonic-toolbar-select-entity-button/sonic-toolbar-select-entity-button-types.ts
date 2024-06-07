@@ -17,7 +17,7 @@ export interface SonicToolbarSelectEntityButtonConfig extends Omit<RapidToolbarB
   /**
    * 固定过滤器
    */
-  fixedFilters?: EntityFilterOptions[],
+  fixedFilters?: EntityFilterOptions[];
 
   /**
    * 排序规则
@@ -55,5 +55,4 @@ export interface SonicToolbarSelectEntityButtonConfig extends Omit<RapidToolbarB
   onSelected?: RockEventHandlerConfig;
 }
 
-export interface SonicToolbarSelectEntityButtonRockConfig extends SimpleRockConfig, SonicToolbarSelectEntityButtonConfig {
-}
+export interface SonicToolbarSelectEntityButtonRockConfig extends SimpleRockConfig, SonicToolbarSelectEntityButtonConfig {}

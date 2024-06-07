@@ -20,40 +20,40 @@ const formConfig: Partial<RapidEntityFormConfig> = {
       code: 'state',
     },
   ],
-}
+};
 
 const page: RapidPage = {
   code: 'oc_role_list',
   name: '角色列表',
   title: '角色管理',
-  permissionCheck: {any: []},
+  permissionCheck: { any: [] },
   view: [
     {
-      $type: "sonicEntityList",
-      entityCode: "OcRole",
-      viewMode: "table",
+      $type: 'sonicEntityList',
+      entityCode: 'OcRole',
+      viewMode: 'table',
       listActions: [
         {
-          $type: "sonicToolbarNewEntityButton",
-          text: "新建",
-          icon: "PlusOutlined",
-          actionStyle: "primary",
-        }
+          $type: 'sonicToolbarNewEntityButton',
+          text: '新建',
+          icon: 'PlusOutlined',
+          actionStyle: 'primary',
+        },
       ],
       extraActions: [
         {
-          $type: "sonicToolbarFormItem",
-          formItemType: "search",
-          placeholder: "Search",
-          actionEventName: "onSearch",
-          filterMode: "contains",
-          filterFields: ["name", "description"],
-        }
+          $type: 'sonicToolbarFormItem',
+          formItemType: 'search',
+          placeholder: 'Search',
+          actionEventName: 'onSearch',
+          filterMode: 'contains',
+          filterFields: ['name', 'description'],
+        },
       ],
       orderBy: [
         {
           field: 'orderNum',
-        }
+        },
       ],
       pageSize: 20,
       columns: [
@@ -63,7 +63,7 @@ const page: RapidPage = {
           fixed: 'left',
           width: '300px',
           rendererProps: {
-            url: "/pages/oc_role_details?id={{id}}",
+            url: '/pages/oc_role_details?id={{id}}',
           },
         },
         {
@@ -88,62 +88,62 @@ const page: RapidPage = {
       ],
       actions: [
         {
-          $type: "sonicRecordActionEditEntity",
+          $type: 'sonicRecordActionEditEntity',
           code: 'edit',
-          actionType: "edit",
+          actionType: 'edit',
           actionText: '修改',
         },
         {
-          $type: "rapidTableAction",
-          code: "disable",
+          $type: 'rapidTableAction',
+          code: 'disable',
           actionText: '禁用',
           $exps: {
-            _hidden: "$slot.record.state !== 'enabled'"
+            _hidden: "$slot.record.state !== 'enabled'",
           },
           onAction: [
             {
-              $action: "sendHttpRequest",
-              method: "PATCH",
-              data: {state: 'disabled'},
+              $action: 'sendHttpRequest',
+              method: 'PATCH',
+              data: { state: 'disabled' },
               $exps: {
                 url: `"/api/app/oc_roles/" + $event.sender['data-record-id']`,
-              }
+              },
             },
             {
-              $action: "loadStoreData",
-              storeName: "list",
-            }
-          ]
+              $action: 'loadStoreData',
+              storeName: 'list',
+            },
+          ],
         },
         {
-          $type: "rapidTableAction",
-          code: "enable",
+          $type: 'rapidTableAction',
+          code: 'enable',
           actionText: '启用',
           $exps: {
-            _hidden: "$slot.record.state === 'enabled'"
+            _hidden: "$slot.record.state === 'enabled'",
           },
           onAction: [
             {
-              $action: "sendHttpRequest",
-              method: "PATCH",
-              data: {state: 'enabled'},
+              $action: 'sendHttpRequest',
+              method: 'PATCH',
+              data: { state: 'enabled' },
               $exps: {
                 url: `"/api/app/oc_roles/" + $event.sender['data-record-id']`,
-              }
+              },
             },
             {
-              $action: "loadStoreData",
-              storeName: "list",
-            }
-          ]
+              $action: 'loadStoreData',
+              storeName: 'list',
+            },
+          ],
         },
         {
-          $type: "sonicRecordActionDeleteEntity",
+          $type: 'sonicRecordActionDeleteEntity',
           code: 'delete',
           actionType: 'delete',
           actionText: '删除',
-          dataSourceCode: "list",
-          entityCode: "OcRole",
+          dataSourceCode: 'list',
+          entityCode: 'OcRole',
         },
       ],
       newForm: cloneDeep(formConfig),

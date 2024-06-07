@@ -34,7 +34,7 @@ export default {
       children: childrenConfig,
     };
 
-    return renderRock({context, rockConfig});
+    return renderRock({ context, rockConfig });
   },
 
   ...RapidLinkRendererMeta,

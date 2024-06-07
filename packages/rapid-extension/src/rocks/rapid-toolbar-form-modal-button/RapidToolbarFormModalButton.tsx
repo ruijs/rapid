@@ -4,11 +4,9 @@ import RapidEntityListMeta from "./RapidToolbarFormModalButtonMeta";
 import type { RapidToolbarFormModalButtonRockConfig } from "./rapid-toolbar-form-modal-button-types";
 
 export default {
-  onInit(context, props) {
-  },
+  onInit(context, props) {},
 
-  onReceiveMessage(message, state, props) {
-  },
+  onReceiveMessage(message, state, props) {},
 
   Renderer(context, props) {
     const buttonRockConfig: RockConfig = {
@@ -20,14 +18,14 @@ export default {
           $action: "setVars",
           vars: {
             "modal-open": true,
-          }
+          },
         },
         {
           $action: "handleEvent",
           eventName: "onModalOpen",
           handlers: props.onModalOpen,
         },
-      ]
+      ],
     };
 
     const modalRockConfig: RockConfig = {
@@ -48,7 +46,7 @@ export default {
           $action: "setVars",
           vars: {
             "modal-open": false,
-          }
+          },
         },
       ],
       onCancel: [
@@ -61,22 +59,19 @@ export default {
           $action: "setVars",
           vars: {
             "modal-open": false,
-          }
-        }
+          },
+        },
       ],
     };
 
     const rockConfig: RockConfig = {
       $type: "scope",
       $id: `${props.$id}-scope`,
-      children: [
-        buttonRockConfig,
-        modalRockConfig,
-      ]
-    }
+      children: [buttonRockConfig, modalRockConfig],
+    };
 
-    return renderRock({context, rockConfig: rockConfig});
+    return renderRock({ context, rockConfig: rockConfig });
   },
 
-  ...RapidEntityListMeta
+  ...RapidEntityListMeta,
 } as Rock<RapidToolbarFormModalButtonRockConfig>;

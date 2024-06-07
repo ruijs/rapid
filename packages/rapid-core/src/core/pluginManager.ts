@@ -13,7 +13,7 @@ class PluginManager {
   }
 
   async loadPlugins(plugins: RapidPlugin[]) {
-    for(const plugin of plugins) {
+    for (const plugin of plugins) {
       this.#plugins.push(plugin);
     }
   }
@@ -73,9 +73,7 @@ class PluginManager {
   }
 
   /** 在加载应用前调用。 */
-  async onLoadingApplication(
-    applicationConfig: RpdApplicationConfig,
-  ) {
+  async onLoadingApplication(applicationConfig: RpdApplicationConfig) {
     for (const plugin of this.#plugins) {
       if (plugin.onLoadingApplication) {
         await plugin.onLoadingApplication(this.#server, applicationConfig);
@@ -84,9 +82,7 @@ class PluginManager {
   }
 
   /** 配置数据模型 */
-  async configureModels(
-    applicationConfig: RpdApplicationConfig,
-  ) {
+  async configureModels(applicationConfig: RpdApplicationConfig) {
     for (const plugin of this.#plugins) {
       if (plugin.configureModels) {
         await plugin.configureModels(this.#server, applicationConfig);
@@ -95,9 +91,7 @@ class PluginManager {
   }
 
   /** 配置模型属性 */
-  async configureModelProperties(
-    applicationConfig: RpdApplicationConfig,
-  ) {
+  async configureModelProperties(applicationConfig: RpdApplicationConfig) {
     for (const plugin of this.#plugins) {
       if (plugin.configureModelProperties) {
         await plugin.configureModelProperties(this.#server, applicationConfig);
@@ -105,11 +99,8 @@ class PluginManager {
     }
   }
 
-
   /** 配置服务 */
-  async configureServices(
-    applicationConfig: RpdApplicationConfig,
-  ) {
+  async configureServices(applicationConfig: RpdApplicationConfig) {
     for (const plugin of this.#plugins) {
       if (plugin.configureServices) {
         await plugin.configureServices(this.#server, applicationConfig);
@@ -118,9 +109,7 @@ class PluginManager {
   }
 
   /** 配置路由 */
-  async configureRoutes(
-    applicationConfig: RpdApplicationConfig,
-  ) {
+  async configureRoutes(applicationConfig: RpdApplicationConfig) {
     for (const plugin of this.#plugins) {
       if (plugin.configureRoutes) {
         await plugin.configureRoutes(this.#server, applicationConfig);
@@ -129,9 +118,7 @@ class PluginManager {
   }
 
   /** 在应用配置加载完成后调用。此时插件可以进行一些数据的初始化工作。 */
-  async onApplicationLoaded(
-    applicationConfig: RpdApplicationConfig,
-  ) {
+  async onApplicationLoaded(applicationConfig: RpdApplicationConfig) {
     for (const plugin of this.#plugins) {
       if (plugin.onApplicationLoaded) {
         await plugin.onApplicationLoaded(this.#server, applicationConfig);
@@ -140,9 +127,7 @@ class PluginManager {
   }
 
   /** 在应用准备完成后调用。此时服务器已经可以处理网络请求。 */
-  async onApplicationReady(
-    applicationConfig: RpdApplicationConfig,
-  ) {
+  async onApplicationReady(applicationConfig: RpdApplicationConfig) {
     for (const plugin of this.#plugins) {
       if (plugin.onApplicationReady) {
         await plugin.onApplicationReady(this.#server, applicationConfig);
@@ -151,9 +136,7 @@ class PluginManager {
   }
 
   /** 在接收到HTTP请求，准备路由上下文时调用。 */
-  async onPrepareRouteContext(
-    routeContext: RouteContext,
-  ) {
+  async onPrepareRouteContext(routeContext: RouteContext) {
     for (const plugin of this.#plugins) {
       if (plugin.onPrepareRouteContext) {
         await plugin.onPrepareRouteContext(this.#server, routeContext);
@@ -162,9 +145,7 @@ class PluginManager {
   }
 
   /** 在接收到HTTP请求，执行 actions 前调用。 */
-  async beforeRunRouteActions(
-    handlerContext: ActionHandlerContext,
-  ) {
+  async beforeRunRouteActions(handlerContext: ActionHandlerContext) {
     for (const plugin of this.#plugins) {
       if (plugin.beforeRunRouteActions) {
         await plugin.beforeRunRouteActions(this.#server, handlerContext);
@@ -173,10 +154,7 @@ class PluginManager {
   }
 
   /** 在创建实体前调用。 */
-  async beforeCreateEntity(
-    model: RpdDataModel,
-    options: CreateEntityOptions,
-  ) {
+  async beforeCreateEntity(model: RpdDataModel, options: CreateEntityOptions) {
     for (const plugin of this.#plugins) {
       if (plugin.beforeCreateEntity) {
         await plugin.beforeCreateEntity(this.#server, model, options);
@@ -185,11 +163,7 @@ class PluginManager {
   }
 
   /** 在更新实体前调用。 */
-  async beforeUpdateEntity(
-    model: RpdDataModel,
-    options: UpdateEntityByIdOptions,
-    currentEntity: any,
-  ) {
+  async beforeUpdateEntity(model: RpdDataModel, options: UpdateEntityByIdOptions, currentEntity: any) {
     for (const plugin of this.#plugins) {
       if (plugin.beforeUpdateEntity) {
         await plugin.beforeUpdateEntity(this.#server, model, options, currentEntity);

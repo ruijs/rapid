@@ -6,11 +6,7 @@ import { RapidPlugin } from "~/core/server";
 
 export const code = "createCollectionEntitiesBatch";
 
-export async function handler(
-  plugin: RapidPlugin,
-  ctx: ActionHandlerContext,
-  options: RunEntityActionHandlerOptions,
-) {
+export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: RunEntityActionHandlerOptions) {
   const { logger, server, input } = ctx;
 
   const { defaultInput, fixedInput } = options;
@@ -22,7 +18,7 @@ export async function handler(
   }
 
   const output: any[] = [];
-  for(const entity of entities) {
+  for (const entity of entities) {
     const mergedEntity = mergeInput(defaultInput?.entity || {}, entity, fixedInput?.entity);
 
     const userId = ctx.routerContext.state?.userId;
@@ -31,9 +27,12 @@ export async function handler(
     }
 
     const entityManager = server.getEntityManager(options.singularCode);
-    const newEntity = await entityManager.createEntity({
-      entity: mergedEntity,
-    }, plugin);
+    const newEntity = await entityManager.createEntity(
+      {
+        entity: mergedEntity,
+      },
+      plugin,
+    );
 
     output.push(newEntity);
   }

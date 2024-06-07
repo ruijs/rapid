@@ -280,7 +280,7 @@ export default {
           columnName: "level",
           type: "text",
           required: false,
-          defaultValue: "'app'"
+          defaultValue: "'app'",
         },
         {
           name: "description",
@@ -325,7 +325,7 @@ export default {
           targetSingularCode: "data_dictionary_entry",
           selfIdColumnName: "dictionary_id",
         },
-      ]
+      ],
     },
     {
       maintainedBy: "metaManager",
@@ -358,7 +358,7 @@ export default {
           columnName: "order_num",
           type: "integer",
           required: true,
-          defaultValue: '0',
+          defaultValue: "0",
         },
         {
           name: "name",
@@ -402,7 +402,7 @@ export default {
           type: "boolean",
           required: false,
         },
-      ]
+      ],
     },
     {
       maintainedBy: "dataManager",

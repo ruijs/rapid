@@ -1,10 +1,7 @@
 import type { Readable, Writable } from "stream";
 import { Stream } from "stream";
 
-export async function writeReadableStreamToWritable(
-  stream: ReadableStream,
-  writable: Writable
-) {
+export async function writeReadableStreamToWritable(stream: ReadableStream, writable: Writable) {
   let reader = stream.getReader();
   let flushable = writable as { flush?: Function };
 
@@ -28,10 +25,7 @@ export async function writeReadableStreamToWritable(
   }
 }
 
-export async function writeAsyncIterableToWritable(
-  iterable: AsyncIterable<Uint8Array>,
-  writable: Writable
-) {
+export async function writeAsyncIterableToWritable(iterable: AsyncIterable<Uint8Array>, writable: Writable) {
   try {
     for await (let chunk of iterable) {
       writable.write(chunk);
@@ -43,10 +37,7 @@ export async function writeAsyncIterableToWritable(
   }
 }
 
-export async function readableStreamToString(
-  stream: ReadableStream<Uint8Array>,
-  encoding?: BufferEncoding
-) {
+export async function readableStreamToString(stream: ReadableStream<Uint8Array>, encoding?: BufferEncoding) {
   let reader = stream.getReader();
   let chunks: Uint8Array[] = [];
 
@@ -63,9 +54,7 @@ export async function readableStreamToString(
   return Buffer.concat(chunks).toString(encoding);
 }
 
-export const createReadableStreamFromReadable = (
-  source: Readable & { readableHighWaterMark?: number }
-) => {
+export const createReadableStreamFromReadable = (source: Readable & { readableHighWaterMark?: number }) => {
   let pump = new StreamPump(source);
   let stream = new ReadableStream(pump, pump);
   return stream;
@@ -90,11 +79,9 @@ class StreamPump {
       resume?: () => void;
       pause?: () => void;
       destroy?: (error?: Error) => void;
-    }
+    },
   ) {
-    this.highWaterMark =
-      stream.readableHighWaterMark ||
-      new Stream.Readable().readableHighWaterMark;
+    this.highWaterMark = stream.readableHighWaterMark || new Stream.Readable().readableHighWaterMark;
     this.accumalatedSize = 0;
     this.stream = stream;
     this.enqueue = this.enqueue.bind(this);
@@ -140,11 +127,7 @@ class StreamPump {
           this.pause();
         }
       } catch (error: any) {
-        this.controller.error(
-          new Error(
-            "Could not create Buffer, chunk must be of type string or an instance of Buffer, ArrayBuffer, or Array or an Array-like Object"
-          )
-        );
+        this.controller.error(new Error("Could not create Buffer, chunk must be of type string or an instance of Buffer, ArrayBuffer, or Array or an Array-like Object"));
         this.cancel();
       }
     }

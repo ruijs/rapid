@@ -4,27 +4,23 @@ import crypto from "crypto";
 
 export function createJwt(payload: Record<string, any>, secret: Secret) {
   return sign(payload, secret, {
-    algorithm: 'HS512',
+    algorithm: "HS512",
   });
 }
 
 export function verifyJwt(token: string, secret: Secret): JwtPayload {
   return verify(token, secret, {
-    algorithms: ['HS512'],
+    algorithms: ["HS512"],
   }) as JwtPayload;
 }
 
 export function decodeJwt(token: string) {
-  return decode(token, { complete: true});
+  return decode(token, { complete: true });
 }
 
 export async function generateJwtSecretKey() {
-  const key = await crypto.subtle.generateKey(
-    { name: "HMAC", hash: "SHA-512" },
-    true,
-    ["sign", "verify"],
-  );
-  
+  const key = await crypto.subtle.generateKey({ name: "HMAC", hash: "SHA-512" }, true, ["sign", "verify"]);
+
   const exportedKey = await crypto.subtle.exportKey("raw", key);
   return base64Encode(exportedKey);
 }

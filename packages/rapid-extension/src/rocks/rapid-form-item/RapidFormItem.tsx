@@ -23,8 +23,7 @@ const formItemTypeToControlRockTypeMap: Record<string, string> = {
   search: "antdInputSearch",
   file: "rapidUploaderFormInput",
   json: "jsonSetterInput",
-}
-
+};
 
 const defaultControlPropsOfFormItemType: Record<string, Record<string, any>> = {
   datetime: {
@@ -43,15 +42,14 @@ const defaultControlPropsOfFormItemType: Record<string, Record<string, any>> = {
     name: "file",
     action: "/api/upload",
     headers: {},
-  }
-}
+  },
+};
 
 const valuePropNameOfFormInput: Record<string, string> = {
   antdSwitch: "checked",
   antdCheckbox: "checked",
   antdUpload: "fileList",
-}
-
+};
 
 export default {
   $type: "rapidFormItem",
@@ -61,7 +59,7 @@ export default {
     let inputRockType = null;
     let childRock: RockConfig = null;
     if (mode === "input") {
-      inputRockType = props.formControlType || formItemTypeToControlRockTypeMap[props.type] || "antdInput"
+      inputRockType = props.formControlType || formItemTypeToControlRockTypeMap[props.type] || "antdInput";
       const defaultFormControlProps = defaultControlPropsOfFormItemType[props.type];
       childRock = {
         $id: `${props.$id}-input`,
@@ -103,14 +101,14 @@ export default {
       name: (props.valueFieldName || props.code)?.split("."), // TODO: should `code` be required for a search form item?
       label: props.label,
       hidden: props.hidden,
-      valuePropName: inputRockType && valuePropNameOfFormInput[inputRockType] || "value",
+      valuePropName: (inputRockType && valuePropNameOfFormInput[inputRockType]) || "value",
       form: props.form,
       children: childRock,
       rules: props.rules,
       $exps: props.$exps,
     };
-    return renderRock({context, rockConfig});
+    return renderRock({ context, rockConfig });
   },
 
-  ...RapidFormItemMeta
+  ...RapidFormItemMeta,
 } as Rock;

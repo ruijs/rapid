@@ -3,7 +3,6 @@ import RapidToolbarMeta from "./RapidToolbarButtonMeta";
 import { renderRock } from "@ruiapp/react-renderer";
 import { RapidToolbarButtonRockConfig } from "./rapid-toolbar-button-types";
 
-
 export default {
   $type: "rapidToolbarButton",
 
@@ -36,7 +35,7 @@ export default {
     if (props.onAction) {
       rockConfig[actionEventName] = props.onAction;
     }
-    return renderRock({context, rockConfig});
+    return renderRock({ context, rockConfig });
   },
 
   ...RapidToolbarMeta,

@@ -3,7 +3,6 @@ import RapidToolbarMeta from "./RapidToolbarMeta";
 import type { RapidToolbarRockConfig } from "./rapid-toolbar-types";
 import { renderRock } from "@ruiapp/react-renderer";
 
-
 export default {
   $type: "rapidToolbar",
 
@@ -37,12 +36,12 @@ export default {
               $type: "antdForm",
               initialValues: {},
               children: props.extras,
-            }
+            },
           ],
         },
       ],
     };
-    return renderRock({context, rockConfig});
+    return renderRock({ context, rockConfig });
   },
 
   ...RapidToolbarMeta,

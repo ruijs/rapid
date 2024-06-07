@@ -21,7 +21,6 @@ export interface IDatabaseAccessor {
   queryDatabaseObject: (sql: string, params?: unknown[] | Record<string, unknown>) => Promise<any[]>;
 }
 
-
 export interface RunEntityActionHandlerOptions {
   /** 模型所在的命名空间 */
   namespace: string;
@@ -137,7 +136,6 @@ export interface IQueryBuilder {
   quoteObject: (name: string) => string;
 }
 
-
 export interface RpdApplicationConfig {
   code?: string;
   name?: string;
@@ -244,21 +242,7 @@ export interface RpdDataModelProperty {
   linkSchema?: string;
 }
 
-export type RpdDataPropertyTypes =
-  | "integer"
-  | "long"
-  | "float"
-  | "double"
-  | "decimal"
-  | "text"
-  | "boolean"
-  | "date"
-  | "datetime"
-  | "json"
-  | "relation"
-  | "relation[]"
-  | "option";
-
+export type RpdDataPropertyTypes = "integer" | "long" | "float" | "double" | "decimal" | "text" | "boolean" | "date" | "datetime" | "json" | "relation" | "relation[]" | "option";
 
 /**
  * 数据字典
@@ -277,7 +261,7 @@ export type RpdDataDictionary = {
   /**
    * 字典项值类型
    */
-  type: 'string' | 'integer';
+  type: "string" | "integer";
 
   /**
    * 字典项
@@ -315,16 +299,12 @@ export type RpdDataDictionaryEntry = {
   disabled: boolean;
 };
 
-
 export interface RpdDataModelExtension {
   code: string;
   config: any;
 }
 
-export type EventHandler<T = any> = (
-  sender: RapidPlugin,
-  payload: T,
-) => void;
+export type EventHandler<T = any> = (sender: RapidPlugin, payload: T) => void;
 
 export interface RpdRoute {
   name: string;
@@ -354,56 +334,21 @@ export interface IRpdDataAccessor<T = any> {
   deleteById(id: any): Promise<void>;
 }
 
-export type EntityFilterRelationalOperators =
-  | "eq"
-  | "ne"
-  | "lt"
-  | "lte"
-  | "gt"
-  | "gte"
-  | "contains"
-  | "notContains"
-  | "containsCS"
-  | "notContainsCS"
-  | "startsWith"
-  | "notStartsWith"
-  | "endsWith"
-  | "notEndsWith";
+export type EntityFilterRelationalOperators = "eq" | "ne" | "lt" | "lte" | "gt" | "gte" | "contains" | "notContains" | "containsCS" | "notContainsCS" | "startsWith" | "notStartsWith" | "endsWith" | "notEndsWith";
 
-export type EntityFilterSetOperators =
-  | "in"
-  | "notIn";
+export type EntityFilterSetOperators = "in" | "notIn";
 
-export type EntityFilterLogicalOperators =
-  | "or"
-  | "and";
+export type EntityFilterLogicalOperators = "or" | "and";
 
-export type EntityFilterUnaryOperators =
-  | "null"
-  | "notNull";
+export type EntityFilterUnaryOperators = "null" | "notNull";
 
-export type EntityFilterExistenceOperators =
-  | "exists"
-  | "notExists";
+export type EntityFilterExistenceOperators = "exists" | "notExists";
 
-export type EntityFilterOperators =
-  | EntityFilterRelationalOperators
-  | EntityFilterSetOperators
-  | EntityFilterLogicalOperators
-  | EntityFilterUnaryOperators
-  | EntityFilterExistenceOperators;
+export type EntityFilterOperators = EntityFilterRelationalOperators | EntityFilterSetOperators | EntityFilterLogicalOperators | EntityFilterUnaryOperators | EntityFilterExistenceOperators;
 
-export type EntityFilterOptions =
-  | FindEntityRelationalFilterOptions
-  | FindEntitySetFilterOptions
-  | FindEntityLogicalFilterOptions
-  | FindEntityUnaryFilterOptions
-  | FindEntityExistenceFilterOptions;
+export type EntityFilterOptions = FindEntityRelationalFilterOptions | FindEntitySetFilterOptions | FindEntityLogicalFilterOptions | FindEntityUnaryFilterOptions | FindEntityExistenceFilterOptions;
 
-export type  EntityNonRelationPropertyFilterOptions =
-  | FindEntityRelationalFilterOptions
-  | FindEntitySetFilterOptions
-  | FindEntityUnaryFilterOptions;
+export type EntityNonRelationPropertyFilterOptions = FindEntityRelationalFilterOptions | FindEntitySetFilterOptions | FindEntityUnaryFilterOptions;
 
 export interface FindEntityOptions {
   filters?: EntityFilterOptions[];
@@ -484,11 +429,11 @@ export interface DeleteEntityOptions {
 export interface AddEntityRelationsOptions {
   id: number;
   property: string;
-  relations: {id?: number, [k: string]: any}[];
+  relations: { id?: number; [k: string]: any }[];
 }
 
 export interface RemoveEntityRelationsOptions {
   id: number;
   property: string;
-  relations: {id?: number, [k: string]: any}[];
+  relations: { id?: number; [k: string]: any }[];
 }

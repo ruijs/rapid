@@ -3,6 +3,5 @@ import type { RockMeta } from "@ruiapp/move-style";
 export default {
   $type: "sonicToolbarFormItem",
 
-  propertyPanels: [
-  ],
+  propertyPanels: [],
 } as RockMeta;

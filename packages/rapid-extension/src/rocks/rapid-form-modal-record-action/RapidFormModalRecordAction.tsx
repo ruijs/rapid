@@ -6,11 +6,9 @@ import { cloneDeep } from "lodash";
 import { message } from "antd";
 
 export default {
-  onInit(context, props) {
-  },
+  onInit(context, props) {},
 
-  onReceiveMessage(message, state, props) {
-  },
+  onReceiveMessage(message, state, props) {},
 
   Renderer(context, props) {
     // TODO: need a better implementation. a component should not care about whether it's in a slot.
@@ -56,7 +54,7 @@ export default {
           $action: "setVars",
           vars: {
             "modal-open": true,
-          }
+          },
         },
         {
           $action: "sendComponentMessage",
@@ -70,7 +68,7 @@ export default {
           eventName: "onModalOpen",
           handlers: props.onModalOpen,
         },
-      ]
+      ],
     };
 
     const modalRockConfig: RockConfig = {
@@ -101,22 +99,19 @@ export default {
           $action: "setVars",
           vars: {
             "modal-open": false,
-          }
-        }
+          },
+        },
       ],
     };
 
     const rockConfig: RockConfig = {
       $type: "scope",
       $id: `${props.$id}-scope-${props.$slot.index}`,
-      children: [
-        actionLinkRockConfig,
-        modalRockConfig,
-      ]
-    }
+      children: [actionLinkRockConfig, modalRockConfig],
+    };
 
-    return renderRock({context, rockConfig: rockConfig});
+    return renderRock({ context, rockConfig: rockConfig });
   },
 
-  ...RapidFormModalRecordActionMeta
+  ...RapidFormModalRecordActionMeta,
 } as Rock<RapidFormModalRecordActionRockConfig>;

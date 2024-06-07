@@ -4,14 +4,10 @@ import type CronJobPlugin from "../CronJobPlugin";
 
 export const code = "runCronJob";
 
-export async function handler(
-  plugin: CronJobPlugin,
-  ctx: ActionHandlerContext,
-  options: RunCronJobActionHandlerOptions,
-) {
+export async function handler(plugin: CronJobPlugin, ctx: ActionHandlerContext, options: RunCronJobActionHandlerOptions) {
   const { server, routerContext } = ctx;
   const { response } = routerContext;
-  
+
   const input: RunCronJobInput = ctx.input;
 
   if (options.code) {
@@ -29,6 +25,5 @@ export async function handler(
 
   await plugin.executeJob(server, job);
 
-  response.json({
-  });
+  response.json({});
 }

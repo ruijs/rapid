@@ -5,7 +5,6 @@ import { RapidDatePickerRockConfig } from "./rapid-date-picker-types";
 import { isString } from "lodash";
 import dayjs from "dayjs";
 
-
 export default {
   $type: "rapidDatePicker",
 
@@ -20,7 +19,7 @@ export default {
       $type: "antdDatePicker",
     };
 
-    return renderRock({context, rockConfig});
+    return renderRock({ context, rockConfig });
   },
 
   ...RapidToolbarLinkMeta,

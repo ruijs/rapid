@@ -1,5 +1,3 @@
 import AccessToken from "./AccessToken";
 
-export default [
-  AccessToken,
-]
+export default [AccessToken];

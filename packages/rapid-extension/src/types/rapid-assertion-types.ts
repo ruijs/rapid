@@ -1,4 +1,4 @@
-export type RapidActionPermissionCheck<TActionCodes=string> = {
+export type RapidActionPermissionCheck<TActionCodes = string> = {
   any?: TActionCodes[];
   all?: TActionCodes[];
-}
+};

@@ -6,11 +6,7 @@ import { first } from "lodash";
 
 export const code = "queryDatabase";
 
-export async function handler(
-  plugin: RapidPlugin,
-  ctx: ActionHandlerContext,
-  options: RunQueryDatabaseHandlerOptions,
-) {
+export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: RunQueryDatabaseHandlerOptions) {
   const { logger, server, input } = ctx;
 
   const { sql, querySingle, defaultInput, fixedInput } = options;

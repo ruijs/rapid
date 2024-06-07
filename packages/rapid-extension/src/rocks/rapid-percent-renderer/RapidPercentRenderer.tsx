@@ -28,8 +28,8 @@ export default {
       }
     }
 
-    return Intl.NumberFormat('Zh-cn', {
-      style: 'percent',
+    return Intl.NumberFormat("Zh-cn", {
+      style: "percent",
       minimumFractionDigits: decimalPlaces,
       useGrouping: useGrouping,
     }).format(value);

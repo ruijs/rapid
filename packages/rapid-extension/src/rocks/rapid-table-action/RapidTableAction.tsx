@@ -4,15 +4,14 @@ import { renderRock } from "@ruiapp/react-renderer";
 import { RapidTableActionRockConfig } from "./rapid-table-action-types";
 import { Modal } from "antd";
 
-
 export default {
   $type: "rapidTableAction",
 
   Renderer(context, props) {
-    const {record, recordId, actionText, confirmText, onAction } = props;
+    const { record, recordId, actionText, confirmText, onAction } = props;
     const rockConfig: RockConfig = {
       $id: `${props.$id}-anchor`,
-      $type: 'anchor',
+      $type: "anchor",
       className: "rui-table-action-link",
       "data-record-id": recordId,
       children: {
@@ -41,7 +40,7 @@ export default {
       ];
     }
 
-    return renderRock({context, rockConfig});
+    return renderRock({ context, rockConfig });
   },
 
   ...RapidToolbarMeta,

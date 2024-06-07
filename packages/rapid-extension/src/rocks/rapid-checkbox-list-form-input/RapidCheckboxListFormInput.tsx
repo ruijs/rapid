@@ -21,7 +21,7 @@ export default {
 
     let itemList = listDataSource?.data?.list;
     if (listDataSourceCode) {
-      itemList = scope.stores[listDataSourceCode]?.data?.list
+      itemList = scope.stores[listDataSourceCode]?.data?.list;
     }
 
     const listTextFieldName = props.listTextFieldName || "name";
@@ -42,14 +42,14 @@ export default {
       return {
         label,
         value,
-      }
+      };
     }
 
     let selectedValue: string[];
     if (props.valueFieldName) {
-      selectedValue = map(props.value, item => {
+      selectedValue = map(props.value, (item) => {
         if (isObject(item)) {
-          return get(item, props.valueFieldName)
+          return get(item, props.valueFieldName);
         }
         return item;
       });
@@ -70,43 +70,45 @@ export default {
           const groupValue = get(group, groupValueFieldName) || index;
           const itemsInGroup = filter(itemList, (item) => get(item, groupByFieldName) === groupValue);
 
-          return <div key={groupValue} style={{marginBottom: "15px", ...props.groupStyle}} className={props.groupClassName}>
-            <h4 style={{fontWeight: "bold", ...props.groupTitleStyle}} className={props.groupTitleClassName}>
-              {
-                get(group, groupTextFieldName, "")
-              }
-            </h4>
-            <div style={props.itemListStyle} className={props.itemListClassName}>
-              <Space direction={props.direction || "horizontal"}>
-                {
-                  itemsInGroup.map((item, index) => {
+          return (
+            <div key={groupValue} style={{ marginBottom: "15px", ...props.groupStyle }} className={props.groupClassName}>
+              <h4 style={{ fontWeight: "bold", ...props.groupTitleStyle }} className={props.groupTitleClassName}>
+                {get(group, groupTextFieldName, "")}
+              </h4>
+              <div style={props.itemListStyle} className={props.itemListClassName}>
+                <Space direction={props.direction || "horizontal"}>
+                  {itemsInGroup.map((item, index) => {
                     const option = getCheckboxOption(item);
-                    return <Checkbox key={index} value={option.value}>{option.label}</Checkbox>
-                  })
-                }
-              </Space>
+                    return (
+                      <Checkbox key={index} value={option.value}>
+                        {option.label}
+                      </Checkbox>
+                    );
+                  })}
+                </Space>
+              </div>
             </div>
-          </div>
+          );
         });
       } else {
-        return <div style={props.itemListStyle} className={props.itemListClassName}>
-          <Space direction={props.direction || "horizontal"}>
-            {
-              itemList.map((item, index) => {
+        return (
+          <div style={props.itemListStyle} className={props.itemListClassName}>
+            <Space direction={props.direction || "horizontal"}>
+              {itemList.map((item, index) => {
                 const option = getCheckboxOption(item);
-                return <Checkbox key={index} value={option.value}>{option.label}</Checkbox>
-              })
-            }
-          </Space>
-        </div>
+                return (
+                  <Checkbox key={index} value={option.value}>
+                    {option.label}
+                  </Checkbox>
+                );
+              })}
+            </Space>
+          </div>
+        );
       }
     }, [groupList, itemList, groupByFieldName]);
 
-    return <Checkbox.Group {...antdProps}>
-      {
-        checkboxList
-      }
-    </Checkbox.Group>
+    return <Checkbox.Group {...antdProps}>{checkboxList}</Checkbox.Group>;
   },
 
   ...RapidCheckboxListFormInputMeta,

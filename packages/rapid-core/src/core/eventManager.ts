@@ -7,10 +7,7 @@ export default class EventManager<EventTypes extends Record<string, any[]>> {
     this.#eventEmitter = new EventEmitter();
   }
 
-  on<K extends keyof EventTypes>(
-    eventName: K,
-    listener: (...args: EventTypes[K]) => void,
-  ) {
+  on<K extends keyof EventTypes>(eventName: K, listener: (...args: EventTypes[K]) => void) {
     this.#eventEmitter.on(eventName as string, listener);
   }
 

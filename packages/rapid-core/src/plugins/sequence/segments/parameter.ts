@@ -9,9 +9,5 @@ export const segmentType = "parameter";
 export async function resolveSegmentValue(server: IRpdServer, ruleCode: string, config: SequenceParameterSegmentConfig, input: GenerateSequenceNumbersInput): Promise<string> {
   const segmentValue = get(input.parameters, config.parameterName, config.defaultContent || "");
 
-  return padSegment(
-    segmentValue,
-    config.length,
-    config.padding,
-  );
+  return padSegment(segmentValue, config.length, config.padding);
 }

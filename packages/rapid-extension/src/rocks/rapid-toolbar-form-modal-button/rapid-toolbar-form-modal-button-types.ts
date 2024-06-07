@@ -14,5 +14,4 @@ export interface RapidToolbarFormModalButtonConfig extends Omit<RapidToolbarButt
   onModalCancel: RockEventHandlerConfig;
 }
 
-export interface RapidToolbarFormModalButtonRockConfig extends SimpleRockConfig, RapidToolbarFormModalButtonConfig {
-}
+export interface RapidToolbarFormModalButtonRockConfig extends SimpleRockConfig, RapidToolbarFormModalButtonConfig {}

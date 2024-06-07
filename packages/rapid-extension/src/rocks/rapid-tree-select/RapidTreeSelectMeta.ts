@@ -3,8 +3,7 @@ import { RockMeta } from "@ruiapp/move-style";
 export default {
   $type: "rapidTreeSelect",
 
-  slots: {
-  },
+  slots: {},
 
   propertyPanels: [
     {
@@ -45,9 +44,9 @@ export default {
               label: "small",
               value: "small",
             },
-          ]
+          ],
         },
-      ]
-    }
-  ]
+      ],
+    },
+  ],
 } as RockMeta;

@@ -27,21 +27,6 @@ export function toIMF(date: Date): string {
   const s = dtPad(date.getUTCSeconds().toString());
   const y = date.getUTCFullYear();
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  return `${days[date.getUTCDay()]}, ${d} ${
-    months[date.getUTCMonth()]
-  } ${y} ${h}:${min}:${s} GMT`;
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return `${days[date.getUTCDay()]}, ${d} ${months[date.getUTCMonth()]} ${y} ${h}:${min}:${s} GMT`;
 }

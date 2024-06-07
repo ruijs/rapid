@@ -6,7 +6,7 @@ export type RapidToolbarConfig = {
   extraClassName?: "";
   items?: RockConfig[];
   extras?: RockConfig[];
-}
+};
 
 // export type RapidToolbarItem = RapidToolbarButtonItem | RapidToolbarSearchFormItem;
 
@@ -39,5 +39,4 @@ export type RapidToolbarConfig = {
 //   formControlProps?: Record<string, any>;
 // }
 
-export interface RapidToolbarRockConfig extends SimpleRockConfig, RapidToolbarConfig {
-}
+export interface RapidToolbarRockConfig extends SimpleRockConfig, RapidToolbarConfig {}

@@ -30,7 +30,7 @@ export default {
       }
     }
 
-    return Intl.NumberFormat('Zh-cn', {
+    return Intl.NumberFormat("Zh-cn", {
       minimumFractionDigits: decimalPlaces,
       useGrouping: useGrouping,
     }).format(value);

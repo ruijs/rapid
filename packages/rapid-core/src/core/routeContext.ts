@@ -33,11 +33,7 @@ export class RouteContext {
     this.response.headers.set(headerName, headerValue);
   }
 
-  json(
-    obj: any,
-    status?: HttpStatus,
-    headers?: HeadersInit,
-  ) {
+  json(obj: any, status?: HttpStatus, headers?: HeadersInit) {
     this.response.json(obj, status, headers);
   }
 

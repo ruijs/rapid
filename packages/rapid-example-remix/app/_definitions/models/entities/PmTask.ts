@@ -37,32 +37,32 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
             states: {
               done: {
                 on: {
-                  close: "closed",
-                  reopen: "reopened"
-                }
+                  close: 'closed',
+                  reopen: 'reopened',
+                },
               },
               closed: {},
               pending: {
                 on: {
-                  start: "processing"
-                }
+                  start: 'processing',
+                },
               },
               reopened: {
                 on: {
-                  start: "processing"
-                }
+                  start: 'processing',
+                },
               },
               processing: {
                 on: {
-                  pause: "pending",
-                  finish: "done"
-                }
-              }
+                  pause: 'pending',
+                  finish: 'done',
+                },
+              },
             },
-            initial: "pending"
-          }
-        }
-      }
+            initial: 'pending',
+          },
+        },
+      },
     },
   ],
 };

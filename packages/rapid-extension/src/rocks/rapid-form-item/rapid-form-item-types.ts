@@ -102,8 +102,7 @@ export type RapidFormItemConfig = {
   rendererProps?: Record<string, any>;
 
   $exps?: RockPropExpressions;
-}
-
+};
 
 /**
  * 搜索表单项
@@ -118,30 +117,8 @@ export type RapidSearchFormItemConfig = {
    * 过滤应用于哪些字段，多个字段任意一个满足条件即可。默认使用表单项编码`code`作为过滤字段。
    */
   filterFields?: string[];
-}
+};
 
-export type RapidFormItemType =
-  | "auto"
-  | "text"
-  | "textarea"
-  | "number"
-  | "switch"
-  | "checkbox"
-  | "checkboxList"
-  | "radioList"
-  | "date"
-  | "time"
-  | "datetime"
-  | "dateRange"
-  | "dateTimeRange"
-  | "select"
-  | "treeSelect"
-  | "search"
-  | "json"
-  | "file"
-  | "custom"
-  ;
+export type RapidFormItemType = "auto" | "text" | "textarea" | "number" | "switch" | "checkbox" | "checkboxList" | "radioList" | "date" | "time" | "datetime" | "dateRange" | "dateTimeRange" | "select" | "treeSelect" | "search" | "json" | "file" | "custom";
 
-
-export interface RapidFormItemRockConfig extends SimpleRockConfig, RapidFormItemConfig {
-}
+export interface RapidFormItemRockConfig extends SimpleRockConfig, RapidFormItemConfig {}

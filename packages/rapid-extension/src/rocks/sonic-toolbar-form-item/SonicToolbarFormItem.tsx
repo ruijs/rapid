@@ -5,7 +5,6 @@ import type { SonicToolbarFormItemRockConfig } from "./sonic-toolbar-form-item-t
 import { RapidFormItemRockConfig } from "../rapid-form-item/rapid-form-item-types";
 import { SearchFormFilterConfiguration } from "../../types/rapid-entity-types";
 
-
 export default {
   Renderer(context, props) {
     const actionEventName = props.actionEventName || "onClick";
@@ -44,16 +43,16 @@ export default {
               store.setPropertyExpression("filters", `$functions.searchParamsToFilters(${JSON.stringify(filterConfigurations)}, $scope.vars)`);
               // 重新加载数据
               store.loadData();
-            }
-          }
-        ]
+            },
+          },
+        ],
       },
     };
 
     if (props.onAction) {
       rockConfig[actionEventName] = props.onAction;
     }
-    return renderRock({context, rockConfig});
+    return renderRock({ context, rockConfig });
   },
 
   ...RapidToolbarFormItemMeta,

@@ -14,7 +14,7 @@ export default {
   onResolveState(props, state) {
     return {
       selectedIds: [],
-    }
+    };
   },
 
   onInit(context, props) {
@@ -24,7 +24,7 @@ export default {
       return;
     }
 
-    const mainEntity = find(entities, item => item.code === entityCode);
+    const mainEntity = find(entities, (item) => item.code === entityCode);
     if (!mainEntity) {
       return;
     }
@@ -32,11 +32,16 @@ export default {
     const dataSourceCode = props.dataSourceCode || "list";
     if (!context.scope.stores[dataSourceCode]) {
       const { columns, pageSize } = props;
-      const properties: string[] = uniq(props.queryProperties || [
-        'id',
-        ...map(filter(columns, column => !!column.code), column => column.code),
-        ...props.extraProperties || [],
-      ]);
+      const properties: string[] = uniq(
+        props.queryProperties || [
+          "id",
+          ...map(
+            filter(columns, (column) => !!column.code),
+            (column) => column.code,
+          ),
+          ...(props.extraProperties || []),
+        ],
+      );
       const listDataStoreConfig: EntityStoreConfig = {
         type: "entityStore",
         name: dataSourceCode,
@@ -45,17 +50,23 @@ export default {
         properties,
         orderBy: props.orderBy || [
           {
-            field: 'id',
-          }
+            field: "id",
+          },
         ],
-        pagination: pageSize > 0 ? {
-          limit: pageSize,
-          offset: ((props.pageNum || 1) - 1) * pageSize,
-        } : undefined,
-        $exps: pageSize > 0 ? {
-          "pagination.limit": `${pageSize}`,
-          "pagination.offset": `(($scope.vars['stores-${dataSourceCode}-pageNum'] || 1) - 1) * ${pageSize}`,
-        } : undefined,
+        pagination:
+          pageSize > 0
+            ? {
+                limit: pageSize,
+                offset: ((props.pageNum || 1) - 1) * pageSize,
+              }
+            : undefined,
+        $exps:
+          pageSize > 0
+            ? {
+                "pagination.limit": `${pageSize}`,
+                "pagination.offset": `(($scope.vars['stores-${dataSourceCode}-pageNum'] || 1) - 1) * ${pageSize}`,
+              }
+            : undefined,
       };
       context.scope.addStore(listDataStoreConfig);
     }
@@ -74,10 +85,10 @@ export default {
     let mainEntity: RapidEntity | undefined;
 
     if (entityCode) {
-      mainEntity = find(entities, item => item.code === entityCode);
+      mainEntity = find(entities, (item) => item.code === entityCode);
       if (!mainEntity) {
-        const errorRockConfig = generateRockConfigOfError(new Error(`Entitiy with code '${entityCode}' not found.`))
-        return renderRock({context, rockConfig: errorRockConfig});
+        const errorRockConfig = generateRockConfigOfError(new Error(`Entitiy with code '${entityCode}' not found.`));
+        return renderRock({ context, rockConfig: errorRockConfig });
       }
     }
 
@@ -117,7 +128,7 @@ export default {
             $exps: {
               href: `$rui.execVarText('${url}', $slot.record)`,
               ...(column.rendererProps?.$exps || {}),
-            }
+            },
           };
         }
       } else if (column.type === "auto") {
@@ -147,7 +158,7 @@ export default {
           $exps: {
             value: "$slot.value",
             ...(column.rendererProps?.$exps || {}),
-          }
+          },
         };
       }
 
@@ -157,7 +168,7 @@ export default {
         cell,
       };
       tableColumnRocks.push(tableColumnRock);
-    })
+    });
 
     if (!props.hideActionsColumn) {
       forEach(props.actions, (recordActionConfig) => {
@@ -168,11 +179,11 @@ export default {
       if (props.actions && props.actions.length) {
         const tableActionsColumnRock: RockConfig = {
           $type: "rapidTableColumn",
-          title: '操作',
-          code: 'id',
-          key: '_actions',
-          width: props.actionsColumnWidth || '150px',
-          fixed: 'right',
+          title: "操作",
+          code: "id",
+          key: "_actions",
+          width: props.actionsColumnWidth || "150px",
+          fixed: "right",
           cell: props.actions,
         };
         tableColumnRocks.push(tableActionsColumnRock);
@@ -190,7 +201,7 @@ export default {
             $exps: {
               [`vars.${props.$id}-selectedIds`]: "$event.args[0]",
               [`vars.${props.$id}-selectedRecords`]: "$event.args[1]",
-            }
+            },
           },
           {
             $action: "handleEvent",
@@ -198,9 +209,9 @@ export default {
             handlers: props.onSelectedIdsChange,
             $exps: {
               args: "[{selectedIds: $event.args[0], selectedRecords: $event.args[1]}]",
-            }
-          }
-        ]
+            },
+          },
+        ],
       };
     }
 
@@ -210,9 +221,11 @@ export default {
       $exps: {
         dataSource: `$scope.stores.${dataSourceCode}.data?.list`,
         pagination: props.pageSize > 0 ? `{pageSize: ${props.pageSize}, current: $scope.vars["${`stores-${dataSourceCode}-pageNum`}"], total: $scope.stores.${dataSourceCode}.data?.total}` : "false",
-        ...(selectionMode !== "none" ? {
-          "rowSelection.selectedRowKeys": `$scope.vars['${props.$id}-selectedIds']`
-        } : {}),
+        ...(selectionMode !== "none"
+          ? {
+              "rowSelection.selectedRowKeys": `$scope.vars['${props.$id}-selectedIds']`,
+            }
+          : {}),
       },
       size: "small",
       rowKey: "id",
@@ -224,47 +237,49 @@ export default {
       listIdField: props.listIdField,
       listParentField: props.listParentField,
       treeChildrenField: props.treeChildrenField,
-      onRowClick: props.selectOnClickRow ? [
-        {
-          $action: "script",
-          script: async (event: RockEvent) => {
-            const { framework, page, scope } = event;
-            let nextSelectedIds = [];
-            let nextSelectedRecords = [];
-            const { record } = event.args[0];
-            const recordId = record.id;
-            if (selectionMode === "single") {
-              nextSelectedIds.push(recordId);
-              nextSelectedRecords.push(record);
-            } else if (selectionMode === "multiple") {
-              const currentSelectedIds = scope.vars[`${props.$id}-selectedIds`] || [];
-              const currentSelectedRecords = scope.vars[`${props.$id}-selectedRecords`] || [];
-              if (findIndex(currentSelectedIds, item => item === recordId) === -1) {
-                nextSelectedIds = [...currentSelectedIds, recordId];
-                nextSelectedRecords = [...currentSelectedRecords, record];
-              } else {
-                nextSelectedIds = reject(currentSelectedIds, item => item === recordId);
-                nextSelectedRecords = reject(currentSelectedRecords, item => item.id === recordId);
-              }
-            }
-            scope.setVars({
-              [`${props.$id}-selectedIds`]: nextSelectedIds,
-              [`${props.$id}-selectedRecords`]: nextSelectedRecords,
-            });
-            handleComponentEvent("onSelectedIdsChange", framework, page as any, scope, props, props.onSelectedIdsChange, [
-              {
-                selectedIds: nextSelectedIds,
-                selectedRecords: nextSelectedRecords,
-              }
-            ]);
-          }
-        },
-      ] : null,
+      onRowClick: props.selectOnClickRow
+        ? [
+            {
+              $action: "script",
+              script: async (event: RockEvent) => {
+                const { framework, page, scope } = event;
+                let nextSelectedIds = [];
+                let nextSelectedRecords = [];
+                const { record } = event.args[0];
+                const recordId = record.id;
+                if (selectionMode === "single") {
+                  nextSelectedIds.push(recordId);
+                  nextSelectedRecords.push(record);
+                } else if (selectionMode === "multiple") {
+                  const currentSelectedIds = scope.vars[`${props.$id}-selectedIds`] || [];
+                  const currentSelectedRecords = scope.vars[`${props.$id}-selectedRecords`] || [];
+                  if (findIndex(currentSelectedIds, (item) => item === recordId) === -1) {
+                    nextSelectedIds = [...currentSelectedIds, recordId];
+                    nextSelectedRecords = [...currentSelectedRecords, record];
+                  } else {
+                    nextSelectedIds = reject(currentSelectedIds, (item) => item === recordId);
+                    nextSelectedRecords = reject(currentSelectedRecords, (item) => item.id === recordId);
+                  }
+                }
+                scope.setVars({
+                  [`${props.$id}-selectedIds`]: nextSelectedIds,
+                  [`${props.$id}-selectedRecords`]: nextSelectedRecords,
+                });
+                handleComponentEvent("onSelectedIdsChange", framework, page as any, scope, props, props.onSelectedIdsChange, [
+                  {
+                    selectedIds: nextSelectedIds,
+                    selectedRecords: nextSelectedRecords,
+                  },
+                ]);
+              },
+            },
+          ]
+        : null,
       onChange: [
         {
           $action: "script",
           script: async (event: RockEvent) => {
-            const [ pagination ] = event.args;
+            const [pagination] = event.args;
             const store: EntityStore = event.scope.stores[dataSourceCode] as any;
             // store.setPagination({
             //   limit: props.pageSize,
@@ -272,9 +287,9 @@ export default {
             // });
             event.scope.setVars({
               [`stores-${dataSourceCode}-pageNum`]: pagination.current,
-            })
+            });
             await store.loadData();
-          }
+          },
         },
       ],
     };
@@ -285,15 +300,12 @@ export default {
       items: props.listActions,
       extras: props.extraActions,
       dataSourceCode: props.dataSourceCode,
-    }
+    };
 
-    const rockChildrenConfig: RockChildrenConfig = [
-      toolbarRockConfig,
-      tableRockConfig,
-    ];
+    const rockChildrenConfig: RockChildrenConfig = [toolbarRockConfig, tableRockConfig];
 
-    return renderRockChildren({context, rockChildrenConfig});
+    return renderRockChildren({ context, rockChildrenConfig });
   },
 
-  ...RapidEntityListMeta
+  ...RapidEntityListMeta,
 } as Rock<RapidEntityListRockConfig, RapidEntityListState>;

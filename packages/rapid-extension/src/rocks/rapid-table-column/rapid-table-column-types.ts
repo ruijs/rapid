@@ -30,7 +30,7 @@ export type RapidTableColumnConfig = {
   /**
    * 对齐方式
    */
-  align?: 'left' | 'center' | 'right';
+  align?: "left" | "center" | "right";
 
   /**
    * 列宽
@@ -68,7 +68,6 @@ export type RapidTableColumnConfig = {
   referenceDataSource?: string;
 
   cell?: RockChildrenConfig;
-}
+};
 
-export interface RapidTableColumnRockConfig extends SimpleRockConfig, RapidTableColumnConfig {
-}
+export interface RapidTableColumnRockConfig extends SimpleRockConfig, RapidTableColumnConfig {}

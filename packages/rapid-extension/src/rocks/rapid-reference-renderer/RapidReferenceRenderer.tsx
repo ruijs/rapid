@@ -10,7 +10,7 @@ export default {
   Renderer(context, props: RapidReferenceRendererRockConfig) {
     const { list, value, valueFieldName, textFieldName, itemRenderer } = props;
 
-    const item = find(list, item => {
+    const item = find(list, (item) => {
       return item[valueFieldName] == value;
     });
     if (!item) {
@@ -24,7 +24,7 @@ export default {
         $id: `${props.$id}-rdr`,
       } as RockConfig;
 
-      return renderRock({context, rockConfig});
+      return renderRock({ context, rockConfig });
     }
 
     return "" + item[textFieldName];

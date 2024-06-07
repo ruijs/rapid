@@ -4,7 +4,6 @@ import { renderRock } from "@ruiapp/react-renderer";
 import type { RapidDocumentFormControlRockConfig } from "./rapid-document-form-control-types";
 import { RapidUploaderFormInputRockConfig } from "../rapid-uploader-form-input/rapid-uploader-form-input-types";
 
-
 export default {
   Renderer(context, props) {
     const rockConfig: RapidUploaderFormInputRockConfig = {

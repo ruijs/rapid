@@ -2,9 +2,7 @@
  * File manager plugin
  */
 
-import {
-  RpdApplicationConfig,
-} from "~/types";
+import { RpdApplicationConfig } from "~/types";
 
 import * as downloadDocumentActionHandler from "./actionHandlers/downloadDocument";
 import * as downloadFileActionHandler from "./actionHandlers/downloadFile";

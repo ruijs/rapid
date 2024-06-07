@@ -4,11 +4,9 @@ import RapidModalRecordActionMeta from "./RapidModalRecordActionMeta";
 import type { RapidModalRecordActionRockConfig } from "./rapid-modal-record-action-types";
 
 export default {
-  onInit(context, props) {
-  },
+  onInit(context, props) {},
 
-  onReceiveMessage(message, state, props) {
-  },
+  onReceiveMessage(message, state, props) {},
 
   Renderer(context, props) {
     const actionLinkRockConfig: RockConfig = {
@@ -20,14 +18,14 @@ export default {
           $action: "setVars",
           vars: {
             "modal-open": true,
-          }
+          },
         },
         {
           $action: "handleEvent",
           eventName: "onModalOpen",
           handlers: props.onModalOpen,
         },
-      ]
+      ],
     };
 
     const modalRockConfig: RockConfig = {
@@ -61,22 +59,19 @@ export default {
           $action: "setVars",
           vars: {
             "modal-open": false,
-          }
-        }
+          },
+        },
       ],
     };
 
     const rockConfig: RockConfig = {
       $type: "scope",
       $id: `${props.$id}-scope`,
-      children: [
-        actionLinkRockConfig,
-        modalRockConfig,
-      ]
-    }
+      children: [actionLinkRockConfig, modalRockConfig],
+    };
 
-    return renderRock({context, rockConfig: rockConfig});
+    return renderRock({ context, rockConfig: rockConfig });
   },
 
-  ...RapidModalRecordActionMeta
+  ...RapidModalRecordActionMeta,
 } as Rock<RapidModalRecordActionRockConfig>;

@@ -49,12 +49,12 @@ export class RapidRequest {
         this.#body = {
           type: "form",
           value: qs.parse(bodyText),
-        }
+        };
       } else if (contentType.startsWith("multipart/form-data")) {
         this.#body = {
           type: "form-data",
           value: await parseFormDataBody(req),
-        }
+        };
       }
     } else {
       this.#body = null;
@@ -79,7 +79,7 @@ export class RapidRequest {
 
   get body(): RapidRequestBody {
     if (!this.#bodyParsed) {
-      throw new Error("Request body not parsed, you should call 'parseBody()' method before getting the body.")
+      throw new Error("Request body not parsed, you should call 'parseBody()' method before getting the body.");
     }
     return this.#body;
   }

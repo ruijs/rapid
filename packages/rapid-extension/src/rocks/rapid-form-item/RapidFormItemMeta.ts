@@ -18,7 +18,7 @@ export default {
           label: "label",
           propName: "label",
         },
-    
+
         {
           $type: "numberPropSetter",
           label: "span",
@@ -31,7 +31,7 @@ export default {
           label: "ellipsis",
           propName: "ellipsis",
         },
-      ]
-    }
-  ]
+      ],
+    },
+  ],
 } as RockMeta;

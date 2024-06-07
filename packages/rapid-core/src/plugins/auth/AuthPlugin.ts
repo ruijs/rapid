@@ -2,9 +2,7 @@
  * Auth manager plugin
  */
 
-import {
-  RpdApplicationConfig,
-} from "~/types";
+import { RpdApplicationConfig } from "~/types";
 import { IRpdServer, RapidPlugin, RpdConfigurationItemOptions, RpdServerPluginConfigurableTargetOptions, RpdServerPluginExtendingAbilities } from "~/core/server";
 
 import pluginActionHandlers from "./actionHandlers";
@@ -12,7 +10,6 @@ import pluginModels from "./models";
 import pluginRoutes from "./routes";
 import { RouteContext } from "~/core/routeContext";
 import { verifyJwt } from "~/utilities/jwtUtility";
-
 
 class AuthPlugin implements RapidPlugin {
   get code(): string {
@@ -59,7 +56,7 @@ class AuthPlugin implements RapidPlugin {
       // Authorization header has no Bearer or no token
       const authHeader = headers.get("Authorization")!;
       if (!authHeader.startsWith("Bearer ") || authHeader.length <= 7) {
-        throw new Error('AUTHORIZATION_HEADER_INVALID');
+        throw new Error("AUTHORIZATION_HEADER_INVALID");
       }
 
       token = authHeader.slice(7);

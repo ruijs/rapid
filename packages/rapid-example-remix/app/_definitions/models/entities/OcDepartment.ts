@@ -11,8 +11,8 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       code: 'parent',
       name: '上级部门',
       type: 'relation',
-      targetSingularCode: "oc_department",
-      targetIdColumnName: "parent_id",
+      targetSingularCode: 'oc_department',
+      targetIdColumnName: 'parent_id',
     },
     {
       code: 'code',
@@ -32,11 +32,11 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
     },
     {
       code: 'users',
-      name: "用户",
-      type: "relation[]",
-      targetSingularCode: "oc_user",
-      selfIdColumnName: "department_id",
-    }
+      name: '用户',
+      type: 'relation[]',
+      targetSingularCode: 'oc_user',
+      selfIdColumnName: 'department_id',
+    },
   ],
 };
 

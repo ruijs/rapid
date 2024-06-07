@@ -7,16 +7,13 @@ import { isNullOrUndefined } from "~/utilities/typeUtility";
 import { Next, RouteContext } from "./routeContext";
 import { cloneDeep } from "lodash";
 
-export async function buildRoutes(
-  server: IRpdServer,
-  applicationConfig: RpdApplicationConfig,
-) {
+export async function buildRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig) {
   const logger = server.getLogger();
   const router = new Router();
 
   let baseUrl = server.config.baseUrl;
   if (baseUrl) {
-    if (baseUrl.endsWith('/')) {
+    if (baseUrl.endsWith("/")) {
       baseUrl = baseUrl.substring(0, baseUrl.length - 1);
     }
   } else {
@@ -30,67 +27,61 @@ export async function buildRoutes(
 
     const routePath = baseUrl + routeConfig.endpoint;
 
-    (router as any)[routeConfig.method.toLowerCase()](
-      routePath,
-      async (routerContext: RouteContext, next: Next) => {
-        routerContext.routeConfig = cloneDeep(routeConfig);
-        const { request, params } = routerContext;
+    (router as any)[routeConfig.method.toLowerCase()](routePath, async (routerContext: RouteContext, next: Next) => {
+      routerContext.routeConfig = cloneDeep(routeConfig);
+      const { request, params } = routerContext;
 
-        let search = request.url.search;
-        if (search && search.startsWith("?")) {
-          search = search.substring(1);
+      let search = request.url.search;
+      if (search && search.startsWith("?")) {
+        search = search.substring(1);
+      }
+      const query = qs.parse(search);
+      const input = Object.assign({}, params, query);
+
+      const requestMethod = request.method;
+      if (requestMethod === "POST" || requestMethod === "PUT" || requestMethod === "PATCH") {
+        const body = request.body;
+        if (body) {
+          Object.assign(input, body.value);
         }
-        const query = qs.parse(search);
-        const input = Object.assign({}, params, query);
+      }
 
-        const requestMethod = request.method;
-        if (
-          (requestMethod === "POST" || requestMethod === "PUT" ||
-            requestMethod === "PATCH")
-        ) {
-          const body = request.body;
-          if (body) {
-            Object.assign(input, body.value);
-          }
-        }
+      // Normalize input value
 
-        // Normalize input value
+      logger.debug("Processing rapid request.", {
+        method: requestMethod,
+        url: request.url.toString(),
+        input,
+      });
 
-        logger.debug("Processing rapid request.", {
-          method: requestMethod,
-          url: request.url.toString(),
-          input
-        });
+      let handlerContext: ActionHandlerContext = {
+        logger,
+        routerContext,
+        next,
+        server,
+        applicationConfig,
+        input,
+      };
 
-        let handlerContext: ActionHandlerContext = {
-          logger,
-          routerContext,
-          next,
-          server,
-          applicationConfig,
-          input,
-        };
+      await server.beforeRunRouteActions(handlerContext);
 
-        await server.beforeRunRouteActions(handlerContext);
-
-        for (const actionConfig of routeConfig.actions) {
-          const actionCode = actionConfig.code;
-          const handler = server.getActionHandlerByCode(actionCode);
-          if (!handler) {
-            throw new Error("Unknown handler: " + actionCode);
-          }
-
-          const result = handler(handlerContext, actionConfig.config);
-          if (result instanceof Promise) {
-            await result;
-          }
+      for (const actionConfig of routeConfig.actions) {
+        const actionCode = actionConfig.code;
+        const handler = server.getActionHandlerByCode(actionCode);
+        if (!handler) {
+          throw new Error("Unknown handler: " + actionCode);
         }
 
-        if (!isNullOrUndefined(handlerContext.output)) {
-          routerContext.json(handlerContext.output, handlerContext.status);
+        const result = handler(handlerContext, actionConfig.config);
+        if (result instanceof Promise) {
+          await result;
         }
-      },
-    );
+      }
+
+      if (!isNullOrUndefined(handlerContext.output)) {
+        routerContext.json(handlerContext.output, handlerContext.status);
+      }
+    });
   });
 
   return router.routes();

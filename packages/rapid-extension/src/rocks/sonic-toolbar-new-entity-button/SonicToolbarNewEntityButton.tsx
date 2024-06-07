@@ -4,11 +4,9 @@ import RapidEntityListMeta from "./SonicToolbarNewEntityButtonMeta";
 import type { SonicToolbarNewEntityButtonRockConfig } from "./sonic-toolbar-new-entity-button-types";
 
 export default {
-  onInit(context, props) {
-  },
+  onInit(context, props) {},
 
-  onReceiveMessage(message, state, props) {
-  },
+  onReceiveMessage(message, state, props) {},
 
   Renderer(context, props) {
     const rockConfig: RockConfig = {
@@ -19,11 +17,11 @@ export default {
           $action: "notifyEvent",
           eventName: "onNewEntityButtonClick",
         },
-      ]
-    }
+      ],
+    };
 
-    return renderRock({context, rockConfig});
+    return renderRock({ context, rockConfig });
   },
 
-  ...RapidEntityListMeta
+  ...RapidEntityListMeta,
 } as Rock<SonicToolbarNewEntityButtonRockConfig>;

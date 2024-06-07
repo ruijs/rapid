@@ -32,7 +32,7 @@ export default {
 
       const itemConfig: any = {
         $id: `${props.$id}-${item.code}`,
-        $type: 'antdDescriptionsItem',
+        $type: "antdDescriptionsItem",
         key: item.code,
         label: item.label || item.code,
         children: itemDisplayRockConfig,
@@ -41,16 +41,15 @@ export default {
       itemsConfigs.push(itemConfig);
     });
 
-
     const rockConfig: RockConfig = {
       $id: props.$id,
-      $type: 'antdDescriptions',
+      $type: "antdDescriptions",
       ...antdProps,
       children: itemsConfigs,
     };
 
-    return renderRock({context, rockConfig});
+    return renderRock({ context, rockConfig });
   },
 
-  ...RapidDescriptionsRendererMeta
+  ...RapidDescriptionsRendererMeta,
 } as Rock<RapidDescriptionsRockConfig>;

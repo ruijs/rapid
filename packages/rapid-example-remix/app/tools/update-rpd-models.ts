@@ -1,7 +1,7 @@
 import path from 'path';
 import { type RapidModelsUpdateOptions, RapidModelsUpdater } from '@ruiapp/rapid-configure-tools';
-import EntityModels from "../_definitions/meta/entity-models";
-import DataDictionaryModels from "../_definitions/meta/data-dictionary-models";
+import EntityModels from '../_definitions/meta/entity-models';
+import DataDictionaryModels from '../_definitions/meta/data-dictionary-models';
 
 const env = process.env;
 

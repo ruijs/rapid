@@ -4,11 +4,9 @@ import RapidEntityListMeta from "./SonicToolbarRefreshButtonMeta";
 import type { SonicToolbarRefreshButtonRockConfig } from "./sonic-toolbar-refresh-button-types";
 
 export default {
-  onInit(context, props) {
-  },
+  onInit(context, props) {},
 
-  onReceiveMessage(message, state, props) {
-  },
+  onReceiveMessage(message, state, props) {},
 
   Renderer(context, props) {
     const rockConfig: RockConfig = {
@@ -19,11 +17,11 @@ export default {
           $action: "notifyEvent",
           eventName: "onRefreshButtonClick",
         },
-      ]
-    }
+      ],
+    };
 
-    return renderRock({context, rockConfig});
+    return renderRock({ context, rockConfig });
   },
 
-  ...RapidEntityListMeta
+  ...RapidEntityListMeta,
 } as Rock<SonicToolbarRefreshButtonRockConfig>;

@@ -45,7 +45,7 @@ export async function resolveSegmentValue(server: IRpdServer, ruleCode: string, 
       if (now.year() !== lastUpdate.year() || now.month() !== lastUpdate.month()) {
         shouldReset = true;
       }
-    } else  if (period === "day") {
+    } else if (period === "day") {
       if (now.year() !== lastUpdate.year() || now.month() !== lastUpdate.month() || now.date() !== lastUpdate.date()) {
         shouldReset = true;
       }
@@ -64,14 +64,10 @@ export async function resolveSegmentValue(server: IRpdServer, ruleCode: string, 
       scope: scope,
       current_value: nextValue,
       updated_at: nowString,
-    })
+    });
   }
 
   const segmentValue = nextValue.toString();
 
-  return padSegment(
-    segmentValue,
-    config.length,
-    config.padding || "0",
-  );
+  return padSegment(segmentValue, config.length, config.padding || "0");
 }
