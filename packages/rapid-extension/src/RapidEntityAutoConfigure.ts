@@ -61,12 +61,12 @@ export function autoConfigureRapidField(sourceField: RapidField): RapidField {
  * - 当没有指定`pluralCode`时，将其自动配置为实体`singularCode`字段的复数形式。
  * - 当没有指定`tableName`时，将其自动配置为实体`pluralCode`字段。
  */
-export function autoConfigureRapidEntity(sourceEntity: RapidEntity): RapidEntity {
+export function autoConfigureRapidEntity(sourceEntity: RapidEntity, entityDefinitions: RapidEntity[]): RapidEntity {
   const singularCode = sourceEntity.singularCode || snakeCase(sourceEntity.code);
   const pluralCode = sourceEntity.pluralCode || pluralize(singularCode);
   const tableName = sourceEntity.tableName || pluralCode;
   let entity: RapidEntity = {
-    ...(pick(sourceEntity, ["code", "name", "description"]) as any),
+    ...(pick(sourceEntity, ["code", "name", "description", "base", "derivedType", "derivedTypePropertyCode"]) as any),
 
     namespace: sourceEntity.namespace,
     singularCode,
@@ -74,7 +74,7 @@ export function autoConfigureRapidEntity(sourceEntity: RapidEntity): RapidEntity
     dbSchema: sourceEntity.dbSchema,
     tableName,
 
-    fields: autoConfigureRapidFields(sourceEntity),
+    fields: autoConfigureRapidFields(sourceEntity, entityDefinitions),
   };
 
   return entity;
@@ -83,18 +83,18 @@ export function autoConfigureRapidEntity(sourceEntity: RapidEntity): RapidEntity
 /**
  * 对实体中的字段进行自动配置，增加id字段以及创建时间，更新时间等字段
  */
-function autoConfigureRapidFields(sourceEntity: RapidEntity) {
+function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: RapidEntity[]) {
   let idFields: RapidField[] = [
     {
       name: "id",
       code: "id",
       type: "integer",
       required: true,
-      autoIncrement: true,
+      autoIncrement: sourceEntity.base ? false : true,
     },
   ];
 
-  let auditFields: RapidField[] = [
+  let auditFields: RapidField[] = sourceEntity.base ? [
     {
       name: "创建时间",
       code: "createdAt",
@@ -144,7 +144,21 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity) {
       targetIdColumnName: "deleter_id",
       required: false,
     },
-  ];
+  ] : [];
+
+  if (sourceEntity.base) {
+    const baseEntity = entityDefinitions.find(entity => {
+      const singularCode = entity.singularCode || snakeCase(entity.code);
+      return singularCode === sourceEntity.base;
+    });
+
+    for (const field of sourceEntity.fields) {
+      const baseField = baseEntity.fields.find(item => item.code === field.code);
+      if (baseField) {
+        throw new Error(`Property '${sourceEntity.code}.${field.code}' is already defined in '${baseEntity.code}' entity.`);
+      }
+    }
+  }
 
   const userDefinedFields = map(sourceEntity.fields, autoConfigureRapidField);
 

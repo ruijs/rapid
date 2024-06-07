@@ -1,4 +1,13 @@
 /**
+ * Bug等级
+ */
+export type BugLevel =
+  | 'critical'
+  | 'error'
+  | 'suggest'
+  ;
+
+/**
  * 启用/禁用状态
  */
 export type EnabledDisabledState =

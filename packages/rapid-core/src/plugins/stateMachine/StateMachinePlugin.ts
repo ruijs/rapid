@@ -12,6 +12,7 @@ import { filter, find, first, get, isEqual } from "lodash";
 import { PropertyStateMachineConfig } from "./StateMachinePluginTypes";
 import { isNullOrUndefined } from "~/utilities/typeUtility";
 import { getStateMachineNextSnapshot } from "./stateMachineHelper";
+import { getEntityPropertiesIncludingBase } from "~/dataAccess/metaHelper";
 
 class StateMachinePlugin implements RapidPlugin {
   get code(): string {
@@ -51,7 +52,7 @@ class StateMachinePlugin implements RapidPlugin {
   async onApplicationLoaded(server: IRpdServer, applicationConfig: RpdApplicationConfig) {
     const models = server.getApplicationConfig().models;
     for (const model of models) {
-      for (const property of model.properties) {
+      for (const property of getEntityPropertiesIncludingBase(server, model)) {
         const propertyStateMachineConfig: PropertyStateMachineConfig = property.config?.stateMachine;
         if (propertyStateMachineConfig) {
           const stateMachineCode = getStateMachineCode(model, property);
@@ -95,7 +96,7 @@ class StateMachinePlugin implements RapidPlugin {
    * @param options
    */
   async beforeCreateEntity(server: IRpdServer, model: RpdDataModel, options: CreateEntityOptions) {
-    for (const property of model.properties) {
+    for (const property of getEntityPropertiesIncludingBase(server, model)) {
       const isStateMachineEnabled = get(property.config, "stateMachine.enabled", false);
       if (isStateMachineEnabled && isNullOrUndefined(options.entity[property.code])) {
         const initialState = get(property.config, "stateMachine.config.initial", null);
@@ -120,7 +121,7 @@ class StateMachinePlugin implements RapidPlugin {
     const entity = options.entityToSave;
 
     const stateMachineEnabledProperties: RpdDataModelProperty[] = [];
-    for (const property of model.properties) {
+    for (const property of getEntityPropertiesIncludingBase(server, model)) {
       const isStateMachineEnabled = get(property.config, "stateMachine.enabled", false);
 
       if (isStateMachineEnabled) {
@@ -169,7 +170,11 @@ class StateMachinePlugin implements RapidPlugin {
 }
 
 function getStateMachineCode(model: RpdDataModel, property: RpdDataModelProperty) {
-  return `propertyStateMachine.${model.namespace}.${model.singularCode}.${property.code}`;
+  if (property.isBaseProperty) {
+    return `propertyStateMachine.${model.namespace}.${model.base}.${property.code}`;
+  } else {
+    return `propertyStateMachine.${model.namespace}.${model.singularCode}.${property.code}`;
+  }
 }
 
 export default StateMachinePlugin;

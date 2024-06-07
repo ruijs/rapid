@@ -42,7 +42,9 @@ export default class SequenceService {
       filters: [
         {
           operator: "eq",
-          field: "code",
+          field: {
+            name: "code",
+          },
           value: ruleCode,
         },
       ],

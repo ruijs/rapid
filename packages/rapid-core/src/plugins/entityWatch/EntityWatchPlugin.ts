@@ -67,22 +67,28 @@ class EntityWatchPlugin implements RapidPlugin {
       return;
     }
 
-    const { modelSingularCode } = payload;
+    const { modelSingularCode, baseModelSingularCode } = payload;
     const entityWatchHandlerContext: EntityWatchHandlerContext<typeof eventName> = {
       server,
       payload,
     };
 
+    let emitter: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
     if (eventName === "entity.create") {
-      this.#createEventEmitters.emit(modelSingularCode, entityWatchHandlerContext);
+      emitter = this.#createEventEmitters;
     } else if (eventName === "entity.update") {
-      this.#updateEventEmitters.emit(modelSingularCode, entityWatchHandlerContext);
+      emitter = this.#updateEventEmitters;
     } else if (eventName === "entity.delete") {
-      this.#deleteEventEmitters.emit(modelSingularCode, entityWatchHandlerContext);
+      emitter = this.#deleteEventEmitters;
     } else if (eventName === "entity.addRelations") {
-      this.#addRelationsEventEmitters.emit(modelSingularCode, entityWatchHandlerContext);
+      emitter = this.#addRelationsEventEmitters;
     } else if (eventName === "entity.removeRelations") {
-      this.#removeRelationsEventEmitters.emit(modelSingularCode, entityWatchHandlerContext);
+      emitter = this.#removeRelationsEventEmitters;
+    }
+
+    emitter.emit(modelSingularCode, entityWatchHandlerContext);
+    if (baseModelSingularCode) {
+      emitter.emit(baseModelSingularCode, entityWatchHandlerContext);
     }
   }
 }

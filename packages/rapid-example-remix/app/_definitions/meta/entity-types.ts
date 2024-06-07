@@ -1,4 +1,5 @@
 import type {
+  BugLevel,
   EnabledDisabledState,
   TaskState,
 } from "./data-dictionary-types";
@@ -30,30 +31,6 @@ export interface OcDepartment {
    * 用户
    */
   users?: any;
-  /**
-   * 创建时间
-   */
-  createdAt?: string;
-  /**
-   * 创建人
-   */
-  createdBy?: Partial<OcUser>;
-  /**
-   * 更新时间
-   */
-  updatedAt?: string;
-  /**
-   * 更新人
-   */
-  updatedBy?: Partial<OcUser>;
-  /**
-   * 删除时间
-   */
-  deletedAt?: string;
-  /**
-   * 删除人
-   */
-  deletedBy?: Partial<OcUser>;
 }
 
 /**
@@ -93,30 +70,6 @@ export interface OcRole {
    * 操作
    */
   actions?: any;
-  /**
-   * 创建时间
-   */
-  createdAt?: string;
-  /**
-   * 创建人
-   */
-  createdBy?: Partial<OcUser>;
-  /**
-   * 更新时间
-   */
-  updatedAt?: string;
-  /**
-   * 更新人
-   */
-  updatedBy?: Partial<OcUser>;
-  /**
-   * 删除时间
-   */
-  deletedAt?: string;
-  /**
-   * 删除人
-   */
-  deletedBy?: Partial<OcUser>;
 }
 
 /**
@@ -164,6 +117,25 @@ export interface OcUser {
    * 角色
    */
   roles?: any;
+}
+
+/**
+ * 用户
+ */
+export type SaveOcUserInput = Omit<OcUser, 'id' | 'createdAt' | 'createdBy' | 'updatedAt' | 'updatedBy'>;
+
+/**
+ * Bug
+ */
+export interface PmBugIssue {
+  /**
+   * id
+   */
+  id: number;
+  /**
+   * Bug等级
+   */
+  bugLevel?: BugLevel;
   /**
    * 创建时间
    */
@@ -191,9 +163,9 @@ export interface OcUser {
 }
 
 /**
- * 用户
+ * Bug
  */
-export type SaveOcUserInput = Omit<OcUser, 'id' | 'createdAt' | 'createdBy' | 'updatedAt' | 'updatedBy'>;
+export type SavePmBugIssueInput = Omit<PmBugIssue, 'id' | 'createdAt' | 'createdBy' | 'updatedAt' | 'updatedBy'>;
 
 /**
  * 任务
@@ -216,33 +188,13 @@ export interface PmTask {
    */
   description?: string;
   /**
+   * 任务类型
+   */
+  taskType?: string;
+  /**
    * 状态
    */
   state?: TaskState;
-  /**
-   * 创建时间
-   */
-  createdAt?: string;
-  /**
-   * 创建人
-   */
-  createdBy?: Partial<OcUser>;
-  /**
-   * 更新时间
-   */
-  updatedAt?: string;
-  /**
-   * 更新人
-   */
-  updatedBy?: Partial<OcUser>;
-  /**
-   * 删除时间
-   */
-  deletedAt?: string;
-  /**
-   * 删除人
-   */
-  deletedBy?: Partial<OcUser>;
 }
 
 /**
@@ -278,30 +230,6 @@ export interface SysAction {
    * 排序号
    */
   orderNum: number;
-  /**
-   * 创建时间
-   */
-  createdAt?: string;
-  /**
-   * 创建人
-   */
-  createdBy?: Partial<OcUser>;
-  /**
-   * 更新时间
-   */
-  updatedAt?: string;
-  /**
-   * 更新人
-   */
-  updatedBy?: Partial<OcUser>;
-  /**
-   * 删除时间
-   */
-  deletedAt?: string;
-  /**
-   * 删除人
-   */
-  deletedBy?: Partial<OcUser>;
 }
 
 /**
@@ -329,30 +257,6 @@ export interface SysActionGroup {
    * 排序号
    */
   orderNum: number;
-  /**
-   * 创建时间
-   */
-  createdAt?: string;
-  /**
-   * 创建人
-   */
-  createdBy?: Partial<OcUser>;
-  /**
-   * 更新时间
-   */
-  updatedAt?: string;
-  /**
-   * 更新人
-   */
-  updatedBy?: Partial<OcUser>;
-  /**
-   * 删除时间
-   */
-  deletedAt?: string;
-  /**
-   * 删除人
-   */
-  deletedBy?: Partial<OcUser>;
 }
 
 /**

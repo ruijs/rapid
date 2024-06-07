@@ -12,6 +12,7 @@ import { PropertySequenceConfig } from "./SequencePluginTypes";
 import { isEqual } from "lodash";
 import SequenceService from "./SequenceService";
 import { isNullOrUndefined } from "~/utilities/typeUtility";
+import { getEntityPropertiesIncludingBase } from "~/dataAccess/metaHelper";
 
 class SequencePlugin implements RapidPlugin {
   #sequenceService!: SequenceService;
@@ -62,7 +63,7 @@ class SequencePlugin implements RapidPlugin {
   async onApplicationLoaded(server: IRpdServer, applicationConfig: RpdApplicationConfig) {
     const models = server.getApplicationConfig().models;
     for (const model of models) {
-      for (const property of model.properties) {
+      for (const property of getEntityPropertiesIncludingBase(server, model)) {
         const propertySequenceConfig: PropertySequenceConfig = property.config?.sequence;
         if (propertySequenceConfig) {
           const ruleCode = getSequenceRuleCode(model, property);
@@ -75,7 +76,9 @@ class SequencePlugin implements RapidPlugin {
             filters: [
               {
                 operator: "eq",
-                field: "code",
+                field: {
+                  name: "code",
+                },
                 value: ruleCode,
               },
             ],
@@ -100,7 +103,7 @@ class SequencePlugin implements RapidPlugin {
 
   async beforeCreateEntity(server: IRpdServer, model: RpdDataModel, options: CreateEntityOptions) {
     const entity = options.entity;
-    for (const property of model.properties) {
+    for (const property of getEntityPropertiesIncludingBase(server, model)) {
       const sequenceConfig: PropertySequenceConfig = property.config?.sequence;
       const propertyValue = entity[property.code];
       if (sequenceConfig && sequenceConfig.enabled && isNullOrUndefined(propertyValue)) {
@@ -117,7 +120,11 @@ class SequencePlugin implements RapidPlugin {
 }
 
 function getSequenceRuleCode(model: RpdDataModel, property: RpdDataModelProperty) {
-  return `propertyAutoGenerate.${model.namespace}.${model.singularCode}.${property.code}`;
+  if (property.isBaseProperty) {
+    return `propertyAutoGenerate.${model.namespace}.${model.base}.${property.code}`;
+  } else {
+    return `propertyAutoGenerate.${model.namespace}.${model.singularCode}.${property.code}`;
+  }
 }
 
 export default SequencePlugin;

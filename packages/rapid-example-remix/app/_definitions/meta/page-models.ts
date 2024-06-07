@@ -3,10 +3,12 @@ import OcDepartmentListPage from '../models/pages/OcDepartmentListPage';
 import OcRoleDetailsPage from '../models/pages/OcRoleDetailsPage';
 import OcRoleListPage from '../models/pages/OcRoleListPage';
 import OcUserListPage from '../models/pages/OcUserListPage';
+import PmBugIssueListPage from '../models/pages/PmBugIssueListPage';
 
 export default [
   OcDepartmentListPage,
   OcRoleDetailsPage,
   OcRoleListPage,
   OcUserListPage,
+  PmBugIssueListPage,
 ] as TRapidPage[];

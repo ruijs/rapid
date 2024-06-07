@@ -10,6 +10,7 @@ import * as listMetaRoutes from "./actionHandlers/listMetaRoutes";
 import * as getMetaModelDetail from "./actionHandlers/getMetaModelDetail";
 import { isRelationProperty } from "~/utilities/rapidUtility";
 import { find } from "lodash";
+import { getEntityPropertiesIncludingBase } from "~/dataAccess/metaHelper";
 
 class MetaManager implements RapidPlugin {
   get code(): string {
@@ -136,8 +137,9 @@ function listCollections(server: IRpdServer, applicationConfig: RpdApplicationCo
   const entityManager = server.getEntityManager("model");
   const model = entityManager.getModel();
 
+  const properties = getEntityPropertiesIncludingBase(server, model);
   return entityManager.findEntities({
-    properties: model.properties.map((item) => item.code),
+    properties: properties.map((item) => item.code),
   });
 }
 

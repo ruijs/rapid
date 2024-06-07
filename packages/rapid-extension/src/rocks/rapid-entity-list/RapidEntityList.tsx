@@ -2,7 +2,7 @@ import { handleComponentEvent, type Rock, type RockChildrenConfig, type RockConf
 import { renderRock, renderRockChildren } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./RapidEntityListMeta";
 import type { RapidEntityListRockConfig, RapidEntityListState } from "./rapid-entity-list-types";
-import { filter, find, findIndex, forEach, map, reject, set, uniq } from "lodash";
+import { filter, findIndex, forEach, map, reject, set, uniq } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import type { RapidToolbarRockConfig } from "../rapid-toolbar/rapid-toolbar-types";
@@ -18,13 +18,12 @@ export default {
   },
 
   onInit(context, props) {
-    const entities = rapidAppDefinition.getEntities();
     const entityCode = props.entityCode;
     if (!entityCode) {
       return;
     }
 
-    const mainEntity = find(entities, (item) => item.code === entityCode);
+    const mainEntity = rapidAppDefinition.getEntityByCode(entityCode);
     if (!mainEntity) {
       return;
     }
@@ -80,12 +79,11 @@ export default {
 
   Renderer(context, props, state) {
     const { logger } = context;
-    const entities = rapidAppDefinition.getEntities();
     const entityCode = props.entityCode;
     let mainEntity: RapidEntity | undefined;
 
     if (entityCode) {
-      mainEntity = find(entities, (item) => item.code === entityCode);
+      mainEntity = rapidAppDefinition.getEntityByCode(entityCode);
       if (!mainEntity) {
         const errorRockConfig = generateRockConfigOfError(new Error(`Entitiy with code '${entityCode}' not found.`));
         return renderRock({ context, rockConfig: errorRockConfig });
@@ -100,7 +98,7 @@ export default {
 
       let rpdField: RapidField | undefined;
       if (mainEntity) {
-        rpdField = find(mainEntity.fields, { code: column.code });
+        rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, column.code);
         if (!rpdField) {
           logger.warn(props, `Unknown field code '${column.code}'`);
         }
