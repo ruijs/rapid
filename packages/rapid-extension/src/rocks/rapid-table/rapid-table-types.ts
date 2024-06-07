@@ -10,7 +10,7 @@ export type RapidTableConfig = {
   dataSource: any;
   columns: RapidTableColumnRockConfig[];
   onChange?: RockEventHandlerConfig;
-  
+
   /**
    * 是否将列表转换成树结构
    */
@@ -23,7 +23,6 @@ export type RapidTableConfig = {
 
   listIdField?: string;
   treeChildrenField?: string;
-}
+};
 
-export interface RapidTableRockConfig extends SimpleRockConfig, RapidTableConfig {
-}
+export interface RapidTableRockConfig extends SimpleRockConfig, RapidTableConfig {}

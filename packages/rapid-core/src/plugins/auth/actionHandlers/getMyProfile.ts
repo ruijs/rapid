@@ -3,11 +3,7 @@ import { RapidPlugin } from "~/core/server";
 
 export const code = "getMyProfile";
 
-export async function handler(
-  plugin: RapidPlugin,
-  ctx: ActionHandlerContext,
-  options: any,
-) {
+export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: any) {
   const { server, input, routerContext } = ctx;
 
   const userId = routerContext.state.userId;
@@ -15,9 +11,9 @@ export async function handler(
     ctx.status = 401;
     ctx.output = {
       error: {
-        message: "You are not signed in."
-      }
-    }
+        message: "You are not signed in.",
+      },
+    };
     return;
   }
 
@@ -28,7 +24,7 @@ export async function handler(
         operator: "eq",
         field: "id",
         value: userId,
-      }
+      },
     ],
     properties: ["id", "name", "login", "email", "department", "roles", "state", "createdAt"],
   });

@@ -61,7 +61,7 @@ export default {
               label: "small",
               value: "small",
             },
-          ]
+          ],
         },
 
         {
@@ -69,7 +69,7 @@ export default {
           label: "bordered",
           propName: "bordered",
         },
-      ]
-    }
-  ]
+      ],
+    },
+  ],
 } as RockMeta;

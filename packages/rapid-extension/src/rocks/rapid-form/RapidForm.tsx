@@ -22,7 +22,7 @@ export default {
       try {
         const values = await form.validateFields();
         form.submit();
-      } catch(err) {
+      } catch (err) {
         message.framework.getRockLogger().error(props, `Failed to submit form: ${err.message}`, { error: err });
       }
     } else if (message.name === "validateFields") {
@@ -31,16 +31,16 @@ export default {
       state.form.setFieldsValue(message.payload);
     } else if (message.name === "resetFields") {
       state.form.resetFields();
-      handleComponentEvent("onFormRefresh", message.framework, message.page as any, state.scope, props, props.onFormRefresh, [{form: state.form}]);
+      handleComponentEvent("onFormRefresh", message.framework, message.page as any, state.scope, props, props.onFormRefresh, [{ form: state.form }]);
     } else if (message.name === "refreshView") {
       state.form.resetFields();
-      handleComponentEvent("onFormRefresh", message.framework, message.page as any, state.scope, props, props.onFormRefresh, [{form: state.form}]);
+      handleComponentEvent("onFormRefresh", message.framework, message.page as any, state.scope, props, props.onFormRefresh, [{ form: state.form }]);
     }
   },
 
   Renderer(context, props: RapidFormRockConfig, state: any) {
-    const {framework, page, scope} = context;
-    
+    const { framework, page, scope } = context;
+
     const dataFormItemRocks: RockConfig[] = [];
     if (props.items) {
       props.items.forEach((formItemConfig) => {
@@ -67,7 +67,7 @@ export default {
         }
 
         dataFormItemRocks.push(formItemRockConfig);
-      })
+      });
     }
 
     const formActionRocks: RockConfig[] = [];
@@ -108,7 +108,7 @@ export default {
             },
           ],
         },
-      ]
+      ],
     };
 
     let initialValues;
@@ -130,7 +130,7 @@ export default {
       $type: "antdForm",
       form: state.form,
       labelCol: isHorizonLayout ? { span: 8 } : null,
-      wrapperCol: isHorizonLayout ? { span: 16} : null,
+      wrapperCol: isHorizonLayout ? { span: 16 } : null,
       layout: props.layout,
       requiredMark: props.requiredMark,
       initialValues,
@@ -151,8 +151,8 @@ export default {
               const formValues = Object.assign({}, event.args[0], props.fixedFields);
               await handleComponentEvent("onFinish", event.framework, event.page as any, event.scope, event.sender, props.onFinish, [formValues]);
             }
-          }
-        }
+          },
+        },
       ],
       onValuesChange: {
         $action: "script",
@@ -169,20 +169,20 @@ export default {
           {
             $id: `${props.$id}-spin`,
             $type: "antdSpin",
-          }
+          },
         ],
-        children: [ formRockConfig ],
+        children: [formRockConfig],
         $exps: {
           when: `$scope.stores.${props.dataSourceCode}.data`,
         },
-      }
+      };
     } else {
       formSectionConfig = formRockConfig;
     }
-  
+
     const rockConfig: RockConfig = formSectionConfig;
-    return renderRock({context, rockConfig});
+    return renderRock({ context, rockConfig });
   },
 
-  ...RapidFormMeta
+  ...RapidFormMeta,
 } as Rock;

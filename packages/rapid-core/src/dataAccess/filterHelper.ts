@@ -34,9 +34,7 @@ export function removeFiltersWithNullValue(filters?: EntityFilterOptions[]) {
   return result;
 }
 
-function transformFilterWithSubFilters(
-  filter: FindEntityExistenceFilterOptions | FindEntityLogicalFilterOptions,
-): FindEntityExistenceFilterOptions | FindEntityLogicalFilterOptions | null {
+function transformFilterWithSubFilters(filter: FindEntityExistenceFilterOptions | FindEntityLogicalFilterOptions): FindEntityExistenceFilterOptions | FindEntityLogicalFilterOptions | null {
   const subFilters = removeFiltersWithNullValue(filter.filters);
   if (!subFilters.length) {
     return null;

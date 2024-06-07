@@ -3,7 +3,6 @@ import { HttpStatus, ResponseData } from "./http-types";
 
 export const GlobalResponse = global.Response;
 
-
 function mergeHeaders(target: Headers, source: HeadersInit) {
   if (source instanceof Headers) {
     for (const keyValuePair of source.entries()) {
@@ -44,11 +43,7 @@ export class RapidResponse {
     this.status = init?.status;
   }
 
-  json(
-    obj: any,
-    status?: HttpStatus,
-    headers?: HeadersInit,
-  ) {
+  json(obj: any, status?: HttpStatus, headers?: HeadersInit) {
     let body: string | null = null;
     if (obj) {
       body = JSON.stringify(obj);
@@ -58,7 +53,7 @@ export class RapidResponse {
     if (headers) {
       mergeHeaders(responseHeaders, headers);
     }
-    this.#response = newResponse({body, status: status || 200, headers: responseHeaders});
+    this.#response = newResponse({ body, status: status || 200, headers: responseHeaders });
   }
 
   redirect(location: string, status?: HttpStatus) {

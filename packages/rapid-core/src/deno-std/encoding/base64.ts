@@ -100,11 +100,7 @@ const base64abc = [
  * @param data
  */
 export function encode(data: ArrayBuffer | string): string {
-  const uint8 = typeof data === "string"
-    ? new TextEncoder().encode(data)
-    : data instanceof Uint8Array
-    ? data
-    : new Uint8Array(data);
+  const uint8 = typeof data === "string" ? new TextEncoder().encode(data) : data instanceof Uint8Array ? data : new Uint8Array(data);
   let result = "",
     i;
   const l = uint8.length;

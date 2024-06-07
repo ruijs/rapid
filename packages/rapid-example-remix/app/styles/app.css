@@ -8,7 +8,7 @@
 .rui-player-left-sider {
   height: 100vh;
   overflow: auto;
-  background-color: #28489E;
+  background-color: #28489e;
 }
 
 .rui-player-left-sider .ant-menu.ant-menu-dark,
@@ -64,7 +64,7 @@
   padding: 16px;
 }
 
-.rui-page-section+.rui-page-section {
+.rui-page-section + .rui-page-section {
   margin-top: 16px;
 }
 
@@ -73,7 +73,7 @@
   padding-bottom: 12px;
 }
 
-.rui-toolbar .ant-btn+.ant-btn {
+.rui-toolbar .ant-btn + .ant-btn {
   margin-left: 6px;
 }
 
@@ -82,14 +82,13 @@
 }
 
 .rui-toolbar-extras {
-
 }
 
 .rui-toolbar .ant-form-item {
   margin-bottom: 0;
 }
 
-.rui-table-action-link+.rui-table-action-link {
+.rui-table-action-link + .rui-table-action-link {
   margin-left: 6px;
 }
 

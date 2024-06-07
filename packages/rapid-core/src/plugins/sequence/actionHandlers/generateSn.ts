@@ -6,17 +6,12 @@ export interface GenerateSequenceNumbersOptions {
   ruleCode: string;
 }
 
-
 export const code = "generateSn";
 
-export async function handler(
-  plugin: RapidPlugin,
-  ctx: ActionHandlerContext,
-  options: GenerateSequenceNumbersOptions,
-) {
+export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: GenerateSequenceNumbersOptions) {
   const { server, routerContext } = ctx;
   const { response } = routerContext;
-  
+
   const input: GenerateSequenceNumbersInput = ctx.input;
 
   if (options?.ruleCode) {

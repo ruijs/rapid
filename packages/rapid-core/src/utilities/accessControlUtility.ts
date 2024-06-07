@@ -3,7 +3,7 @@ import { find } from "lodash";
 export type PermissionCheckPolicy = {
   any?: string[];
   all?: string[];
-}
+};
 
 export function isAccessAllowed(policy: PermissionCheckPolicy, allowedActions: string[]): boolean {
   let isAnyCheckPassed = true;
@@ -12,7 +12,7 @@ export function isAccessAllowed(policy: PermissionCheckPolicy, allowedActions: s
   if (policy.any) {
     isAnyCheckPassed = false;
     for (const action of policy.any) {
-      if (find(allowedActions, item => item === action) != null) {
+      if (find(allowedActions, (item) => item === action) != null) {
         isAnyCheckPassed = true;
         break;
       }
@@ -22,7 +22,7 @@ export function isAccessAllowed(policy: PermissionCheckPolicy, allowedActions: s
   if (policy.all) {
     isAllCheckPassed = true;
     for (const action of policy.all) {
-      if (find(allowedActions, item => item === action) == null) {
+      if (find(allowedActions, (item) => item === action) == null) {
         isAnyCheckPassed = false;
         break;
       }

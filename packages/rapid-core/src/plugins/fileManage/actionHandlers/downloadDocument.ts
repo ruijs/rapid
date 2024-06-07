@@ -5,11 +5,7 @@ import { readFile } from "~/utilities/fsUtility";
 
 export const code = "downloadDocument";
 
-export async function handler(
-  plugin: RapidPlugin,
-  ctx: ActionHandlerContext,
-  options: any,
-) {
+export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: any) {
   const { server, applicationConfig, routerContext, input } = ctx;
   const { request, response } = routerContext;
 
@@ -36,5 +32,5 @@ export async function handler(
   const attachmentFileName = document.name;
 
   response.body = await readFile(filePathName);
-  response.headers.set("Content-Disposition", `attachment; filename="${encodeURIComponent(attachmentFileName)}"`)
+  response.headers.set("Content-Disposition", `attachment; filename="${encodeURIComponent(attachmentFileName)}"`);
 }

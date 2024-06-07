@@ -37,5 +37,4 @@ export interface RapidEntityFormConfig extends RapidFormConfig {
   onSaveError?: RockEventHandlerConfig;
 }
 
-export interface RapidEntityFormRockConfig extends ContainerRockConfig, RapidEntityFormConfig {
-}
+export interface RapidEntityFormRockConfig extends ContainerRockConfig, RapidEntityFormConfig {}

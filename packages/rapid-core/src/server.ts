@@ -1,19 +1,5 @@
 import DataAccessor from "./dataAccess/dataAccessor";
-import {
-  GetDataAccessorOptions,
-  GetModelOptions,
-  IDatabaseAccessor,
-  IDatabaseConfig,
-  IQueryBuilder,
-  IRpdDataAccessor,
-  RpdApplicationConfig,
-  RpdDataModel,
-  RpdServerEventTypes,
-  RapidServerConfig,
-  RpdDataModelProperty,
-  CreateEntityOptions,
-  UpdateEntityByIdOptions,
-} from "./types";
+import { GetDataAccessorOptions, GetModelOptions, IDatabaseAccessor, IDatabaseConfig, IQueryBuilder, IRpdDataAccessor, RpdApplicationConfig, RpdDataModel, RpdServerEventTypes, RapidServerConfig, RpdDataModelProperty, CreateEntityOptions, UpdateEntityByIdOptions } from "./types";
 
 import QueryBuilder from "./queryBuilder/queryBuilder";
 import PluginManager from "./core/pluginManager";
@@ -65,7 +51,7 @@ export class RapidServer implements IRpdServer {
     if (options.facilityFactories) {
       forEach(options.facilityFactories, (factory) => {
         this.registerFacilityFactory(factory);
-      })
+      });
     }
 
     this.#pluginManager = new PluginManager(this);
@@ -151,10 +137,7 @@ export class RapidServer implements IRpdServer {
     }
   }
 
-  registerActionHandler(
-    plugin: RapidPlugin,
-    options: IPluginActionHandler,
-  ) {
+  registerActionHandler(plugin: RapidPlugin, options: IPluginActionHandler) {
     const handler = bind(options.handler, null, plugin);
     this.#actionHandlersMapByCode.set(options.code, handler);
   }
@@ -167,9 +150,7 @@ export class RapidServer implements IRpdServer {
     this.#middlewares.push(middleware);
   }
 
-  getDataAccessor<T = any>(
-    options: GetDataAccessorOptions,
-  ): IRpdDataAccessor<T> {
+  getDataAccessor<T = any>(options: GetDataAccessorOptions): IRpdDataAccessor<T> {
     const { namespace, singularCode } = options;
 
     let dataAccessor = this.#cachedDataAccessors.get(singularCode);
@@ -210,19 +191,12 @@ export class RapidServer implements IRpdServer {
     return entityManager;
   }
 
-  registerEventHandler<K extends keyof RpdServerEventTypes>(
-    eventName: K,
-    listener: (...args: RpdServerEventTypes[K]) => void,
-  ): this {
+  registerEventHandler<K extends keyof RpdServerEventTypes>(eventName: K, listener: (...args: RpdServerEventTypes[K]) => void): this {
     this.#eventManager.on(eventName, listener);
     return this;
   }
 
-  async emitEvent<K extends keyof RpdServerEventTypes>(
-    eventName: K,
-    payload: RpdServerEventTypes[K][1],
-    sender?: RapidPlugin,
-  ) {
+  async emitEvent<K extends keyof RpdServerEventTypes>(eventName: K, payload: RpdServerEventTypes[K][1], sender?: RapidPlugin) {
     this.#logger.debug(`Emitting '${eventName}' event.`, { eventName, payload });
     await this.#eventManager.emit<K>(eventName, sender, payload as any);
 
@@ -264,9 +238,7 @@ export class RapidServer implements IRpdServer {
   }
 
   async configureApplication() {
-    this.#applicationConfig = cloneDeep(
-      this.#bootstrapApplicationConfig,
-    ) as RpdApplicationConfig;
+    this.#applicationConfig = cloneDeep(this.#bootstrapApplicationConfig) as RpdApplicationConfig;
 
     const pluginManager = this.#pluginManager;
     await pluginManager.onLoadingApplication(this.#applicationConfig);
@@ -286,7 +258,7 @@ export class RapidServer implements IRpdServer {
     this.#facilityFactories.set(factory.name, factory);
   }
 
-  async getFacility<TFacility=any>(name: string, options?: any, nullIfUnknownFacility?: boolean): Promise<TFacility> {
+  async getFacility<TFacility = any>(name: string, options?: any, nullIfUnknownFacility?: boolean): Promise<TFacility> {
     const factory = this.#facilityFactories.get(name);
     if (!factory) {
       if (nullIfUnknownFacility) {
@@ -299,7 +271,7 @@ export class RapidServer implements IRpdServer {
     return await factory.createFacility(this, options);
   }
 
-  async queryDatabaseObject(sql: string, params?: unknown[] | Record<string,unknown>) : Promise<any[]> {
+  async queryDatabaseObject(sql: string, params?: unknown[] | Record<string, unknown>): Promise<any[]> {
     try {
       return await this.#databaseAccessor.queryDatabaseObject(sql, params);
     } catch (err) {
@@ -308,7 +280,7 @@ export class RapidServer implements IRpdServer {
     }
   }
 
-  async tryQueryDatabaseObject(sql: string, params?: unknown[] | Record<string,unknown>) : Promise<any[]> {
+  async tryQueryDatabaseObject(sql: string, params?: unknown[] | Record<string, unknown>): Promise<any[]> {
     try {
       return await this.queryDatabaseObject(sql, params);
     } catch (err) {
@@ -331,12 +303,15 @@ export class RapidServer implements IRpdServer {
       await this.#pluginManager.onPrepareRouteContext(routeContext);
       await this.#buildedRoutes(routeContext, next);
     } catch (ex) {
-      this.#logger.error('handle request error:', ex)
-      routeContext.response.json({
-        error: {
-          message: ex.message || ex,
+      this.#logger.error("handle request error:", ex);
+      routeContext.response.json(
+        {
+          error: {
+            message: ex.message || ex,
+          },
         },
-      }, 500);
+        500,
+      );
     }
     return routeContext.response.getResponse();
   }
@@ -348,7 +323,7 @@ export class RapidServer implements IRpdServer {
   async beforeCreateEntity(model: RpdDataModel, options: CreateEntityOptions) {
     await this.#pluginManager.beforeCreateEntity(model, options);
   }
-  
+
   async beforeUpdateEntity(model: RpdDataModel, options: UpdateEntityByIdOptions, currentEntity: any) {
     await this.#pluginManager.beforeUpdateEntity(model, options, currentEntity);
   }

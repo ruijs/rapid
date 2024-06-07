@@ -2,12 +2,7 @@
  * Sequence plugin
  */
 
-import {
-  CreateEntityOptions,
-  RpdApplicationConfig,
-  RpdDataModel,
-  RpdDataModelProperty,
-} from "~/types";
+import { CreateEntityOptions, RpdApplicationConfig, RpdDataModel, RpdDataModelProperty } from "~/types";
 import { IRpdServer, RapidPlugin, RpdConfigurationItemOptions, RpdServerPluginConfigurableTargetOptions, RpdServerPluginExtendingAbilities } from "~/core/server";
 
 import pluginActionHandlers from "./actionHandlers";
@@ -17,7 +12,6 @@ import { PropertySequenceConfig } from "./SequencePluginTypes";
 import { isEqual } from "lodash";
 import SequenceService from "./SequenceService";
 import { isNullOrUndefined } from "~/utilities/typeUtility";
-
 
 class SequencePlugin implements RapidPlugin {
   #sequenceService!: SequenceService;
@@ -55,7 +49,7 @@ class SequencePlugin implements RapidPlugin {
   async configureModels(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
     server.appendApplicationConfig({ models: pluginModels });
   }
-  
+
   async configureServices(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
     this.#sequenceService = new SequenceService(server);
     server.registerService("sequenceService", this.#sequenceService);
@@ -109,10 +103,7 @@ class SequencePlugin implements RapidPlugin {
     for (const property of model.properties) {
       const sequenceConfig: PropertySequenceConfig = property.config?.sequence;
       const propertyValue = entity[property.code];
-      if (sequenceConfig &&
-        sequenceConfig.enabled &&
-        isNullOrUndefined(propertyValue)
-      ) {
+      if (sequenceConfig && sequenceConfig.enabled && isNullOrUndefined(propertyValue)) {
         const ruleCode = getSequenceRuleCode(model, property);
         const numbers = await this.#sequenceService.generateSn(server, {
           ruleCode,

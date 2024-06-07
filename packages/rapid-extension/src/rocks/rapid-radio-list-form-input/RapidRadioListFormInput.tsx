@@ -16,13 +16,13 @@ export default {
 
     let itemList = listDataSource?.data?.list;
     if (listDataSourceCode) {
-      itemList = scope.stores[listDataSourceCode]?.data?.list
+      itemList = scope.stores[listDataSourceCode]?.data?.list;
     }
 
     const listTextFieldName = props.listTextFieldName || "name";
     const listValueFieldName = props.listValueFieldName || "id";
 
-    function getCheckboxOption(item: any): { label: string, value: string } {
+    function getCheckboxOption(item: any): { label: string; value: string } {
       let label: string;
       if (listTextFormat) {
         label = MoveStyleUtils.fulfillVariablesInString(listTextFormat, item);
@@ -34,14 +34,14 @@ export default {
       return {
         label,
         value,
-      }
+      };
     }
 
     let selectedValue: string[];
     if (props.valueFieldName) {
-      selectedValue = map(props.value, item => {
+      selectedValue = map(props.value, (item) => {
         if (isObject(item)) {
-          return get(item, props.valueFieldName)
+          return get(item, props.valueFieldName);
         }
         return item;
       });
@@ -57,21 +57,21 @@ export default {
     };
 
     const radioList = useMemo(() => {
-      return <Space direction={props.direction || "horizontal"}>
-        {
-          itemList.map((item, index) => {
+      return (
+        <Space direction={props.direction || "horizontal"}>
+          {itemList.map((item, index) => {
             const option = getCheckboxOption(item);
-            return <Radio key={index} value={option.value}>{option.label}</Radio>
-          })
-        }
-      </Space>
+            return (
+              <Radio key={index} value={option.value}>
+                {option.label}
+              </Radio>
+            );
+          })}
+        </Space>
+      );
     }, [itemList]);
 
-    return <Radio.Group {...antdProps}>
-      {
-        radioList
-      }
-    </Radio.Group>
+    return <Radio.Group {...antdProps}>{radioList}</Radio.Group>;
   },
 
   ...RapidCheckboxListFormInputMeta,

@@ -6,7 +6,6 @@ export interface SonicRecordActionDeleteEntityConfig extends Omit<RapidToolbarBu
    * 删除时的确认提示文字。
    */
   confirmText?: string;
-};
-
-export interface SonicRecordActionDeleteEntityRockConfig extends SimpleRockConfig, SonicRecordActionDeleteEntityConfig {
 }
+
+export interface SonicRecordActionDeleteEntityRockConfig extends SimpleRockConfig, SonicRecordActionDeleteEntityConfig {}

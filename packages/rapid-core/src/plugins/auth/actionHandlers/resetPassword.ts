@@ -4,11 +4,7 @@ import { RapidPlugin } from "~/core/server";
 
 export const code = "resetPassword";
 
-export async function handler(
-  plugin: RapidPlugin,
-  ctx: ActionHandlerContext,
-  options: any,
-) {
+export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: any) {
   const { server, input, routerContext } = ctx;
   const { response } = routerContext;
   const { userId, password } = input;
@@ -23,8 +19,8 @@ export async function handler(
         operator: "eq",
         field: "id",
         value: userId,
-      }
-    ]
+      },
+    ],
   });
 
   if (!user) {

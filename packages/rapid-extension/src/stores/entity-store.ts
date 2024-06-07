@@ -4,7 +4,7 @@ import rapidAppDefinition from "../rapidAppDefinition";
 import type { FindEntityOptions, RapidEntity } from "../types/rapid-entity-types";
 
 export interface EntityStoreConfig extends StoreConfigBase, FindEntityOptions {
-  type: "entityStore",
+  type: "entityStore";
   entityModel?: RapidEntity;
   entityCode?: string;
   frozon?: boolean;
@@ -77,7 +77,7 @@ export class EntityStore implements IStore<EntityStoreConfig> {
     if (!entityModel) {
       const entities = rapidAppDefinition.getEntities();
       const entityCode = this.#config.entityCode;
-      entityModel = find(entities, item => item.code === entityCode);
+      entityModel = find(entities, (item) => item.code === entityCode);
     }
 
     if (!entityModel) {
@@ -95,7 +95,7 @@ export class EntityStore implements IStore<EntityStoreConfig> {
     };
 
     if (expressions) {
-      for(const propName in expressions) {
+      for (const propName in expressions) {
         if (propName.startsWith("$")) {
           this.#logger.error(`System field can not bind to an expression. ${propName}=${expressions[propName]}`);
           continue;
@@ -132,12 +132,9 @@ export class EntityStore implements IStore<EntityStoreConfig> {
       requestOptions.data!.filters = [
         {
           operator: "and",
-          filters: [
-            ...fixedFilters,
-            ...(requestOptions.data!.filters! || []),
-          ]
-        }
-      ]
+          filters: [...fixedFilters, ...(requestOptions.data!.filters! || [])],
+        },
+      ];
     }
 
     const response = await MoveStyleUtils.request(requestOptions);
@@ -152,7 +149,7 @@ export class EntityStore implements IStore<EntityStoreConfig> {
     return data;
   }
 
-  observe(callback: (data: any) => void): void{
+  observe(callback: (data: any) => void): void {
     this.#emitter.on("dataChange", callback);
   }
 

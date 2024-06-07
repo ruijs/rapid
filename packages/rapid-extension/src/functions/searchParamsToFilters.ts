@@ -2,7 +2,6 @@ import type { FunctionMeta } from "@ruiapp/move-style";
 import { isNull, isUndefined, map } from "lodash";
 import { SearchFormFilterConfiguration } from "../types/rapid-entity-types";
 
-
 export const searchParamsToFilters = (filterConfigurations: SearchFormFilterConfiguration[], searchParams: Record<string, any>) => {
   const filters: any[] = [];
 
@@ -13,9 +12,9 @@ export const searchParamsToFilters = (filterConfigurations: SearchFormFilterConf
     }
 
     const operator = filterConfig.filterMode || "contains";
-    let filterFields = filterConfig.filterFields || [ filterConfig.code ];
+    let filterFields = filterConfig.filterFields || [filterConfig.code];
     if (!filterFields.length) {
-      filterFields = [ filterConfig.code ];
+      filterFields = [filterConfig.code];
     }
 
     if (filterFields.length === 1) {
@@ -27,7 +26,7 @@ export const searchParamsToFilters = (filterConfigurations: SearchFormFilterConf
     } else {
       filters.push({
         operator: "or",
-        filters: map(filterFields, filterField => {
+        filters: map(filterFields, (filterField) => {
           return {
             field: filterField,
             operator,
@@ -39,7 +38,7 @@ export const searchParamsToFilters = (filterConfigurations: SearchFormFilterConf
   }
 
   return filters;
-}
+};
 
 export default {
   name: "searchParamsToFilters",

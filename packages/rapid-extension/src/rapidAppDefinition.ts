@@ -1,8 +1,8 @@
 import type { RapidDataDictionary, RapidEntity } from "./types/rapid-entity-types";
 
 export interface AppDefinition {
-  entities: RapidEntity[],
-  dataDictionaries: RapidDataDictionary[],
+  entities: RapidEntity[];
+  dataDictionaries: RapidDataDictionary[];
 }
 let appDef: AppDefinition;
 
@@ -17,5 +17,5 @@ export default {
 
   getDataDictionaries() {
     return appDef.dataDictionaries;
-  }
-}
+  },
+};

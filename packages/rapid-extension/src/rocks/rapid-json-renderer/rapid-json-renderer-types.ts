@@ -4,7 +4,6 @@ export type RapidJsonRendererConfig = {
   value: any;
 
   defaultText?: string;
-}
+};
 
-export interface RapidJsonRendererRockConfig extends SimpleRockConfig, RapidJsonRendererConfig {
-}
+export interface RapidJsonRendererRockConfig extends SimpleRockConfig, RapidJsonRendererConfig {}

@@ -31,11 +31,9 @@ class ServerOperationPlugin implements RapidPlugin {
     return [];
   }
 
-  async initPlugin(server: IRpdServer): Promise<any> {
-  }
+  async initPlugin(server: IRpdServer): Promise<any> {}
 
-  async registerMiddlewares(server: IRpdServer): Promise<any> {
-  }
+  async registerMiddlewares(server: IRpdServer): Promise<any> {}
 
   async registerActionHandlers(server: IRpdServer): Promise<any> {
     for (const actionHandler of pluginActionHandlers) {
@@ -43,23 +41,17 @@ class ServerOperationPlugin implements RapidPlugin {
     }
   }
 
-  async registerEventHandlers(server: IRpdServer): Promise<any> {
-  }
+  async registerEventHandlers(server: IRpdServer): Promise<any> {}
 
-  async registerMessageHandlers(server: IRpdServer): Promise<any> {
-  }
+  async registerMessageHandlers(server: IRpdServer): Promise<any> {}
 
-  async registerTaskProcessors(server: IRpdServer): Promise<any> {
-  }
+  async registerTaskProcessors(server: IRpdServer): Promise<any> {}
 
-  async onLoadingApplication(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
+  async onLoadingApplication(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {}
 
-  async configureModels(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
+  async configureModels(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {}
 
-  async configureModelProperties(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
+  async configureModelProperties(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {}
 
   async configureRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
     const routes: RpdRoute[] = [];
@@ -76,19 +68,17 @@ class ServerOperationPlugin implements RapidPlugin {
             code: "runServerOperation",
             config: {
               operation: operation.handler,
-            }
+            },
           },
         ],
-      })
+      });
     }
     server.appendApplicationConfig({ routes });
   }
 
-  async onApplicationLoaded(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
+  async onApplicationLoaded(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {}
 
-  async onApplicationReady(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-  }
+  async onApplicationReady(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {}
 }
 
 export default ServerOperationPlugin;

@@ -1,5 +1,3 @@
 import generateSn from "./generateSn";
 
-export default [
-  generateSn,
-]
+export default [generateSn];

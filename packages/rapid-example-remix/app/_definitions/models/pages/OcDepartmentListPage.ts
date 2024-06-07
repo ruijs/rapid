@@ -7,9 +7,9 @@ const formConfig: Partial<RapidEntityFormConfig> = {
       type: 'treeSelect',
       code: 'parent',
       formControlProps: {
-        listDataSourceCode: "departments",
-        listParentField: "parent.id",
-      }
+        listDataSourceCode: 'departments',
+        listParentField: 'parent.id',
+      },
     },
     {
       type: 'auto',
@@ -24,35 +24,35 @@ const formConfig: Partial<RapidEntityFormConfig> = {
       code: 'orderNum',
     },
   ],
-}
+};
 
 const page: RapidPage = {
   code: 'oc_department_list',
   name: '部门列表',
   title: '部门管理',
-  permissionCheck: {any: []},
+  permissionCheck: { any: [] },
   view: [
     {
-      $type: "sonicEntityList",
-      entityCode: "OcDepartment",
-      viewMode: "table",
+      $type: 'sonicEntityList',
+      entityCode: 'OcDepartment',
+      viewMode: 'table',
       listActions: [
         {
-          $type: "sonicToolbarNewEntityButton",
-          text: "新建",
-          icon: "PlusOutlined",
-          actionStyle: "primary",
-        }
+          $type: 'sonicToolbarNewEntityButton',
+          text: '新建',
+          icon: 'PlusOutlined',
+          actionStyle: 'primary',
+        },
       ],
       extraActions: [
         {
-          $type: "sonicToolbarFormItem",
-          formItemType: "search",
-          placeholder: "Search",
-          actionEventName: "onSearch",
-          filterMode: "contains",
-          filterFields: ["name"],
-        }
+          $type: 'sonicToolbarFormItem',
+          formItemType: 'search',
+          placeholder: 'Search',
+          actionEventName: 'onSearch',
+          filterMode: 'contains',
+          filterFields: ['name'],
+        },
       ],
       orderBy: [
         {
@@ -60,7 +60,7 @@ const page: RapidPage = {
         },
       ],
       convertListToTree: true,
-      listParentField: "parent.id",
+      listParentField: 'parent.id',
       pageSize: -1,
       extraProperties: ['parent'],
       columns: [
@@ -81,18 +81,18 @@ const page: RapidPage = {
       ],
       actions: [
         {
-          $type: "sonicRecordActionEditEntity",
+          $type: 'sonicRecordActionEditEntity',
           code: 'edit',
-          actionType: "edit",
+          actionType: 'edit',
           actionText: '修改',
         },
         {
-          $type: "sonicRecordActionDeleteEntity",
+          $type: 'sonicRecordActionDeleteEntity',
           code: 'delete',
           actionType: 'delete',
           actionText: '删除',
-          dataSourceCode: "list",
-          entityCode: "OcDepartment",
+          dataSourceCode: 'list',
+          entityCode: 'OcDepartment',
         },
       ],
       newForm: cloneDeep(formConfig),
@@ -114,18 +114,17 @@ const page: RapidPage = {
       },
       stores: [
         {
-          type: "entityStore",
-          name: "departments",
-          entityCode: "OcDepartment",
-          properties: ["id", "code", "name", "parent", "orderNum", "createdAt"],
-          filters: [
-          ],
+          type: 'entityStore',
+          name: 'departments',
+          entityCode: 'OcDepartment',
+          properties: ['id', 'code', 'name', 'parent', 'orderNum', 'createdAt'],
+          filters: [],
           orderBy: [
             {
               field: 'orderNum',
-            }
+            },
           ],
-        }
+        },
       ],
     },
   ],

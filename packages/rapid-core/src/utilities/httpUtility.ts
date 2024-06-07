@@ -1,8 +1,4 @@
-export async function fetchWithTimeout(
-  url: string,
-  reqInit: RequestInit,
-  timeout?: number,
-) : Promise<Response> {
+export async function fetchWithTimeout(url: string, reqInit: RequestInit, timeout?: number): Promise<Response> {
   if (!timeout) {
     return await fetch(url, reqInit);
   }

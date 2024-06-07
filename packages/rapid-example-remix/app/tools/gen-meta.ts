@@ -1,16 +1,15 @@
 import chokidar from 'chokidar';
 
-import { MetaFileGenerator } from "@ruiapp/rapid-configure-tools";
-import type { FileGenerateOption } from "@ruiapp/rapid-configure-tools";
+import { MetaFileGenerator } from '@ruiapp/rapid-configure-tools';
+import type { FileGenerateOption } from '@ruiapp/rapid-configure-tools';
 import path from 'path';
-
 
 export function runGenerator(options: FileGenerateOption) {
   const { declarationsDirectory } = options;
   const watcher = chokidar.watch(path.join(declarationsDirectory, 'models'), {
     // eslint-disable-next-line no-useless-escape
     ignored: /(^|[\/\\])\../, // ignore dotfiles
-    persistent: true
+    persistent: true,
   });
 
   let initialized = false;
@@ -18,9 +17,9 @@ export function runGenerator(options: FileGenerateOption) {
   let expanding = false;
   let postoned = false;
 
-  const fileGenerator = new MetaFileGenerator()
+  const fileGenerator = new MetaFileGenerator();
 
-  function tryGenerate () {
+  function tryGenerate() {
     if (expanding) {
       postoned = true;
       return;

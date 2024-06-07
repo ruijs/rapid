@@ -5,11 +5,7 @@ import { RapidPlugin } from "~/core/server";
 
 export const code = "addEntityRelations";
 
-export async function handler(
-  plugin: RapidPlugin,
-  ctx: ActionHandlerContext,
-  options: RunEntityActionHandlerOptions,
-) {
+export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: RunEntityActionHandlerOptions) {
   const { logger, server, input } = ctx;
 
   const { defaultInput, fixedInput } = options;

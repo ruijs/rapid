@@ -1,5 +1,3 @@
 import EntityStore from "./entity-store";
 
-export default [
-  EntityStore,
-]
+export default [EntityStore];

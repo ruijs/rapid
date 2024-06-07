@@ -6,18 +6,9 @@ import { RapidPlugin } from "~/core/server";
 
 export const code = "countCollectionEntities";
 
-export async function handler(
-  plugin: RapidPlugin,
-  ctx: ActionHandlerContext,
-  options: RunEntityActionHandlerOptions,
-) {
-  await runCollectionEntityActionHandler(
-    ctx,
-    options,
-    code,
-    (entityManager, input) => {
-      input.filters = removeFiltersWithNullValue(input.filters);
-      return entityManager.count(input);
-    },
-  );
+export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: RunEntityActionHandlerOptions) {
+  await runCollectionEntityActionHandler(ctx, options, code, (entityManager, input) => {
+    input.filters = removeFiltersWithNullValue(input.filters);
+    return entityManager.count(input);
+  });
 }

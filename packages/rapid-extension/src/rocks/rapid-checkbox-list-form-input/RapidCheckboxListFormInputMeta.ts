@@ -3,9 +3,7 @@ import { RockMeta } from "@ruiapp/move-style";
 export default {
   $type: "rapidCheckboxListFormInput",
 
-  slots: {
-  },
+  slots: {},
 
-  propertyPanels: [
-  ]
+  propertyPanels: [],
 } as RockMeta;

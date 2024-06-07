@@ -1,7 +1,5 @@
 import { RockMeta } from "@ruiapp/move-style";
 
 export default {
-
-  propertyPanels: [
-  ],
+  propertyPanels: [],
 } as RockMeta;

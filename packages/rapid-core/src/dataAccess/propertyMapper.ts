@@ -6,7 +6,7 @@ export function mapPropertyNameToColumnName(model: RpdDataModel, propertyName: s
     return propertyName;
   }
 
-  const property = model.properties.find(item => item.code === propertyName);
+  const property = model.properties.find((item) => item.code === propertyName);
   if (!property) {
     return propertyName;
   }
@@ -23,5 +23,5 @@ export function mapPropertyNamesToColumnNames(model: RpdDataModel, propertyNames
     return [];
   }
 
-  return propertyNames.map(fieldName => mapPropertyNameToColumnName(model, fieldName));
+  return propertyNames.map((fieldName) => mapPropertyNameToColumnName(model, fieldName));
 }

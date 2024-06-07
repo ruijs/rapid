@@ -1,10 +1,10 @@
-import type { RapidDataDictionary } from "@ruiapp/rapid-extension";
+import type { RapidDataDictionary } from '@ruiapp/rapid-extension';
 
 export default {
   code: 'PublishState',
   name: '发布状态',
   valueType: 'string',
-  level: "app",
+  level: 'app',
   entries: [
     { name: '草稿', value: 'draft' },
     { name: '审核中', value: 'in_review', color: 'orange' },

@@ -3,8 +3,7 @@ import { RockMeta } from "@ruiapp/move-style";
 export default {
   $type: "rapidForm",
 
-  slots: {
-  },
+  slots: {},
 
   propertyPanels: [
     {
@@ -35,7 +34,7 @@ export default {
               label: "vertical",
               value: "vertical",
             },
-          ]
+          ],
         },
 
         {
@@ -61,7 +60,7 @@ export default {
               label: "small",
               value: "small",
             },
-          ]
+          ],
         },
 
         {
@@ -69,7 +68,7 @@ export default {
           label: "colon",
           propName: "colon",
         },
-      ]
-    }
-  ]
+      ],
+    },
+  ],
 } as RockMeta;

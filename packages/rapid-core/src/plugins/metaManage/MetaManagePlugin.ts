@@ -2,17 +2,7 @@
  * Meta manager plugin
  */
 
-import {
-  IQueryBuilder,
-  QuoteTableOptions,
-  RpdApplicationConfig,
-  RpdDataModel,
-  RpdDataModelProperty,
-  RpdDataPropertyTypes,
-  RpdEntityCreateEventPayload,
-  RpdEntityDeleteEventPayload,
-  RpdEntityUpdateEventPayload,
-} from "~/types";
+import { IQueryBuilder, QuoteTableOptions, RpdApplicationConfig, RpdDataModel, RpdDataModelProperty, RpdDataPropertyTypes, RpdEntityCreateEventPayload, RpdEntityDeleteEventPayload, RpdEntityUpdateEventPayload } from "~/types";
 import { IRpdServer, RapidPlugin, RpdConfigurationItemOptions, RpdServerPluginConfigurableTargetOptions, RpdServerPluginExtendingAbilities } from "~/core/server";
 
 import * as listMetaModels from "./actionHandlers/listMetaModels";
@@ -49,18 +39,9 @@ class MetaManager implements RapidPlugin {
   }
 
   async registerEventHandlers(server: IRpdServer): Promise<any> {
-    server.registerEventHandler(
-      "entity.create",
-      handleEntityCreateEvent.bind(this, server),
-    );
-    server.registerEventHandler(
-      "entity.update",
-      handleEntityUpdateEvent.bind(this, server),
-    );
-    server.registerEventHandler(
-      "entity.delete",
-      handleEntityDeleteEvent.bind(this, server),
-    );
+    server.registerEventHandler("entity.create", handleEntityCreateEvent.bind(this, server));
+    server.registerEventHandler("entity.update", handleEntityUpdateEvent.bind(this, server));
+    server.registerEventHandler("entity.delete", handleEntityDeleteEvent.bind(this, server));
   }
 
   async configureModels(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
@@ -81,12 +62,7 @@ class MetaManager implements RapidPlugin {
 
 export default MetaManager;
 
-
-async function handleEntityCreateEvent(
-  server: IRpdServer,
-  sender: RapidPlugin,
-  payload: RpdEntityCreateEventPayload,
-) {
+async function handleEntityCreateEvent(server: IRpdServer, sender: RapidPlugin, payload: RpdEntityCreateEventPayload) {
   if (sender === this) {
     return;
   }
@@ -97,19 +73,12 @@ async function handleEntityCreateEvent(
     const model: Partial<RpdDataModel> = payload.after;
     if (model.tableName) {
       const model: RpdDataModel = payload.after;
-      await server.queryDatabaseObject(
-        `CREATE TABLE ${queryBuilder.quoteTable(model)} ();`,
-        [],
-      );
+      await server.queryDatabaseObject(`CREATE TABLE ${queryBuilder.quoteTable(model)} ();`, []);
     }
   }
 }
 
-async function handleEntityUpdateEvent(
-  server: IRpdServer,
-  sender: RapidPlugin,
-  payload: RpdEntityUpdateEventPayload,
-) {
+async function handleEntityUpdateEvent(server: IRpdServer, sender: RapidPlugin, payload: RpdEntityUpdateEventPayload) {
   if (sender === this) {
     return;
   }
@@ -120,19 +89,12 @@ async function handleEntityUpdateEvent(
     const modelChanges: Partial<RpdDataModel> = payload.changes;
     if (modelChanges.tableName) {
       const modelBefore: RpdDataModel = payload.before;
-      await server.queryDatabaseObject(
-        `ALTER TABLE ${queryBuilder.quoteTable(modelBefore)} RENAME TO ${queryBuilder.quoteTable(modelChanges as QuoteTableOptions)}`,
-        [],
-      );
+      await server.queryDatabaseObject(`ALTER TABLE ${queryBuilder.quoteTable(modelBefore)} RENAME TO ${queryBuilder.quoteTable(modelChanges as QuoteTableOptions)}`, []);
     }
   }
 }
 
-async function handleEntityDeleteEvent(
-  server: IRpdServer,
-  sender: RapidPlugin,
-  payload: RpdEntityDeleteEventPayload,
-) {
+async function handleEntityDeleteEvent(server: IRpdServer, sender: RapidPlugin, payload: RpdEntityDeleteEventPayload) {
   if (sender === this) {
     return;
   }
@@ -145,10 +107,7 @@ async function handleEntityDeleteEvent(
 
   if (payload.modelSingularCode === "model") {
     const deletedModel: RpdDataModel = payload.before;
-    await server.queryDatabaseObject(
-      `DROP TABLE ${queryBuilder.quoteTable(deletedModel)}`,
-      [],
-    );
+    await server.queryDatabaseObject(`DROP TABLE ${queryBuilder.quoteTable(deletedModel)}`, []);
   } else if (payload.modelSingularCode === "property") {
     const deletedProperty: RpdDataModelProperty = payload.before;
 
@@ -168,20 +127,12 @@ async function handleEntityDeleteEvent(
     });
     const model = await dataAccessor.findById((deletedProperty as any).modelId);
     if (model) {
-      await server.queryDatabaseObject(
-        `ALTER TABLE ${queryBuilder.quoteTable(model)} DROP COLUMN ${
-          queryBuilder.quoteObject(columnNameToDrop)
-        }`,
-        [],
-      );
+      await server.queryDatabaseObject(`ALTER TABLE ${queryBuilder.quoteTable(model)} DROP COLUMN ${queryBuilder.quoteObject(columnNameToDrop)}`, []);
     }
   }
 }
 
-function listCollections(
-  server: IRpdServer,
-  applicationConfig: RpdApplicationConfig,
-) {
+function listCollections(server: IRpdServer, applicationConfig: RpdApplicationConfig) {
   const entityManager = server.getEntityManager("model");
   const model = entityManager.getModel();
 
@@ -190,11 +141,10 @@ function listCollections(
   });
 }
 
-
 type TableInformation = {
   table_schema: string;
   table_name: string;
-}
+};
 
 type ColumnInformation = {
   table_schema: string;
@@ -207,12 +157,9 @@ type ColumnInformation = {
   character_maximum_length: number;
   numeric_precision: number;
   numeric_scale: number;
-}
+};
 
-async function syncDatabaseSchema(
-  server: IRpdServer,
-  applicationConfig: RpdApplicationConfig,
-) {
+async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdApplicationConfig) {
   const logger = server.getLogger();
   logger.info("Synchronizing database schema...");
   const sqlQueryTableInformations = `SELECT table_schema, table_name FROM information_schema.tables`;
@@ -224,7 +171,7 @@ async function syncDatabaseSchema(
 
     const expectedTableSchema = model.schema || server.databaseConfig.dbDefaultSchema;
     const expectedTableName = model.tableName;
-    const tableInDb = find(tablesInDb, { table_schema: expectedTableSchema, table_name: expectedTableName});
+    const tableInDb = find(tablesInDb, { table_schema: expectedTableSchema, table_name: expectedTableName });
     if (!tableInDb) {
       await server.queryDatabaseObject(`CREATE TABLE IF NOT EXISTS ${queryBuilder.quoteTable(model)} ()`, []);
     }
@@ -241,9 +188,9 @@ async function syncDatabaseSchema(
       let columnDDL;
       if (isRelationProperty(property)) {
         if (property.relation === "one") {
-          const targetModel = applicationConfig.models.find(item => item.singularCode === property.targetSingularCode);
+          const targetModel = applicationConfig.models.find((item) => item.singularCode === property.targetSingularCode);
           if (!targetModel) {
-            logger.warn(`Cannot find target model with singular code "${property.targetSingularCode}".`)
+            logger.warn(`Cannot find target model with singular code "${property.targetSingularCode}".`);
           }
 
           const columnInDb: ColumnInformation | undefined = find(columnsInDb, {
@@ -264,7 +211,7 @@ async function syncDatabaseSchema(
           }
         } else if (property.relation === "many") {
           if (property.linkTableName) {
-            const tableInDb = find(tablesInDb, { table_schema: property.linkSchema || server.databaseConfig.dbDefaultSchema, table_name: property.linkTableName});
+            const tableInDb = find(tablesInDb, { table_schema: property.linkSchema || server.databaseConfig.dbDefaultSchema, table_name: property.linkTableName });
             if (!tableInDb) {
               columnDDL = generateLinkTableDDL(queryBuilder, {
                 linkSchema: property.linkSchema,
@@ -274,9 +221,9 @@ async function syncDatabaseSchema(
               });
             }
           } else {
-            const targetModel = applicationConfig.models.find(item => item.singularCode === property.targetSingularCode);
+            const targetModel = applicationConfig.models.find((item) => item.singularCode === property.targetSingularCode);
             if (!targetModel) {
-              logger.warn(`Cannot find target model with singular code "${property.targetSingularCode}".`)
+              logger.warn(`Cannot find target model with singular code "${property.targetSingularCode}".`);
               continue;
             }
 
@@ -360,15 +307,18 @@ async function syncDatabaseSchema(
   }
 }
 
-function generateCreateColumnDDL(queryBuilder: IQueryBuilder, options: {
-  schema?: string;
-  tableName: string;
-  name: string;
-  type: RpdDataPropertyTypes;
-  autoIncrement?: boolean;
-  notNull?: boolean;
-  defaultValue?: string;
-}) {
+function generateCreateColumnDDL(
+  queryBuilder: IQueryBuilder,
+  options: {
+    schema?: string;
+    tableName: string;
+    name: string;
+    type: RpdDataPropertyTypes;
+    autoIncrement?: boolean;
+    notNull?: boolean;
+    defaultValue?: string;
+  },
+) {
   let columnDDL = `ALTER TABLE ${queryBuilder.quoteTable(options)} ADD`;
   columnDDL += ` ${queryBuilder.quoteObject(options.name)}`;
   if (options.type === "integer" && options.autoIncrement) {
@@ -391,13 +341,15 @@ function generateCreateColumnDDL(queryBuilder: IQueryBuilder, options: {
   return columnDDL;
 }
 
-
-function generateLinkTableDDL(queryBuilder: IQueryBuilder, options: {
-  linkSchema?: string;
-  linkTableName: string;
-  targetIdColumnName: string;
-  selfIdColumnName: string;
-}) {
+function generateLinkTableDDL(
+  queryBuilder: IQueryBuilder,
+  options: {
+    linkSchema?: string;
+    linkTableName: string;
+    targetIdColumnName: string;
+    selfIdColumnName: string;
+  },
+) {
   let columnDDL = `CREATE TABLE ${queryBuilder.quoteTable({
     schema: options.linkSchema,
     tableName: options.linkTableName,
@@ -408,7 +360,6 @@ function generateLinkTableDDL(queryBuilder: IQueryBuilder, options: {
 
   return columnDDL;
 }
-
 
 const pgPropertyTypeColumnMap: Partial<Record<RpdDataPropertyTypes, string>> = {
   integer: "int4",

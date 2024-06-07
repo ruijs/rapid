@@ -11,7 +11,6 @@ export interface SonicMainSecondaryLayoutConfig {
   secondaryTitle?: string;
   secondaryColSpan: number;
   secondaryClassName?: string;
-};
-
-export interface SonicMainSecondaryLayoutRockConfig extends SimpleRockConfig, SonicMainSecondaryLayoutConfig {
 }
+
+export interface SonicMainSecondaryLayoutRockConfig extends SimpleRockConfig, SonicMainSecondaryLayoutConfig {}

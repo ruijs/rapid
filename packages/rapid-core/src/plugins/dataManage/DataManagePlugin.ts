@@ -4,12 +4,7 @@
  * - routes for manage data in database.
  */
 
-import {
-  RpdApplicationConfig,
-  RpdHttpMethod,
-  RpdRoute,
-  RunEntityActionHandlerOptions,
-} from "~/types";
+import { RpdApplicationConfig, RpdHttpMethod, RpdRoute, RunEntityActionHandlerOptions } from "~/types";
 
 import * as findCollectionEntities from "./actionHandlers/findCollectionEntities";
 import * as findCollectionEntityById from "./actionHandlers/findCollectionEntityById";
@@ -22,7 +17,6 @@ import * as addEntityRelations from "./actionHandlers/addEntityRelations";
 import * as removeEntityRelations from "./actionHandlers/removeEntityRelations";
 import * as queryDatabase from "./actionHandlers/queryDatabase";
 import { RpdServerPluginExtendingAbilities, RpdServerPluginConfigurableTargetOptions, RpdConfigurationItemOptions, IRpdServer, RapidPlugin } from "~/core/server";
-
 
 const routeConfigs: {
   code: string;
@@ -123,10 +117,10 @@ class DataManager implements RapidPlugin {
   async configureRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
     const { models } = applicationConfig;
     const routes: RpdRoute[] = [];
-  
+
     models.forEach((model) => {
       const { namespace, singularCode, pluralCode } = model;
-  
+
       routeConfigs.forEach((routeConfig) => {
         routes.push({
           namespace,
@@ -147,7 +141,7 @@ class DataManager implements RapidPlugin {
         });
       });
     });
-  
+
     server.appendApplicationConfig({ routes });
   }
 }

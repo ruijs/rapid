@@ -14,10 +14,7 @@ export interface ActionHandlerContext {
   status?: Response["status"];
 }
 
-export type ActionHandler = (
-  ctx: ActionHandlerContext,
-  options: any,
-) => void | Promise<void>;
+export type ActionHandler = (ctx: ActionHandlerContext, options: any) => void | Promise<void>;
 
 export interface IPluginActionHandler {
   code: string;

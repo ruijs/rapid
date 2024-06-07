@@ -30,8 +30,8 @@ export default {
       }
     }
 
-    return Intl.NumberFormat('Zh-cn', {
-      style: 'currency',
+    return Intl.NumberFormat("Zh-cn", {
+      style: "currency",
       currency: currencyCode,
       minimumFractionDigits: decimalPlaces,
       useGrouping: useGrouping,

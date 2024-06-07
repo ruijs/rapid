@@ -4,7 +4,7 @@ const page: RapidPage = {
   code: 'oc_role_details',
   name: '角色详情',
   title: '角色详情',
-  permissionCheck: {any: []},
+  permissionCheck: { any: [] },
   view: [
     {
       $type: 'rapidEntityForm',
@@ -27,15 +27,15 @@ const page: RapidPage = {
         },
       ],
       $exps: {
-        entityId: "$rui.parseQuery().id",
-      }
+        entityId: '$rui.parseQuery().id',
+      },
     },
     {
-      $type: "antdTabs",
+      $type: 'antdTabs',
       items: [
         {
-          key: "actions",
-          label: "权限",
+          key: 'actions',
+          label: '权限',
           children: [
             {
               $type: 'rapidEntityForm',
@@ -47,12 +47,12 @@ const page: RapidPage = {
                   type: 'auto',
                   code: 'actions',
                   label: null,
-                  formControlType: "rapidCheckboxListFormInput",
+                  formControlType: 'rapidCheckboxListFormInput',
                   formControlProps: {
-                    listDataSourceCode: "sysActions",
-                    listTextFieldName: "name",
-                    groupsDataSourceCode: "sysActionGroups",
-                    groupByFieldName: "group.id",
+                    listDataSourceCode: 'sysActions',
+                    listTextFieldName: 'name',
+                    groupsDataSourceCode: 'sysActionGroups',
+                    groupByFieldName: 'group.id',
                   } satisfies RapidCheckboxListFormInputConfig,
                 },
               ],
@@ -63,41 +63,41 @@ const page: RapidPage = {
                 },
               ],
               $exps: {
-                'entityId': `$rui.parseQuery().id`,
+                entityId: `$rui.parseQuery().id`,
               },
             },
           ],
         },
         {
-          key: "users",
-          label: "用户",
+          key: 'users',
+          label: '用户',
           children: [
             {
-              $id: "userList",
-              $type: "sonicEntityList",
-              entityCode: "OcUser",
-              viewMode: "table",
+              $id: 'userList',
+              $type: 'sonicEntityList',
+              entityCode: 'OcUser',
+              viewMode: 'table',
               fixedFilters: [
                 {
-                  field: "roles",
-                  operator: "exists",
+                  field: 'roles',
+                  operator: 'exists',
                   filters: [
                     {
-                      field: "id",
-                      operator: "eq",
-                      value: ""
-                    }
-                  ]
-                }
+                      field: 'id',
+                      operator: 'eq',
+                      value: '',
+                    },
+                  ],
+                },
               ],
               listActions: [
                 {
-                  $type: "sonicToolbarSelectEntityButton",
-                  text: "添加",
-                  icon: "PlusOutlined",
-                  actionStyle: "primary",
-                  entityCode: "OcUser",
-                  quickSearchFields: ["name", "login"],
+                  $type: 'sonicToolbarSelectEntityButton',
+                  text: '添加',
+                  icon: 'PlusOutlined',
+                  actionStyle: 'primary',
+                  entityCode: 'OcUser',
+                  quickSearchFields: ['name', 'login'],
                   columns: [
                     {
                       type: 'auto',
@@ -110,28 +110,28 @@ const page: RapidPage = {
                   ],
                   onSelected: [
                     {
-                      $action: "sendHttpRequest",
-                      method: "POST",
-                      url: "/api/app/oc_roles/operations/add_relations",
+                      $action: 'sendHttpRequest',
+                      method: 'POST',
+                      url: '/api/app/oc_roles/operations/add_relations',
                       data: {
-                        property: "users",
+                        property: 'users',
                       },
                       $exps: {
-                        "data.id": "$rui.parseQuery().id",
-                        "data.relations": "_.map($event.args[0].selectedIds, function(id) {return {id: id}})",
+                        'data.id': '$rui.parseQuery().id',
+                        'data.relations': '_.map($event.args[0].selectedIds, function(id) {return {id: id}})',
                       },
                     },
                     {
-                      $action: "loadStoreData",
-                      scopeId: "userList-scope",
-                      storeName: "list",
+                      $action: 'loadStoreData',
+                      scopeId: 'userList-scope',
+                      storeName: 'list',
                     },
-                  ]
+                  ],
                 },
                 {
-                  $type: "sonicToolbarRefreshButton",
-                  text: "刷新",
-                  icon: "ReloadOutlined",
+                  $type: 'sonicToolbarRefreshButton',
+                  text: '刷新',
+                  icon: 'ReloadOutlined',
                 },
               ],
               columns: [
@@ -157,10 +157,10 @@ const page: RapidPage = {
                   width: '250px',
                   rendererProps: {
                     item: {
-                      $type: "rapidLinkRenderer",
-                      url: "/pages/oc_role_details?id={{id}}",
-                      text: "{{name}}",
-                    }
+                      $type: 'rapidLinkRenderer',
+                      url: '/pages/oc_role_details?id={{id}}',
+                      text: '{{name}}',
+                    },
                   },
                 },
                 {
@@ -176,47 +176,46 @@ const page: RapidPage = {
               ],
               actions: [
                 {
-                  $type: "rapidTableAction",
-                  code: "remove",
+                  $type: 'rapidTableAction',
+                  code: 'remove',
                   actionText: '移除',
-                  confirmText: "您确定要从角色中移除此用户吗？",
+                  confirmText: '您确定要从角色中移除此用户吗？',
                   onAction: [
                     {
-                      $action: "sendHttpRequest",
-                      method: "POST",
-                      url: "/api/app/oc_roles/operations/remove_relations",
+                      $action: 'sendHttpRequest',
+                      method: 'POST',
+                      url: '/api/app/oc_roles/operations/remove_relations',
                       data: {
-                        property: "users",
+                        property: 'users',
                       },
                       $exps: {
-                        "data.id": "$rui.parseQuery().id",
-                        "data.relations": "[{id: $event.sender['data-record-id']}]",
+                        'data.id': '$rui.parseQuery().id',
+                        'data.relations': "[{id: $event.sender['data-record-id']}]",
                       },
                     },
                     {
-                      $action: "loadStoreData",
-                      storeName: "list",
-                    }
-                  ]
+                      $action: 'loadStoreData',
+                      storeName: 'list',
+                    },
+                  ],
                 },
               ],
               $exps: {
-                "fixedFilters[0].filters[0].value": "$rui.parseQuery().id",
+                'fixedFilters[0].filters[0].value': '$rui.parseQuery().id',
               },
-            }
-          ]
+            },
+          ],
         },
-      ]
+      ],
     },
   ],
   stores: [
     {
-      type: "entityStore",
-      name: "sysActionGroups",
-      entityCode: "SysActionGroup",
-      properties: ["id", "code", "name", "orderNum"],
-      filters: [
-      ],
+      type: 'entityStore',
+      name: 'sysActionGroups',
+      entityCode: 'SysActionGroup',
+      properties: ['id', 'code', 'name', 'orderNum'],
+      filters: [],
       orderBy: [
         {
           field: 'orderNum',
@@ -224,12 +223,11 @@ const page: RapidPage = {
       ],
     },
     {
-      type: "entityStore",
-      name: "sysActions",
-      entityCode: "SysAction",
-      properties: ["id", "code", "name", "group", "orderNum"],
-      filters: [
-      ],
+      type: 'entityStore',
+      name: 'sysActions',
+      entityCode: 'SysAction',
+      properties: ['id', 'code', 'name', 'group', 'orderNum'],
+      filters: [],
       orderBy: [
         {
           field: 'group_id',
@@ -239,7 +237,7 @@ const page: RapidPage = {
         },
       ],
     },
-  ]
+  ],
 };
 
 export default page;

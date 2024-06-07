@@ -1,12 +1,4 @@
-import {
-  CountEntityOptions,
-  FindEntityOptions,
-  CreateEntityOptions,
-  IRpdDataAccessor,
-  RpdDataModel,
-  UpdateEntityOptions,
-  IDatabaseAccessor,
-} from "~/types";
+import { CountEntityOptions, FindEntityOptions, CreateEntityOptions, IRpdDataAccessor, RpdDataModel, UpdateEntityOptions, IDatabaseAccessor } from "~/types";
 import QueryBuilder from "~/queryBuilder/queryBuilder";
 import { first, set } from "lodash";
 import { IRpdServer } from "~/core/server";

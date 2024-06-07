@@ -3,17 +3,9 @@ import { mergeInput } from "./inputHelper";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import EntityManager from "~/dataAccess/entityManager";
 
-type EntityActionHandler = (
-  entityManager: EntityManager,
-  input: any,
-) => Promise<any>;
+type EntityActionHandler = (entityManager: EntityManager, input: any) => Promise<any>;
 
-export default async function runCollectionEntityActionHandler(
-  ctx: ActionHandlerContext,
-  options: RunEntityActionHandlerOptions,
-  code: string,
-  handleEntityAction: EntityActionHandler,
-) {
+export default async function runCollectionEntityActionHandler(ctx: ActionHandlerContext, options: RunEntityActionHandlerOptions, code: string, handleEntityAction: EntityActionHandler) {
   const { logger, server, input } = ctx;
 
   const { defaultInput, fixedInput } = options;

@@ -14,14 +14,14 @@ export function mapDbRowToEntity(model: RpdDataModel, row: any, keepNonPropertyF
 
   const result: Record<string, any> = {};
   const columnNames = Object.keys(row);
-  columnNames.forEach(columnName => {
+  columnNames.forEach((columnName) => {
     let isRelationProp = false;
     let propertyName = columnName;
-    let property = model.properties.find(item => item.columnName === columnName);
+    let property = model.properties.find((item) => item.columnName === columnName);
     if (property) {
       propertyName = property.code;
     } else {
-      property = model.properties.find(item => item.relation === "one" && item.targetIdColumnName === columnName);
+      property = model.properties.find((item) => item.relation === "one" && item.targetIdColumnName === columnName);
       if (property) {
         isRelationProp = true;
         propertyName = property.code;
@@ -48,7 +48,6 @@ export function mapDbRowToEntity(model: RpdDataModel, row: any, keepNonPropertyF
   return result;
 }
 
-
 export function mapEntityToDbRow(model: RpdDataModel, entity: any) {
   if (!entity) {
     return null;
@@ -60,21 +59,21 @@ export function mapEntityToDbRow(model: RpdDataModel, entity: any) {
 
   const result: Record<string, any> = {};
   const propertyNames = Object.keys(entity);
-  propertyNames.forEach(propertyName => {
+  propertyNames.forEach((propertyName) => {
     let columnName = propertyName;
-    const property = model.properties.find(item => item.code === propertyName);
+    const property = model.properties.find((item) => item.code === propertyName);
     if (property) {
       if (!isRelationProperty(property)) {
         columnName = property.columnName || property.code;
         result[columnName] = entity[propertyName];
       }
     } else {
-      const oneRelationProperty = model.properties.find(item => item.relation === "one" && item.targetIdColumnName === propertyName);
+      const oneRelationProperty = model.properties.find((item) => item.relation === "one" && item.targetIdColumnName === propertyName);
       if (oneRelationProperty) {
         result[propertyName] = entity[propertyName];
       }
     }
-  })
+  });
 
   return result;
 }

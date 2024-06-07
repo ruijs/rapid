@@ -1,7 +1,4 @@
-export function getEntityPartChanges(
-  before: any,
-  after: any,
-): Record<string, any> | null {
+export function getEntityPartChanges(before: any, after: any): Record<string, any> | null {
   if (!before) {
     throw new Error("Argument 'before' can not be null.");
   }

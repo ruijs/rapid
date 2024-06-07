@@ -1,5 +1,3 @@
 import sendStateMachineEvent from "./sendStateMachineEvent";
 
-export default [
-  sendStateMachineEvent,
-]
+export default [sendStateMachineEvent];

@@ -7,7 +7,7 @@ export default {
     extra: {
       allowMultiComponents: true,
       required: false,
-    }
+    },
   },
 
   propertyPanels: [
@@ -33,7 +33,7 @@ export default {
               label: "vertical",
               value: "vertical",
             },
-          ]
+          ],
         },
 
         {
@@ -59,7 +59,7 @@ export default {
               label: "small",
               value: "small",
             },
-          ]
+          ],
         },
 
         {
@@ -67,7 +67,7 @@ export default {
           label: "colon",
           propName: "colon",
         },
-      ]
-    }
-  ]
+      ],
+    },
+  ],
 } as RockMeta;

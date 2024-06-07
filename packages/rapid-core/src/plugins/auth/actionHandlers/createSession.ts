@@ -5,17 +5,13 @@ import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 
 export interface UserAccessToken {
-  sub: "userAccessToken",
+  sub: "userAccessToken";
   aud: string;
 }
 
 export const code = "createSession";
 
-export async function handler(
-  plugin: RapidPlugin,
-  ctx: ActionHandlerContext,
-  options: any,
-) {
+export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: any) {
   const { server, input, routerContext } = ctx;
   const { response } = routerContext;
   const { account, password } = input;
@@ -30,8 +26,8 @@ export async function handler(
         operator: "eq",
         field: "login",
         value: account,
-      }
-    ]
+      },
+    ],
   });
 
   if (!user) {
@@ -44,13 +40,16 @@ export async function handler(
   }
 
   const secretKey = Buffer.from(server.config.jwtKey, "base64");
-  const token = createJwt({
-    iss: "authManager",
-    sub: "userAccessToken",
-    aud: "" + user.id,
-    iat: Math.floor(Date.now() / 1000),
-    act: user.login,
-  } as UserAccessToken, secretKey);
+  const token = createJwt(
+    {
+      iss: "authManager",
+      sub: "userAccessToken",
+      aud: "" + user.id,
+      iat: Math.floor(Date.now() / 1000),
+      act: user.login,
+    } as UserAccessToken,
+    secretKey,
+  );
 
   setCookie(response.headers, {
     name: ctx.server.config.sessionCookieName,

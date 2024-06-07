@@ -4,23 +4,14 @@ import RapidEntityListMeta from "./SonicMainSecondaryLayoutMeta";
 import type { SonicMainSecondaryLayoutRockConfig } from "./sonic-main-secondary-layout-types";
 import { each, map } from "lodash";
 
-
 export default {
   onReceiveMessage(message, state, props) {
     if (message.name === "notifySelectedIdsChange") {
-      handleComponentEvent(
-        "onSelectedIdsChange",
-        message.framework,
-        message.page as any,
-        props._state.scope,
-        props,
-        props.main.onSelectedIdsChange,
-        [
-          {
-            selectedIds: message.payload.selectedIds
-          },
-        ],
-      )
+      handleComponentEvent("onSelectedIdsChange", message.framework, message.page as any, props._state.scope, props, props.main.onSelectedIdsChange, [
+        {
+          selectedIds: message.payload.selectedIds,
+        },
+      ]);
     }
   },
 
@@ -32,7 +23,7 @@ export default {
         $exps: {
           "vars.activeId": "_.first($event.args[0].selectedIds)",
           "vars.activeRecord": "_.first($event.args[0].selectedRecords)",
-        }
+        },
       },
       {
         $action: "loadScopeData",
@@ -44,14 +35,14 @@ export default {
           componentId: childRock.$id,
           message: {
             name: "refreshView",
-          }
-        }
-      })
-    ]
+          },
+        };
+      }),
+    ];
 
     each(props.secondary, (childRock) => {
       // set(childRock, "$exps._hidden", "!$scope.vars.activeId");
-    })
+    });
 
     let mainRock = props.main;
     if (props.mainTitle) {
@@ -98,9 +89,9 @@ export default {
               $id: `${props.$id}-col-secondary`,
               span: props.secondaryColSpan,
               children: secondaryRock,
-            }
-          ]
-        }
+            },
+          ],
+        },
       ],
       eventSubscriptions: [
         // {
@@ -114,11 +105,11 @@ export default {
         //     },
         //   ]
         // }
-      ]
-    }
+      ],
+    };
 
-    return renderRock({context, rockConfig});
+    return renderRock({ context, rockConfig });
   },
 
-  ...RapidEntityListMeta
+  ...RapidEntityListMeta,
 } as Rock<SonicMainSecondaryLayoutRockConfig>;

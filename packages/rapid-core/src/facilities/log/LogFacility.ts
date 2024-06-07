@@ -33,4 +33,3 @@ export interface Logger {
 
   child(options: Object): Logger;
 }
-

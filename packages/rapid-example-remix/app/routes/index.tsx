@@ -1,14 +1,9 @@
-import type { MetaFunction } from "@remix-run/node";
+import type { MetaFunction } from '@remix-run/node';
 
 export const meta: MetaFunction = () => {
-  return [
-    { title: "Rapid examples" },
-    { name: "description", content: "Welcome to use Rapid!" },
-  ];
+  return [{ title: 'Rapid examples' }, { name: 'description', content: 'Welcome to use Rapid!' }];
 };
 
 export default function Index() {
-  return (
-    <div>Home</div>
-  );
+  return <div>Home</div>;
 }

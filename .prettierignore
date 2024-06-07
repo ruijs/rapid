@@ -1,0 +1,30 @@
+node_modules
+
+/.cache
+/build
+/public
+**/_definitions/meta
+.env
+.idea
+
+### OSX ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+**/.git
+**/.svn
+**/.hg
+**/node_modules
+**/.vscode
+
+.dockerignore
+.editorconfig
+.eslintrc
+.gitignore
+pnpm-lock.yaml
+pnpm-lock.yaml.sha1

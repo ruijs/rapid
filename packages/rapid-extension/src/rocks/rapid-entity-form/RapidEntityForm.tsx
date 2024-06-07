@@ -1,36 +1,20 @@
-import type {
-  RockEvent,
-  Rock,
-  RockEventHandler,
-  RuiRockLogger,
-} from "@ruiapp/move-style";
+import type { RockEvent, Rock, RockEventHandler, RuiRockLogger } from "@ruiapp/move-style";
 import { handleComponentEvent } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityFormMeta from "./RapidEntityFormMeta";
 import type { RapidEntityFormRockConfig } from "./rapid-entity-form-types";
 import { filter, find, isUndefined, map, uniq } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
-import type {
-  RapidDataDictionary,
-  RapidEntity,
-  RapidField,
-  RapidFieldType,
-} from "../../types/rapid-entity-types";
+import type { RapidDataDictionary, RapidEntity, RapidField, RapidFieldType } from "../../types/rapid-entity-types";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import type { EntityStoreConfig } from "../../stores/entity-store";
-import type {
-  RapidFormItemConfig,
-  RapidFormItemType,
-} from "../rapid-form-item/rapid-form-item-types";
+import type { RapidFormItemConfig, RapidFormItemType } from "../rapid-form-item/rapid-form-item-types";
 import type { RapidFormRockConfig } from "../rapid-form/rapid-form-types";
 import type { RapidSelectConfig } from "../rapid-select/rapid-select-types";
 import { RapidOptionFieldRendererConfig } from "../rapid-option-field-renderer/rapid-option-field-renderer-types";
 import { message } from "antd";
 
-const fieldTypeToFormItemTypeMap: Record<
-  RapidFieldType,
-  RapidFormItemType | null
-> = {
+const fieldTypeToFormItemTypeMap: Record<RapidFieldType, RapidFormItemType | null> = {
   text: "text",
   boolean: "switch",
   integer: "number",
@@ -72,9 +56,7 @@ export interface GenerateEntityFormItemOption {
   dataDictionaries: RapidDataDictionary[];
 }
 
-function generateDataFormItemForOptionProperty(
-  option: GenerateEntityFormItemOption
-) {
+function generateDataFormItemForOptionProperty(option: GenerateEntityFormItemOption) {
   const { formItemConfig, mainEntity } = option;
 
   const rpdField = find(mainEntity.fields, { code: formItemConfig.code })!;
@@ -111,10 +93,7 @@ function generateDataFormItemForOptionProperty(
   return formItem;
 }
 
-export function generateDataFormItemForRelationProperty(
-  option: GenerateEntityFormItemOption,
-  field: RapidField
-) {
+export function generateDataFormItemForRelationProperty(option: GenerateEntityFormItemOption, field: RapidField) {
   const { formItemConfig } = option;
 
   let listDataSourceCode = formItemConfig.formControlProps?.listDataSourceCode;
@@ -146,23 +125,15 @@ export function generateDataFormItemForRelationProperty(
   return formItem;
 }
 
-function generateDataFormItem(
-  logger: RuiRockLogger,
-  entityFormProps: any,
-  option: GenerateEntityFormItemOption
-) {
+function generateDataFormItem(logger: RuiRockLogger, entityFormProps: any, option: GenerateEntityFormItemOption) {
   const { formItemConfig, mainEntity } = option;
 
   const rpdField = find(mainEntity.fields, { code: formItemConfig.code })!;
   if (!rpdField) {
-    logger.warn(
-      entityFormProps,
-      `Field with code '${formItemConfig.code}' not found.`
-    );
+    logger.warn(entityFormProps, `Field with code '${formItemConfig.code}' not found.`);
   }
 
-  let valueFieldType =
-    formItemConfig.valueFieldType || rpdField?.type || "text";
+  let valueFieldType = formItemConfig.valueFieldType || rpdField?.type || "text";
 
   if (valueFieldType === "option") {
     return generateDataFormItemForOptionProperty(option);
@@ -225,10 +196,10 @@ export default {
           "id",
           ...map(
             filter(props.items, (item) => !!item.code),
-            (item) => item.code
+            (item) => item.code,
           ),
           ...(props.extraProperties || []),
-        ]
+        ],
       );
       const detailDataStoreConfig: EntityStoreConfig = {
         type: "entityStore",
@@ -261,8 +232,7 @@ export default {
         }
 
         if (rpdField.type === "relation" || rpdField.type === "relation[]") {
-          let listDataSourceCode =
-            formItemConfig.formControlProps?.listDataSourceCode;
+          let listDataSourceCode = formItemConfig.formControlProps?.listDataSourceCode;
           if (listDataSourceCode) {
             // use specified data store.
             return;
@@ -330,9 +300,7 @@ export default {
     const mainEntityCode = formConfig.entityCode;
     const mainEntity = find(entities, (item) => item.code === mainEntityCode);
     if (!mainEntity) {
-      const errorRockConfig = generateRockConfigOfError(
-        new Error(`Entitiy with code '${mainEntityCode}' not found.`)
-      );
+      const errorRockConfig = generateRockConfigOfError(new Error(`Entitiy with code '${mainEntityCode}' not found.`));
       return renderRock({ context, rockConfig: errorRockConfig });
     }
 
@@ -352,16 +320,13 @@ export default {
           formItem.mode = "display";
         } else {
           // auto config formItem.rules
-          const validationMessagesOfFieldType =
-            validationMessagesByFieldType[formItem.valueFieldType!];
+          const validationMessagesOfFieldType = validationMessagesByFieldType[formItem.valueFieldType!];
           if (formItem.required) {
             if (!formItem.rules || !formItem.rules.length) {
               formItem.rules = [
                 {
                   required: true,
-                  message:
-                    validationMessagesOfFieldType?.required ||
-                    defaultValidationMessages.required,
+                  message: validationMessagesOfFieldType?.required || defaultValidationMessages.required,
                 },
               ];
             }
@@ -385,15 +350,7 @@ export default {
             script: async (event: RockEvent) => {
               message.success("保存成功。");
               if (formConfig.onSaveSuccess) {
-                await handleComponentEvent(
-                  "onSaveSuccess",
-                  event.framework,
-                  event.page as any,
-                  event.scope,
-                  event.sender,
-                  formConfig.onSaveSuccess,
-                  [event.args[0]]
-                );
+                await handleComponentEvent("onSaveSuccess", event.framework, event.page as any, event.scope, event.sender, formConfig.onSaveSuccess, [event.args[0]]);
               }
             },
           },
@@ -404,15 +361,7 @@ export default {
             script: async (event: RockEvent) => {
               message.error(`保存失败：${event.args[0].message}`);
               if (formConfig.onSaveError) {
-                await handleComponentEvent(
-                  "onSaveError",
-                  event.framework,
-                  event.page as any,
-                  event.scope,
-                  event.sender,
-                  formConfig.onSaveError,
-                  [event.args[0]]
-                );
+                await handleComponentEvent("onSaveError", event.framework, event.page as any, event.scope, event.sender, formConfig.onSaveError, [event.args[0]]);
               }
             },
           },
@@ -432,8 +381,7 @@ export default {
       onFormRefresh: formConfig.onFormRefresh,
       onValuesChange: formConfig.onValuesChange,
       items: formItems,
-      dataSourceCode:
-        formConfig.mode === "new" ? null : props.dataSourceCode || "detail",
+      dataSourceCode: formConfig.mode === "new" ? null : props.dataSourceCode || "detail",
       onFinish: formConfig.mode === "view" ? null : formOnFinish,
     };
     return renderRock({ context, rockConfig });

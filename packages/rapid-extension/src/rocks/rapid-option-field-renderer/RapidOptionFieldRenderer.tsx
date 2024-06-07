@@ -14,7 +14,7 @@ export default {
     }
 
     const dataDictionaries = rapidAppDefinition.getDataDictionaries();
-    let dataDictionary = find(dataDictionaries, {code: dictionaryCode});
+    let dataDictionary = find(dataDictionaries, { code: dictionaryCode });
     if (!dataDictionary) {
       return "" + value;
     }
@@ -31,7 +31,7 @@ export default {
       value,
     } as RockConfig;
 
-    return renderRock({context, rockConfig});
+    return renderRock({ context, rockConfig });
   },
 
   ...RapidOptionFieldRendererMeta,

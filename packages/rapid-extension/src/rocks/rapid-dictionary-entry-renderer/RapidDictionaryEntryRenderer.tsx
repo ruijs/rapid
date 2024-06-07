@@ -24,7 +24,7 @@ export default {
       },
     } as RockConfig;
 
-    return renderRock({context, rockConfig});
+    return renderRock({ context, rockConfig });
   },
 
   ...RapidDictionaryEntryRendererMeta,

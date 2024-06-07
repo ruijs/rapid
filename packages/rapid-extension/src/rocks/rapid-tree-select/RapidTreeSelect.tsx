@@ -10,7 +10,7 @@ export default {
     const { scope } = context;
     let dataList = props.listDataSource?.data?.list;
     if (props.listDataSourceCode) {
-      dataList = scope.stores[props.listDataSourceCode]?.data?.list
+      dataList = scope.stores[props.listDataSourceCode]?.data?.list;
     }
 
     const treeData = MoveStyleUtils.listToTree(dataList, {
@@ -22,9 +22,9 @@ export default {
     let selectedValue: string | string[];
     if (props.mode === "multiple") {
       if (props.valueFieldName) {
-        selectedValue = map(props.value, item => {
+        selectedValue = map(props.value, (item) => {
           if (isObject(item)) {
-            return get(item, props.valueFieldName)
+            return get(item, props.valueFieldName);
           }
           return item;
         });
@@ -60,6 +60,6 @@ export default {
       style: { width: "100%" },
     };
 
-    return <TreeSelect {...antdProps}></TreeSelect>
+    return <TreeSelect {...antdProps}></TreeSelect>;
   },
 } as Rock;

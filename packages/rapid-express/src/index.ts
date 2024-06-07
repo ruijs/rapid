@@ -2,21 +2,13 @@ import type * as express from "express";
 import { createReadableStreamFromReadable, writeReadableStreamToWritable } from "./stream";
 import { IRpdServer } from "@ruiapp/rapid-core";
 
-export type RequestHandler = (
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) => Promise<void>;
+export type RequestHandler = (req: express.Request, res: express.Response, next: express.NextFunction) => Promise<void>;
 
-export function createRapidRequestHandler(server: IRpdServer) : RequestHandler {
-  return async (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => {
+export function createRapidRequestHandler(server: IRpdServer): RequestHandler {
+  return async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
       let request = createStandardRequest(req, res);
-      let response: Response = await server.handleRequest(request, next as any);;
+      let response: Response = await server.handleRequest(request, next as any);
       await sendStandardResponse(res, response);
     } catch (error: unknown) {
       // Express doesn't support async functions, so we have to pass along the
@@ -26,9 +18,7 @@ export function createRapidRequestHandler(server: IRpdServer) : RequestHandler {
   };
 }
 
-export function createRapidHeaders(
-  requestHeaders: express.Request["headers"]
-): Headers {
+export function createRapidHeaders(requestHeaders: express.Request["headers"]): Headers {
   let headers = new Headers();
 
   for (let [key, values] of Object.entries(requestHeaders)) {
@@ -46,10 +36,7 @@ export function createRapidHeaders(
   return headers;
 }
 
-export function createStandardRequest(
-  req: express.Request,
-  res: express.Response
-): Request {
+export function createStandardRequest(req: express.Request, res: express.Response): Request {
   // req.hostname doesn't include port information so grab that from
   // `X-Forwarded-Host` or `Host`
   let [, hostnamePort] = req.get("X-Forwarded-Host")?.split(":") ?? [];
@@ -77,10 +64,7 @@ export function createStandardRequest(
   return new Request(url.href, init);
 }
 
-export async function sendStandardResponse(
-  nodeResponse: express.Response,
-  standardResponse: Response
-): Promise<void> {
+export async function sendStandardResponse(nodeResponse: express.Response, standardResponse: Response): Promise<void> {
   nodeResponse.statusMessage = standardResponse.statusText;
   nodeResponse.status(standardResponse.status);
 

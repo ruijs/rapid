@@ -7,5 +7,5 @@ export default {
     return null;
   },
 
-  ...RapidTableColumnMeta
+  ...RapidTableColumnMeta,
 } as Rock;

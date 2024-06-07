@@ -5,11 +5,7 @@ import { RapidPlugin } from "~/core/server";
 
 export const code = "createCollectionEntity";
 
-export async function handler(
-  plugin: RapidPlugin,
-  ctx: ActionHandlerContext,
-  options: RunEntityActionHandlerOptions,
-) {
+export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: RunEntityActionHandlerOptions) {
   const { logger, server, input } = ctx;
 
   const { defaultInput, fixedInput } = options;
@@ -22,8 +18,11 @@ export async function handler(
   }
 
   const entityManager = server.getEntityManager(options.singularCode);
-  const output = await entityManager.createEntity({
-    entity: input,
-  }, plugin);
+  const output = await entityManager.createEntity(
+    {
+      entity: input,
+    },
+    plugin,
+  );
   ctx.output = output;
 }

@@ -1,5 +1,3 @@
 import StateMachine from "./StateMachine";
 
-export default [
-  StateMachine,
-]
+export default [StateMachine];

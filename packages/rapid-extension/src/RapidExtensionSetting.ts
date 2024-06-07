@@ -33,10 +33,9 @@ const defaultDisplayPropsOfFieldType: Record<string, Record<string, any>> = {
     falseText: "否",
     defaultText: "-",
   },
-}
+};
 
-const defaultRendererPropsOfRendererTypes: Record<string, Record<string, any>> = {
-}
+const defaultRendererPropsOfRendererTypes: Record<string, Record<string, any>> = {};
 
 export default {
   getDefaultRendererTypeOfFieldType(fieldType: RapidFieldType) {
@@ -59,5 +58,5 @@ export default {
     const propsOfFieldType = defaultDisplayPropsOfFieldType[fieldType];
     const propsOfRendererType = defaultRendererPropsOfRendererTypes[rendererType];
     return merge({}, propsOfFieldType, propsOfRendererType);
-  }
-}
+  },
+};

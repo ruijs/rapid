@@ -5,10 +5,4 @@ import * as deleteSession from "./deleteSession";
 import * as getMyProfile from "./getMyProfile";
 import * as resetPassword from "./resetPassword";
 
-export default [
-  changePassword,
-  createSession,
-  deleteSession,
-  getMyProfile,
-  resetPassword,
-] satisfies IPluginActionHandler[];
+export default [changePassword, createSession, deleteSession, getMyProfile, resetPassword] satisfies IPluginActionHandler[];

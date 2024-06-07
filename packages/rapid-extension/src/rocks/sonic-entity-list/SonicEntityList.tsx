@@ -42,13 +42,13 @@ export default {
 
     let mainEntity: RapidEntity | undefined;
     if (entityCode) {
-      mainEntity = find(entities, item => item.code === entityCode);
+      mainEntity = find(entities, (item) => item.code === entityCode);
       if (!entityName) {
         entityName = mainEntity?.name;
       }
 
       if (!mainEntity) {
-        return renderRock({context, rockConfig: generateRockConfigOfError(new Error(`Entity '${entityCode}' not found.`))});
+        return renderRock({ context, rockConfig: generateRockConfigOfError(new Error(`Entity '${entityCode}' not found.`)) });
       }
     }
 
@@ -62,138 +62,142 @@ export default {
       $id: `${props.$id}-rapidEntityList`,
     };
 
-    const newModalRockConfig: RockConfig | null = props.newForm ? {
-      $type: "antdModal",
-      $id: `${props.$id}-newModal`,
-      title: `新建${entityName}`,
-      okText: "确定",
-      cancelText: "取消",
-      $exps: {
-        open: "!!$scope.vars['modal-newEntity-open']",
-        confirmLoading: "!!$scope.vars['modal-saving']",
-      },
-      children: [
-        {
-          $type: "rapidEntityForm",
-          $id: `${props.$id}-newForm`,
-          entityCode: entityCode,
-          mode: "new",
-          ...omit(props.newForm, ["entityCode"]),
-          onSaveSuccess: [
+    const newModalRockConfig: RockConfig | null = props.newForm
+      ? {
+          $type: "antdModal",
+          $id: `${props.$id}-newModal`,
+          title: `新建${entityName}`,
+          okText: "确定",
+          cancelText: "取消",
+          $exps: {
+            open: "!!$scope.vars['modal-newEntity-open']",
+            confirmLoading: "!!$scope.vars['modal-saving']",
+          },
+          children: [
+            {
+              $type: "rapidEntityForm",
+              $id: `${props.$id}-newForm`,
+              entityCode: entityCode,
+              mode: "new",
+              ...omit(props.newForm, ["entityCode"]),
+              onSaveSuccess: [
+                {
+                  $action: "setVars",
+                  vars: {
+                    "modal-newEntity-open": false,
+                    "modal-saving": false,
+                  },
+                },
+                {
+                  $action: "loadStoreData",
+                  storeName: "list",
+                },
+              ],
+              onSaveError: [
+                {
+                  $action: "setVars",
+                  vars: {
+                    "modal-saving": false,
+                  },
+                },
+              ],
+            },
+          ],
+          onOk: [
+            {
+              $action: "setVars",
+              vars: {
+                "modal-saving": true,
+              },
+            },
+            {
+              $action: "sendComponentMessage",
+              componentId: props.$id,
+              message: {
+                name: "submitNewForm",
+              },
+            },
+          ],
+          onCancel: [
             {
               $action: "setVars",
               vars: {
                 "modal-newEntity-open": false,
-                "modal-saving": false,
-              }
-            },
-            {
-              $action: "loadStoreData",
-              storeName: "list",
+              },
             },
           ],
-          onSaveError: [
+        }
+      : null;
+
+    const editModalRockConfig: RockConfig | null = props.editForm
+      ? {
+          $type: "antdModal",
+          $id: `${props.$id}-editModal`,
+          title: `修改${entityName}`,
+          okText: "确定",
+          cancelText: "取消",
+          $exps: {
+            open: "!!$scope.vars['modal-editEntity-open']",
+            confirmLoading: "!!$scope.vars['modal-saving']",
+          },
+          children: [
+            {
+              $type: "rapidEntityForm",
+              $id: `${props.$id}-editForm`,
+              entityCode: entityCode,
+              mode: "edit",
+              ...omit(props.editForm, ["entityCode"]),
+              $exps: {
+                entityId: "$scope.vars.activeEntityId",
+              },
+              onSaveSuccess: [
+                {
+                  $action: "setVars",
+                  vars: {
+                    "modal-editEntity-open": false,
+                    "modal-saving": false,
+                  },
+                },
+                {
+                  $action: "loadStoreData",
+                  storeName: "list",
+                },
+              ],
+              onSaveError: [
+                {
+                  $action: "setVars",
+                  vars: {
+                    "modal-saving": false,
+                  },
+                },
+              ],
+            },
+          ],
+          onOk: [
             {
               $action: "setVars",
               vars: {
-                "modal-saving": false,
-              }
+                "modal-saving": true,
+              },
+            },
+            {
+              $action: "sendComponentMessage",
+              componentId: props.$id,
+              message: {
+                name: "submitEditForm",
+              },
             },
           ],
-        },
-      ],
-      onOk: [
-        {
-          $action: "setVars",
-          vars: {
-            "modal-saving": true,
-          }
-        },
-        {
-          $action: "sendComponentMessage",
-          componentId: props.$id,
-          message: {
-            name: "submitNewForm",
-          }
-        }
-      ],
-      onCancel: [
-        {
-          $action: "setVars",
-          vars: {
-            "modal-newEntity-open": false,
-          }
-        }
-      ],
-    } : null;
-
-    const editModalRockConfig: RockConfig | null = props.editForm ? {
-      $type: "antdModal",
-      $id: `${props.$id}-editModal`,
-      title: `修改${entityName}`,
-      okText: "确定",
-      cancelText: "取消",
-      $exps: {
-        open: "!!$scope.vars['modal-editEntity-open']",
-        confirmLoading: "!!$scope.vars['modal-saving']",
-      },
-      children: [
-        {
-          $type: "rapidEntityForm",
-          $id: `${props.$id}-editForm`,
-          entityCode: entityCode,
-          mode: "edit",
-          ...omit(props.editForm, ["entityCode"]),
-          $exps: {
-            "entityId": "$scope.vars.activeEntityId",
-          },
-          onSaveSuccess: [
+          onCancel: [
             {
               $action: "setVars",
               vars: {
                 "modal-editEntity-open": false,
-                "modal-saving": false,
-              }
-            },
-            {
-              $action: "loadStoreData",
-              storeName: "list",
-            },
-          ],
-          onSaveError: [
-            {
-              $action: "setVars",
-              vars: {
-                "modal-saving": false,
-              }
+              },
             },
           ],
         }
-      ],
-      onOk: [
-        {
-          $action: "setVars",
-          vars: {
-            "modal-saving": true,
-          }
-        },
-        {
-          $action: "sendComponentMessage",
-          componentId: props.$id,
-          message: {
-            name: "submitEditForm",
-          }
-        }
-      ],
-      onCancel: [
-        {
-          $action: "setVars",
-          vars: {
-            "modal-editEntity-open": false,
-          }
-        }
-      ],
-    } : null;
+      : null;
 
     const childrenConfig: RockChildrenConfig = [entityListRockConfig];
     if (newModalRockConfig) {
@@ -233,16 +237,16 @@ export default {
               $action: "setVars",
               vars: {
                 "modal-newEntity-open": true,
-              }
+              },
             },
             {
               $action: "sendComponentMessage",
               componentId: props.$id,
               message: {
-                name: "resetNewForm"
-              }
-            }
-          ]
+                name: "resetNewForm",
+              },
+            },
+          ],
         },
         {
           eventName: "onEditEntityButtonClick",
@@ -254,7 +258,7 @@ export default {
               },
               $exps: {
                 "vars.activeEntityId": "$event.sender['data-record-id']",
-              }
+              },
             },
             {
               $action: "loadStoreData",
@@ -268,16 +272,16 @@ export default {
               $action: "sendComponentMessage",
               componentId: props.$id,
               message: {
-                name: "resetEditForm"
-              }
-            }
-          ]
+                name: "resetEditForm",
+              },
+            },
+          ],
         },
-      ]
-    }
+      ],
+    };
 
-    return renderRock({context, rockConfig});
+    return renderRock({ context, rockConfig });
   },
 
-  ...RapidEntityListMeta
+  ...RapidEntityListMeta,
 } as Rock<SonicEntityListRockConfig>;

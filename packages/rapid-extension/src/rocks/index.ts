@@ -88,4 +88,4 @@ export default [
   SonicToolbarNewEntityButton,
   SonicToolbarRefreshButton,
   SonicToolbarSelectEntityButton,
-]
+];

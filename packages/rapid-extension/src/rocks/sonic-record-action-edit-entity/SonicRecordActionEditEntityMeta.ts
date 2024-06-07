@@ -1,12 +1,9 @@
 import type { RockMeta } from "@ruiapp/move-style";
 
-
 export default {
   $type: "sonicRecordActionEditEntity",
 
-  slots: {
-  },
+  slots: {},
 
-  propertyPanels: [
-  ]
+  propertyPanels: [],
 } as RockMeta;

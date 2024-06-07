@@ -5,11 +5,9 @@ import type { SonicRecordActionEditEntityConfig, SonicRecordActionEditEntityRock
 import { RapidTableActionRockConfig } from "../rapid-table-action/rapid-table-action-types";
 
 export default {
-  onInit(context, props) {
-  },
+  onInit(context, props) {},
 
-  onReceiveMessage(message, state, props) {
-  },
+  onReceiveMessage(message, state, props) {},
 
   Renderer(context, props) {
     const rockConfig: RapidTableActionRockConfig = {
@@ -20,11 +18,11 @@ export default {
           $action: "notifyEvent",
           eventName: "onEditEntityButtonClick",
         },
-      ]
-    }
+      ],
+    };
 
-    return renderRock({context, rockConfig});
+    return renderRock({ context, rockConfig });
   },
 
-  ...RapidEntityListMeta
+  ...RapidEntityListMeta,
 } as Rock<SonicRecordActionEditEntityRockConfig>;

@@ -12,7 +12,7 @@ export type RapidFormConfig = {
    */
   size?: "default" | "middle" | "small";
 
-  requiredMark?: boolean | 'optional';
+  requiredMark?: boolean | "optional";
 
   /**
    * 布局模式，默认为`horizontal`
@@ -48,8 +48,7 @@ export type RapidFormConfig = {
    * 表单默认字段，可用于新建表单设置默认值
    */
   defaultFormFields?: Record<string, any>;
-}
-
+};
 
 /**
  * 表单动作
@@ -84,15 +83,12 @@ export type RapidFormAction = {
    * 请求地址，设置后覆盖表单的请求地址
    */
   requestUrl?: string;
-}
+};
 
 export type RapidFormActionType =
   | "submit" // 提交
-  | "reset" // 重置
-  // | "closeModal" // 关闭模态窗
-  // | "closeDrawer" // 关闭抽屉
-  ;
+  | "reset"; // 重置
+// | "closeModal" // 关闭模态窗
+// | "closeDrawer" // 关闭抽屉
 
-
-export interface RapidFormRockConfig extends ContainerRockConfig, RapidFormConfig {
-}
+export interface RapidFormRockConfig extends ContainerRockConfig, RapidFormConfig {}

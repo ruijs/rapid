@@ -2,12 +2,9 @@
  * Route manager plugin
  */
 
-import {
-  RpdApplicationConfig,
-} from "~/types";
+import { RpdApplicationConfig } from "~/types";
 import { RpdServerPluginExtendingAbilities, RpdServerPluginConfigurableTargetOptions, RpdConfigurationItemOptions, IRpdServer, RapidPlugin } from "~/core/server";
 import * as httpProxy from "./actionHandlers/httpProxy";
-
 
 class RouteManager implements RapidPlugin {
   get code(): string {
@@ -47,9 +44,7 @@ class RouteManager implements RapidPlugin {
       logger.info("Loading meta of routes...");
       const entityManager = server.getEntityManager("route");
       const routes = await entityManager.findEntities({
-        orderBy: [
-          { field: "endpoint" },
-        ],
+        orderBy: [{ field: "endpoint" }],
       });
       applicationConfig.routes.push(...routes);
     } catch (error) {
