@@ -359,7 +359,10 @@ async function convertEntityFiltersToRowFilters(server: IRpdServer, model: RpdDa
         });
       }
     } else {
-      const property: RpdDataModelProperty = getEntityPropertyByCode(server, model, (filter as EntityNonRelationPropertyFilterOptions).field);
+      const property: RpdDataModelProperty = getEntityProperty(server, model, (property) => {
+        const field = (filter as EntityNonRelationPropertyFilterOptions).field;
+        return property.code === field || property.columnName === field || property.targetIdColumnName === field;
+      });
       // TODO: do not use `any` here
       replacedFilters.push({
         operator: filter.operator,
