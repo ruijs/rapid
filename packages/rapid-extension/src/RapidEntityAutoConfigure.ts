@@ -152,6 +152,14 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: 
       return singularCode === sourceEntity.base;
     });
 
+    if (!sourceEntity.derivedType) {
+      throw new Error(`Attribute 'derivedType' of '${sourceEntity.code}' entity is not configured.`);
+    }
+
+    if (!baseEntity.derivedTypePropertyCode) {
+      throw new Error(`Attribute 'derivedTypePropertyCode' of '${baseEntity.code}' entity is not configured.`);
+    }
+
     for (const field of sourceEntity.fields) {
       const baseField = baseEntity.fields.find(item => item.code === field.code);
       if (baseField) {
