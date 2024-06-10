@@ -1,25 +1,29 @@
 import { find } from "lodash";
 import {
-  CountEntityOptions,
-  DeleteEntityOptions,
-  EntityFilterOptions,
-  EntityFilterRelationalOperators,
-  FindEntityLogicalFilterOptions,
-  FindEntityOptions,
-  FindEntityRelationalFilterOptions,
-  FindEntityUnaryFilterOptions,
-  CreateEntityOptions,
   RpdDataModel,
   RpdDataModelProperty,
-  UpdateEntityOptions,
-  FindEntitySetFilterOptions,
+  CreateEntityOptions,
   QuoteTableOptions,
+  DatabaseQuery,
 } from "../types";
+import {
+  CountRowOptions,
+  DeleteRowOptions,
+  FindRowLogicalFilterOptions,
+  FindRowRelationalFilterOptions,
+  FindRowSetFilterOptions,
+  FindRowUnaryFilterOptions,
+  FindRowOptions,
+  RowFilterOptions,
+  RowFilterRelationalOperators,
+  UpdateRowOptions,
+  ColumnQueryOptions,
+} from "~/dataAccess/dataAccessTypes";
 
 const objLeftQuoteChar = '"';
 const objRightQuoteChar = '"';
 
-const relationalOperatorsMap = new Map<EntityFilterRelationalOperators, string>([
+const relationalOperatorsMap = new Map<RowFilterRelationalOperators, string>([
   ["eq", "="],
   ["ne", "<>"],
   ["gt", ">"],
@@ -31,6 +35,7 @@ const relationalOperatorsMap = new Map<EntityFilterRelationalOperators, string>(
 export interface BuildQueryContext {
   builder: QueryBuilder;
   params: any[];
+  emitTableAlias: boolean;
 }
 
 export interface InitQueryBuilderOptions {
@@ -59,17 +64,28 @@ export default class QueryBuilder {
     return `${objLeftQuoteChar}${name}${objRightQuoteChar}`;
   }
 
-  select(model: RpdDataModel, options: FindEntityOptions) {
+  quoteColumn(column: ColumnQueryOptions, emitTableAlias: boolean) {
+    if (typeof column === "string") {
+      return `${objLeftQuoteChar}${column}${objRightQuoteChar}`;
+    } else if (emitTableAlias && column.tableName) {
+      return `${objLeftQuoteChar}${column.tableName}${objRightQuoteChar}.${objLeftQuoteChar}${column.name}${objRightQuoteChar}`;
+    } else {
+      return `${objLeftQuoteChar}${column.name}${objRightQuoteChar}`;
+    }
+  }
+
+  select(model: RpdDataModel, options: FindRowOptions): DatabaseQuery {
     const ctx: BuildQueryContext = {
       builder: this,
       params: [],
+      emitTableAlias: false,
     };
-    let { properties, filters, orderBy, pagination } = options;
+    let { fields: columns, filters, orderBy, pagination } = options;
     let command = "SELECT ";
-    if (!properties || !properties.length) {
+    if (!columns || !columns.length) {
       command += "* FROM ";
     } else {
-      command += properties.map(this.quoteObject).join(", ");
+      command += columns.map((column) => this.quoteColumn(column, ctx.emitTableAlias)).join(", ");
       command += " FROM ";
     }
 
@@ -84,7 +100,7 @@ export default class QueryBuilder {
       command += " ORDER BY ";
       command += orderBy
         .map((item) => {
-          const quotedName = this.quoteObject(item.field);
+          const quotedName = this.quoteColumn(item.field,  ctx.emitTableAlias);
           return item.desc ? quotedName + " DESC" : quotedName;
         })
         .join(", ");
@@ -106,10 +122,61 @@ export default class QueryBuilder {
     };
   }
 
-  count(model: RpdDataModel, options: CountEntityOptions) {
+  selectDerived(derivedModel: RpdDataModel, baseModel: RpdDataModel, options: FindRowOptions): DatabaseQuery {
     const ctx: BuildQueryContext = {
       builder: this,
       params: [],
+      emitTableAlias: true,
+    };
+    let { fields: columns, filters, orderBy, pagination } = options;
+    let command = "SELECT ";
+    if (!columns || !columns.length) {
+      command += `${this.quoteObject(derivedModel.tableName)}.* FROM `;
+    } else {
+      command += columns.map((column) => {
+        return this.quoteColumn(column, ctx.emitTableAlias);
+      }).join(", ");
+      command += " FROM ";
+    }
+
+    command += `${this.quoteTable(derivedModel)} LEFT JOIN ${this.quoteTable(baseModel)} ON ${this.quoteObject(derivedModel.tableName)}.id = ${this.quoteObject(baseModel.tableName)}.id`;
+
+    if (filters && filters.length) {
+      command += " WHERE ";
+      command += buildFiltersQuery(ctx, filters);
+    }
+
+    if (orderBy && orderBy.length) {
+      command += " ORDER BY ";
+      command += orderBy
+        .map((item) => {
+          const quotedName = this.quoteColumn(item.field, ctx.emitTableAlias);
+          return item.desc ? quotedName + " DESC" : quotedName;
+        })
+        .join(", ");
+    }
+
+    if (pagination) {
+      command += " OFFSET ";
+      ctx.params.push(pagination.offset);
+      command += "$" + ctx.params.length;
+
+      command += " LIMIT ";
+      ctx.params.push(pagination.limit);
+      command += "$" + ctx.params.length;
+    }
+
+    return {
+      command,
+      params: ctx.params,
+    };
+  }
+
+  count(model: RpdDataModel, options: CountRowOptions): DatabaseQuery {
+    const ctx: BuildQueryContext = {
+      builder: this,
+      params: [],
+      emitTableAlias: false,
     };
     let { filters } = options;
     let command = 'SELECT COUNT(*)::int as "count" FROM ';
@@ -127,11 +194,34 @@ export default class QueryBuilder {
     };
   }
 
-  insert(model: RpdDataModel, options: CreateEntityOptions) {
+  countDerived(derivedModel: RpdDataModel, baseModel: RpdDataModel, options: CountRowOptions): DatabaseQuery {
+    const ctx: BuildQueryContext = {
+      builder: this,
+      params: [],
+      emitTableAlias: true,
+    };
+    let { filters } = options;
+    let command = 'SELECT COUNT(*)::int as "count" FROM ';
+
+    command += `${this.quoteTable(derivedModel)} LEFT JOIN ${this.quoteTable(baseModel)} ON ${this.quoteObject(derivedModel.tableName)}.id = ${this.quoteObject(baseModel.tableName)}.id`;
+
+    if (filters && filters.length) {
+      command += " WHERE ";
+      command += buildFiltersQuery(ctx, filters);
+    }
+
+    return {
+      command,
+      params: ctx.params,
+    };
+  }
+
+  insert(model: RpdDataModel, options: CreateEntityOptions): DatabaseQuery {
     const params: any[] = [];
     const ctx: BuildQueryContext = {
       builder: this,
       params,
+      emitTableAlias: false,
     };
     const { entity } = options;
     let command = "INSERT INTO ";
@@ -168,11 +258,12 @@ export default class QueryBuilder {
     };
   }
 
-  update(model: RpdDataModel, options: UpdateEntityOptions) {
+  update(model: RpdDataModel, options: UpdateRowOptions): DatabaseQuery {
     const params: any[] = [];
     const ctx: BuildQueryContext = {
       builder: this,
       params,
+      emitTableAlias: false,
     };
     let { entity, filters } = options;
     let command = "UPDATE ";
@@ -213,11 +304,12 @@ export default class QueryBuilder {
     };
   }
 
-  delete(model: RpdDataModel, options: DeleteEntityOptions) {
+  delete(model: RpdDataModel, options: DeleteRowOptions): DatabaseQuery {
     const params: any[] = [];
     const ctx: BuildQueryContext = {
       builder: this,
       params,
+      emitTableAlias: false,
     };
     let { filters } = options;
     let command = "DELETE FROM ";
@@ -236,14 +328,14 @@ export default class QueryBuilder {
   }
 }
 
-export function buildFiltersQuery(ctx: BuildQueryContext, filters: EntityFilterOptions[]) {
+export function buildFiltersQuery(ctx: BuildQueryContext, filters: RowFilterOptions[]) {
   return buildFilterQuery(0, ctx, {
     operator: "and",
     filters,
   });
 }
 
-function buildFilterQuery(level: number, ctx: BuildQueryContext, filter: EntityFilterOptions): string {
+function buildFilterQuery(level: number, ctx: BuildQueryContext, filter: RowFilterOptions): string {
   const { operator } = filter;
   if (operator === "eq" || operator === "ne" || operator === "gt" || operator === "gte" || operator === "lt" || operator === "lte") {
     return buildRelationalFilterQuery(ctx, filter);
@@ -270,7 +362,7 @@ function buildFilterQuery(level: number, ctx: BuildQueryContext, filter: EntityF
   }
 }
 
-function buildLogicalFilterQuery(level: number, ctx: BuildQueryContext, filter: FindEntityLogicalFilterOptions) {
+function buildLogicalFilterQuery(level: number, ctx: BuildQueryContext, filter: FindRowLogicalFilterOptions) {
   let dbOperator;
   if (filter.operator === "and") {
     dbOperator = " AND ";
@@ -285,8 +377,8 @@ function buildLogicalFilterQuery(level: number, ctx: BuildQueryContext, filter: 
   return command;
 }
 
-function buildUnaryFilterQuery(ctx: BuildQueryContext, filter: FindEntityUnaryFilterOptions) {
-  let command = ctx.builder.quoteObject(filter.field);
+function buildUnaryFilterQuery(ctx: BuildQueryContext, filter: FindRowUnaryFilterOptions) {
+  let command = ctx.builder.quoteColumn(filter.field, ctx.emitTableAlias);
   if (filter.operator === "null") {
     command += " IS NULL";
   } else {
@@ -295,8 +387,8 @@ function buildUnaryFilterQuery(ctx: BuildQueryContext, filter: FindEntityUnaryFi
   return command;
 }
 
-function buildInFilterQuery(ctx: BuildQueryContext, filter: FindEntitySetFilterOptions) {
-  let command = ctx.builder.quoteObject(filter.field);
+function buildInFilterQuery(ctx: BuildQueryContext, filter: FindRowSetFilterOptions) {
+  let command = ctx.builder.quoteColumn(filter.field, ctx.emitTableAlias);
 
   if (filter.operator === "in") {
     command += " = ";
@@ -309,8 +401,8 @@ function buildInFilterQuery(ctx: BuildQueryContext, filter: FindEntitySetFilterO
   return command;
 }
 
-function buildContainsFilterQuery(ctx: BuildQueryContext, filter: FindEntityRelationalFilterOptions) {
-  let command = ctx.builder.quoteObject(filter.field);
+function buildContainsFilterQuery(ctx: BuildQueryContext, filter: FindRowRelationalFilterOptions) {
+  let command = ctx.builder.quoteColumn(filter.field, ctx.emitTableAlias);
 
   command += " LIKE ";
   ctx.params.push(`%${filter.value}%`);
@@ -319,8 +411,8 @@ function buildContainsFilterQuery(ctx: BuildQueryContext, filter: FindEntityRela
   return command;
 }
 
-function buildNotContainsFilterQuery(ctx: BuildQueryContext, filter: FindEntityRelationalFilterOptions) {
-  let command = ctx.builder.quoteObject(filter.field);
+function buildNotContainsFilterQuery(ctx: BuildQueryContext, filter: FindRowRelationalFilterOptions) {
+  let command = ctx.builder.quoteColumn(filter.field, ctx.emitTableAlias);
 
   command += " NOT LIKE ";
   ctx.params.push(`%${filter.value}%`);
@@ -329,8 +421,8 @@ function buildNotContainsFilterQuery(ctx: BuildQueryContext, filter: FindEntityR
   return command;
 }
 
-function buildStartsWithFilterQuery(ctx: BuildQueryContext, filter: FindEntityRelationalFilterOptions) {
-  let command = ctx.builder.quoteObject(filter.field);
+function buildStartsWithFilterQuery(ctx: BuildQueryContext, filter: FindRowRelationalFilterOptions) {
+  let command = ctx.builder.quoteColumn(filter.field, ctx.emitTableAlias);
 
   command += " LIKE ";
   ctx.params.push(`${filter.value}%`);
@@ -339,8 +431,8 @@ function buildStartsWithFilterQuery(ctx: BuildQueryContext, filter: FindEntityRe
   return command;
 }
 
-function buildNotStartsWithFilterQuery(ctx: BuildQueryContext, filter: FindEntityRelationalFilterOptions) {
-  let command = ctx.builder.quoteObject(filter.field);
+function buildNotStartsWithFilterQuery(ctx: BuildQueryContext, filter: FindRowRelationalFilterOptions) {
+  let command = ctx.builder.quoteColumn(filter.field, ctx.emitTableAlias);
 
   command += " NOT LIKE ";
   ctx.params.push(`${filter.value}%`);
@@ -349,8 +441,8 @@ function buildNotStartsWithFilterQuery(ctx: BuildQueryContext, filter: FindEntit
   return command;
 }
 
-function buildEndsWithFilterQuery(ctx: BuildQueryContext, filter: FindEntityRelationalFilterOptions) {
-  let command = ctx.builder.quoteObject(filter.field);
+function buildEndsWithFilterQuery(ctx: BuildQueryContext, filter: FindRowRelationalFilterOptions) {
+  let command = ctx.builder.quoteColumn(filter.field, ctx.emitTableAlias);
 
   command += " LIKE ";
   ctx.params.push(`%${filter.value}`);
@@ -359,8 +451,8 @@ function buildEndsWithFilterQuery(ctx: BuildQueryContext, filter: FindEntityRela
   return command;
 }
 
-function buildNotEndsWithFilterQuery(ctx: BuildQueryContext, filter: FindEntityRelationalFilterOptions) {
-  let command = ctx.builder.quoteObject(filter.field);
+function buildNotEndsWithFilterQuery(ctx: BuildQueryContext, filter: FindRowRelationalFilterOptions) {
+  let command = ctx.builder.quoteColumn(filter.field, ctx.emitTableAlias);
 
   command += " NOT LIKE ";
   ctx.params.push(`%${filter.value}`);
@@ -369,8 +461,8 @@ function buildNotEndsWithFilterQuery(ctx: BuildQueryContext, filter: FindEntityR
   return command;
 }
 
-function buildRelationalFilterQuery(ctx: BuildQueryContext, filter: FindEntityRelationalFilterOptions) {
-  let command = ctx.builder.quoteObject(filter.field);
+function buildRelationalFilterQuery(ctx: BuildQueryContext, filter: FindRowRelationalFilterOptions) {
+  let command = ctx.builder.quoteColumn(filter.field, ctx.emitTableAlias);
 
   command += relationalOperatorsMap.get(filter.operator);
 

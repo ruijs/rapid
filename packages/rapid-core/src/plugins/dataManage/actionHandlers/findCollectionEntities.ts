@@ -16,7 +16,7 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
     } = { list: entities };
 
     if (input.pagination && !input.pagination.withoutTotal) {
-      // TOOD: impl count entities by using entity manager, because DataAccessor does not support 'exists' and 'notExists' filter.
+      // TOOD: count entities when calling findEntities for performance.
       const countResult = await entityManager.count(input);
       result.total = countResult.count;
     }

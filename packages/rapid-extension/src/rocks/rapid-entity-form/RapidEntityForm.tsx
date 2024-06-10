@@ -3,7 +3,7 @@ import { handleComponentEvent } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityFormMeta from "./RapidEntityFormMeta";
 import type { RapidEntityFormRockConfig } from "./rapid-entity-form-types";
-import { filter, find, isUndefined, map, uniq } from "lodash";
+import { filter, isUndefined, map, uniq } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import type { RapidDataDictionary, RapidEntity, RapidField, RapidFieldType } from "../../types/rapid-entity-types";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
@@ -52,18 +52,15 @@ const defaultValidationMessages = {
 export interface GenerateEntityFormItemOption {
   formItemConfig: RapidFormItemConfig;
   mainEntity: RapidEntity;
-  entities: RapidEntity[];
   dataDictionaries: RapidDataDictionary[];
 }
 
 function generateDataFormItemForOptionProperty(option: GenerateEntityFormItemOption) {
   const { formItemConfig, mainEntity } = option;
 
-  const rpdField = find(mainEntity.fields, { code: formItemConfig.code })!;
+  const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
   const dataDictionaryCode = rpdField.dataDictionary;
-  let dataDictionary = find(option.dataDictionaries, {
-    code: dataDictionaryCode,
-  });
+  let dataDictionary = rapidAppDefinition.getDataDictionaryByCode(dataDictionaryCode);
 
   let formControlProps: Partial<RapidSelectConfig> = {
     allowClear: !formItemConfig.required,
@@ -128,7 +125,7 @@ export function generateDataFormItemForRelationProperty(option: GenerateEntityFo
 function generateDataFormItem(logger: RuiRockLogger, entityFormProps: any, option: GenerateEntityFormItemOption) {
   const { formItemConfig, mainEntity } = option;
 
-  const rpdField = find(mainEntity.fields, { code: formItemConfig.code })!;
+  const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
   if (!rpdField) {
     logger.warn(entityFormProps, `Field with code '${formItemConfig.code}' not found.`);
   }
@@ -162,15 +159,14 @@ function generateDataFormItem(logger: RuiRockLogger, entityFormProps: any, optio
 
 export default {
   onInit(context, props) {
-    const entities = rapidAppDefinition.getEntities();
     const mainEntityCode = props.entityCode;
-    const mainEntity = find(entities, (item) => item.code === mainEntityCode);
+    const mainEntity = rapidAppDefinition.getEntityByCode(mainEntityCode);
     if (!mainEntity) {
       return;
     }
 
     for (const formItem of props.items) {
-      const field = find(mainEntity.fields, { code: formItem.code });
+      const field = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItem.code);
       if (field) {
         // 使用字段名称作为表单项的标签
         if (isUndefined(formItem.label)) {
@@ -224,9 +220,7 @@ export default {
 
     if (props.items) {
       props.items.forEach((formItemConfig) => {
-        const rpdField = find(mainEntity.fields, {
-          code: formItemConfig.code,
-        })!;
+        const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
         if (!rpdField) {
           return;
         }
@@ -240,12 +234,8 @@ export default {
 
           const listDataStoreName = `dataFormItemList-${formItemConfig.code}`;
 
-          const rpdField = find(mainEntity.fields, {
-            code: formItemConfig.code,
-          })!;
-          const targetEntity = find(entities, {
-            singularCode: rpdField.targetSingularCode,
-          })!;
+          const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
+          const targetEntity = rapidAppDefinition.getEntityBySingularCode(rpdField.targetSingularCode);
 
           let { listDataFindOptions = {} } = formItemConfig;
 
@@ -294,11 +284,10 @@ export default {
 
   Renderer(context, props, state) {
     const { logger } = context;
-    const entities = rapidAppDefinition.getEntities();
     const dataDictionaries = rapidAppDefinition.getDataDictionaries();
     const formConfig = props;
     const mainEntityCode = formConfig.entityCode;
-    const mainEntity = find(entities, (item) => item.code === mainEntityCode);
+    const mainEntity = rapidAppDefinition.getEntityByCode(mainEntityCode);
     if (!mainEntity) {
       const errorRockConfig = generateRockConfigOfError(new Error(`Entitiy with code '${mainEntityCode}' not found.`));
       return renderRock({ context, rockConfig: errorRockConfig });
@@ -311,7 +300,6 @@ export default {
         const formItem = generateDataFormItem(logger, props, {
           formItemConfig,
           mainEntity,
-          entities,
           dataDictionaries,
         });
 

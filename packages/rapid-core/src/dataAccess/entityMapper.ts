@@ -1,9 +1,11 @@
+import type { IRpdServer } from "~/core/server";
 import { RpdDataModel } from "~/types";
 import { isRelationProperty } from "~/utilities/rapidUtility";
+import { getEntityProperty, getEntityPropertyByCode } from "./metaHelper";
 
 // TODO Generate mapper and cache it.
 
-export function mapDbRowToEntity(model: RpdDataModel, row: any, keepNonPropertyFields: boolean) {
+export function mapDbRowToEntity(server: IRpdServer, model: RpdDataModel, row: any, keepNonPropertyFields: boolean) {
   if (!row) {
     return null;
   }
@@ -14,14 +16,15 @@ export function mapDbRowToEntity(model: RpdDataModel, row: any, keepNonPropertyF
 
   const result: Record<string, any> = {};
   const columnNames = Object.keys(row);
+  // TODO: Improve performance.
   columnNames.forEach((columnName) => {
     let isRelationProp = false;
     let propertyName = columnName;
-    let property = model.properties.find((item) => item.columnName === columnName);
+    let property = getEntityProperty(server, model, (item) => item.columnName === columnName);
     if (property) {
       propertyName = property.code;
     } else {
-      property = model.properties.find((item) => item.relation === "one" && item.targetIdColumnName === columnName);
+      property = getEntityProperty(server, model, (item) => item.relation === "one" && item.targetIdColumnName === columnName);
       if (property) {
         isRelationProp = true;
         propertyName = property.code;
@@ -48,29 +51,44 @@ export function mapDbRowToEntity(model: RpdDataModel, row: any, keepNonPropertyF
   return result;
 }
 
-export function mapEntityToDbRow(model: RpdDataModel, entity: any) {
+export type DbRowWithBaseRow = {
+  row?: Record<string, any>;
+  baseRow?: Record<string, any>;
+}
+
+export function mapEntityToDbRow(server: IRpdServer, model: RpdDataModel, entity: any): DbRowWithBaseRow {
+  let result: DbRowWithBaseRow = {};
   if (!entity) {
-    return null;
+    return result;
   }
 
+  const row = result.row = {};
+  const baseRow = result.baseRow = {};
   if (!model.properties || !model.properties.length) {
-    return entity;
+    return result;
   }
 
-  const result: Record<string, any> = {};
   const propertyNames = Object.keys(entity);
   propertyNames.forEach((propertyName) => {
     let columnName = propertyName;
-    const property = model.properties.find((item) => item.code === propertyName);
+    const property = getEntityPropertyByCode(server, model, propertyName);
     if (property) {
       if (!isRelationProperty(property)) {
         columnName = property.columnName || property.code;
-        result[columnName] = entity[propertyName];
+        if (property.isBaseProperty) {
+          baseRow[columnName] = entity[propertyName];
+        } else {
+          row[columnName] = entity[propertyName];
+        }
       }
     } else {
-      const oneRelationProperty = model.properties.find((item) => item.relation === "one" && item.targetIdColumnName === propertyName);
+      const oneRelationProperty = getEntityProperty(server, model, (item) => item.relation === "one" && item.targetIdColumnName === propertyName);
       if (oneRelationProperty) {
-        result[propertyName] = entity[propertyName];
+        if (oneRelationProperty.isBaseProperty) {
+          baseRow[columnName] = entity[propertyName];
+        } else {
+          row[columnName] = entity[propertyName];
+        }
       }
     }
   });

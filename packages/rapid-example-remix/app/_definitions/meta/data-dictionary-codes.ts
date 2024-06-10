@@ -1,4 +1,5 @@
 const dictionaryCodes = [
+  'BugLevel',
   'EnabledDisabledState',
   'PublishState',
   'TaskState',

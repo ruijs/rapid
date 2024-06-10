@@ -1,4 +1,5 @@
 import { RapidPlugin } from "./core/server";
+import { CountRowOptions, FindRowOptions } from "./dataAccess/dataAccessTypes";
 
 export type RapidServerConfig = {
   baseUrl?: string;
@@ -15,6 +16,11 @@ export interface IDatabaseConfig {
   dbPassword?: string;
   dbDefaultSchema?: string;
   dbPoolConnections?: number;
+}
+
+export type DatabaseQuery = {
+  command: string;
+  params?: unknown[] | Record<string, unknown>;
 }
 
 export interface IDatabaseAccessor {
@@ -74,18 +80,21 @@ export type RpdServerEventTypes = {
 export interface RpdEntityBeforeCreateEventPayload {
   namespace: string;
   modelSingularCode: string;
+  baseModelSingularCode?: string;
   before: any;
 }
 
 export interface RpdEntityCreateEventPayload {
   namespace: string;
   modelSingularCode: string;
+  baseModelSingularCode?: string;
   after: any;
 }
 
 export interface RpdEntityBeforeUpdateEventPayload {
   namespace: string;
   modelSingularCode: string;
+  baseModelSingularCode?: string;
   before: any;
   changes: any;
 }
@@ -93,6 +102,7 @@ export interface RpdEntityBeforeUpdateEventPayload {
 export interface RpdEntityUpdateEventPayload {
   namespace: string;
   modelSingularCode: string;
+  baseModelSingularCode?: string;
   before: any;
   after: any;
   changes: any;
@@ -101,18 +111,21 @@ export interface RpdEntityUpdateEventPayload {
 export interface RpdEntityBeforeDeleteEventPayload {
   namespace: string;
   modelSingularCode: string;
+  baseModelSingularCode?: string;
   before: any;
 }
 
 export interface RpdEntityDeleteEventPayload {
   namespace: string;
   modelSingularCode: string;
+  baseModelSingularCode?: string;
   before: any;
 }
 
 export interface RpdEntityAddRelationsEventPayload {
   namespace: string;
   modelSingularCode: string;
+  baseModelSingularCode?: string;
   entity: any;
   property: string;
   relations: any[];
@@ -121,6 +134,7 @@ export interface RpdEntityAddRelationsEventPayload {
 export interface RpdEntityRemoveRelationsEventPayload {
   namespace: string;
   modelSingularCode: string;
+  baseModelSingularCode?: string;
   entity: any;
   property: string;
   relations: any[];
@@ -151,6 +165,18 @@ export interface RpdDataModel {
   pluralCode: string;
   schema?: string;
   tableName: string;
+  /**
+   * Configure the singular code of base entity.
+   */
+  base?: string;
+  /**
+   * Configure the type of derived entity.
+   */
+  derivedType?: string;
+  /**
+   * Configure the property code to save derived type for base entity.
+   */
+  derivedTypePropertyCode?: string;
   properties: RpdDataModelProperty[];
   extensions?: RpdDataModelExtension[];
   permissionPolicies?: RpdDataModelPermissionPolicies;
@@ -173,6 +199,10 @@ export interface RpdDataModelProperty {
    * 表示此属性由谁来维护
    */
   maintainedBy?: string;
+  /**
+   * 表示是否基础属性
+   */
+  isBaseProperty?: boolean;
   /**
    * 字段名称。可以包含中文。
    */
@@ -327,10 +357,10 @@ export interface IRpdDataAccessor<T = any> {
   getModel(): RpdDataModel;
   create(entity: any): Promise<any>;
   updateById(id: any, entity: any): Promise<any>;
-  find(options: FindEntityOptions): Promise<T[]>;
-  findOne(options: FindEntityOptions): Promise<T | null>;
+  find(options: FindRowOptions): Promise<T[]>;
+  findOne(options: FindRowOptions): Promise<T | null>;
   findById(id: any): Promise<T | null>;
-  count(options: CountEntityOptions): Promise<any>;
+  count(options: CountRowOptions): Promise<any>;
   deleteById(id: any): Promise<void>;
 }
 
@@ -354,7 +384,7 @@ export interface FindEntityOptions {
   filters?: EntityFilterOptions[];
   orderBy?: FindEntityOrderByOptions[];
   pagination?: FindEntityPaginationOptions;
-  properties?: string[] | Record<string, any>;
+  properties?: string[];
   keepNonPropertyFields?: boolean;
 }
 

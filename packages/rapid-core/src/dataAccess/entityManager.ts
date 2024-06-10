@@ -21,57 +21,100 @@ import { isRelationProperty } from "~/utilities/rapidUtility";
 import { IRpdServer, RapidPlugin } from "~/core/server";
 import { getEntityPartChanges } from "~/helpers/entityHelpers";
 import { filter, find, first, forEach, isArray, isObject, keys, map, reject, uniq } from "lodash";
+import { getEntityPropertiesIncludingBase, getEntityProperty, getEntityPropertyByCode } from "./metaHelper";
+import { ColumnQueryOptions, CountRowOptions, FindRowOptions, FindRowOrderByOptions, RowFilterOptions } from "./dataAccessTypes";
+import { newEntityOperationError } from "~/utilities/errorUtility";
 
-function convertToDataAccessOrderBy(model: RpdDataModel, orderByList?: FindEntityOrderByOptions[]) {
+function convertEntityOrderByToRowOrderBy(server: IRpdServer, model: RpdDataModel, baseModel?: RpdDataModel, orderByList?: FindEntityOrderByOptions[]) {
   if (!orderByList) {
-    return orderByList;
+    return null;
   }
 
   return orderByList.map((orderBy) => {
+    let property = getEntityPropertyByCode(server, model, orderBy.field);
+    if (!property) {
+      property = getEntityProperty(server, model, (item) => item.relation === "one" && item.targetIdColumnName === orderBy.field);
+    }
+
+    if (!property) {
+      throw new Error(`Unkown orderBy field '${orderBy.field}'`);
+    }
+
     return {
-      field: mapPropertyNameToColumnName(model, orderBy.field),
+      field: {
+        name: mapPropertyNameToColumnName(model, orderBy.field),
+        tableName: property.isBaseProperty ? baseModel.tableName : model.tableName,
+      },
       desc: !!orderBy.desc,
-    } as FindEntityOrderByOptions;
+    } as FindRowOrderByOptions;
   });
 }
 
 async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, options: FindEntityOptions) {
   const model = dataAccessor.getModel();
-  const fieldsToSelect: string[] = [];
-  const relationPropertiesToSelect: RpdDataModelProperty[] = [];
-  if (options.properties) {
-    forEach(options.properties, (propertyCode: string) => {
-      const property = model.properties.find((e) => e.code === propertyCode);
-      if (!property) {
-        throw new Error(`Collection '${model.namespace}.${model.singularCode}' does not have a property '${propertyCode}'.`);
-      }
-
-      if (isRelationProperty(property)) {
-        relationPropertiesToSelect.push(property);
-
-        if (property.relation === "one" && !property.linkTableName) {
-          if (!property.targetIdColumnName) {
-            throw new Error(`'targetIdColumnName' should be configured for property '${propertyCode}' of model '${model.namespace}.${model.singularCode}'.`);
-          }
-          fieldsToSelect.push(property.targetIdColumnName);
-        }
-      } else {
-        fieldsToSelect.push(property.columnName || property.code);
-      }
+  let baseModel: RpdDataModel | undefined;
+  if (model.base) {
+    baseModel = server.getModel({
+      singularCode: model.base,
     });
   }
 
-  const processedFilters = await replaceFiltersWithFiltersOperator(server, model, options.filters);
+  let propertiesToSlect: RpdDataModelProperty[];
+  if (!options.properties || !options.properties.length) {
+    propertiesToSlect = getEntityPropertiesIncludingBase(server, model).filter(property => !isRelationProperty(property));
+  } else {
+    propertiesToSlect = getEntityPropertiesIncludingBase(server, model).filter(property => options.properties.includes(property.code));
+  }
 
-  const findEntityOptions: FindEntityOptions = {
-    filters: processedFilters,
-    orderBy: convertToDataAccessOrderBy(model, options.orderBy),
+  const columnsToSelect: ColumnQueryOptions[] = [];
+
+  const relationPropertiesToSelect: RpdDataModelProperty[] = [];
+  forEach(propertiesToSlect, (property) => {
+    if (isRelationProperty(property)) {
+      relationPropertiesToSelect.push(property);
+
+      if (property.relation === "one" && !property.linkTableName) {
+        if (!property.targetIdColumnName) {
+          throw new Error(`'targetIdColumnName' should be configured for property '${property.code}' of model '${model.namespace}.${model.singularCode}'.`);
+        }
+
+        if (property.isBaseProperty) {
+          columnsToSelect.push({
+            name: property.targetIdColumnName,
+            tableName: baseModel.tableName,
+          });
+        } else {
+          columnsToSelect.push({
+            name: property.targetIdColumnName,
+            tableName: model.tableName,
+          });
+        }
+      }
+    } else {
+      if (property.isBaseProperty) {
+        columnsToSelect.push({
+          name: property.columnName || property.code,
+          tableName: baseModel.tableName,
+        });
+      } else {
+        columnsToSelect.push({
+          name: property.columnName || property.code,
+          tableName: model.tableName,
+        });
+      }
+    }
+  });
+
+  const rowFilters = await convertEntityFiltersToRowFilters(server, model, baseModel, options.filters);
+  const findRowOptions: FindRowOptions = {
+    filters: rowFilters,
+    orderBy: convertEntityOrderByToRowOrderBy(server, model, baseModel, options.orderBy),
     pagination: options.pagination,
-    properties: fieldsToSelect,
+    fields: columnsToSelect,
   };
-  const entities = await dataAccessor.find(findEntityOptions);
+  const entities = await dataAccessor.find(findRowOptions);
   if (!entities.length) {
-    return entities;
+    return [];
   }
 
   const entityIds = entities.map((e) => e.id);
@@ -91,7 +134,7 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
           forEach(entities, (entity: any) => {
             entity[relationProperty.code] = filter(relationLinks, (link: any) => {
               return link[relationProperty.selfIdColumnName!] == entity["id"];
-            }).map((link) => mapDbRowToEntity(targetModel, link.targetEntity, false));
+            }).map((link) => mapDbRowToEntity(server, targetModel, link.targetEntity, false));
           });
         }
       } else {
@@ -115,9 +158,10 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
           if (isManyRelation) {
             entity[relationProperty.code] = filter(relatedEntities, (relatedEntity: any) => {
               return relatedEntity[relationProperty.selfIdColumnName!] == entity.id;
-            }).map((item) => mapDbRowToEntity(targetModel!, item, false));
+            }).map((item) => mapDbRowToEntity(server, targetModel!, item, false));
           } else {
             entity[relationProperty.code] = mapDbRowToEntity(
+              server,
               targetModel!,
               find(relatedEntities, (relatedEntity: any) => {
                 // TODO: id property code should be configurable.
@@ -130,7 +174,7 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
       }
     }
   }
-  return entities.map((item) => mapDbRowToEntity(model, item, options.keepNonPropertyFields));
+  return entities.map((item) => mapDbRowToEntity(server, model, item, options.keepNonPropertyFields));
 }
 
 async function findEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, options: FindEntityOptions) {
@@ -151,19 +195,21 @@ async function findById(server: IRpdServer, dataAccessor: IRpdDataAccessor, id: 
   });
 }
 
-async function replaceFiltersWithFiltersOperator(server: IRpdServer, model: RpdDataModel, filters: EntityFilterOptions[] | undefined) {
+async function convertEntityFiltersToRowFilters(server: IRpdServer, model: RpdDataModel, baseModel: RpdDataModel, filters: EntityFilterOptions[] | undefined): Promise<RowFilterOptions[]> {
   if (!filters || !filters.length) {
     return [];
   }
 
-  const replacedFilters: EntityFilterOptions[] = [];
+  const replacedFilters: RowFilterOptions[] = [];
   for (const filter of filters) {
     const { operator } = filter;
     if (operator === "and" || operator === "or") {
-      filter.filters = await replaceFiltersWithFiltersOperator(server, model, filter.filters);
-      replacedFilters.push(filter);
+      replacedFilters.push({
+        operator: operator,
+        filters: await convertEntityFiltersToRowFilters(server, model, baseModel, filter.filters),
+      });
     } else if (operator === "exists" || operator === "notExists") {
-      const relationProperty: RpdDataModelProperty = find(model.properties, (property: RpdDataModelProperty) => property.code === filter.field);
+      const relationProperty: RpdDataModelProperty = getEntityPropertyByCode(server, model, filter.field);
       if (!relationProperty) {
         throw new Error(`Invalid filters. Property '${filter.field}' was not found in model '${model.namespace}.${model.singularCode}'`);
       }
@@ -192,7 +238,10 @@ async function replaceFiltersWithFiltersOperator(server: IRpdServer, model: RpdD
               }
             }
             replacedFilters.push({
-              field: relationProperty.targetIdColumnName as string,
+              field: {
+                name: relationProperty.targetIdColumnName!,
+                tableName: relationProperty.isBaseProperty ? baseModel.tableName : model.tableName,
+              },
               operator: replacedOperator,
               value: relatedEntityIdFilter.value,
             });
@@ -203,13 +252,28 @@ async function replaceFiltersWithFiltersOperator(server: IRpdServer, model: RpdD
         const dataAccessor = server.getDataAccessor({
           singularCode: relationProperty.targetSingularCode as string,
         });
-        const entities = await dataAccessor.find({
-          filters: filter.filters,
-          properties: ["id"],
+        const relatedModel = dataAccessor.getModel();
+        let relatedBaseModel: RpdDataModel;
+        if (relatedModel.base) {
+          relatedBaseModel = server.getModel({
+            singularCode: relatedModel.base,
+          });
+        }
+        const rows = await dataAccessor.find({
+          filters: await convertEntityFiltersToRowFilters(server, relatedModel, relatedBaseModel, filter.filters),
+          fields: [
+            {
+              name: "id",
+              tableName: relatedModel.tableName,
+            },
+          ],
         });
-        const entityIds = map(entities, (entity: any) => entity["id"]);
+        const entityIds = map(rows, (entity: any) => entity["id"]);
         replacedFilters.push({
-          field: relationProperty.targetIdColumnName as string,
+          field: {
+            name: relationProperty.targetIdColumnName,
+            tableName: relationProperty.isBaseProperty ? baseModel.tableName : model.tableName,
+          },
           operator: operator === "exists" ? "in" : "notIn",
           value: entityIds,
         });
@@ -222,14 +286,28 @@ async function replaceFiltersWithFiltersOperator(server: IRpdServer, model: RpdD
         const targetEntityDataAccessor = server.getDataAccessor({
           singularCode: relationProperty.targetSingularCode as string,
         });
-
+        const relatedModel = targetEntityDataAccessor.getModel();
+        let relatedBaseModel: RpdDataModel;
+        if (relatedModel.base) {
+          relatedBaseModel = server.getModel({
+            singularCode: relatedModel.base,
+          });
+        }
         const targetEntities = await targetEntityDataAccessor.find({
-          filters: filter.filters,
-          properties: [relationProperty.selfIdColumnName],
+          filters: await convertEntityFiltersToRowFilters(server, relatedModel, relatedBaseModel, filter.filters),
+          fields: [
+            {
+              name: relationProperty.selfIdColumnName,
+              tableName: relatedModel.tableName,
+            },
+          ],
         });
         const selfEntityIds = map(targetEntities, (entity: any) => entity[relationProperty.selfIdColumnName!]);
         replacedFilters.push({
-          field: "id",
+          field: {
+            name: "id",
+            tableName: model.tableName,
+          },
           operator: operator === "exists" ? "in" : "notIn",
           value: selfEntityIds,
         });
@@ -249,10 +327,21 @@ async function replaceFiltersWithFiltersOperator(server: IRpdServer, model: RpdD
         const targetEntityDataAccessor = server.getDataAccessor({
           singularCode: relationProperty.targetSingularCode as string,
         });
-
+        const relatedModel = targetEntityDataAccessor.getModel();
+        let relatedBaseModel: RpdDataModel;
+        if (relatedModel.base) {
+          relatedBaseModel = server.getModel({
+            singularCode: relatedModel.base,
+          });
+        }
         const targetEntities = await targetEntityDataAccessor.find({
-          filters: filter.filters,
-          properties: ["id"],
+          filters: await convertEntityFiltersToRowFilters(server, relatedModel, relatedBaseModel, filter.filters),
+          fields: [
+            {
+              name: "id",
+              tableName: relatedModel.tableName,
+            },
+          ],
         });
         const targetEntityIds = map(targetEntities, (entity: any) => entity["id"]);
 
@@ -261,17 +350,26 @@ async function replaceFiltersWithFiltersOperator(server: IRpdServer, model: RpdD
         const links = await server.queryDatabaseObject(command, params);
         const selfEntityIds = links.map((link) => link[relationProperty.selfIdColumnName!]);
         replacedFilters.push({
-          field: "id",
+          field: {
+            name: "id",
+            tableName: model.tableName,
+          },
           operator: operator === "exists" ? "in" : "notIn",
           value: selfEntityIds,
         });
       }
     } else {
-      const property: RpdDataModelProperty = find(model.properties, (property: RpdDataModelProperty) => property.code === (filter as EntityNonRelationPropertyFilterOptions).field);
-      if (property) {
-        (filter as EntityNonRelationPropertyFilterOptions).field = property.columnName || property.code;
-      }
-      replacedFilters.push(filter);
+      const property: RpdDataModelProperty = getEntityPropertyByCode(server, model, (filter as EntityNonRelationPropertyFilterOptions).field);
+      // TODO: do not use `any` here
+      replacedFilters.push({
+        operator: filter.operator,
+        field: {
+          name: property.columnName || property.code,
+          tableName: property.isBaseProperty ? baseModel.tableName : model.tableName,
+        },
+        value: (filter as any).value,
+        itemType: (filter as any).itemType,
+      } as any);
     }
   }
   return replacedFilters;
@@ -282,10 +380,12 @@ async function findManyRelationLinksViaLinkTable(server: IRpdServer, targetModel
   const params = [entityIds];
   const links = await server.queryDatabaseObject(command, params);
   const targetEntityIds = links.map((link) => link[relationProperty.targetIdColumnName!]);
-  const findEntityOptions: FindEntityOptions = {
+  const findEntityOptions: FindRowOptions = {
     filters: [
       {
-        field: "id",
+        field: {
+          name: "id",
+        },
         operator: "in",
         value: targetEntityIds,
       },
@@ -305,10 +405,12 @@ async function findManyRelationLinksViaLinkTable(server: IRpdServer, targetModel
 }
 
 function findManyRelatedEntitiesViaIdPropertyCode(server: IRpdServer, model: RpdDataModel, relationProperty: RpdDataModelProperty, entityIds: any[]) {
-  const findEntityOptions: FindEntityOptions = {
+  const findEntityOptions: FindRowOptions = {
     filters: [
       {
-        field: relationProperty.selfIdColumnName as string,
+        field: {
+          name: relationProperty.selfIdColumnName,
+        },
         operator: "in",
         value: entityIds,
       },
@@ -322,10 +424,12 @@ function findManyRelatedEntitiesViaIdPropertyCode(server: IRpdServer, model: Rpd
 }
 
 function findOneRelatedEntitiesViaIdPropertyCode(server: IRpdServer, model: RpdDataModel, relationProperty: RpdDataModelProperty, targetEntityIds: any[]) {
-  const findEntityOptions: FindEntityOptions = {
+  const findEntityOptions: FindRowOptions = {
     filters: [
       {
-        field: "id",
+        field: {
+          name: "id",
+        },
         operator: "in",
         value: targetEntityIds,
       },
@@ -340,6 +444,10 @@ function findOneRelatedEntitiesViaIdPropertyCode(server: IRpdServer, model: RpdD
 
 async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, options: CreateEntityOptions, plugin?: RapidPlugin) {
   const model = dataAccessor.getModel();
+  if (model.derivedTypePropertyCode) {
+    throw newEntityOperationError("Create base entity directly is not allowed.");
+  }
+
   const { entity } = options;
 
   await server.beforeCreateEntity(model, options);
@@ -349,6 +457,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     {
       namespace: model.namespace,
       modelSingularCode: model.singularCode,
+      baseModelSingularCode: model.base,
       before: entity,
     },
     plugin,
@@ -357,7 +466,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
   const oneRelationPropertiesToCreate: RpdDataModelProperty[] = [];
   const manyRelationPropertiesToCreate: RpdDataModelProperty[] = [];
   keys(entity).forEach((propertyCode) => {
-    const property = model.properties.find((e) => e.code === propertyCode);
+    const property = getEntityPropertyByCode(server, model, propertyCode);
     if (!property) {
       // Unknown property
       return;
@@ -372,10 +481,11 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     }
   });
 
-  const row = mapEntityToDbRow(model, entity);
+  const { row, baseRow } = mapEntityToDbRow(server, model, entity);
 
   // save one-relation properties
   for (const property of oneRelationPropertiesToCreate) {
+    const targetRow = property.isBaseProperty ? baseRow : row;
     const fieldValue = entity[property.code];
     if (isObject(fieldValue)) {
       if (!fieldValue["id"]) {
@@ -386,18 +496,27 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
         const newTargetEntity = await createEntity(server, targetDataAccessor, {
           entity: targetEntity,
         });
-        row[property.targetIdColumnName!] = newTargetEntity["id"];
+        targetRow[property.targetIdColumnName!] = newTargetEntity["id"];
       } else {
-        row[property.targetIdColumnName!] = fieldValue["id"];
+        targetRow[property.targetIdColumnName!] = fieldValue["id"];
       }
     } else {
       // fieldValue is id;
-      row[property.targetIdColumnName!] = fieldValue;
+      targetRow[property.targetIdColumnName!] = fieldValue;
     }
   }
 
+  let newBaseRow: any;
+  if (model.base) {
+    const baseDataAccessor = server.getDataAccessor({
+      singularCode: model.base,
+    });
+    newBaseRow = await baseDataAccessor.create(baseRow);
+
+    row.id = newBaseRow.id;
+  }
   const newRow = await dataAccessor.create(row);
-  const newEntity = mapDbRowToEntity(model, newRow, true);
+  const newEntity = mapDbRowToEntity(server, model, Object.assign(newBaseRow, newRow), true);
 
   // save many-relation properties
   for (const property of manyRelationPropertiesToCreate) {
@@ -477,6 +596,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     {
       namespace: model.namespace,
       modelSingularCode: model.singularCode,
+      baseModelSingularCode: model.base,
       after: newEntity,
     },
     plugin,
@@ -521,7 +641,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
   const oneRelationPropertiesToUpdate: RpdDataModelProperty[] = [];
   const manyRelationPropertiesToUpdate: RpdDataModelProperty[] = [];
   keys(changes).forEach((propertyCode) => {
-    const property = model.properties.find((e) => e.code === propertyCode);
+    const property = getEntityPropertyByCode(server, model, propertyCode);
     if (!property) {
       // Unknown property
       return;
@@ -536,20 +656,29 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     }
   });
 
-  const row = mapEntityToDbRow(model, changes);
+  const { row, baseRow } = mapEntityToDbRow(server, model, changes);
   oneRelationPropertiesToUpdate.forEach((property) => {
+    const targetRow = property.isBaseProperty ? baseRow : row;
     const fieldValue = changes[property.code];
     if (isObject(fieldValue)) {
-      row[property.targetIdColumnName!] = fieldValue["id"];
+      targetRow[property.targetIdColumnName!] = fieldValue["id"];
     } else {
-      row[property.targetIdColumnName!] = fieldValue;
+      targetRow[property.targetIdColumnName!] = fieldValue;
     }
   });
   let updatedRow = row;
   if (Object.keys(row).length) {
     updatedRow = await dataAccessor.updateById(id, row);
   }
-  let updatedEntity = mapDbRowToEntity(model, updatedRow, true);
+  let updatedBaseRow = baseRow;
+  if (model.base && Object.keys(baseRow).length) {
+    const baseDataAccessor = server.getDataAccessor({
+      singularCode: model.base,
+    });
+    updatedBaseRow = await baseDataAccessor.updateById(id, updatedBaseRow);
+  }
+
+  let updatedEntity = mapDbRowToEntity(server, model, {...updatedRow, ...updatedBaseRow}, true);
   updatedEntity = Object.assign({}, entity, updatedEntity);
 
   // save many-relation properties
@@ -635,6 +764,8 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     {
       namespace: model.namespace,
       modelSingularCode: model.singularCode,
+      // TODO: should not emit event on base model if it's not effected.
+      baseModelSingularCode: model.base,
       before: entity,
       after: updatedEntity,
       changes: changes,
@@ -670,11 +801,7 @@ export default class EntityManager<TEntity = any> {
   }
 
   async createEntity(options: CreateEntityOptions, plugin?: RapidPlugin): Promise<TEntity> {
-    const model = this.getModel();
-
-    const newEntity = await createEntity(this.#server, this.#dataAccessor, options, plugin);
-
-    return newEntity;
+    return await createEntity(this.#server, this.#dataAccessor, options, plugin);
   }
 
   async updateEntityById(options: UpdateEntityByIdOptions, plugin?: RapidPlugin): Promise<TEntity> {
@@ -682,11 +809,25 @@ export default class EntityManager<TEntity = any> {
   }
 
   async count(options: CountEntityOptions): Promise<CountEntityResult> {
-    return await this.#dataAccessor.count(options);
+    const model = this.#dataAccessor.getModel();
+    let baseModel: RpdDataModel;
+    if (model.base) {
+      baseModel = this.#server.getModel({
+        singularCode: model.base,
+      });
+    }
+    const countRowOptions: CountRowOptions = {
+      filters: await convertEntityFiltersToRowFilters(this.#server, model, baseModel, options.filters),
+    }
+    return await this.#dataAccessor.count(countRowOptions);
   }
 
   async deleteById(id: any, plugin?: RapidPlugin): Promise<void> {
     const model = this.getModel();
+    if (model.derivedTypePropertyCode) {
+      throw newEntityOperationError("Delete base entity directly is not allowed.");
+    }
+
     const entity = await this.findById(id, true);
     if (!entity) {
       return;
@@ -703,12 +844,19 @@ export default class EntityManager<TEntity = any> {
     );
 
     await this.#dataAccessor.deleteById(id);
+    if (model.base) {
+      const baseDataAccessor = this.#server.getDataAccessor({
+        singularCode: model.base,
+      });
+      await baseDataAccessor.deleteById(id);
+    }
 
     await this.#server.emitEvent(
       "entity.delete",
       {
         namespace: model.namespace,
         modelSingularCode: model.singularCode,
+        baseModelSingularCode: model.base,
         before: entity,
       },
       plugin,
@@ -716,6 +864,7 @@ export default class EntityManager<TEntity = any> {
   }
 
   async addRelations(options: AddEntityRelationsOptions, plugin?: RapidPlugin): Promise<void> {
+    const server = this.#server;
     const model = this.getModel();
     const { id, property, relations } = options;
     const entity = await this.findById(id);
@@ -723,7 +872,7 @@ export default class EntityManager<TEntity = any> {
       throw new Error(`${model.namespace}.${model.singularCode}  with id "${id}" was not found.`);
     }
 
-    const relationProperty = model.properties.find((e) => e.code === property);
+    const relationProperty = getEntityPropertyByCode(server, model, property);
     if (!relationProperty) {
       throw new Error(`Property '${property}' was not found in ${model.namespace}.${model.singularCode}`);
     }
@@ -732,7 +881,6 @@ export default class EntityManager<TEntity = any> {
       throw new Error(`Operation 'addRelations' is only supported on property of 'many' relation`);
     }
 
-    const server = this.#server;
     const { queryBuilder } = server;
     if (relationProperty.linkTableName) {
       for (const relation of relations) {
@@ -761,6 +909,7 @@ export default class EntityManager<TEntity = any> {
   }
 
   async removeRelations(options: RemoveEntityRelationsOptions, plugin?: RapidPlugin): Promise<void> {
+    const server = this.#server;
     const model = this.getModel();
     const { id, property, relations } = options;
     const entity = await this.findById(id);
@@ -768,7 +917,7 @@ export default class EntityManager<TEntity = any> {
       throw new Error(`${model.namespace}.${model.singularCode}  with id "${id}" was not found.`);
     }
 
-    const relationProperty = model.properties.find((e) => e.code === property);
+    const relationProperty = getEntityPropertyByCode(server, model, property);
     if (!relationProperty) {
       throw new Error(`Property '${property}' was not found in ${model.namespace}.${model.singularCode}`);
     }
@@ -777,7 +926,6 @@ export default class EntityManager<TEntity = any> {
       throw new Error(`Operation 'removeRelations' is only supported on property of 'many' relation`);
     }
 
-    const server = this.#server;
     const { queryBuilder } = server;
     if (relationProperty.linkTableName) {
       for (const relation of relations) {

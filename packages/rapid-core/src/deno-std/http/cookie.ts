@@ -355,7 +355,7 @@ export function getSetCookies(headers: Headers): Cookie[] {
   // TODO(lino-levan): remove this ts-ignore when Typescript 5.2 lands in Deno
   // @ts-ignore Typescript's TS Dom types will be out of date until 5.2
   return (
-    headers
+    (headers as any)
       .getSetCookie()
       /** Parse each `set-cookie` header separately */
       .map(parseSetCookie)

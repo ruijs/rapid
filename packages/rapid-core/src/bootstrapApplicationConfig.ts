@@ -71,6 +71,27 @@ export default {
           required: true,
         },
         {
+          name: "base",
+          code: "base",
+          columnName: "base",
+          type: "text",
+          required: false,
+        },
+        {
+          name: "derivedType",
+          code: "derivedType",
+          columnName: "derived_type",
+          type: "text",
+          required: false,
+        },
+        {
+          name: "derivedTypePropertyCode",
+          code: "derivedTypePropertyCode",
+          columnName: "derived_type_property_code",
+          type: "text",
+          required: false,
+        },
+        {
           name: "properties",
           code: "properties",
           type: "relation[]",

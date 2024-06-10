@@ -117,6 +117,21 @@ export type RapidEntity<TEntitySingularCodes extends string = string, TDictionar
   tableName?: string;
 
   /**
+   * 基础实体编码的单数形式
+   */
+  base?: TEntitySingularCodes;
+
+  /**
+   * 扩展类型
+   */
+  derivedType?: string;
+
+  /**
+   * 保存扩展类型的属性编码
+   */
+  derivedTypePropertyCode?: string;
+
+  /**
    * 实体字段
    */
   fields: RapidField<TEntitySingularCodes, TDictionaryCodes>[];
