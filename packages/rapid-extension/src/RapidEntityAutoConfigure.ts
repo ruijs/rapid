@@ -94,7 +94,7 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: 
     },
   ];
 
-  let auditFields: RapidField[] = sourceEntity.base ? [
+  let auditFields: RapidField[] = sourceEntity.base ? [] : [
     {
       name: "创建时间",
       code: "createdAt",
@@ -144,7 +144,7 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: 
       targetIdColumnName: "deleter_id",
       required: false,
     },
-  ] : [];
+  ];
 
   if (sourceEntity.base) {
     const baseEntity = entityDefinitions.find(entity => {
