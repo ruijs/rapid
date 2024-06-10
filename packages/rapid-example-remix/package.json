@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "rapid-example-remix",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "rapid-example-remix",
   "main": "lib/index.js",
   "scripts": {
