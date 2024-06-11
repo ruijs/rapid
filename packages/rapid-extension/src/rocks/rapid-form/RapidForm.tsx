@@ -2,8 +2,9 @@ import { Rock, RockConfig, RockEvent, RockEventHandlerScript, handleComponentEve
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidFormMeta from "./RapidFormMeta";
 import type { RapidFormRockConfig } from "./rapid-form-types";
-import { assign, each, get } from "lodash";
+import { assign, each, get, trim } from "lodash";
 import { Form, message as antdMessage } from "antd";
+import { useEffect, useMemo, useState } from "react";
 
 export default {
   $type: "rapidForm",
@@ -41,9 +42,27 @@ export default {
   Renderer(context, props: RapidFormRockConfig, state: any) {
     const { framework, page, scope } = context;
 
+    // 当前主要是触发 rerender
+    const [currentFormData, setCurrentFormData] = useState<Record<string, any>>({});
+
     const dataFormItemRocks: RockConfig[] = [];
     if (props.items) {
       props.items.forEach((formItemConfig) => {
+        let shouldHide = formItemConfig.shouldHide;
+        if (typeof shouldHide === "string") {
+          const formData = state.form.getFieldsValue() || {};
+          const trimedShouldHide = trim(shouldHide);
+          if (trimedShouldHide.indexOf("function") === 0) {
+            shouldHide = new Function(`return ${trimedShouldHide}`)()(formData);
+          } else {
+            shouldHide = new Function("form", `return ${trimedShouldHide}`)(formData);
+          }
+        }
+
+        if (shouldHide) {
+          return;
+        }
+
         (formItemConfig as any).form = state.form;
 
         let formItemRockConfig: RockConfig;
@@ -111,17 +130,28 @@ export default {
       ],
     };
 
-    let initialValues;
-    if (props.dataSourceCode) {
-      initialValues = {
-        ...props.defaultFormFields,
-        ...get(scope.stores[props.dataSourceCode], "data.list[0]"),
-      };
-    } else {
-      initialValues = props.defaultFormFields;
-    }
+    const dataSource = props.dataSourceCode && get(scope.stores[props.dataSourceCode], "data.list[0]");
+    const initialValues = useMemo(() => {
+      let values;
+      if (props.dataSourceCode) {
+        values = {
+          ...props.defaultFormFields,
+          ...get(scope.stores[props.dataSourceCode], "data.list[0]"),
+        };
+      } else {
+        values = props.defaultFormFields;
+      }
+
+      return values || {};
+    }, [props.defaultFormFields, dataSource]);
+
+    useEffect(() => {
+      state.form.setFieldsValue(initialValues);
+      setCurrentFormData(initialValues);
+    }, [initialValues, state.form]);
 
     const onValuesChange: RockEventHandlerScript["script"] = (event: RockEvent) => {
+      setCurrentFormData(event.args[0]);
       handleComponentEvent("onValuesChange", framework, page, scope, props, props.onValuesChange, event.args);
     };
 
