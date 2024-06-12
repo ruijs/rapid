@@ -37,6 +37,10 @@ function convertEntityOrderByToRowOrderBy(server: IRpdServer, model: RpdDataMode
     }
 
     if (!property) {
+      property = getEntityProperty(server, model, (item) => item.columnName === orderBy.field);
+    }
+
+    if (!property) {
       throw new Error(`Unkown orderBy field '${orderBy.field}'`);
     }
 
