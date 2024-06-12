@@ -2,7 +2,7 @@ import { Rock, RockConfig, RockEvent, RockEventHandlerScript, handleComponentEve
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidFormMeta from "./RapidFormMeta";
 import type { RapidFormRockConfig } from "./rapid-form-types";
-import { assign, each, get, trim } from "lodash";
+import { assign, each, get } from "lodash";
 import { Form, message as antdMessage } from "antd";
 import { useEffect, useMemo, useState } from "react";
 
@@ -48,21 +48,6 @@ export default {
     const dataFormItemRocks: RockConfig[] = [];
     if (props.items) {
       props.items.forEach((formItemConfig) => {
-        let shouldHide = formItemConfig.shouldHide;
-        if (typeof shouldHide === "string") {
-          const formData = state.form.getFieldsValue() || {};
-          const trimedShouldHide = trim(shouldHide);
-          if (trimedShouldHide.indexOf("function") === 0) {
-            shouldHide = new Function(`return ${trimedShouldHide}`)()(formData);
-          } else {
-            shouldHide = new Function("form", `return ${trimedShouldHide}`)(formData);
-          }
-        }
-
-        if (shouldHide) {
-          return;
-        }
-
         (formItemConfig as any).form = state.form;
 
         let formItemRockConfig: RockConfig;

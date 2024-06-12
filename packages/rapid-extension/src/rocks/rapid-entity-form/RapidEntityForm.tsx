@@ -144,7 +144,6 @@ function generateDataFormItem(logger: RuiRockLogger, entityFormProps: any, optio
     required: formItemConfig.required,
     label: formItemConfig.label,
     hidden: formItemConfig.hidden,
-    shouldHide: formItemConfig.shouldHide,
     valueFieldType,
     valueFieldName: formItemConfig.valueFieldName,
     multipleValues: formItemConfig.multipleValues,
