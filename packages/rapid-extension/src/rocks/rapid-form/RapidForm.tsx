@@ -4,6 +4,7 @@ import RapidFormMeta from "./RapidFormMeta";
 import type { RapidFormRockConfig } from "./rapid-form-types";
 import { assign, each, get } from "lodash";
 import { Form, message as antdMessage } from "antd";
+import { useEffect, useMemo, useState } from "react";
 
 export default {
   $type: "rapidForm",
@@ -40,6 +41,9 @@ export default {
 
   Renderer(context, props: RapidFormRockConfig, state: any) {
     const { framework, page, scope } = context;
+
+    // 当前主要是触发 rerender
+    const [currentFormData, setCurrentFormData] = useState<Record<string, any>>({});
 
     const dataFormItemRocks: RockConfig[] = [];
     if (props.items) {
@@ -111,17 +115,28 @@ export default {
       ],
     };
 
-    let initialValues;
-    if (props.dataSourceCode) {
-      initialValues = {
-        ...props.defaultFormFields,
-        ...get(scope.stores[props.dataSourceCode], "data.list[0]"),
-      };
-    } else {
-      initialValues = props.defaultFormFields;
-    }
+    const dataSource = props.dataSourceCode && get(scope.stores[props.dataSourceCode], "data.list[0]");
+    const initialValues = useMemo(() => {
+      let values;
+      if (props.dataSourceCode) {
+        values = {
+          ...props.defaultFormFields,
+          ...get(scope.stores[props.dataSourceCode], "data.list[0]"),
+        };
+      } else {
+        values = props.defaultFormFields;
+      }
+
+      return values || {};
+    }, [props.defaultFormFields, dataSource]);
+
+    useEffect(() => {
+      state.form.setFieldsValue(initialValues);
+      setCurrentFormData(initialValues);
+    }, [initialValues, state.form]);
 
     const onValuesChange: RockEventHandlerScript["script"] = (event: RockEvent) => {
+      setCurrentFormData(event.args[0]);
       handleComponentEvent("onValuesChange", framework, page, scope, props, props.onValuesChange, event.args);
     };
 
