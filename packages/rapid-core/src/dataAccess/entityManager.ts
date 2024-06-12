@@ -109,6 +109,19 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     }
   });
 
+  // if `keepNonPropertyFields` is true and `properties` are not specified, then select relation columns automatically.
+  if (options.keepNonPropertyFields && (!options.properties || !options.properties.length)) {
+    const oneRelationPropertiesWithNoLinkTable = getEntityPropertiesIncludingBase(server, model).filter(property => property.relation === "one" && !property.linkTableName);
+    oneRelationPropertiesWithNoLinkTable.forEach((property) => {
+      if (property.targetIdColumnName) {
+        columnsToSelect.push({
+          name: property.targetIdColumnName,
+          tableName: property.isBaseProperty ? baseModel.tableName : model.tableName,
+        });
+      }
+    });
+  }
+
   const rowFilters = await convertEntityFiltersToRowFilters(server, model, baseModel, options.filters);
   const findRowOptions: FindRowOptions = {
     filters: rowFilters,
@@ -363,16 +376,40 @@ async function convertEntityFiltersToRowFilters(server: IRpdServer, model: RpdDa
         });
       }
     } else {
-      const property: RpdDataModelProperty = getEntityProperty(server, model, (property) => {
-        const field = (filter as EntityNonRelationPropertyFilterOptions).field;
-        return property.code === field || property.columnName === field || property.targetIdColumnName === field;
+      const filterField = (filter as EntityNonRelationPropertyFilterOptions).field;
+      let property: RpdDataModelProperty = getEntityProperty(server, model, (property) => {
+        return property.code === filterField;
       });
+
+      let columnName = "";
+      if (property) {
+        columnName = property.columnName || property.code;
+      } else {
+        property = getEntityProperty(server, model, (property) => {
+          return property.columnName === filterField;
+        });
+
+        if (property) {
+          columnName = property.columnName;
+        } else {
+          property = getEntityProperty(server, model, (property) => {
+            return property.targetIdColumnName === filterField;
+          });
+
+          if (property) {
+            columnName = property.targetIdColumnName;
+          } else {
+            columnName = filterField;
+          }
+        }
+      }
+
       // TODO: do not use `any` here
       replacedFilters.push({
         operator: filter.operator,
         field: {
-          name: property.columnName || property.code,
-          tableName: property.isBaseProperty ? baseModel.tableName : model.tableName,
+          name: columnName,
+          tableName: (property && property.isBaseProperty) ? baseModel.tableName : model.tableName,
         },
         value: (filter as any).value,
         itemType: (filter as any).itemType,
