@@ -560,7 +560,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     row.id = newBaseRow.id;
   }
   const newRow = await dataAccessor.create(row);
-  const newEntity = mapDbRowToEntity(server, model, Object.assign(newBaseRow, newRow), true);
+  const newEntity = mapDbRowToEntity(server, model, newBaseRow ? Object.assign(newBaseRow, newRow) : newRow, true);
 
   // save many-relation properties
   for (const property of manyRelationPropertiesToCreate) {
