@@ -527,26 +527,40 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
 
   const { row, baseRow } = mapEntityToDbRow(server, model, entity);
 
+  const newEntityOneRelationProps = {};
   // save one-relation properties
   for (const property of oneRelationPropertiesToCreate) {
     const targetRow = property.isBaseProperty ? baseRow : row;
     const fieldValue = entity[property.code];
+    const targetDataAccessor = server.getDataAccessor({
+      singularCode: property.targetSingularCode!,
+    });
     if (isObject(fieldValue)) {
-      if (!fieldValue["id"]) {
-        const targetDataAccessor = server.getDataAccessor({
-          singularCode: property.targetSingularCode!,
-        });
+      const targetEntityId = fieldValue["id"];
+      if (!targetEntityId) {
         const targetEntity = fieldValue;
         const newTargetEntity = await createEntity(server, targetDataAccessor, {
           entity: targetEntity,
         });
+        newEntityOneRelationProps[property.code] = newTargetEntity;
         targetRow[property.targetIdColumnName!] = newTargetEntity["id"];
       } else {
-        targetRow[property.targetIdColumnName!] = fieldValue["id"];
+        const targetEntity = await findById(server, targetDataAccessor, targetEntityId);
+        if (!targetEntity) {
+          throw newEntityOperationError(`Create ${model.singularCode} entity failed. Property '${property.code}' was invalid. Related ${property.targetSingularCode} entity with id '${targetEntityId}' was not found.`);
+        }
+        newEntityOneRelationProps[property.code] = targetEntity;
+        targetRow[property.targetIdColumnName!] = targetEntityId;
       }
     } else {
       // fieldValue is id;
-      targetRow[property.targetIdColumnName!] = fieldValue;
+      const targetEntityId = fieldValue;
+      const targetEntity = await findById(server, targetDataAccessor, targetEntityId);
+      if (!targetEntity) {
+        throw newEntityOperationError(`Create ${model.singularCode} entity failed. Property '${property.code}' was invalid. Related ${property.targetSingularCode} entity with id '${targetEntityId}' was not found.`);
+      }
+      newEntityOneRelationProps[property.code] = targetEntity;
+      targetRow[property.targetIdColumnName!] = targetEntityId;
     }
   }
 
@@ -560,7 +574,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     row.id = newBaseRow.id;
   }
   const newRow = await dataAccessor.create(row);
-  const newEntity = mapDbRowToEntity(server, model, newBaseRow ? Object.assign(newBaseRow, newRow) : newRow, true);
+  const newEntity = mapDbRowToEntity(server, model, Object.assign({}, newBaseRow, newRow, newEntityOneRelationProps), true);
 
   // save many-relation properties
   for (const property of manyRelationPropertiesToCreate) {
@@ -701,15 +715,44 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
   });
 
   const { row, baseRow } = mapEntityToDbRow(server, model, changes);
-  oneRelationPropertiesToUpdate.forEach((property) => {
+
+  const updatedEntityOneRelationProps = {};
+  for (const property of oneRelationPropertiesToUpdate) {
     const targetRow = property.isBaseProperty ? baseRow : row;
     const fieldValue = changes[property.code];
+    const targetDataAccessor = server.getDataAccessor({
+      singularCode: property.targetSingularCode!,
+    });
+
     if (isObject(fieldValue)) {
-      targetRow[property.targetIdColumnName!] = fieldValue["id"];
+      const targetEntityId = fieldValue["id"];
+      if (!targetEntityId) {
+        const targetEntity = fieldValue;
+        const newTargetEntity = await createEntity(server, targetDataAccessor, {
+          entity: targetEntity,
+        });
+        updatedEntityOneRelationProps[property.code] = newTargetEntity;
+        targetRow[property.targetIdColumnName!] = newTargetEntity["id"];
+      } else {
+        const targetEntity = await findById(server, targetDataAccessor, targetEntityId);
+        if (!targetEntity) {
+          throw newEntityOperationError(`Create ${model.singularCode} entity failed. Property '${property.code}' was invalid. Related ${property.targetSingularCode} entity with id '${targetEntityId}' was not found.`);
+        }
+        updatedEntityOneRelationProps[property.code] = targetEntity;
+        targetRow[property.targetIdColumnName!] = targetEntityId;
+      }
     } else {
-      targetRow[property.targetIdColumnName!] = fieldValue;
+      // fieldValue is id;
+      const targetEntityId = fieldValue;
+      const targetEntity = await findById(server, targetDataAccessor, targetEntityId);
+      if (!targetEntity) {
+        throw newEntityOperationError(`Create ${model.singularCode} entity failed. Property '${property.code}' was invalid. Related ${property.targetSingularCode} entity with id '${targetEntityId}' was not found.`);
+      }
+      updatedEntityOneRelationProps[property.code] = targetEntity;
+      targetRow[property.targetIdColumnName!] = targetEntityId;
     }
-  });
+  };
+
   let updatedRow = row;
   if (Object.keys(row).length) {
     updatedRow = await dataAccessor.updateById(id, row);
@@ -722,7 +765,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     updatedBaseRow = await baseDataAccessor.updateById(id, updatedBaseRow);
   }
 
-  let updatedEntity = mapDbRowToEntity(server, model, {...updatedRow, ...updatedBaseRow}, true);
+  let updatedEntity = mapDbRowToEntity(server, model, {...updatedRow, ...updatedBaseRow, ...updatedEntityOneRelationProps}, true);
   updatedEntity = Object.assign({}, entity, updatedEntity);
 
   // save many-relation properties
