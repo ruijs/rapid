@@ -33,6 +33,10 @@ export function mapDbRowToEntity(server: IRpdServer, model: RpdDataModel, row: a
       }
     }
 
+    if (property?.config?.dataManage?.hidden) {
+      return;
+    }
+
     if (isRelationProp) {
       if (row[propertyName]) {
         if (!result[propertyName]) {
