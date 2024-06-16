@@ -23,6 +23,11 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       code: 'password',
       name: '密码',
       type: 'text',
+      config: {
+        dataManage: {
+          hidden: true,
+        },
+      },
     },
     {
       code: 'hidden',
