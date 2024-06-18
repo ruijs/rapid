@@ -67,6 +67,7 @@ const entityFieldCodes = {
     'description',
     'taskType',
     'state',
+    'permissions',
     'createdAt',
     'createdBy',
     'updatedAt',

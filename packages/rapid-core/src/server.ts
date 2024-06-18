@@ -47,6 +47,7 @@ export class RapidServer implements IRpdServer {
   #entityDeleteEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
   #entityAddRelationsEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
   #entityRemoveRelationsEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
+  #entityBeforeResponseEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
   #entityWatchers: EntityWatcherType[];
   #appEntityWatchers: EntityWatcherType[];
 
@@ -87,6 +88,7 @@ export class RapidServer implements IRpdServer {
     this.#entityDeleteEventEmitters = new EventManager();
     this.#entityAddRelationsEventEmitters = new EventManager();
     this.#entityRemoveRelationsEventEmitters = new EventManager();
+    this.#entityBeforeResponseEventEmitters = new EventManager();
 
     this.registerEventHandler("entity.beforeCreate", this.#handleEntityEvent.bind(this, "entity.beforeCreate"));
     this.registerEventHandler("entity.create", this.#handleEntityEvent.bind(this, "entity.create"));
@@ -96,6 +98,7 @@ export class RapidServer implements IRpdServer {
     this.registerEventHandler("entity.delete", this.#handleEntityEvent.bind(this, "entity.delete"));
     this.registerEventHandler("entity.addRelations", this.#handleEntityEvent.bind(this, "entity.addRelations"));
     this.registerEventHandler("entity.removeRelations", this.#handleEntityEvent.bind(this, "entity.removeRelations"));
+    this.registerEventHandler("entity.beforeResponse", this.#handleEntityEvent.bind(this, "entity.beforeResponse"));
 
     this.#entityWatchers = [];
     this.#appEntityWatchers = options.entityWatchers || [];
@@ -287,6 +290,8 @@ export class RapidServer implements IRpdServer {
         this.#entityAddRelationsEventEmitters.on(entityWatcher.modelSingularCode, entityWatcher.handler);
       } else if (entityWatcher.eventName === "entity.removeRelations") {
         this.#entityRemoveRelationsEventEmitters.on(entityWatcher.modelSingularCode, entityWatcher.handler);
+      } else if (entityWatcher.eventName === "entity.beforeResponse") {
+        this.#entityBeforeResponseEventEmitters.on(entityWatcher.modelSingularCode, entityWatcher.handler);
       }
     }
 
@@ -411,6 +416,8 @@ export class RapidServer implements IRpdServer {
       emitter = this.#entityAddRelationsEventEmitters;
     } else if (eventName === "entity.removeRelations") {
       emitter = this.#entityRemoveRelationsEventEmitters;
+    } else if (eventName === "entity.beforeResponse") {
+      emitter = this.#entityBeforeResponseEventEmitters;
     }
 
     emitter.emit(modelSingularCode, entityWatchHandlerContext);

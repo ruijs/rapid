@@ -89,6 +89,11 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
         },
       },
     },
+    {
+      code: 'permissions',
+      name: '权限',
+      type: 'json',
+    },
   ],
 };
 

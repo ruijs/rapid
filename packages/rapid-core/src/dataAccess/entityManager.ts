@@ -129,12 +129,12 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     pagination: options.pagination,
     fields: columnsToSelect,
   };
-  const entities = await dataAccessor.find(findRowOptions);
-  if (!entities.length) {
+  const rows = await dataAccessor.find(findRowOptions);
+  if (!rows.length) {
     return [];
   }
 
-  const entityIds = entities.map((e) => e.id);
+  const entityIds = rows.map((row) => row.id);
   if (relationPropertiesToSelect.length) {
     for (const relationProperty of relationPropertiesToSelect) {
       const isManyRelation = relationProperty.relation === "many";
@@ -148,9 +148,9 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
         if (isManyRelation) {
           const relationLinks = await findManyRelationLinksViaLinkTable(server, targetModel, relationProperty, entityIds);
 
-          forEach(entities, (entity: any) => {
-            entity[relationProperty.code] = filter(relationLinks, (link: any) => {
-              return link[relationProperty.selfIdColumnName!] == entity["id"];
+          forEach(rows, (row: any) => {
+            row[relationProperty.code] = filter(relationLinks, (link: any) => {
+              return link[relationProperty.selfIdColumnName!] == row["id"];
             }).map((link) => mapDbRowToEntity(server, targetModel, link.targetEntity, false));
           });
         }
@@ -161,7 +161,7 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
         } else {
           const targetEntityIds = uniq(
             reject(
-              map(entities, (entity: any) => entity[relationProperty.targetIdColumnName!]),
+              map(rows, (entity: any) => entity[relationProperty.targetIdColumnName!]),
               isNullOrUndefined,
             ),
           );
@@ -171,18 +171,18 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
         const targetModel = server.getModel({
           singularCode: relationProperty.targetSingularCode!,
         });
-        entities.forEach((entity) => {
+        rows.forEach((row) => {
           if (isManyRelation) {
-            entity[relationProperty.code] = filter(relatedEntities, (relatedEntity: any) => {
-              return relatedEntity[relationProperty.selfIdColumnName!] == entity.id;
+            row[relationProperty.code] = filter(relatedEntities, (relatedEntity: any) => {
+              return relatedEntity[relationProperty.selfIdColumnName!] == row.id;
             }).map((item) => mapDbRowToEntity(server, targetModel!, item, false));
           } else {
-            entity[relationProperty.code] = mapDbRowToEntity(
+            row[relationProperty.code] = mapDbRowToEntity(
               server,
               targetModel!,
               find(relatedEntities, (relatedEntity: any) => {
                 // TODO: id property code should be configurable.
-                return relatedEntity["id"] == entity[relationProperty.targetIdColumnName!];
+                return relatedEntity["id"] == row[relationProperty.targetIdColumnName!];
               }),
               false,
             );
@@ -191,7 +191,20 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
       }
     }
   }
-  return entities.map((item) => mapDbRowToEntity(server, model, item, options.keepNonPropertyFields));
+  const entities = rows.map((item) => mapDbRowToEntity(server, model, item, options.keepNonPropertyFields));
+
+  await server.emitEvent(
+    "entity.beforeResponse",
+    {
+      namespace: model.namespace,
+      modelSingularCode: model.singularCode,
+      baseModelSingularCode: model.base,
+      entities,
+    },
+    null,
+  );
+
+  return entities;
 }
 
 async function findEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, options: FindEntityOptions) {
