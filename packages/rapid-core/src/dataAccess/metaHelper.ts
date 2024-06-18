@@ -1,3 +1,4 @@
+import { cloneDeep } from "lodash";
 import { IRpdServer } from "~/core/server";
 import { RpdDataModel, RpdDataModelProperty } from "~/types";
 
@@ -13,10 +14,17 @@ export function getEntityPropertiesIncludingBase(server: IRpdServer, model: RpdD
   const baseModel = server.getModel({
     singularCode: model.base,
   });
-  baseModel.properties.forEach(prop => prop.isBaseProperty = true);
+  let baseProperties: RpdDataModelProperty[] = [];
+  if (baseModel) {
+    baseModel.properties.map((property) => {
+      property = cloneDeep(property);
+      property.isBaseProperty = true;
+      return property;
+    })
+  }
 
   return [
-    ...baseModel.properties,
+    ...baseProperties,
     ...model.properties,
   ]
 }
@@ -36,6 +44,7 @@ export function getEntityProperty(server: IRpdServer, model: RpdDataModel, predi
 
       property = baseModel.properties.find(predicate);
       if (property) {
+        property = cloneDeep(property);
         property.isBaseProperty = true;
       }
     }

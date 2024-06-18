@@ -75,6 +75,7 @@ export type RpdServerEventTypes = {
   "entity.delete": [RapidPlugin, RpdEntityDeleteEventPayload];
   "entity.addRelations": [RapidPlugin, RpdEntityAddRelationsEventPayload];
   "entity.removeRelations": [RapidPlugin, RpdEntityRemoveRelationsEventPayload];
+  "entity.beforeResponse": [RapidPlugin, RpdEntityBeforeResponseEventPayload];
 };
 
 export interface RpdEntityBeforeCreateEventPayload {
@@ -138,6 +139,13 @@ export interface RpdEntityRemoveRelationsEventPayload {
   entity: any;
   property: string;
   relations: any[];
+}
+
+export interface RpdEntityBeforeResponseEventPayload {
+  namespace: string;
+  modelSingularCode: string;
+  baseModelSingularCode?: string;
+  entities: any[];
 }
 
 export interface QuoteTableOptions {

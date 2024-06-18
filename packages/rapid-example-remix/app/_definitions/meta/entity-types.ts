@@ -244,6 +244,10 @@ export interface PmTask {
    */
   state?: TaskState;
   /**
+   * 权限
+   */
+  permissions?: Record<string, any>;
+  /**
    * 创建时间
    */
   createdAt?: string;
