@@ -226,9 +226,8 @@ export class RapidServer implements IRpdServer {
     return entityManager;
   }
 
-  registerEventHandler<K extends keyof RpdServerEventTypes>(eventName: K, listener: (...args: RpdServerEventTypes[K]) => void): this {
+  registerEventHandler<K extends keyof RpdServerEventTypes>(eventName: K, listener: (...args: RpdServerEventTypes[K]) => void) {
     this.#eventManager.on(eventName, listener);
-    return this;
   }
 
   registerEntityWatcher(entityWatcher: EntityWatcherType) {
