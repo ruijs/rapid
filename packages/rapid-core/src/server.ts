@@ -1,5 +1,5 @@
 import DataAccessor from "./dataAccess/dataAccessor";
-import { GetDataAccessorOptions, GetModelOptions, IDatabaseAccessor, IDatabaseConfig, IQueryBuilder, IRpdDataAccessor, RpdApplicationConfig, RpdDataModel, RpdServerEventTypes, RapidServerConfig, RpdDataModelProperty, CreateEntityOptions, UpdateEntityByIdOptions } from "./types";
+import { GetDataAccessorOptions, GetModelOptions, IDatabaseAccessor, IDatabaseConfig, IQueryBuilder, IRpdDataAccessor, RpdApplicationConfig, RpdDataModel, RpdServerEventTypes, RapidServerConfig, RpdDataModelProperty, CreateEntityOptions, UpdateEntityByIdOptions, EntityWatchHandlerContext, EntityWatcherType, RpdEntityCreateEventPayload } from "./types";
 
 import QueryBuilder from "./queryBuilder/queryBuilder";
 import PluginManager from "./core/pluginManager";
@@ -23,6 +23,7 @@ export interface InitServerOptions {
   applicationConfig?: RpdApplicationConfig;
   facilityFactories?: FacilityFactory[];
   plugins?: RapidPlugin[];
+  entityWatchers?: EntityWatcherType[];
 }
 
 export class RapidServer implements IRpdServer {
@@ -37,12 +38,25 @@ export class RapidServer implements IRpdServer {
   #actionHandlersMapByCode: Map<string, ActionHandler>;
   #databaseAccessor: IDatabaseAccessor;
   #cachedDataAccessors: Map<string, DataAccessor>;
+
+  #entityBeforeCreateEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
+  #entityCreateEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
+  #entityBeforeUpdateEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
+  #entityUpdateEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
+  #entityBeforeDeleteEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
+  #entityDeleteEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
+  #entityAddRelationsEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
+  #entityRemoveRelationsEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
+  #entityWatchers: EntityWatcherType[];
+  #appEntityWatchers: EntityWatcherType[];
+
   #cachedEntityManager: Map<string, EntityManager>;
   #services: Map<string, any>;
   queryBuilder: IQueryBuilder;
   config: RapidServerConfig;
   databaseConfig: IDatabaseConfig;
   #buildedRoutes: (ctx: any, next: any) => any;
+
 
   constructor(options: InitServerOptions) {
     this.#logger = options.logger;
@@ -64,6 +78,27 @@ export class RapidServer implements IRpdServer {
     this.#databaseAccessor = options.databaseAccessor;
     this.#cachedDataAccessors = new Map();
     this.#cachedEntityManager = new Map();
+
+    this.#entityBeforeCreateEventEmitters = new EventManager();
+    this.#entityCreateEventEmitters = new EventManager();
+    this.#entityBeforeUpdateEventEmitters = new EventManager();
+    this.#entityUpdateEventEmitters = new EventManager();
+    this.#entityBeforeDeleteEventEmitters = new EventManager();
+    this.#entityDeleteEventEmitters = new EventManager();
+    this.#entityAddRelationsEventEmitters = new EventManager();
+    this.#entityRemoveRelationsEventEmitters = new EventManager();
+
+    this.registerEventHandler("entity.beforeCreate", this.#handleEntityEvent.bind(this, "entity.beforeCreate"));
+    this.registerEventHandler("entity.create", this.#handleEntityEvent.bind(this, "entity.create"));
+    this.registerEventHandler("entity.beforeUpdate", this.#handleEntityEvent.bind(this, "entity.beforeUpdate"));
+    this.registerEventHandler("entity.update", this.#handleEntityEvent.bind(this, "entity.update"));
+    this.registerEventHandler("entity.beforeDelete", this.#handleEntityEvent.bind(this, "entity.beforeDelete"));
+    this.registerEventHandler("entity.delete", this.#handleEntityEvent.bind(this, "entity.delete"));
+    this.registerEventHandler("entity.addRelations", this.#handleEntityEvent.bind(this, "entity.addRelations"));
+    this.registerEventHandler("entity.removeRelations", this.#handleEntityEvent.bind(this, "entity.removeRelations"));
+
+    this.#entityWatchers = [];
+    this.#appEntityWatchers = options.entityWatchers || [];
 
     this.#services = new Map();
 
@@ -196,6 +231,10 @@ export class RapidServer implements IRpdServer {
     return this;
   }
 
+  registerEntityWatcher(entityWatcher: EntityWatcherType) {
+    this.#entityWatchers.push(entityWatcher);
+  }
+
   async emitEvent<K extends keyof RpdServerEventTypes>(eventName: K, payload: RpdServerEventTypes[K][1], sender?: RapidPlugin) {
     this.#logger.debug(`Emitting '${eventName}' event.`, { eventName, payload });
     await this.#eventManager.emit<K>(eventName, sender, payload as any);
@@ -230,6 +269,27 @@ export class RapidServer implements IRpdServer {
     await pluginManager.registerEventHandlers();
     await pluginManager.registerMessageHandlers();
     await pluginManager.registerTaskProcessors();
+
+    this.#entityWatchers = this.#entityWatchers.concat(this.#appEntityWatchers);
+    for (const entityWatcher of this.#entityWatchers) {
+      if (entityWatcher.eventName === "entity.beforeCreate") {
+        this.#entityBeforeCreateEventEmitters.on(entityWatcher.modelSingularCode, entityWatcher.handler);
+      } else if (entityWatcher.eventName === "entity.create") {
+        this.#entityCreateEventEmitters.on(entityWatcher.modelSingularCode, entityWatcher.handler);
+      } else if (entityWatcher.eventName === "entity.beforeUpdate") {
+        this.#entityBeforeUpdateEventEmitters.on(entityWatcher.modelSingularCode, entityWatcher.handler);
+      } else if (entityWatcher.eventName === "entity.update") {
+        this.#entityUpdateEventEmitters.on(entityWatcher.modelSingularCode, entityWatcher.handler);
+      } else if (entityWatcher.eventName === "entity.beforeDelete") {
+        this.#entityBeforeDeleteEventEmitters.on(entityWatcher.modelSingularCode, entityWatcher.handler);
+      } else if (entityWatcher.eventName === "entity.delete") {
+        this.#entityDeleteEventEmitters.on(entityWatcher.modelSingularCode, entityWatcher.handler);
+      } else if (entityWatcher.eventName === "entity.addRelations") {
+        this.#entityAddRelationsEventEmitters.on(entityWatcher.modelSingularCode, entityWatcher.handler);
+      } else if (entityWatcher.eventName === "entity.removeRelations") {
+        this.#entityRemoveRelationsEventEmitters.on(entityWatcher.modelSingularCode, entityWatcher.handler);
+      }
+    }
 
     await this.configureApplication();
 
@@ -326,5 +386,37 @@ export class RapidServer implements IRpdServer {
 
   async beforeUpdateEntity(model: RpdDataModel, options: UpdateEntityByIdOptions, currentEntity: any) {
     await this.#pluginManager.beforeUpdateEntity(model, options, currentEntity);
+  }
+
+  #handleEntityEvent(eventName: keyof RpdServerEventTypes, sender: RapidPlugin, payload: RpdEntityCreateEventPayload) {
+    const { modelSingularCode, baseModelSingularCode } = payload;
+    const entityWatchHandlerContext: EntityWatchHandlerContext<typeof eventName> = {
+      server: this,
+      payload,
+    };
+
+    let emitter: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
+    if (eventName === "entity.beforeCreate") {
+      emitter = this.#entityBeforeCreateEventEmitters;
+    } else if (eventName === "entity.create") {
+      emitter = this.#entityCreateEventEmitters;
+    } else if (eventName === "entity.beforeUpdate") {
+      emitter = this.#entityBeforeUpdateEventEmitters;
+    } else if (eventName === "entity.update") {
+      emitter = this.#entityUpdateEventEmitters;
+    } else if (eventName === "entity.beforeDelete") {
+      emitter = this.#entityBeforeDeleteEventEmitters;
+    } else if (eventName === "entity.delete") {
+      emitter = this.#entityDeleteEventEmitters;
+    } else if (eventName === "entity.addRelations") {
+      emitter = this.#entityAddRelationsEventEmitters;
+    } else if (eventName === "entity.removeRelations") {
+      emitter = this.#entityRemoveRelationsEventEmitters;
+    }
+
+    emitter.emit(modelSingularCode, entityWatchHandlerContext);
+    if (baseModelSingularCode) {
+      emitter.emit(baseModelSingularCode, entityWatchHandlerContext);
+    }
   }
 }

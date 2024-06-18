@@ -38,7 +38,4 @@ export * from "./plugins/cronJob/CronJobPluginTypes";
 export { default as StateMachinePlugin } from "./plugins/stateMachine/StateMachinePlugin";
 export * from "./plugins/stateMachine/StateMachinePluginTypes";
 
-export { default as EntityWatchPlugin } from "./plugins/entityWatch/EntityWatchPlugin";
-export * from "./plugins/entityWatch/EntityWatchPluginTypes";
-
 export { default as EntityAccessControlPlugin } from "./plugins/entityAccessControl/EntityAccessControlPlugin";
