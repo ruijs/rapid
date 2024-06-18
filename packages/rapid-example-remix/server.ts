@@ -19,7 +19,7 @@ import {
   FileManagePlugin,
   ServerOperationPlugin,
   StateMachinePlugin,
-  EntityWatchPlugin,
+  // EntityWatchPlugin,
   CronJobPlugin,
 } from '@ruiapp/rapid-core';
 import { createRapidRequestHandler } from '@ruiapp/rapid-express';
@@ -127,13 +127,14 @@ export async function startServer() {
         operations: serverOperations,
       }),
       new StateMachinePlugin(),
-      new EntityWatchPlugin({
-        watchers: entityWatchers,
-      }),
+      // new EntityWatchPlugin({
+      //   watchers: entityWatchers,
+      // }),
       new CronJobPlugin({
         jobs: cronJobs,
       }),
     ],
+    entityWatchers,
   });
   await rapidServer.start();
 
