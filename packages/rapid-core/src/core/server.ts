@@ -1,4 +1,4 @@
-import { CreateEntityOptions, EntityWatcherType, GetDataAccessorOptions, GetModelOptions, IDatabaseConfig, IQueryBuilder, IRpdDataAccessor, RapidServerConfig, RpdApplicationConfig, RpdDataModel, RpdDataModelProperty, RpdServerEventTypes, UpdateEntityByIdOptions } from "~/types";
+import { CreateEntityOptions, EmitServerEventOptions, EntityWatcherType, GetDataAccessorOptions, GetModelOptions, IDatabaseConfig, IQueryBuilder, IRpdDataAccessor, RapidServerConfig, RpdApplicationConfig, RpdDataModel, RpdDataModelProperty, RpdServerEventTypes, UpdateEntityByIdOptions } from "~/types";
 import { IPluginActionHandler, ActionHandler, ActionHandlerContext } from "./actionHandler";
 import { Next, RouteContext } from "./routeContext";
 import EntityManager from "~/dataAccess/entityManager";
@@ -30,7 +30,7 @@ export interface IRpdServer {
   getModel(options: GetModelOptions): RpdDataModel | undefined;
   registerEventHandler<K extends keyof RpdServerEventTypes>(eventName: K, listener: (...args: RpdServerEventTypes[K]) => void);
   registerEntityWatcher(entityWatcher: EntityWatcherType);
-  emitEvent<K extends keyof RpdServerEventTypes>(eventName: K, payload: RpdServerEventTypes[K][1], sender?: RapidPlugin): void;
+  emitEvent<TEventName extends keyof RpdServerEventTypes>(event: EmitServerEventOptions<TEventName>): void;
   handleRequest(request: Request, next: Next): Promise<Response>;
   beforeRunRouteActions(handlerContext: ActionHandlerContext): Promise<void>;
   beforeCreateEntity(model: RpdDataModel, options: CreateEntityOptions): Promise<void>;

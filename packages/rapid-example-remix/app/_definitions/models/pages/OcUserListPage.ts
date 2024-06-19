@@ -55,6 +55,7 @@ const page: RapidPage = {
   permissionCheck: { any: [] },
   view: [
     {
+      $id: 'userList',
       $type: 'sonicEntityList',
       entityCode: 'OcUser',
       viewMode: 'table',

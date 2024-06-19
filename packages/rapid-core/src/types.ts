@@ -1,3 +1,4 @@
+import { RouteContext } from "./core/routeContext";
 import { IRpdServer, RapidPlugin } from "./core/server";
 import { CountRowOptions, FindRowOptions } from "./dataAccess/dataAccessTypes";
 
@@ -67,15 +68,15 @@ export interface GetModelOptions {
 }
 
 export type RpdServerEventTypes = {
-  "entity.beforeCreate": [RapidPlugin, RpdEntityBeforeCreateEventPayload];
-  "entity.create": [RapidPlugin, RpdEntityCreateEventPayload];
-  "entity.beforeUpdate": [RapidPlugin, RpdEntityBeforeUpdateEventPayload];
-  "entity.update": [RapidPlugin, RpdEntityUpdateEventPayload];
-  "entity.beforeDelete": [RapidPlugin, RpdEntityBeforeDeleteEventPayload];
-  "entity.delete": [RapidPlugin, RpdEntityDeleteEventPayload];
-  "entity.addRelations": [RapidPlugin, RpdEntityAddRelationsEventPayload];
-  "entity.removeRelations": [RapidPlugin, RpdEntityRemoveRelationsEventPayload];
-  "entity.beforeResponse": [RapidPlugin, RpdEntityBeforeResponseEventPayload];
+  "entity.beforeCreate": [RapidPlugin, RpdEntityBeforeCreateEventPayload, RouteContext?];
+  "entity.create": [RapidPlugin, RpdEntityCreateEventPayload, RouteContext?];
+  "entity.beforeUpdate": [RapidPlugin, RpdEntityBeforeUpdateEventPayload, RouteContext?];
+  "entity.update": [RapidPlugin, RpdEntityUpdateEventPayload, RouteContext?];
+  "entity.beforeDelete": [RapidPlugin, RpdEntityBeforeDeleteEventPayload, RouteContext?];
+  "entity.delete": [RapidPlugin, RpdEntityDeleteEventPayload, RouteContext?];
+  "entity.addRelations": [RapidPlugin, RpdEntityAddRelationsEventPayload, RouteContext?];
+  "entity.removeRelations": [RapidPlugin, RpdEntityRemoveRelationsEventPayload, RouteContext?];
+  "entity.beforeResponse": [RapidPlugin, RpdEntityBeforeResponseEventPayload, RouteContext?];
 };
 
 export interface RpdEntityBeforeCreateEventPayload {
@@ -146,6 +147,13 @@ export interface RpdEntityBeforeResponseEventPayload {
   modelSingularCode: string;
   baseModelSingularCode?: string;
   entities: any[];
+}
+
+export type EmitServerEventOptions<TEventName extends keyof RpdServerEventTypes> = {
+  eventName: TEventName;
+  payload: RpdServerEventTypes[TEventName][1];
+  sender?: RapidPlugin;
+  routeContext?: RouteContext;
 }
 
 export interface QuoteTableOptions {
@@ -389,9 +397,17 @@ export type EntityFilterOptions = FindEntityRelationalFilterOptions | FindEntity
 export type EntityNonRelationPropertyFilterOptions = FindEntityRelationalFilterOptions | FindEntitySetFilterOptions | FindEntityUnaryFilterOptions;
 
 export interface FindEntityOptions {
+  routeContext?: RouteContext;
   filters?: EntityFilterOptions[];
   orderBy?: FindEntityOrderByOptions[];
   pagination?: FindEntityPaginationOptions;
+  properties?: string[];
+  keepNonPropertyFields?: boolean;
+}
+
+export interface FindEntityByIdOptions {
+  routeContext?: RouteContext;
+  id: any;
   properties?: string[];
   keepNonPropertyFields?: boolean;
 }
@@ -437,6 +453,7 @@ export interface FindEntityOrderByOptions {
 }
 
 export interface CountEntityOptions {
+  routeContext?: RouteContext;
   filters?: EntityFilterOptions[];
 }
 
@@ -444,16 +461,24 @@ export interface CountEntityResult {
   count: number;
 }
 
+export interface DeleteEntityByIdOptions {
+  routeContext?: RouteContext;
+  id: any;
+}
+
 export interface CreateEntityOptions {
+  routeContext?: RouteContext;
   entity: any;
 }
 
 export interface UpdateEntityOptions {
+  routeContext?: RouteContext;
   filters?: EntityFilterOptions[];
   entity: any;
 }
 
 export interface UpdateEntityByIdOptions {
+  routeContext?: RouteContext;
   id: any;
   entityToSave: any;
   operation?: any;
@@ -461,16 +486,19 @@ export interface UpdateEntityByIdOptions {
 }
 
 export interface DeleteEntityOptions {
+  routeContext?: RouteContext;
   filters?: EntityFilterOptions[];
 }
 
 export interface AddEntityRelationsOptions {
+  routeContext?: RouteContext;
   id: number;
   property: string;
   relations: { id?: number; [k: string]: any }[];
 }
 
 export interface RemoveEntityRelationsOptions {
+  routeContext?: RouteContext;
   id: number;
   property: string;
   relations: { id?: number; [k: string]: any }[];
@@ -490,6 +518,7 @@ export type EntityWatchHandler<TEventName extends keyof RpdServerEventTypes> = (
 export type EntityWatchHandlerContext<TEventName extends keyof RpdServerEventTypes> = {
   server: IRpdServer;
   payload: RpdServerEventTypes[TEventName][1];
+  routerContext?: RouteContext;
 };
 
 export interface EntityWatchPluginInitOptions {

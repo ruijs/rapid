@@ -9,6 +9,7 @@ export const code = "findCollectionEntities";
 export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: RunEntityActionHandlerOptions) {
   await runCollectionEntityActionHandler(ctx, options, code, async (entityManager, input: FindEntityOptions) => {
     input.filters = removeFiltersWithNullValue(input.filters);
+    input.routeContext = ctx.routerContext;
     const entities = await entityManager.findEntities(input);
     const result: {
       list: any;

@@ -10,7 +10,10 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
   const { id } = input;
 
   const entityManager = server.getEntityManager(options.singularCode);
-  const entity = await entityManager.findById(id);
+  const entity = await entityManager.findById({
+    id,
+    routeContext: ctx.routerContext,
+  });
   if (!entity) {
     throw new Error(`${options.namespace}.${options.singularCode} with id "${id}" was not found.`);
   }

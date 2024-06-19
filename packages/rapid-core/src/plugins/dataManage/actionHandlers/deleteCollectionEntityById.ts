@@ -9,7 +9,10 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
   logger.debug(`Running ${code} handler...`);
 
   const entityManager = server.getEntityManager(options.singularCode);
-  await entityManager.deleteById(input.id, plugin);
+  await entityManager.deleteById({
+    id: input.id,
+    routeContext: ctx.routerContext,
+  }, plugin);
 
   ctx.status = 200;
   ctx.output = {};

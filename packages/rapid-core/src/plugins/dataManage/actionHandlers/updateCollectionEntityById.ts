@@ -1,4 +1,4 @@
-import { RunEntityActionHandlerOptions } from "~/types";
+import { RunEntityActionHandlerOptions, UpdateEntityByIdOptions } from "~/types";
 import { mergeInput } from "~/helpers/inputHelper";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
@@ -22,7 +22,14 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
     delete mergedInput.$stateProperties;
   }
 
+  const updateEntityByIdOptions: UpdateEntityByIdOptions = {
+    id: mergedInput.id,
+    entityToSave: mergedInput,
+    operation,
+    stateProperties,
+    routeContext: ctx.routerContext,
+  };
   const entityManager = server.getEntityManager(options.singularCode);
-  const output = await entityManager.updateEntityById({ id: mergedInput.id, entityToSave: mergedInput, operation, stateProperties }, plugin);
+  const output = await entityManager.updateEntityById(updateEntityByIdOptions, plugin);
   ctx.output = output;
 }
