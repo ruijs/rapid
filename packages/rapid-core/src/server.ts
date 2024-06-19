@@ -392,7 +392,7 @@ export class RapidServer implements IRpdServer {
     await this.#pluginManager.beforeUpdateEntity(model, options, currentEntity);
   }
 
-  #handleEntityEvent(eventName: keyof RpdServerEventTypes, sender: RapidPlugin, payload: RpdEntityCreateEventPayload) {
+  async #handleEntityEvent(eventName: keyof RpdServerEventTypes, sender: RapidPlugin, payload: RpdEntityCreateEventPayload) {
     const { modelSingularCode, baseModelSingularCode } = payload;
     const entityWatchHandlerContext: EntityWatchHandlerContext<typeof eventName> = {
       server: this,
@@ -420,9 +420,9 @@ export class RapidServer implements IRpdServer {
       emitter = this.#entityBeforeResponseEventEmitters;
     }
 
-    emitter.emit(modelSingularCode, entityWatchHandlerContext);
+    await emitter.emit(modelSingularCode, entityWatchHandlerContext);
     if (baseModelSingularCode) {
-      emitter.emit(baseModelSingularCode, entityWatchHandlerContext);
+      await emitter.emit(baseModelSingularCode, entityWatchHandlerContext);
     }
   }
 }

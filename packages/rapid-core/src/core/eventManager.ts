@@ -11,7 +11,10 @@ export default class EventManager<EventTypes extends Record<string, any[]>> {
     this.#eventEmitter.on(eventName as string, listener);
   }
 
-  emit<K extends keyof EventTypes>(eventName: K, ...args: EventTypes[K]) {
-    return this.#eventEmitter.emit(eventName as string, ...args);
+  async emit<K extends keyof EventTypes>(eventName: K, ...args: EventTypes[K]) {
+    const listeners = this.#eventEmitter.listeners(eventName as string);
+    for (const listener of listeners) {
+      await listener(...args);
+    }
   }
 }
