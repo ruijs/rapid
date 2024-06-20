@@ -151,7 +151,7 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
           forEach(rows, (row: any) => {
             row[relationProperty.code] = filter(relationLinks, (link: any) => {
               return link[relationProperty.selfIdColumnName!] == row["id"];
-            }).map((link) => mapDbRowToEntity(server, targetModel, link.targetEntity, false));
+            }).map((link) => mapDbRowToEntity(server, targetModel, link.targetEntity, options.keepNonPropertyFields));
           });
         }
       } else {
@@ -175,7 +175,7 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
           if (isManyRelation) {
             row[relationProperty.code] = filter(relatedEntities, (relatedEntity: any) => {
               return relatedEntity[relationProperty.selfIdColumnName!] == row.id;
-            }).map((item) => mapDbRowToEntity(server, targetModel!, item, false));
+            }).map((item) => mapDbRowToEntity(server, targetModel!, item, options.keepNonPropertyFields));
           } else {
             row[relationProperty.code] = mapDbRowToEntity(
               server,
@@ -184,7 +184,7 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
                 // TODO: id property code should be configurable.
                 return relatedEntity["id"] == row[relationProperty.targetIdColumnName!];
               }),
-              false,
+              options.keepNonPropertyFields,
             );
           }
         });
