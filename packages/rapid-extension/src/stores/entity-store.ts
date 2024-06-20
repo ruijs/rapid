@@ -92,6 +92,7 @@ export class EntityStore implements IStore<EntityStoreConfig> {
       orderBy: cloneDeep(this.#config.orderBy),
       properties: cloneDeep(this.#config.properties),
       pagination: cloneDeep(this.#config.pagination),
+      keepNonPropertyFields: this.#config.keepNonPropertyFields,
     };
 
     if (expressions) {
@@ -120,6 +121,7 @@ export class EntityStore implements IStore<EntityStoreConfig> {
         orderBy: config.orderBy,
         properties: config.properties,
         pagination: config.pagination,
+        keepNonPropertyFields: config.keepNonPropertyFields,
       },
     };
 

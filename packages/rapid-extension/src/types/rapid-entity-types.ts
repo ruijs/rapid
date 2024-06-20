@@ -261,6 +261,7 @@ export interface FindEntityOptions {
   orderBy?: FindEntityOrderByOptions[] | null;
   pagination?: FindEntityPaginationOptions | null;
   properties?: string[] | Record<string, any> | null;
+  keepNonPropertyFields?: boolean | null;
 }
 
 export interface FindEntityRelationalFilterOptions {

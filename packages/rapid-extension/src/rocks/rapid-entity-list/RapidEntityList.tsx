@@ -46,6 +46,7 @@ export default {
         name: dataSourceCode,
         entityModel: mainEntity,
         fixedFilters: props.fixedFilters,
+        keepNonPropertyFields: props.keepNonPropertyFields,
         properties,
         orderBy: props.orderBy || [
           {
