@@ -201,6 +201,7 @@ export default {
         type: "entityStore",
         name: props.dataSourceCode || "detail",
         entityModel: mainEntity,
+        keepNonPropertyFields: props.keepNonPropertyFields,
         properties,
         filters: [
           {
@@ -252,6 +253,7 @@ export default {
               },
             ],
             pagination: listDataFindOptions.pagination,
+            keepNonPropertyFields: listDataFindOptions.keepNonPropertyFields,
             $exps: listDataFindOptions.$exps,
           };
 
