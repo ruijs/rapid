@@ -68,9 +68,9 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
 
   let propertiesToSlect: RpdDataModelProperty[];
   if (!options.properties || !options.properties.length) {
-    propertiesToSlect = getEntityPropertiesIncludingBase(server, model).filter(property => !isRelationProperty(property));
+    propertiesToSlect = getEntityPropertiesIncludingBase(server, model).filter((property) => !isRelationProperty(property));
   } else {
-    propertiesToSlect = getEntityPropertiesIncludingBase(server, model).filter(property => options.properties.includes(property.code));
+    propertiesToSlect = getEntityPropertiesIncludingBase(server, model).filter((property) => options.properties.includes(property.code));
   }
 
   const columnsToSelect: ColumnQueryOptions[] = [];
@@ -114,7 +114,7 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
 
   // if `keepNonPropertyFields` is true and `properties` are not specified, then select relation columns automatically.
   if (options.keepNonPropertyFields && (!options.properties || !options.properties.length)) {
-    const oneRelationPropertiesWithNoLinkTable = getEntityPropertiesIncludingBase(server, model).filter(property => property.relation === "one" && !property.linkTableName);
+    const oneRelationPropertiesWithNoLinkTable = getEntityPropertiesIncludingBase(server, model).filter((property) => property.relation === "one" && !property.linkTableName);
     oneRelationPropertiesWithNoLinkTable.forEach((property) => {
       if (property.targetIdColumnName) {
         columnsToSelect.push({
@@ -429,7 +429,7 @@ async function convertEntityFiltersToRowFilters(server: IRpdServer, model: RpdDa
         operator: filter.operator,
         field: {
           name: columnName,
-          tableName: (property && property.isBaseProperty) ? baseModel.tableName : model.tableName,
+          tableName: property && property.isBaseProperty ? baseModel.tableName : model.tableName,
         },
         value: (filter as any).value,
         itemType: (filter as any).itemType,
@@ -789,7 +789,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
       updatedEntityOneRelationProps[property.code] = targetEntity;
       targetRow[property.targetIdColumnName!] = targetEntityId;
     }
-  };
+  }
 
   let updatedRow = row;
   if (Object.keys(row).length) {
@@ -803,7 +803,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     updatedBaseRow = await baseDataAccessor.updateById(id, updatedBaseRow);
   }
 
-  let updatedEntity = mapDbRowToEntity(server, model, {...updatedRow, ...updatedBaseRow, ...updatedEntityOneRelationProps}, true);
+  let updatedEntity = mapDbRowToEntity(server, model, { ...updatedRow, ...updatedBaseRow, ...updatedEntityOneRelationProps }, true);
   updatedEntity = Object.assign({}, entity, updatedEntity);
 
   // save many-relation properties
@@ -923,7 +923,7 @@ export default class EntityManager<TEntity = any> {
     return await findEntity(this.#server, this.#dataAccessor, options);
   }
 
-  async findById(options: FindEntityByIdOptions): Promise<TEntity | null> {
+  async findById(options: FindEntityByIdOptions | string | number): Promise<TEntity | null> {
     // options is id
     if (!isObject(options)) {
       options = {
@@ -951,11 +951,11 @@ export default class EntityManager<TEntity = any> {
     }
     const countRowOptions: CountRowOptions = {
       filters: await convertEntityFiltersToRowFilters(this.#server, model, baseModel, options.filters),
-    }
+    };
     return await this.#dataAccessor.count(countRowOptions);
   }
 
-  async deleteById(options: DeleteEntityByIdOptions, plugin?: RapidPlugin): Promise<void> {
+  async deleteById(options: DeleteEntityByIdOptions | string | number, plugin?: RapidPlugin): Promise<void> {
     // options is id
     if (!isObject(options)) {
       options = {
