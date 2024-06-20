@@ -3,9 +3,11 @@ import {
   CountEntityOptions,
   CountEntityResult,
   CreateEntityOptions,
+  DeleteEntityByIdOptions,
   EntityFilterOperators,
   EntityFilterOptions,
   EntityNonRelationPropertyFilterOptions,
+  FindEntityByIdOptions,
   FindEntityOptions,
   FindEntityOrderByOptions,
   IRpdDataAccessor,
@@ -24,6 +26,7 @@ import { filter, find, first, forEach, isArray, isObject, keys, map, reject, uni
 import { getEntityPropertiesIncludingBase, getEntityProperty, getEntityPropertyByCode } from "./metaHelper";
 import { ColumnQueryOptions, CountRowOptions, FindRowOptions, FindRowOrderByOptions, RowFilterOptions } from "./dataAccessTypes";
 import { newEntityOperationError } from "~/utilities/errorUtility";
+import { RouteContext } from "~/core/routeContext";
 
 function convertEntityOrderByToRowOrderBy(server: IRpdServer, model: RpdDataModel, baseModel?: RpdDataModel, orderByList?: FindEntityOrderByOptions[]) {
   if (!orderByList) {
@@ -151,7 +154,7 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
           forEach(rows, (row: any) => {
             row[relationProperty.code] = filter(relationLinks, (link: any) => {
               return link[relationProperty.selfIdColumnName!] == row["id"];
-            }).map((link) => mapDbRowToEntity(server, targetModel, link.targetEntity, false));
+            }).map((link) => mapDbRowToEntity(server, targetModel, link.targetEntity, options.keepNonPropertyFields));
           });
         }
       } else {
@@ -175,7 +178,7 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
           if (isManyRelation) {
             row[relationProperty.code] = filter(relatedEntities, (relatedEntity: any) => {
               return relatedEntity[relationProperty.selfIdColumnName!] == row.id;
-            }).map((item) => mapDbRowToEntity(server, targetModel!, item, false));
+            }).map((item) => mapDbRowToEntity(server, targetModel!, item, options.keepNonPropertyFields));
           } else {
             row[relationProperty.code] = mapDbRowToEntity(
               server,
@@ -184,7 +187,7 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
                 // TODO: id property code should be configurable.
                 return relatedEntity["id"] == row[relationProperty.targetIdColumnName!];
               }),
-              false,
+              options.keepNonPropertyFields,
             );
           }
         });
@@ -193,16 +196,17 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
   }
   const entities = rows.map((item) => mapDbRowToEntity(server, model, item, options.keepNonPropertyFields));
 
-  await server.emitEvent(
-    "entity.beforeResponse",
-    {
+  await server.emitEvent({
+    eventName: "entity.beforeResponse",
+    payload: {
       namespace: model.namespace,
       modelSingularCode: model.singularCode,
       baseModelSingularCode: model.base,
       entities,
     },
-    null,
-  );
+    sender: null,
+    routeContext: options.routeContext,
+  });
 
   return entities;
 }
@@ -212,7 +216,8 @@ async function findEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, op
   return first(entities);
 }
 
-async function findById(server: IRpdServer, dataAccessor: IRpdDataAccessor, id: any, keepNonPropertyFields: boolean = false): Promise<any> {
+async function findById(server: IRpdServer, dataAccessor: IRpdDataAccessor, options: FindEntityByIdOptions): Promise<any> {
+  const { id, properties, keepNonPropertyFields, routeContext } = options;
   return await findEntity(server, dataAccessor, {
     filters: [
       {
@@ -221,7 +226,9 @@ async function findById(server: IRpdServer, dataAccessor: IRpdDataAccessor, id: 
         value: id,
       },
     ],
+    properties,
     keepNonPropertyFields,
+    routeContext,
   });
 }
 
@@ -505,20 +512,21 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     throw newEntityOperationError("Create base entity directly is not allowed.");
   }
 
-  const { entity } = options;
+  const { entity, routeContext } = options;
 
   await server.beforeCreateEntity(model, options);
 
-  await server.emitEvent(
-    "entity.beforeCreate",
-    {
+  await server.emitEvent({
+    eventName: "entity.beforeCreate",
+    payload: {
       namespace: model.namespace,
       modelSingularCode: model.singularCode,
       baseModelSingularCode: model.base,
       before: entity,
     },
-    plugin,
-  );
+    sender: plugin,
+    routeContext,
+  });
 
   const oneRelationPropertiesToCreate: RpdDataModelProperty[] = [];
   const manyRelationPropertiesToCreate: RpdDataModelProperty[] = [];
@@ -558,7 +566,10 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
         newEntityOneRelationProps[property.code] = newTargetEntity;
         targetRow[property.targetIdColumnName!] = newTargetEntity["id"];
       } else {
-        const targetEntity = await findById(server, targetDataAccessor, targetEntityId);
+        const targetEntity = await findById(server, targetDataAccessor, {
+          id: targetEntityId,
+          routeContext,
+        });
         if (!targetEntity) {
           throw newEntityOperationError(`Create ${model.singularCode} entity failed. Property '${property.code}' was invalid. Related ${property.targetSingularCode} entity with id '${targetEntityId}' was not found.`);
         }
@@ -568,7 +579,10 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     } else {
       // fieldValue is id;
       const targetEntityId = fieldValue;
-      const targetEntity = await findById(server, targetDataAccessor, targetEntityId);
+      const targetEntity = await findById(server, targetDataAccessor, {
+        id: targetEntityId,
+        routeContext,
+      });
       if (!targetEntity) {
         throw newEntityOperationError(`Create ${model.singularCode} entity failed. Property '${property.code}' was invalid. Related ${property.targetSingularCode} entity with id '${targetEntityId}' was not found.`);
       }
@@ -662,28 +676,32 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     }
   }
 
-  await server.emitEvent(
-    "entity.create",
-    {
+  await server.emitEvent({
+    eventName: "entity.create",
+    payload: {
       namespace: model.namespace,
       modelSingularCode: model.singularCode,
       baseModelSingularCode: model.base,
       after: newEntity,
     },
-    plugin,
-  );
+    sender: plugin,
+    routeContext,
+  });
 
   return newEntity;
 }
 
 async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccessor, options: UpdateEntityByIdOptions, plugin?: RapidPlugin) {
   const model = dataAccessor.getModel();
-  const { id, entityToSave } = options;
+  const { id, entityToSave, routeContext } = options;
   if (!id) {
     throw new Error("Id is required when updating an entity.");
   }
 
-  const entity = await findById(server, dataAccessor, id);
+  const entity = await findById(server, dataAccessor, {
+    id,
+    routeContext,
+  });
   if (!entity) {
     throw new Error(`${model.namespace}.${model.singularCode}  with id "${id}" was not found.`);
   }
@@ -696,16 +714,17 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
   options.entityToSave = changes || {};
   await server.beforeUpdateEntity(model, options, entity);
 
-  await server.emitEvent(
-    "entity.beforeUpdate",
-    {
+  await server.emitEvent({
+    eventName: "entity.beforeUpdate",
+    payload: {
       namespace: model.namespace,
       modelSingularCode: model.singularCode,
       before: entity,
       changes: options.entityToSave,
     },
-    plugin,
-  );
+    sender: plugin,
+    routeContext: options.routeContext,
+  });
 
   changes = getEntityPartChanges(entity, options.entityToSave);
 
@@ -747,7 +766,10 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
         updatedEntityOneRelationProps[property.code] = newTargetEntity;
         targetRow[property.targetIdColumnName!] = newTargetEntity["id"];
       } else {
-        const targetEntity = await findById(server, targetDataAccessor, targetEntityId);
+        const targetEntity = await findById(server, targetDataAccessor, {
+          id: targetEntityId,
+          routeContext,
+        });
         if (!targetEntity) {
           throw newEntityOperationError(`Create ${model.singularCode} entity failed. Property '${property.code}' was invalid. Related ${property.targetSingularCode} entity with id '${targetEntityId}' was not found.`);
         }
@@ -757,7 +779,10 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     } else {
       // fieldValue is id;
       const targetEntityId = fieldValue;
-      const targetEntity = await findById(server, targetDataAccessor, targetEntityId);
+      const targetEntity = await findById(server, targetDataAccessor, {
+        id: targetEntityId,
+        routeContext,
+      });
       if (!targetEntity) {
         throw newEntityOperationError(`Create ${model.singularCode} entity failed. Property '${property.code}' was invalid. Related ${property.targetSingularCode} entity with id '${targetEntityId}' was not found.`);
       }
@@ -859,9 +884,9 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     updatedEntity[property.code] = relatedEntities;
   }
 
-  await server.emitEvent(
-    "entity.update",
-    {
+  await server.emitEvent({
+    eventName: "entity.update",
+    payload: {
       namespace: model.namespace,
       modelSingularCode: model.singularCode,
       // TODO: should not emit event on base model if it's not effected.
@@ -870,8 +895,10 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
       after: updatedEntity,
       changes: changes,
     },
-    plugin,
-  );
+    sender: plugin,
+    routeContext: options.routeContext,
+  });
+
   return updatedEntity;
 }
 
@@ -896,8 +923,14 @@ export default class EntityManager<TEntity = any> {
     return await findEntity(this.#server, this.#dataAccessor, options);
   }
 
-  async findById(id: any, keepNonPropertyFields: boolean = false): Promise<TEntity | null> {
-    return await findById(this.#server, this.#dataAccessor, id, keepNonPropertyFields);
+  async findById(options: FindEntityByIdOptions): Promise<TEntity | null> {
+    // options is id
+    if (!isObject(options)) {
+      options = {
+        id: options,
+      };
+    }
+    return await findById(this.#server, this.#dataAccessor, options);
   }
 
   async createEntity(options: CreateEntityOptions, plugin?: RapidPlugin): Promise<TEntity> {
@@ -922,26 +955,41 @@ export default class EntityManager<TEntity = any> {
     return await this.#dataAccessor.count(countRowOptions);
   }
 
-  async deleteById(id: any, plugin?: RapidPlugin): Promise<void> {
+  async deleteById(options: DeleteEntityByIdOptions, plugin?: RapidPlugin): Promise<void> {
+    // options is id
+    if (!isObject(options)) {
+      options = {
+        id: options,
+      };
+    }
+
     const model = this.getModel();
     if (model.derivedTypePropertyCode) {
       throw newEntityOperationError("Delete base entity directly is not allowed.");
     }
 
-    const entity = await this.findById(id, true);
+    const { id, routeContext } = options;
+
+    const entity = await this.findById({
+      id,
+      keepNonPropertyFields: true,
+      routeContext,
+    });
+
     if (!entity) {
       return;
     }
 
-    await this.#server.emitEvent(
-      "entity.beforeDelete",
-      {
+    await this.#server.emitEvent({
+      eventName: "entity.beforeDelete",
+      payload: {
         namespace: model.namespace,
         modelSingularCode: model.singularCode,
         before: entity,
       },
-      plugin,
-    );
+      sender: plugin,
+      routeContext,
+    });
 
     await this.#dataAccessor.deleteById(id);
     if (model.base) {
@@ -951,23 +999,26 @@ export default class EntityManager<TEntity = any> {
       await baseDataAccessor.deleteById(id);
     }
 
-    await this.#server.emitEvent(
-      "entity.delete",
-      {
+    await this.#server.emitEvent({
+      eventName: "entity.delete",
+      payload: {
         namespace: model.namespace,
         modelSingularCode: model.singularCode,
-        baseModelSingularCode: model.base,
         before: entity,
       },
-      plugin,
-    );
+      sender: plugin,
+      routeContext,
+    });
   }
 
   async addRelations(options: AddEntityRelationsOptions, plugin?: RapidPlugin): Promise<void> {
     const server = this.#server;
     const model = this.getModel();
-    const { id, property, relations } = options;
-    const entity = await this.findById(id);
+    const { id, property, relations, routeContext } = options;
+    const entity = await this.findById({
+      id,
+      routeContext,
+    });
     if (!entity) {
       throw new Error(`${model.namespace}.${model.singularCode}  with id "${id}" was not found.`);
     }
@@ -995,24 +1046,28 @@ export default class EntityManager<TEntity = any> {
       }
     }
 
-    await server.emitEvent(
-      "entity.addRelations",
-      {
+    await server.emitEvent({
+      eventName: "entity.addRelations",
+      payload: {
         namespace: model.namespace,
         modelSingularCode: model.singularCode,
         entity,
         property,
         relations,
       },
-      plugin,
-    );
+      sender: plugin,
+      routeContext: options.routeContext,
+    });
   }
 
   async removeRelations(options: RemoveEntityRelationsOptions, plugin?: RapidPlugin): Promise<void> {
     const server = this.#server;
     const model = this.getModel();
-    const { id, property, relations } = options;
-    const entity = await this.findById(id);
+    const { id, property, relations, routeContext } = options;
+    const entity = await this.findById({
+      id,
+      routeContext,
+    });
     if (!entity) {
       throw new Error(`${model.namespace}.${model.singularCode}  with id "${id}" was not found.`);
     }
@@ -1036,16 +1091,17 @@ export default class EntityManager<TEntity = any> {
       }
     }
 
-    await server.emitEvent(
-      "entity.removeRelations",
-      {
+    await server.emitEvent({
+      eventName: "entity.removeRelations",
+      payload: {
         namespace: model.namespace,
         modelSingularCode: model.singularCode,
         entity,
         property,
         relations,
       },
-      plugin,
-    );
+      sender: plugin,
+      routeContext: options.routeContext,
+    });
   }
 }

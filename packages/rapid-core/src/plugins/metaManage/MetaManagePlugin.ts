@@ -161,6 +161,13 @@ type ColumnInformation = {
   numeric_scale: number;
 };
 
+type ConstraintInformation = {
+  table_schema: string;
+  table_name: string;
+  constraint_type: string;
+  constraint_name: string;
+};
+
 async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdApplicationConfig) {
   const logger = server.getLogger();
   logger.info("Synchronizing database schema...");
@@ -187,7 +194,7 @@ async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdAppl
     logger.debug(`Checking data columns for '${model.namespace}.${model.singularCode}'...`);
 
     for (const property of model.properties) {
-      let columnDDL;
+      let columnDDL = "";
       if (isRelationProperty(property)) {
         if (property.relation === "one") {
           const targetModel = applicationConfig.models.find((item) => item.singularCode === property.targetSingularCode);
@@ -222,6 +229,12 @@ async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdAppl
                 selfIdColumnName: property.selfIdColumnName!,
               });
             }
+
+            const contraintName = `${property.linkTableName}_pk`;
+            columnDDL += `ALTER TABLE ${queryBuilder.quoteTable(({
+              schema: property.linkSchema,
+              tableName: property.linkTableName,
+            }))} ADD CONSTRAINT ${queryBuilder.quoteObject(contraintName)} PRIMARY KEY (id);`;
           } else {
             const targetModel = applicationConfig.models.find((item) => item.singularCode === property.targetSingularCode);
             if (!targetModel) {
@@ -307,6 +320,24 @@ async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdAppl
       }
     }
   }
+
+  const sqlQueryConstraints = `SELECT table_schema, table_name, constraint_type, constraint_name FROM information_schema.table_constraints WHERE constraint_type = 'PRIMARY KEY';`;
+  const constraintsInDb: ConstraintInformation[] = await server.queryDatabaseObject(sqlQueryConstraints);
+  for (const model of applicationConfig.models) {
+    const expectedTableSchema = model.schema || server.databaseConfig.dbDefaultSchema;
+    const expectedTableName = model.tableName;
+    const expectedContraintName = `${expectedTableName}_pk`;
+    logger.debug(`Checking pk for '${expectedTableSchema}.${expectedTableName}'...`);
+    const constraintInDb = find(constraintsInDb, {
+      table_schema: expectedTableSchema,
+      table_name: expectedTableName,
+      constraint_type: "PRIMARY KEY",
+      constraint_name: expectedContraintName,
+    });
+    if (!constraintInDb) {
+      await server.queryDatabaseObject(`ALTER TABLE ${queryBuilder.quoteTable(model)} ADD CONSTRAINT ${queryBuilder.quoteObject(expectedContraintName)} PRIMARY KEY (id);`, []);
+    }
+  }
 }
 
 function generateCreateColumnDDL(
@@ -358,7 +389,7 @@ function generateLinkTableDDL(
   })} (`;
   columnDDL += `id serial not null,`;
   columnDDL += `${queryBuilder.quoteObject(options.selfIdColumnName)} integer not null,`;
-  columnDDL += `${queryBuilder.quoteObject(options.targetIdColumnName)} integer not null)`;
+  columnDDL += `${queryBuilder.quoteObject(options.targetIdColumnName)} integer not null);`;
 
   return columnDDL;
 }

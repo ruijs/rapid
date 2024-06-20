@@ -30,6 +30,7 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
     const newEntity = await entityManager.createEntity(
       {
         entity: mergedEntity,
+        routeContext: ctx.routerContext,
       },
       plugin,
     );

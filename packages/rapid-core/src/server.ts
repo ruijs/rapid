@@ -1,5 +1,5 @@
 import DataAccessor from "./dataAccess/dataAccessor";
-import { GetDataAccessorOptions, GetModelOptions, IDatabaseAccessor, IDatabaseConfig, IQueryBuilder, IRpdDataAccessor, RpdApplicationConfig, RpdDataModel, RpdServerEventTypes, RapidServerConfig, RpdDataModelProperty, CreateEntityOptions, UpdateEntityByIdOptions, EntityWatchHandlerContext, EntityWatcherType, RpdEntityCreateEventPayload } from "./types";
+import { GetDataAccessorOptions, GetModelOptions, IDatabaseAccessor, IDatabaseConfig, IQueryBuilder, IRpdDataAccessor, RpdApplicationConfig, RpdDataModel, RpdServerEventTypes, RapidServerConfig, RpdDataModelProperty, CreateEntityOptions, UpdateEntityByIdOptions, EntityWatchHandlerContext, EntityWatcherType, RpdEntityCreateEventPayload, EmitServerEventOptions } from "./types";
 
 import QueryBuilder from "./queryBuilder/queryBuilder";
 import PluginManager from "./core/pluginManager";
@@ -237,9 +237,10 @@ export class RapidServer implements IRpdServer {
     this.#entityWatchers.push(entityWatcher);
   }
 
-  async emitEvent<K extends keyof RpdServerEventTypes>(eventName: K, payload: RpdServerEventTypes[K][1], sender?: RapidPlugin) {
+  async emitEvent<TEventName extends keyof RpdServerEventTypes>(event: EmitServerEventOptions<TEventName>) {
+    const { eventName, payload, sender, routeContext: routerContext } = event;
     this.#logger.debug(`Emitting '${eventName}' event.`, { eventName, payload });
-    await this.#eventManager.emit<K>(eventName, sender, payload as any);
+    await this.#eventManager.emit<TEventName>(eventName, sender, payload as any, routerContext);
 
     // TODO: should move this logic into metaManager
     // if (
@@ -392,11 +393,12 @@ export class RapidServer implements IRpdServer {
     await this.#pluginManager.beforeUpdateEntity(model, options, currentEntity);
   }
 
-  async #handleEntityEvent(eventName: keyof RpdServerEventTypes, sender: RapidPlugin, payload: RpdEntityCreateEventPayload) {
+  async #handleEntityEvent(eventName: keyof RpdServerEventTypes, sender: RapidPlugin, payload: RpdEntityCreateEventPayload, routerContext?: RouteContext) {
     const { modelSingularCode, baseModelSingularCode } = payload;
     const entityWatchHandlerContext: EntityWatchHandlerContext<typeof eventName> = {
       server: this,
       payload,
+      routerContext,
     };
 
     let emitter: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;

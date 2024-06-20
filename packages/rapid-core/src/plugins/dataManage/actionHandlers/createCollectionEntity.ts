@@ -21,6 +21,7 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
   const output = await entityManager.createEntity(
     {
       entity: input,
+      routeContext: ctx.routerContext,
     },
     plugin,
   );
