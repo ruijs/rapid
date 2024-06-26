@@ -99,6 +99,10 @@ export interface RpdEntityBeforeUpdateEventPayload {
   baseModelSingularCode?: string;
   before: any;
   changes: any;
+  operation?: {
+    type: string;
+  };
+  stateProperties?: string[];
 }
 
 export interface RpdEntityUpdateEventPayload {
@@ -108,6 +112,10 @@ export interface RpdEntityUpdateEventPayload {
   before: any;
   after: any;
   changes: any;
+  operation?: {
+    type: string;
+  };
+  stateProperties?: string[];
 }
 
 export interface RpdEntityBeforeDeleteEventPayload {
@@ -481,7 +489,9 @@ export interface UpdateEntityByIdOptions {
   routeContext?: RouteContext;
   id: any;
   entityToSave: any;
-  operation?: any;
+  operation?: {
+    type: string;
+  };
   stateProperties?: string[];
 }
 

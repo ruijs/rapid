@@ -1,6 +1,6 @@
 {
   "name": "@ruiapp/rapid-express",
-  "version": "0.1.55",
+  "version": "0.1.57",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -22,9 +22,7 @@
     "typescript": "^4.8.4"
   },
   "peerDependencies": {
+    "@ruiapp/rapid-core": "workspace:^",
     "express": "^4.18.2"
-  },
-  "dependencies": {
-    "@ruiapp/rapid-core": "workspace:^"
   }
 }
