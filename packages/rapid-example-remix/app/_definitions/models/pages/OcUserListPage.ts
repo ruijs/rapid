@@ -1,5 +1,5 @@
 import { cloneDeep } from 'lodash';
-import type { RapidPage, RapidEntityFormConfig } from '@ruiapp/rapid-extension';
+import type { RapidPage, RapidEntityFormConfig, SonicEntityListRockConfig } from '@ruiapp/rapid-extension';
 
 const formConfig: Partial<RapidEntityFormConfig> = {
   items: [
@@ -265,7 +265,7 @@ const page: RapidPage = {
           ],
         },
       ],
-    },
+    } satisfies SonicEntityListRockConfig,
   ],
 };
 
