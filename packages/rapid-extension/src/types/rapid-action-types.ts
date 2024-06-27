@@ -44,6 +44,8 @@ export type RapidActionButton = RapidActionButtonBase & {
 export type RapidRecordAction<TBlock> = RapidRecordActionEdit<TBlock> | RapidRecordActionDelete | RapidRecordActionRequest | RapidRecordActionLink | RapidRecordActionPageLink;
 
 export type RapidRecordActionBase = {
+  $type: string;
+
   code: string;
 
   icon?: string;
