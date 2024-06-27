@@ -33,6 +33,11 @@ export type RapidTableColumnConfig = {
   align?: "left" | "center" | "right";
 
   /**
+   * 固定位置
+   */
+  fix?: "left" | "right";
+
+  /**
    * 列宽
    */
   width?: string;
