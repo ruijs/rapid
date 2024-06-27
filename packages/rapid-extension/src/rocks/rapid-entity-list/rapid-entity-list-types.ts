@@ -65,7 +65,7 @@ export interface RapidEntityListConfig {
   /**
    * 针对记录的操作
    */
-  actions?: RapidRecordAction<any>[];
+  actions?: RockConfig[];
 
   /**
    * 操作列的宽度
