@@ -35,7 +35,7 @@ export type RapidTableColumnConfig = {
   /**
    * 固定位置
    */
-  fix?: "left" | "right";
+  fixed?: "left" | "right";
 
   /**
    * 列宽
