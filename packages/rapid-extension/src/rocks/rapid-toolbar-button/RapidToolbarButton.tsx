@@ -16,6 +16,7 @@ export default {
       ghost: !!props.ghost,
       icon: props.icon ? { $type: "antdIcon", name: props.icon } : null,
       size: props.size,
+      disabled: props.disabled,
       children: {
         $type: "htmlElement",
         htmlTag: "span",
