@@ -158,6 +158,10 @@ export interface OcUser {
    */
   email?: string;
   /**
+   * 生日
+   */
+  birthday?: string;
+  /**
    * 部门
    */
   department?: Partial<OcDepartment>;

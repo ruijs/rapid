@@ -3,14 +3,14 @@ import RapidToolbarLinkMeta from "./RapidDatePickerMeta";
 import { renderRock } from "@ruiapp/react-renderer";
 import { RapidDatePickerRockConfig } from "./rapid-date-picker-types";
 import { isString } from "lodash";
-import dayjs from "dayjs";
+import moment from "moment";
 
 export default {
   $type: "rapidDatePicker",
 
   Renderer(context, props) {
     if (isString(props.value)) {
-      props.value = dayjs(props.value);
+      props.value = moment(props.value);
     }
 
     const rockConfig: RockConfig = {
