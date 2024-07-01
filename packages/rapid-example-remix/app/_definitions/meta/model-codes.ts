@@ -47,6 +47,7 @@ const entityFieldCodes = {
     'hidden',
     'state',
     'email',
+    'birthday',
     'department',
     'roles',
     'createdAt',

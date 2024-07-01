@@ -5,7 +5,7 @@ import RapidEntityFormMeta from "./RapidEntityFormMeta";
 import type { RapidEntityFormRockConfig } from "./rapid-entity-form-types";
 import { filter, isUndefined, map, uniq } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
-import type { RapidDataDictionary, RapidEntity, RapidField, RapidFieldType } from "../../types/rapid-entity-types";
+import type { RapidDataDictionary, RapidDataDictionaryEntry, RapidEntity, RapidField, RapidFieldType } from "../../types/rapid-entity-types";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import type { EntityStoreConfig } from "../../stores/entity-store";
 import type { RapidFormItemConfig, RapidFormItemType } from "../rapid-form-item/rapid-form-item-types";
@@ -58,16 +58,21 @@ export interface GenerateEntityFormItemOption {
 function generateDataFormItemForOptionProperty(option: GenerateEntityFormItemOption) {
   const { formItemConfig, mainEntity } = option;
 
+  let entries: RapidDataDictionaryEntry[] = [];
+
   const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
-  const dataDictionaryCode = rpdField.dataDictionary;
-  let dataDictionary = rapidAppDefinition.getDataDictionaryByCode(dataDictionaryCode);
+  const dataDictionaryCode = rpdField?.dataDictionary;
+  if (dataDictionaryCode) {
+    let dataDictionary = rapidAppDefinition.getDataDictionaryByCode(dataDictionaryCode);
+    entries = dataDictionary?.entries || [];
+  }
 
   let formControlProps: Partial<RapidSelectConfig> = {
     allowClear: !formItemConfig.required,
     placeholder: formItemConfig.placeholder,
     listDataSource: {
       data: {
-        list: dataDictionary?.entries || [],
+        list: entries,
       },
     },
     listTextFieldName: "name",
