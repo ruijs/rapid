@@ -43,6 +43,10 @@ import SonicToolbarNewEntityButton from "./sonic-toolbar-new-entity-button/Sonic
 import SonicToolbarRefreshButton from "./sonic-toolbar-refresh-button/SonicToolbarRefreshButton";
 import SonicToolbarSelectEntityButton from "./sonic-toolbar-select-entity-button/SonicToolbarSelectEntityButton";
 
+// 自定义组件
+import TableSingleSelector from "./table-single-selector";
+import EditableTable from "./editable-table";
+
 export default [
   RapidArrayRenderer,
   RapidBoolRenderer,
@@ -88,4 +92,7 @@ export default [
   SonicToolbarNewEntityButton,
   SonicToolbarRefreshButton,
   SonicToolbarSelectEntityButton,
+
+  TableSingleSelector,
+  EditableTable,
 ];
