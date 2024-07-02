@@ -1,0 +1,25 @@
+.pm-table-single-selector {
+  padding: 8px 8px 0;
+}
+
+.pm-table-single-selector--toolbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.pm-table-row-pointer {
+  cursor: pointer;
+}
+
+.pm-table-row-pointer:hover {
+  background-color: #fafafa;
+  color: #1890ff;
+}
+
+.pm-table-row-pointer--selected {
+  background-color: #fafafa;
+  color: #1890ff;
+}
