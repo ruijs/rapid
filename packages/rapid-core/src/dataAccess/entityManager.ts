@@ -26,7 +26,7 @@ import { filter, find, first, forEach, isArray, isObject, keys, map, reject, uni
 import { getEntityPropertiesIncludingBase, getEntityProperty, getEntityPropertyByCode } from "./metaHelper";
 import { ColumnQueryOptions, CountRowOptions, FindRowOptions, FindRowOrderByOptions, RowFilterOptions } from "./dataAccessTypes";
 import { newEntityOperationError } from "~/utilities/errorUtility";
-import { RouteContext } from "~/core/routeContext";
+import { getNowStringWithTimezone } from "~/utilities/timeUtility";
 
 function convertEntityOrderByToRowOrderBy(server: IRpdServer, model: RpdDataModel, baseModel?: RpdDataModel, orderByList?: FindEntityOrderByOptions[]) {
   if (!orderByList) {
@@ -514,6 +514,18 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
 
   const { entity, routeContext } = options;
 
+  const userId = options.routeContext.state?.userId;
+  if (userId) {
+    const createdByProperty = getEntityPropertyByCode(server, model, "createdBy");
+    if (createdByProperty) {
+      entity.createdBy = userId;
+    }
+  }
+  const createdAtProperty = getEntityPropertyByCode(server, model, "createdAt");
+  if (createdAtProperty) {
+    entity.createdAt = getNowStringWithTimezone();
+  }
+
   await server.beforeCreateEntity(model, options);
 
   await server.emitEvent({
@@ -693,7 +705,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
 
 async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccessor, options: UpdateEntityByIdOptions, plugin?: RapidPlugin) {
   const model = dataAccessor.getModel();
-  const { id, entityToSave, routeContext } = options;
+  const { id, routeContext } = options;
   if (!id) {
     throw new Error("Id is required when updating an entity.");
   }
@@ -706,12 +718,26 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     throw new Error(`${model.namespace}.${model.singularCode}  with id "${id}" was not found.`);
   }
 
+  let { entityToSave } = options;
   let changes = getEntityPartChanges(entity, entityToSave);
   if (!changes && !options.operation) {
     return entity;
   }
 
-  options.entityToSave = changes || {};
+  entityToSave = changes || {};
+
+  const userId = options.routeContext.state?.userId;
+  if (userId) {
+    const updatedByProperty = getEntityPropertyByCode(server, model, "updatedBy");
+    if (updatedByProperty) {
+      entityToSave.updatedBy = userId;
+    }
+  }
+  const updatedAtProperty = getEntityPropertyByCode(server, model, "updatedAt");
+  if (updatedAtProperty) {
+    entityToSave.updatedAt = getNowStringWithTimezone();
+  }
+
   await server.beforeUpdateEntity(model, options, entity);
 
   await server.emitEvent({
@@ -720,7 +746,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
       namespace: model.namespace,
       modelSingularCode: model.singularCode,
       before: entity,
-      changes: options.entityToSave,
+      changes: entityToSave,
       operation: options.operation,
       stateProperties: options.stateProperties,
     },
@@ -728,7 +754,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     routeContext: options.routeContext,
   });
 
-  changes = getEntityPartChanges(entity, options.entityToSave);
+  changes = getEntityPartChanges(entity, entityToSave);
 
   const oneRelationPropertiesToUpdate: RpdDataModelProperty[] = [];
   const manyRelationPropertiesToUpdate: RpdDataModelProperty[] = [];
