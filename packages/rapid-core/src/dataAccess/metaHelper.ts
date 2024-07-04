@@ -16,7 +16,7 @@ export function getEntityPropertiesIncludingBase(server: IRpdServer, model: RpdD
   });
   let baseProperties: RpdDataModelProperty[] = [];
   if (baseModel) {
-    baseModel.properties.map((property) => {
+    baseProperties = baseModel.properties.map((property) => {
       property = cloneDeep(property);
       property.isBaseProperty = true;
       return property;
