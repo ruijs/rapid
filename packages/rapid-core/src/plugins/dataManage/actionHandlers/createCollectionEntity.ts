@@ -12,11 +12,6 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
   const mergedInput = mergeInput(defaultInput, input, fixedInput);
   logger.debug(`Running ${code} handler...`, { defaultInput, fixedInput, mergedInput });
 
-  const userId = ctx.routerContext.state?.userId;
-  if (userId) {
-    input.createdBy = userId;
-  }
-
   const entityManager = server.getEntityManager(options.singularCode);
   const output = await entityManager.createEntity(
     {
