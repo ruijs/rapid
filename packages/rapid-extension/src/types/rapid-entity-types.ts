@@ -68,7 +68,7 @@ export type RapidDataDictionaryEntry = {
   description?: string;
 };
 
-export type RapidFieldType = "text" | "boolean" | "integer" | "long" | "float" | "double" | "decimal" | "date" | "time" | "datetime" | "datetimetz" | "json" | "option" | "relation" | "relation[]";
+export type RapidFieldType = "text" | "boolean" | "integer" | "long" | "float" | "double" | "decimal" | "date" | "time" | "datetime" | "json" | "option" | "relation" | "relation[]";
 
 export type RapidEntity<TEntitySingularCodes extends string = string, TDictionaryCodes extends string = string> = {
   /**

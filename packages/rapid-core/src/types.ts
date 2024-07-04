@@ -22,7 +22,7 @@ export interface IDatabaseConfig {
 export type DatabaseQuery = {
   command: string;
   params?: unknown[] | Record<string, unknown>;
-}
+};
 
 export interface IDatabaseAccessor {
   queryDatabaseObject: (sql: string, params?: unknown[] | Record<string, unknown>) => Promise<any[]>;
@@ -162,7 +162,7 @@ export type EmitServerEventOptions<TEventName extends keyof RpdServerEventTypes>
   payload: RpdServerEventTypes[TEventName][1];
   sender?: RapidPlugin;
   routeContext?: RouteContext;
-}
+};
 
 export interface QuoteTableOptions {
   schema?: string;
@@ -296,7 +296,7 @@ export interface RpdDataModelProperty {
   linkSchema?: string;
 }
 
-export type RpdDataPropertyTypes = "integer" | "long" | "float" | "double" | "decimal" | "text" | "boolean" | "date" | "datetime" | "json" | "relation" | "relation[]" | "option";
+export type RpdDataPropertyTypes = "integer" | "long" | "float" | "double" | "decimal" | "text" | "boolean" | "date" | "time" | "datetime" | "json" | "relation" | "relation[]" | "option";
 
 /**
  * 数据字典
@@ -513,7 +513,6 @@ export interface RemoveEntityRelationsOptions {
   property: string;
   relations: { id?: number; [k: string]: any }[];
 }
-
 
 export type EntityWatcherType = EntityWatcher<"entity.create"> | EntityWatcher<"entity.update"> | EntityWatcher<"entity.delete"> | EntityWatcher<"entity.addRelations"> | EntityWatcher<"entity.removeRelations"> | EntityWatcher<any>;
 

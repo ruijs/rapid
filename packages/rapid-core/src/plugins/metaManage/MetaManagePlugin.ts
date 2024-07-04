@@ -231,10 +231,10 @@ async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdAppl
             }
 
             const contraintName = `${property.linkTableName}_pk`;
-            columnDDL += `ALTER TABLE ${queryBuilder.quoteTable(({
+            columnDDL += `ALTER TABLE ${queryBuilder.quoteTable({
               schema: property.linkSchema,
               tableName: property.linkTableName,
-            }))} ADD CONSTRAINT ${queryBuilder.quoteObject(contraintName)} PRIMARY KEY (id);`;
+            })} ADD CONSTRAINT ${queryBuilder.quoteObject(contraintName)} PRIMARY KEY (id);`;
           } else {
             const targetModel = applicationConfig.models.find((item) => item.singularCode === property.targetSingularCode);
             if (!targetModel) {
@@ -403,6 +403,7 @@ const pgPropertyTypeColumnMap: Partial<Record<RpdDataPropertyTypes, string>> = {
   text: "text",
   boolean: "bool",
   date: "date",
+  time: "time",
   datetime: "timestamptz",
   json: "jsonb",
   option: "text",

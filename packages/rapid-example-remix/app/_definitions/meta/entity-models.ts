@@ -1,5 +1,6 @@
 import type { RapidEntity as TRapidEntity } from '@ruiapp/rapid-extension';
 import { autoConfigureRapidEntity } from '@ruiapp/rapid-extension';
+import base$BaseShift from '../models/entities/base/BaseShift';
 import oc$OcDepartment from '../models/entities/oc/OcDepartment';
 import oc$OcRole from '../models/entities/oc/OcRole';
 import oc$OcUser from '../models/entities/oc/OcUser';
@@ -9,6 +10,7 @@ import sys$SysAction from '../models/entities/sys/SysAction';
 import sys$SysActionGroup from '../models/entities/sys/SysActionGroup';
 
 const entityDefinitions = [
+  base$BaseShift,
   oc$OcDepartment,
   oc$OcRole,
   oc$OcUser,
@@ -18,6 +20,7 @@ const entityDefinitions = [
   sys$SysActionGroup,
 ];
 const configuredEntities:TRapidEntity[] = [
+  autoConfigureRapidEntity(base$BaseShift, entityDefinitions),
   autoConfigureRapidEntity(oc$OcDepartment, entityDefinitions),
   autoConfigureRapidEntity(oc$OcRole, entityDefinitions),
   autoConfigureRapidEntity(oc$OcUser, entityDefinitions),
