@@ -14,7 +14,7 @@ const formItemTypeToControlRockTypeMap: Record<string, string> = {
   checkboxList: "rapidCheckboxListFormInput",
   radioList: "rapidRadioListFormInput",
   date: "rapidDatePicker",
-  time: "antdDatePickerTimePicker",
+  time: "rapidTimePicker",
   datetime: "rapidDatePicker",
   dateRange: "antdDatePickerRangePicker",
   dateTimeRange: "antdDatePickerRangePicker",

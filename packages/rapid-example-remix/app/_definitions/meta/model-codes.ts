@@ -1,4 +1,5 @@
 export const entitySingularCodes = [
+  'base_shift',
   'oc_department',
   'oc_role',
   'oc_user',
@@ -10,6 +11,18 @@ export const entitySingularCodes = [
 export type TEntitySingularCodes = typeof entitySingularCodes[number];
 
 const entityFieldCodes = {
+  'BaseShift': [
+    'id',
+    'name',
+    'beginTime',
+    'endTime',
+    'createdAt',
+    'createdBy',
+    'updatedAt',
+    'updatedBy',
+    'deletedAt',
+    'deletedBy',
+  ],
   'OcDepartment': [
     'id',
     'parent',

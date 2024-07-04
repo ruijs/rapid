@@ -25,7 +25,6 @@ const fieldTypeToFormItemTypeMap: Record<RapidFieldType, RapidFormItemType | nul
   date: "date",
   time: "time",
   datetime: "datetime",
-  datetimetz: "datetime",
   option: "select",
   relation: "select",
   "relation[]": "select",
