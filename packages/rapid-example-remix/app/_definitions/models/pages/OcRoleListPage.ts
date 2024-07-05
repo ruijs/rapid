@@ -84,6 +84,9 @@ const page: RapidPage = {
           type: "auto",
           code: "createdAt",
           width: "150px",
+          $exps: {
+            _hidden: "true",
+          },
         },
       ],
       actions: [
