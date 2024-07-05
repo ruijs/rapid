@@ -2,21 +2,24 @@ import { MoveStyleUtils, Rock, handleComponentEvent } from "@ruiapp/move-style";
 import { toRenderRockSlot, convertToEventHandlers, convertToSlotProps } from "@ruiapp/react-renderer";
 import { Table, TableProps } from "antd";
 import { ColumnType } from "antd/lib/table/interface";
-import { map, reduce } from "lodash";
+import { filter, map, reduce } from "lodash";
 import RapidTableMeta from "./RapidTableMeta";
 import { RapidTableRockConfig } from "./rapid-table-types";
 
 export default {
   Renderer(context, props: RapidTableRockConfig) {
     const { framework, page, scope } = context;
-    const tableColumns = map(props.columns, (column) => {
-      return {
-        ...MoveStyleUtils.omitSystemRockConfigFields(column),
-        dataIndex: (column.fieldName || column.code).split("."),
-        key: column.key || column.fieldName || column.code,
-        render: toRenderRockSlot({ context, slot: column.cell, rockType: column.$type, slotPropName: "cell" }),
-      } as ColumnType<any>;
-    });
+    const tableColumns = map(
+      filter(props.columns, (column) => !column._hidden),
+      (column) => {
+        return {
+          ...MoveStyleUtils.omitSystemRockConfigFields(column),
+          dataIndex: (column.fieldName || column.code).split("."),
+          key: column.key || column.fieldName || column.code,
+          render: toRenderRockSlot({ context, slot: column.cell, rockType: column.$type, slotPropName: "cell" }),
+        } as ColumnType<any>;
+      },
+    );
 
     // calculate total width of columns
     const columnsTotalWidth = reduce(
