@@ -2,7 +2,13 @@ import type { RpdApplicationConfig, RpdRoute } from "~/types";
 
 import pluginActionHandlers from "./actionHandlers";
 import { ServerOperation, ServerOperationPluginInitOptions } from "./ServerOperationPluginTypes";
-import { IRpdServer, RapidPlugin, RpdConfigurationItemOptions, RpdServerPluginConfigurableTargetOptions, RpdServerPluginExtendingAbilities } from "~/core/server";
+import {
+  IRpdServer,
+  RapidPlugin,
+  RpdConfigurationItemOptions,
+  RpdServerPluginConfigurableTargetOptions,
+  RpdServerPluginExtendingAbilities,
+} from "~/core/server";
 
 class ServerOperationPlugin implements RapidPlugin {
   #operations: ServerOperation[];
@@ -68,6 +74,7 @@ class ServerOperationPlugin implements RapidPlugin {
             code: "runServerOperation",
             config: {
               operation: operation.handler,
+              permissionCheck: operation.permissionCheck,
             },
           },
         ],

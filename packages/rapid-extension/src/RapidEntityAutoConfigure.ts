@@ -66,7 +66,7 @@ export function autoConfigureRapidEntity(sourceEntity: RapidEntity, entityDefini
   const pluralCode = sourceEntity.pluralCode || pluralize(singularCode);
   const tableName = sourceEntity.tableName || pluralCode;
   let entity: RapidEntity = {
-    ...(pick(sourceEntity, ["code", "name", "description", "base", "derivedType", "derivedTypePropertyCode"]) as any),
+    ...(pick(sourceEntity, ["code", "name", "description", "base", "derivedType", "derivedTypePropertyCode", "permissionPolicies"]) as any),
 
     namespace: sourceEntity.namespace,
     singularCode,
@@ -94,60 +94,62 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: 
     },
   ];
 
-  let auditFields: RapidField[] = sourceEntity.base ? [] : [
-    {
-      name: "创建时间",
-      code: "createdAt",
-      columnName: "created_at",
-      type: "datetime",
-      required: false,
-      defaultValue: "now()",
-    },
-    {
-      name: "创建人",
-      code: "createdBy",
-      type: "relation",
-      relation: "one",
-      targetSingularCode: "oc_user",
-      targetIdColumnName: "creator_id",
-      required: false,
-    },
-    {
-      name: "更新时间",
-      code: "updatedAt",
-      columnName: "updated_at",
-      type: "datetime",
-      required: false,
-    },
-    {
-      name: "更新人",
-      code: "updatedBy",
-      type: "relation",
-      relation: "one",
-      targetSingularCode: "oc_user",
-      targetIdColumnName: "updater_id",
-      required: false,
-    },
-    {
-      name: "删除时间",
-      code: "deletedAt",
-      columnName: "deleted_at",
-      type: "datetime",
-      required: false,
-    },
-    {
-      name: "删除人",
-      code: "deletedBy",
-      type: "relation",
-      relation: "one",
-      targetSingularCode: "oc_user",
-      targetIdColumnName: "deleter_id",
-      required: false,
-    },
-  ];
+  let auditFields: RapidField[] = sourceEntity.base
+    ? []
+    : [
+        {
+          name: "创建时间",
+          code: "createdAt",
+          columnName: "created_at",
+          type: "datetime",
+          required: false,
+          defaultValue: "now()",
+        },
+        {
+          name: "创建人",
+          code: "createdBy",
+          type: "relation",
+          relation: "one",
+          targetSingularCode: "oc_user",
+          targetIdColumnName: "creator_id",
+          required: false,
+        },
+        {
+          name: "更新时间",
+          code: "updatedAt",
+          columnName: "updated_at",
+          type: "datetime",
+          required: false,
+        },
+        {
+          name: "更新人",
+          code: "updatedBy",
+          type: "relation",
+          relation: "one",
+          targetSingularCode: "oc_user",
+          targetIdColumnName: "updater_id",
+          required: false,
+        },
+        {
+          name: "删除时间",
+          code: "deletedAt",
+          columnName: "deleted_at",
+          type: "datetime",
+          required: false,
+        },
+        {
+          name: "删除人",
+          code: "deletedBy",
+          type: "relation",
+          relation: "one",
+          targetSingularCode: "oc_user",
+          targetIdColumnName: "deleter_id",
+          required: false,
+        },
+      ];
 
   if (sourceEntity.base) {
-    const baseEntity = entityDefinitions.find(entity => {
+    const baseEntity = entityDefinitions.find((entity) => {
       const singularCode = entity.singularCode || snakeCase(entity.code);
       return singularCode === sourceEntity.base;
     });
@@ -161,7 +163,7 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: 
     }
 
     for (const field of sourceEntity.fields) {
-      const baseField = baseEntity.fields.find(item => item.code === field.code);
+      const baseField = baseEntity.fields.find((item) => item.code === field.code);
       if (baseField) {
         throw new Error(`Property '${sourceEntity.code}.${field.code}' is already defined in '${baseEntity.code}' entity.`);
       }

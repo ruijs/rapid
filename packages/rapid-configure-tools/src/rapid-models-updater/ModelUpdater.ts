@@ -1,17 +1,17 @@
-import type { RapidEntity } from '@ruiapp/rapid-extension';
-import type { AxiosInstance } from 'axios';
-import { omit } from 'lodash';
-import { detectChangedFields } from './ObjectChangesDetector';
-import type { RapidModel, CreateRapidModelInput, IRapidModelUpdater, UpdateRapidModelInput } from './types';
+import type { RapidEntity } from "@ruiapp/rapid-extension";
+import type { AxiosInstance } from "axios";
+import { omit } from "lodash";
+import { detectChangedFields } from "./ObjectChangesDetector";
+import type { RapidModel, CreateRapidModelInput, IRapidModelUpdater, UpdateRapidModelInput } from "./types";
 
 export function newModelUpdater(rapidConfigApi: AxiosInstance) {
   const modelUpdater: IRapidModelUpdater<RapidModel, RapidEntity> = {
-    modelType: 'model',
+    modelType: "model",
     relationFields: [
       {
-        fieldName: 'fields',
-        modelType: 'property',
-        relation: 'many',
+        fieldName: "fields",
+        modelType: "property",
+        relation: "many",
       },
     ],
 
@@ -32,28 +32,31 @@ export function newModelUpdater(rapidConfigApi: AxiosInstance) {
 
     isEntityChanged(inputEntity, remoteEntity) {
       const changedFieldNames = detectChangedFields(inputEntity, remoteEntity, [
-        'name',
-        'namespace',
-        'description',
+        "name",
+        "description",
+        "namespace",
+        "singularCode",
+        "pluralCode",
+        "base",
+        "derivedType",
+        "derivedTypePropertyCode",
+        "permissionPolicies",
       ]);
       if (changedFieldNames.length) {
-        console.log(
-          `${this.modelType} ${this.inputTitlePrinter(inputEntity)} changed with these fields:`,
-          changedFieldNames,
-        );
+        console.log(`${this.modelType} ${this.inputTitlePrinter(inputEntity)} changed with these fields:`, changedFieldNames);
       }
       return changedFieldNames.length > 0;
     },
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async createEntity(input, mainEntity, inputIndex) {
-      const createEntityInput: CreateRapidModelInput = omit(input, ['code', 'fields']);
+      const createEntityInput: CreateRapidModelInput = omit(input, ["code", "fields"]);
       const res = await rapidConfigApi.post(`meta/models`, createEntityInput);
       const { data } = res;
       if (!data.id) {
-        console.log('Response:');
+        console.log("Response:");
         console.log(data);
-        console.log('Input:');
+        console.log("Input:");
         console.log(createEntityInput);
       }
       return data;
@@ -61,13 +64,13 @@ export function newModelUpdater(rapidConfigApi: AxiosInstance) {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async updateEntity(input, remoteEntity, mainEntity, inputIndex) {
-      const updateEntityInput: UpdateRapidModelInput = omit(input, ['code', 'fields']);
+      const updateEntityInput: UpdateRapidModelInput = omit(input, ["code", "fields"]);
       const res = await rapidConfigApi.patch(`meta/models/${remoteEntity.id}`, updateEntityInput);
       const { data } = res;
       if (!data.id) {
-        console.log('Response:');
+        console.log("Response:");
         console.log(data);
-        console.log('Input:');
+        console.log("Input:");
         console.log(updateEntityInput);
       }
       return data;
