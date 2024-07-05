@@ -79,7 +79,7 @@ export default {
   },
 
   Renderer(context, props, state) {
-    const { logger } = context;
+    const { logger, page } = context;
     const entityCode = props.entityCode;
     let mainEntity: RapidEntity | undefined;
 
@@ -103,6 +103,13 @@ export default {
         if (!rpdField) {
           logger.warn(props, `Unknown field code '${column.code}'`);
         }
+      }
+
+      if (column.$exps) {
+        page.interpreteComponentProperties(null, column as any, {
+          $self: column,
+          $parent: props,
+        });
       }
 
       if (!column.title && rpdField) {
@@ -219,7 +226,10 @@ export default {
       $type: "rapidTable",
       $exps: {
         dataSource: `$scope.stores.${dataSourceCode}.data?.list`,
-        pagination: props.pageSize > 0 ? `{pageSize: ${props.pageSize}, current: $scope.vars["${`stores-${dataSourceCode}-pageNum`}"], total: $scope.stores.${dataSourceCode}.data?.total}` : "false",
+        pagination:
+          props.pageSize > 0
+            ? `{pageSize: ${props.pageSize}, current: $scope.vars["${`stores-${dataSourceCode}-pageNum`}"], total: $scope.stores.${dataSourceCode}.data?.total}`
+            : "false",
         ...(selectionMode !== "none"
           ? {
               "rowSelection.selectedRowKeys": `$scope.vars['${props.$id}-selectedIds']`,
