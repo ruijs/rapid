@@ -114,7 +114,9 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
 
   // if `keepNonPropertyFields` is true and `properties` are not specified, then select relation columns automatically.
   if (options.keepNonPropertyFields && (!options.properties || !options.properties.length)) {
-    const oneRelationPropertiesWithNoLinkTable = getEntityPropertiesIncludingBase(server, model).filter((property) => property.relation === "one" && !property.linkTableName);
+    const oneRelationPropertiesWithNoLinkTable = getEntityPropertiesIncludingBase(server, model).filter(
+      (property) => property.relation === "one" && !property.linkTableName,
+    );
     oneRelationPropertiesWithNoLinkTable.forEach((property) => {
       if (property.targetIdColumnName) {
         columnsToSelect.push({
@@ -232,7 +234,12 @@ async function findById(server: IRpdServer, dataAccessor: IRpdDataAccessor, opti
   });
 }
 
-async function convertEntityFiltersToRowFilters(server: IRpdServer, model: RpdDataModel, baseModel: RpdDataModel, filters: EntityFilterOptions[] | undefined): Promise<RowFilterOptions[]> {
+async function convertEntityFiltersToRowFilters(
+  server: IRpdServer,
+  model: RpdDataModel,
+  baseModel: RpdDataModel,
+  filters: EntityFilterOptions[] | undefined,
+): Promise<RowFilterOptions[]> {
   if (!filters || !filters.length) {
     return [];
   }
@@ -251,7 +258,9 @@ async function convertEntityFiltersToRowFilters(server: IRpdServer, model: RpdDa
         throw new Error(`Invalid filters. Property '${filter.field}' was not found in model '${model.namespace}.${model.singularCode}'`);
       }
       if (!isRelationProperty(relationProperty)) {
-        throw new Error(`Invalid filters. Filter with 'existence' operator on property '${filter.field}' is not allowed. You can only use it on an relation property.`);
+        throw new Error(
+          `Invalid filters. Filter with 'existence' operator on property '${filter.field}' is not allowed. You can only use it on an relation property.`,
+        );
       }
 
       const relatedEntityFilters = filter.filters;
@@ -382,7 +391,10 @@ async function convertEntityFiltersToRowFilters(server: IRpdServer, model: RpdDa
         });
         const targetEntityIds = map(targetEntities, (entity: any) => entity["id"]);
 
-        const command = `SELECT * FROM ${server.queryBuilder.quoteTable({ schema: relationProperty.linkSchema, tableName: relationProperty.linkTableName! })} WHERE ${server.queryBuilder.quoteObject(relationProperty.targetIdColumnName!)} = ANY($1::int[])`;
+        const command = `SELECT * FROM ${server.queryBuilder.quoteTable({
+          schema: relationProperty.linkSchema,
+          tableName: relationProperty.linkTableName!,
+        })} WHERE ${server.queryBuilder.quoteObject(relationProperty.targetIdColumnName!)} = ANY($1::int[])`;
         const params = [targetEntityIds];
         const links = await server.queryDatabaseObject(command, params);
         const selfEntityIds = links.map((link) => link[relationProperty.selfIdColumnName!]);
@@ -440,7 +452,10 @@ async function convertEntityFiltersToRowFilters(server: IRpdServer, model: RpdDa
 }
 
 async function findManyRelationLinksViaLinkTable(server: IRpdServer, targetModel: RpdDataModel, relationProperty: RpdDataModelProperty, entityIds: any[]) {
-  const command = `SELECT * FROM ${server.queryBuilder.quoteTable({ schema: relationProperty.linkSchema, tableName: relationProperty.linkTableName! })} WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = ANY($1::int[])`;
+  const command = `SELECT * FROM ${server.queryBuilder.quoteTable({
+    schema: relationProperty.linkSchema,
+    tableName: relationProperty.linkTableName!,
+  })} WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = ANY($1::int[])`;
   const params = [entityIds];
   const links = await server.queryDatabaseObject(command, params);
   const targetEntityIds = links.map((link) => link[relationProperty.targetIdColumnName!]);
@@ -514,7 +529,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
 
   const { entity, routeContext } = options;
 
-  const userId = options.routeContext.state?.userId;
+  const userId = options.routeContext?.state?.userId;
   if (userId) {
     const createdByProperty = getEntityPropertyByCode(server, model, "createdBy");
     if (createdByProperty) {
@@ -583,7 +598,9 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
           routeContext,
         });
         if (!targetEntity) {
-          throw newEntityOperationError(`Create ${model.singularCode} entity failed. Property '${property.code}' was invalid. Related ${property.targetSingularCode} entity with id '${targetEntityId}' was not found.`);
+          throw newEntityOperationError(
+            `Create ${model.singularCode} entity failed. Property '${property.code}' was invalid. Related ${property.targetSingularCode} entity with id '${targetEntityId}' was not found.`,
+          );
         }
         newEntityOneRelationProps[property.code] = targetEntity;
         targetRow[property.targetIdColumnName!] = targetEntityId;
@@ -596,7 +613,9 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
         routeContext,
       });
       if (!targetEntity) {
-        throw newEntityOperationError(`Create ${model.singularCode} entity failed. Property '${property.code}' was invalid. Related ${property.targetSingularCode} entity with id '${targetEntityId}' was not found.`);
+        throw newEntityOperationError(
+          `Create ${model.singularCode} entity failed. Property '${property.code}' was invalid. Related ${property.targetSingularCode} entity with id '${targetEntityId}' was not found.`,
+        );
       }
       newEntityOneRelationProps[property.code] = targetEntity;
       targetRow[property.targetIdColumnName!] = targetEntityId;
@@ -643,7 +662,10 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
           });
 
           if (property.linkTableName) {
-            const command = `INSERT INTO ${server.queryBuilder.quoteTable({ schema: property.linkSchema, tableName: property.linkTableName })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
+            const command = `INSERT INTO ${server.queryBuilder.quoteTable({
+              schema: property.linkSchema,
+              tableName: property.linkTableName,
+            })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
             const params = [newEntity.id, newTargetEntity.id];
             await server.queryDatabaseObject(command, params);
           }
@@ -657,7 +679,10 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
           }
 
           if (property.linkTableName) {
-            const command = `INSERT INTO ${server.queryBuilder.quoteTable({ schema: property.linkSchema, tableName: property.linkTableName })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
+            const command = `INSERT INTO ${server.queryBuilder.quoteTable({
+              schema: property.linkSchema,
+              tableName: property.linkTableName,
+            })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
             const params = [newEntity.id, relatedEntityId];
             await server.queryDatabaseObject(command, params);
           } else {
@@ -675,7 +700,10 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
         }
 
         if (property.linkTableName) {
-          const command = `INSERT INTO ${server.queryBuilder.quoteTable({ schema: property.linkSchema, tableName: property.linkTableName })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
+          const command = `INSERT INTO ${server.queryBuilder.quoteTable({
+            schema: property.linkSchema,
+            tableName: property.linkTableName,
+          })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
           const params = [newEntity.id, relatedEntityId];
           await server.queryDatabaseObject(command, params);
         } else {
@@ -726,7 +754,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
 
   entityToSave = changes || {};
 
-  const userId = options.routeContext.state?.userId;
+  const userId = options.routeContext?.state?.userId;
   if (userId) {
     const updatedByProperty = getEntityPropertyByCode(server, model, "updatedBy");
     if (updatedByProperty) {
@@ -799,7 +827,9 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
           routeContext,
         });
         if (!targetEntity) {
-          throw newEntityOperationError(`Create ${model.singularCode} entity failed. Property '${property.code}' was invalid. Related ${property.targetSingularCode} entity with id '${targetEntityId}' was not found.`);
+          throw newEntityOperationError(
+            `Create ${model.singularCode} entity failed. Property '${property.code}' was invalid. Related ${property.targetSingularCode} entity with id '${targetEntityId}' was not found.`,
+          );
         }
         updatedEntityOneRelationProps[property.code] = targetEntity;
         targetRow[property.targetIdColumnName!] = targetEntityId;
@@ -812,7 +842,9 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
         routeContext,
       });
       if (!targetEntity) {
-        throw newEntityOperationError(`Create ${model.singularCode} entity failed. Property '${property.code}' was invalid. Related ${property.targetSingularCode} entity with id '${targetEntityId}' was not found.`);
+        throw newEntityOperationError(
+          `Create ${model.singularCode} entity failed. Property '${property.code}' was invalid. Related ${property.targetSingularCode} entity with id '${targetEntityId}' was not found.`,
+        );
       }
       updatedEntityOneRelationProps[property.code] = targetEntity;
       targetRow[property.targetIdColumnName!] = targetEntityId;
@@ -848,7 +880,13 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
 
     if (property.linkTableName) {
       // TODO: should support removing relation
-      await server.queryDatabaseObject(`DELETE FROM ${server.queryBuilder.quoteTable({ schema: property.linkSchema, tableName: property.linkTableName })} WHERE ${server.queryBuilder.quoteObject(property.selfIdColumnName!)} = $1`, [id]);
+      await server.queryDatabaseObject(
+        `DELETE FROM ${server.queryBuilder.quoteTable({
+          schema: property.linkSchema,
+          tableName: property.linkTableName,
+        })} WHERE ${server.queryBuilder.quoteObject(property.selfIdColumnName!)} = $1`,
+        [id],
+      );
     }
 
     for (const relatedEntityToBeSaved of relatedEntitiesToBeSaved) {
@@ -866,7 +904,10 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
           });
 
           if (property.linkTableName) {
-            const command = `INSERT INTO ${server.queryBuilder.quoteTable({ schema: property.linkSchema, tableName: property.linkTableName })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
+            const command = `INSERT INTO ${server.queryBuilder.quoteTable({
+              schema: property.linkSchema,
+              tableName: property.linkTableName,
+            })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
             const params = [id, newTargetEntity.id];
             await server.queryDatabaseObject(command, params);
           }
@@ -880,7 +921,10 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
           }
 
           if (property.linkTableName) {
-            const command = `INSERT INTO ${server.queryBuilder.quoteTable({ schema: property.linkSchema, tableName: property.linkTableName })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
+            const command = `INSERT INTO ${server.queryBuilder.quoteTable({
+              schema: property.linkSchema,
+              tableName: property.linkTableName,
+            })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
             const params = [id, relatedEntityId];
             await server.queryDatabaseObject(command, params);
           } else {
@@ -898,7 +942,10 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
         }
 
         if (property.linkTableName) {
-          const command = `INSERT INTO ${server.queryBuilder.quoteTable({ schema: property.linkSchema, tableName: property.linkTableName })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
+          const command = `INSERT INTO ${server.queryBuilder.quoteTable({
+            schema: property.linkSchema,
+            tableName: property.linkTableName,
+          })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
           const params = [id, relatedEntityId];
           await server.queryDatabaseObject(command, params);
         } else {
@@ -1065,7 +1112,10 @@ export default class EntityManager<TEntity = any> {
     const { queryBuilder } = server;
     if (relationProperty.linkTableName) {
       for (const relation of relations) {
-        const command = `INSERT INTO ${queryBuilder.quoteTable({ schema: relationProperty.linkSchema, tableName: relationProperty.linkTableName })} (${queryBuilder.quoteObject(relationProperty.selfIdColumnName!)}, ${queryBuilder.quoteObject(relationProperty.targetIdColumnName!)})
+        const command = `INSERT INTO ${queryBuilder.quoteTable({
+          schema: relationProperty.linkSchema,
+          tableName: relationProperty.linkTableName,
+        })} (${queryBuilder.quoteObject(relationProperty.selfIdColumnName!)}, ${queryBuilder.quoteObject(relationProperty.targetIdColumnName!)})
     SELECT $1, $2 WHERE NOT EXISTS (
       SELECT ${queryBuilder.quoteObject(relationProperty.selfIdColumnName!)}, ${queryBuilder.quoteObject(relationProperty.targetIdColumnName!)}
         FROM ${queryBuilder.quoteTable({ schema: relationProperty.linkSchema, tableName: relationProperty.linkTableName })}
