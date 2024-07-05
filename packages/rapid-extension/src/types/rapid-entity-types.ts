@@ -135,7 +135,24 @@ export type RapidEntity<TEntitySingularCodes extends string = string, TDictionar
    * 实体字段
    */
   fields: RapidField<TEntitySingularCodes, TDictionaryCodes>[];
+
+  /**
+   * 权限控制策略
+   */
+  permissionPolicies?: RapidEntityPermissionPolicies;
 };
+
+export interface RapidEntityPermissionPolicies {
+  find?: PermissionPolicy;
+  create?: PermissionPolicy;
+  update?: PermissionPolicy;
+  delete?: PermissionPolicy;
+}
+
+export interface PermissionPolicy {
+  any?: string[];
+  all?: string[];
+}
 
 /**
  * 实体字段

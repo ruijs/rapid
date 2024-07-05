@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import process from 'process';
-import path from 'path';
-import express from 'express';
-import compression from 'compression';
-import { format, transports } from 'winston';
-import expressWinston from 'express-winston';
-import { createRequestHandler } from '@remix-run/express';
-import { consoleFormat, createAppLogger } from './rapid-logger';
-import DatabaseAccessor from './database-accessor';
+import process from "process";
+import path from "path";
+import express from "express";
+import compression from "compression";
+import { format, transports } from "winston";
+import expressWinston from "express-winston";
+import { createRequestHandler } from "@remix-run/express";
+import { consoleFormat, createAppLogger } from "./rapid-logger";
+import DatabaseAccessor from "./database-accessor";
 import {
   RapidServer,
   MetaManagePlugin,
@@ -21,36 +21,37 @@ import {
   StateMachinePlugin,
   // EntityWatchPlugin,
   CronJobPlugin,
-} from '@ruiapp/rapid-core';
-import { createRapidRequestHandler } from '@ruiapp/rapid-express';
+  EntityAccessControlPlugin,
+} from "@ruiapp/rapid-core";
+import { createRapidRequestHandler } from "@ruiapp/rapid-express";
 
-import serverOperations from './app/_definitions/meta/server-operations';
-import entityWatchers from './app/_definitions/meta/entity-watchers';
-import cronJobs from './app/_definitions/meta/cron-jobs';
+import serverOperations from "./app/_definitions/meta/server-operations";
+import entityWatchers from "./app/_definitions/meta/entity-watchers";
+import cronJobs from "./app/_definitions/meta/cron-jobs";
 
-import 'dotenv/config';
+import "dotenv/config";
 
-const isDevelopmentEnv = process.env.NODE_ENV === 'development';
+const isDevelopmentEnv = process.env.NODE_ENV === "development";
 
-const BUILD_DIR = path.join(process.cwd(), 'build');
+const BUILD_DIR = path.join(process.cwd(), "build");
 
 export async function startServer() {
   const logger = createAppLogger({
-    level: isDevelopmentEnv ? 'debug' : 'info',
+    level: isDevelopmentEnv ? "debug" : "info",
   });
   const app = express();
 
   app.use(compression());
 
   // http://expressjs.com/en/advanced/best-practice-security.html#at-a-minimum-disable-x-powered-by-header
-  app.disable('x-powered-by');
+  app.disable("x-powered-by");
 
   // Remix fingerprints its assets so we can cache forever.
-  app.use('/build', express.static('public/build', { immutable: true, maxAge: '1y' }));
+  app.use("/build", express.static("public/build", { immutable: true, maxAge: "1y" }));
 
   // Everything else (like favicon.ico) is cached for an hour. You may want to be
   // more aggressive with this caching.
-  app.use(express.static('public', { maxAge: '1h' }));
+  app.use(express.static("public", { maxAge: "1h" }));
 
   if (isDevelopmentEnv) {
     app.use(
@@ -69,26 +70,25 @@ export async function startServer() {
 
   const envFromProcess = process.env;
   const env = {
-    get: (name: string, defaultValue = '') => {
+    get: (name: string, defaultValue = "") => {
       return envFromProcess[name] || defaultValue;
     },
   };
 
-  const defaultJWTKey =
-    'DyYR1em73ZR5s3rUV32ek3FCZBMxE0YMjuPCvpyQKn+MhCQwlwCiN+8ghgTYcoijtLhKX4G93DPxsJOIuf/ub5qRi0lx5AnHEYGQ8c2zpxJ873viF7marKQ7k5dtBU83f0Oki3aeugSeAfYbOzeK49+LopkgjDeQikgLMyC4JFo=';
+  const defaultJWTKey = "DyYR1em73ZR5s3rUV32ek3FCZBMxE0YMjuPCvpyQKn+MhCQwlwCiN+8ghgTYcoijtLhKX4G93DPxsJOIuf/ub5qRi0lx5AnHEYGQ8c2zpxJ873viF7marKQ7k5dtBU83f0Oki3aeugSeAfYbOzeK49+LopkgjDeQikgLMyC4JFo=";
   const rapidConfig = {
-    dbHost: env.get('DATABASE_HOST', '127.0.0.1'),
-    dbPort: parseInt(env.get('DATABASE_PORT'), 10) || 5432,
-    dbName: env.get('DATABASE_NAME', 'project_matrix'),
-    dbUser: env.get('DATABASE_USERNAME', 'postgres'),
-    dbPassword: env.get('DATABASE_PASSWORD', 'postgres'),
-    dbDefaultSchema: env.get('DATABASE_DEFAULT_SCHEMA') || 'public',
-    dbPoolMaxConnections: parseInt(env.get('DATABASE_POOL_MAX_CONNECTIONS'), 10) || 20,
-    sessionCookieName: env.get('SESSION_COOKIE_NAME', 'RAPID_SESSION'),
-    jwtKey: env.get('JWT_KEY', defaultJWTKey),
-    localFileStoragePath: env.get('LOCAL_FILE_STORAGE_PATH', '/data/rapid-data/local-storage'),
+    dbHost: env.get("DATABASE_HOST", "127.0.0.1"),
+    dbPort: parseInt(env.get("DATABASE_PORT"), 10) || 5432,
+    dbName: env.get("DATABASE_NAME", "project_matrix"),
+    dbUser: env.get("DATABASE_USERNAME", "postgres"),
+    dbPassword: env.get("DATABASE_PASSWORD", "postgres"),
+    dbDefaultSchema: env.get("DATABASE_DEFAULT_SCHEMA") || "public",
+    dbPoolMaxConnections: parseInt(env.get("DATABASE_POOL_MAX_CONNECTIONS"), 10) || 20,
+    sessionCookieName: env.get("SESSION_COOKIE_NAME", "RAPID_SESSION"),
+    jwtKey: env.get("JWT_KEY", defaultJWTKey),
+    localFileStoragePath: env.get("LOCAL_FILE_STORAGE_PATH", "/data/rapid-data/local-storage"),
   };
-  logger.info('Staring rapid with config: ', rapidConfig);
+  logger.info("Staring rapid with config: ", rapidConfig);
 
   const databaseAccessor = new DatabaseAccessor(logger, {
     host: rapidConfig.dbHost,
@@ -126,6 +126,7 @@ export async function startServer() {
       new ServerOperationPlugin({
         operations: serverOperations,
       }),
+      new EntityAccessControlPlugin(),
       new StateMachinePlugin(),
       // new EntityWatchPlugin({
       //   watchers: entityWatchers,
@@ -139,12 +140,12 @@ export async function startServer() {
   await rapidServer.start();
 
   const rapidRequestHandler = createRapidRequestHandler(rapidServer);
-  app.use('/api', (req, res, next) => {
+  app.use("/api", (req, res, next) => {
     rapidRequestHandler(req, res, next);
   });
 
   app.all(
-    '*',
+    "*",
     isDevelopmentEnv
       ? (req, res, next) => {
           purgeRequireCache();
@@ -162,7 +163,7 @@ export async function startServer() {
   const port = process.env.PORT || 8000;
 
   app.listen(port, () => {
-    logger.info('Express server listening on port %d', port);
+    logger.info("Express server listening on port %d", port);
   });
 }
 

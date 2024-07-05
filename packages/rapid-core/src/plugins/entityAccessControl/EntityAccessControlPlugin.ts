@@ -1,6 +1,12 @@
 import type { RpdApplicationConfig, RpdDataModelProperty } from "~/types";
 
-import { IRpdServer, RapidPlugin, RpdConfigurationItemOptions, RpdServerPluginConfigurableTargetOptions, RpdServerPluginExtendingAbilities } from "~/core/server";
+import {
+  IRpdServer,
+  RapidPlugin,
+  RpdConfigurationItemOptions,
+  RpdServerPluginConfigurableTargetOptions,
+  RpdServerPluginExtendingAbilities,
+} from "~/core/server";
 import { find, set } from "lodash";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { isAccessAllowed } from "~/utilities/accessControlUtility";
@@ -45,16 +51,6 @@ class EntityAccessControlPlugin implements RapidPlugin {
     const logger = server.getLogger();
     logger.info("Configuring entity access checking policies...");
 
-    const model = find(applicationConfig.models, (item) => item.singularCode === "model");
-    if (!model) {
-      return;
-    }
-
-    const { permissionPolicies } = model;
-    if (!permissionPolicies) {
-      return;
-    }
-
     const routes = applicationConfig.routes;
     for (const route of routes) {
       const { actions } = route;
@@ -63,9 +59,53 @@ class EntityAccessControlPlugin implements RapidPlugin {
       }
 
       for (const action of route.actions) {
-        if (action.code === "findCollectionEntityById") {
+        if (action.code === "findCollectionEntityById" || action.code === "findCollectionEntities" || action.code === "countCollectionEntities") {
+          const model = find(applicationConfig.models, (item) => item.singularCode === action.config.singularCode);
+          if (!model) {
+            continue;
+          }
+          const { permissionPolicies } = model;
+          if (!permissionPolicies) {
+            continue;
+          }
           if (permissionPolicies.find) {
-            set(action, "config.permissionPolicy", permissionPolicies.find);
+            set(action, "config.permissionCheck", permissionPolicies.find);
+          }
+        } else if (action.code === "createCollectionEntity" || action.code === "createCollectionEntitiesBatch") {
+          const model = find(applicationConfig.models, (item) => item.singularCode === action.config.singularCode);
+          if (!model) {
+            continue;
+          }
+          const { permissionPolicies } = model;
+          if (!permissionPolicies) {
+            continue;
+          }
+          if (permissionPolicies.create) {
+            set(action, "config.permissionCheck", permissionPolicies.create);
+          }
+        } else if (action.code === "updateCollectionEntityById" || action.code === "addEntityRelations" || action.code === "removeEntityRelations") {
+          const model = find(applicationConfig.models, (item) => item.singularCode === action.config.singularCode);
+          if (!model) {
+            continue;
+          }
+          const { permissionPolicies } = model;
+          if (!permissionPolicies) {
+            continue;
+          }
+          if (permissionPolicies.update) {
+            set(action, "config.permissionCheck", permissionPolicies.update);
+          }
+        } else if (action.code === "deleteCollectionEntityById") {
+          const model = find(applicationConfig.models, (item) => item.singularCode === action.config.singularCode);
+          if (!model) {
+            continue;
+          }
+          const { permissionPolicies } = model;
+          if (!permissionPolicies) {
+            continue;
+          }
+          if (permissionPolicies.delete) {
+            set(action, "config.permissionCheck", permissionPolicies.delete);
           }
         }
       }
@@ -93,9 +133,9 @@ class EntityAccessControlPlugin implements RapidPlugin {
     const { routerContext } = handlerContext;
     const { routeConfig } = routerContext;
     for (const actionConfig of routeConfig.actions) {
-      const permissionPolicy = actionConfig.config?.permissionPolicy;
-      if (permissionPolicy) {
-        if (!isAccessAllowed(permissionPolicy, routerContext.state.allowedActions || [])) {
+      const permissionCheck = actionConfig.config?.permissionCheck;
+      if (permissionCheck) {
+        if (!isAccessAllowed(permissionCheck, routerContext.state.allowedActions || [])) {
           throw new Error(`Your action of '${actionConfig.code}' is not permitted.`);
         }
       }
