@@ -201,6 +201,10 @@ export interface RpdDataModel {
    * Configure the property code to save derived type for base entity.
    */
   derivedTypePropertyCode?: string;
+  /**
+   * Configure the property code used to display the entity.
+   */
+  displayPropertyCode?: string;
   properties: RpdDataModelProperty[];
   extensions?: RpdDataModelExtension[];
   permissionPolicies?: RpdDataModelPermissionPolicies;

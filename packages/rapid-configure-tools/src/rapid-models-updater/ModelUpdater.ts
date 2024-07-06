@@ -40,6 +40,7 @@ export function newModelUpdater(rapidConfigApi: AxiosInstance) {
         "base",
         "derivedType",
         "derivedTypePropertyCode",
+        "displayPropertyCode",
         "permissionPolicies",
       ]);
       if (changedFieldNames.length) {

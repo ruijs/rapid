@@ -92,6 +92,13 @@ export default {
           required: false,
         },
         {
+          name: "displayPropertyCode",
+          code: "displayPropertyCode",
+          columnName: "display_property_code",
+          type: "text",
+          required: false,
+        },
+        {
           name: "properties",
           code: "properties",
           type: "relation[]",

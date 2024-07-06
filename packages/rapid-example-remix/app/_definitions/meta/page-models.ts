@@ -3,6 +3,7 @@ import BaseShiftListPage from '../models/pages/BaseShiftListPage';
 import OcDepartmentListPage from '../models/pages/OcDepartmentListPage';
 import OcRoleDetailsPage from '../models/pages/OcRoleDetailsPage';
 import OcRoleListPage from '../models/pages/OcRoleListPage';
+import OcUserDetailsPage from '../models/pages/OcUserDetailsPage';
 import OcUserListPage from '../models/pages/OcUserListPage';
 import PmBugIssueListPage from '../models/pages/PmBugIssueListPage';
 import PmProjectListPage from '../models/pages/PmProjectListPage';
@@ -13,6 +14,7 @@ export default [
   OcDepartmentListPage,
   OcRoleDetailsPage,
   OcRoleListPage,
+  OcUserDetailsPage,
   OcUserListPage,
   PmBugIssueListPage,
   PmProjectListPage,
