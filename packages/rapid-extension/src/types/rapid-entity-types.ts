@@ -68,7 +68,21 @@ export type RapidDataDictionaryEntry = {
   description?: string;
 };
 
-export type RapidFieldType = "text" | "boolean" | "integer" | "long" | "float" | "double" | "decimal" | "date" | "time" | "datetime" | "json" | "option" | "relation" | "relation[]";
+export type RapidFieldType =
+  | "text"
+  | "boolean"
+  | "integer"
+  | "long"
+  | "float"
+  | "double"
+  | "decimal"
+  | "date"
+  | "time"
+  | "datetime"
+  | "json"
+  | "option"
+  | "relation"
+  | "relation[]";
 
 export type RapidEntity<TEntitySingularCodes extends string = string, TDictionaryCodes extends string = string> = {
   /**
@@ -271,15 +285,27 @@ export interface SearchFormFilterConfiguration {
   filterFields?: string[];
 }
 
-export type EntityFilterOptions = FindEntityRelationalFilterOptions | FindEntityLogicalFilterOptions | FindEntityUnaryFilterOptions | FindEntityExistenceFilterOptions;
+export type EntityFilterOptions =
+  | FindEntityRelationalFilterOptions
+  | FindEntityLogicalFilterOptions
+  | FindEntityUnaryFilterOptions
+  | FindEntityExistenceFilterOptions;
 
 export interface FindEntityOptions {
   filters?: EntityFilterOptions[] | null;
   orderBy?: FindEntityOrderByOptions[] | null;
   pagination?: FindEntityPaginationOptions | null;
   properties?: string[] | Record<string, any> | null;
+  relations?: Record<string, FindEntitySelectRelationOptions>;
   keepNonPropertyFields?: boolean | null;
 }
+
+export type FindEntitySelectRelationOptions =
+  | true
+  | {
+      properties?: string[];
+      relations?: Record<string, FindEntitySelectRelationOptions>;
+    };
 
 export interface FindEntityRelationalFilterOptions {
   field: string;
@@ -322,7 +348,23 @@ export type EntityFilterOperators = EntityFilterLogicalOperators | EntityFilterF
 
 export type EntityFilterFieldOperators = EntityFilterRelationalOperators | EntityFilterUnaryOperators | EntityFilterExistenceOperators;
 
-export type EntityFilterRelationalOperators = "eq" | "ne" | "lt" | "lte" | "gt" | "gte" | "in" | "notIn" | "contains" | "notContains" | "containsCS" | "notContainsCS" | "startsWith" | "notStartsWith" | "endsWith" | "notEndsWith";
+export type EntityFilterRelationalOperators =
+  | "eq"
+  | "ne"
+  | "lt"
+  | "lte"
+  | "gt"
+  | "gte"
+  | "in"
+  | "notIn"
+  | "contains"
+  | "notContains"
+  | "containsCS"
+  | "notContainsCS"
+  | "startsWith"
+  | "notStartsWith"
+  | "endsWith"
+  | "notEndsWith";
 
 export type EntityFilterLogicalOperators = "or" | "and";
 

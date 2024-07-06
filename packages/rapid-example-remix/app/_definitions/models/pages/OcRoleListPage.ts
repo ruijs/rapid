@@ -50,6 +50,13 @@ const page: RapidPage = {
           filterFields: ["name", "description"],
         },
       ],
+      relations: {
+        createdBy: {
+          relations: {
+            roles: true,
+          },
+        },
+      },
       orderBy: [
         {
           field: "orderNum",
@@ -79,6 +86,14 @@ const page: RapidPage = {
           type: "auto",
           code: "state",
           width: "100px",
+        },
+        {
+          type: "auto",
+          code: "createdBy",
+          width: "150px",
+          rendererProps: {
+            format: "{{name}}",
+          },
         },
         {
           type: "auto",

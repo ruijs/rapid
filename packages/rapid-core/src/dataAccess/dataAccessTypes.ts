@@ -1,4 +1,18 @@
-export type RowFilterRelationalOperators = "eq" | "ne" | "lt" | "lte" | "gt" | "gte" | "contains" | "notContains" | "containsCS" | "notContainsCS" | "startsWith" | "notStartsWith" | "endsWith" | "notEndsWith";
+export type RowFilterRelationalOperators =
+  | "eq"
+  | "ne"
+  | "lt"
+  | "lte"
+  | "gt"
+  | "gte"
+  | "contains"
+  | "notContains"
+  | "containsCS"
+  | "notContainsCS"
+  | "startsWith"
+  | "notStartsWith"
+  | "endsWith"
+  | "notEndsWith";
 
 export type RowFilterSetOperators = "in" | "notIn";
 
@@ -8,38 +22,47 @@ export type RowFilterUnaryOperators = "null" | "notNull";
 
 export type RowFilterExistenceOperators = "exists" | "notExists";
 
-export type RowFilterOperators = RowFilterRelationalOperators | RowFilterSetOperators | RowFilterLogicalOperators | RowFilterUnaryOperators | RowFilterExistenceOperators;
+export type RowFilterOperators =
+  | RowFilterRelationalOperators
+  | RowFilterSetOperators
+  | RowFilterLogicalOperators
+  | RowFilterUnaryOperators
+  | RowFilterExistenceOperators;
 
-export type RowFilterOptions = FindRowRelationalFilterOptions | FindRowSetFilterOptions | FindRowLogicalFilterOptions | FindRowUnaryFilterOptions | FindRowExistenceFilterOptions;
+export type RowFilterOptions =
+  | FindRowRelationalFilterOptions
+  | FindRowSetFilterOptions
+  | FindRowLogicalFilterOptions
+  | FindRowUnaryFilterOptions
+  | FindRowExistenceFilterOptions;
 
 export type RowNonRelationPropertyFilterOptions = FindRowRelationalFilterOptions | FindRowSetFilterOptions | FindRowUnaryFilterOptions;
 
-export type ColumnQueryOptions = string | ColumnNameWithTableName;
+export type ColumnSelectOptions = string | ColumnNameWithTableName;
 
 export type ColumnNameWithTableName = {
   name: string;
   tableName?: string;
-}
+};
 
 export interface FindRowOptions {
   filters?: RowFilterOptions[];
   orderBy?: FindRowOrderByOptions[];
   pagination?: FindRowPaginationOptions;
   // TODO: may be `columns` is a better name.
-  fields?: ColumnQueryOptions[];
+  fields?: ColumnSelectOptions[];
   keepNonPropertyFields?: boolean;
 }
 
-
 export interface FindRowRelationalFilterOptions {
   // TODO: may be `column` is a better name.
-  field: ColumnQueryOptions;
+  field: ColumnSelectOptions;
   operator: RowFilterRelationalOperators;
   value: any;
 }
 
 export interface FindRowSetFilterOptions {
-  field: ColumnQueryOptions;
+  field: ColumnSelectOptions;
   operator: RowFilterSetOperators;
   value: any[];
   itemType?: string;
@@ -51,12 +74,12 @@ export interface FindRowLogicalFilterOptions {
 }
 
 export interface FindRowUnaryFilterOptions {
-  field: ColumnQueryOptions;
+  field: ColumnSelectOptions;
   operator: RowFilterUnaryOperators;
 }
 
 export interface FindRowExistenceFilterOptions {
-  field: ColumnQueryOptions;
+  field: ColumnSelectOptions;
   operator: RowFilterExistenceOperators;
   filters: RowFilterOptions[];
 }
@@ -68,7 +91,7 @@ export interface FindRowPaginationOptions {
 }
 
 export interface FindRowOrderByOptions {
-  field: ColumnQueryOptions;
+  field: ColumnSelectOptions;
   desc?: boolean;
 }
 

@@ -1,6 +1,6 @@
 import { RouteContext } from "./core/routeContext";
 import { IRpdServer, RapidPlugin } from "./core/server";
-import { CountRowOptions, FindRowOptions } from "./dataAccess/dataAccessTypes";
+import { ColumnSelectOptions, CountRowOptions, FindRowOptions } from "./dataAccess/dataAccessTypes";
 
 export type RapidServerConfig = {
   baseUrl?: string;
@@ -296,7 +296,21 @@ export interface RpdDataModelProperty {
   linkSchema?: string;
 }
 
-export type RpdDataPropertyTypes = "integer" | "long" | "float" | "double" | "decimal" | "text" | "boolean" | "date" | "time" | "datetime" | "json" | "relation" | "relation[]" | "option";
+export type RpdDataPropertyTypes =
+  | "integer"
+  | "long"
+  | "float"
+  | "double"
+  | "decimal"
+  | "text"
+  | "boolean"
+  | "date"
+  | "time"
+  | "datetime"
+  | "json"
+  | "relation"
+  | "relation[]"
+  | "option";
 
 /**
  * 数据字典
@@ -388,7 +402,21 @@ export interface IRpdDataAccessor<T = any> {
   deleteById(id: any): Promise<void>;
 }
 
-export type EntityFilterRelationalOperators = "eq" | "ne" | "lt" | "lte" | "gt" | "gte" | "contains" | "notContains" | "containsCS" | "notContainsCS" | "startsWith" | "notStartsWith" | "endsWith" | "notEndsWith";
+export type EntityFilterRelationalOperators =
+  | "eq"
+  | "ne"
+  | "lt"
+  | "lte"
+  | "gt"
+  | "gte"
+  | "contains"
+  | "notContains"
+  | "containsCS"
+  | "notContainsCS"
+  | "startsWith"
+  | "notStartsWith"
+  | "endsWith"
+  | "notEndsWith";
 
 export type EntityFilterSetOperators = "in" | "notIn";
 
@@ -398,9 +426,19 @@ export type EntityFilterUnaryOperators = "null" | "notNull";
 
 export type EntityFilterExistenceOperators = "exists" | "notExists";
 
-export type EntityFilterOperators = EntityFilterRelationalOperators | EntityFilterSetOperators | EntityFilterLogicalOperators | EntityFilterUnaryOperators | EntityFilterExistenceOperators;
+export type EntityFilterOperators =
+  | EntityFilterRelationalOperators
+  | EntityFilterSetOperators
+  | EntityFilterLogicalOperators
+  | EntityFilterUnaryOperators
+  | EntityFilterExistenceOperators;
 
-export type EntityFilterOptions = FindEntityRelationalFilterOptions | FindEntitySetFilterOptions | FindEntityLogicalFilterOptions | FindEntityUnaryFilterOptions | FindEntityExistenceFilterOptions;
+export type EntityFilterOptions =
+  | FindEntityRelationalFilterOptions
+  | FindEntitySetFilterOptions
+  | FindEntityLogicalFilterOptions
+  | FindEntityUnaryFilterOptions
+  | FindEntityExistenceFilterOptions;
 
 export type EntityNonRelationPropertyFilterOptions = FindEntityRelationalFilterOptions | FindEntitySetFilterOptions | FindEntityUnaryFilterOptions;
 
@@ -410,6 +448,8 @@ export interface FindEntityOptions {
   orderBy?: FindEntityOrderByOptions[];
   pagination?: FindEntityPaginationOptions;
   properties?: string[];
+  relations?: Record<string, FindEntitySelectRelationOptions>;
+  extraColumnsToSelect?: ColumnSelectOptions[];
   keepNonPropertyFields?: boolean;
 }
 
@@ -417,6 +457,7 @@ export interface FindEntityByIdOptions {
   routeContext?: RouteContext;
   id: any;
   properties?: string[];
+  relations?: Record<string, FindEntitySelectRelationOptions>;
   keepNonPropertyFields?: boolean;
 }
 
@@ -454,6 +495,13 @@ export interface FindEntityPaginationOptions {
   limit: number;
   withoutTotal?: boolean;
 }
+
+export type FindEntitySelectRelationOptions =
+  | true
+  | {
+      properties?: string[];
+      relations?: Record<string, FindEntitySelectRelationOptions>;
+    };
 
 export interface FindEntityOrderByOptions {
   field: string;
@@ -514,7 +562,13 @@ export interface RemoveEntityRelationsOptions {
   relations: { id?: number; [k: string]: any }[];
 }
 
-export type EntityWatcherType = EntityWatcher<"entity.create"> | EntityWatcher<"entity.update"> | EntityWatcher<"entity.delete"> | EntityWatcher<"entity.addRelations"> | EntityWatcher<"entity.removeRelations"> | EntityWatcher<any>;
+export type EntityWatcherType =
+  | EntityWatcher<"entity.create">
+  | EntityWatcher<"entity.update">
+  | EntityWatcher<"entity.delete">
+  | EntityWatcher<"entity.addRelations">
+  | EntityWatcher<"entity.removeRelations">
+  | EntityWatcher<any>;
 
 export interface EntityWatcher<TEventName extends keyof RpdServerEventTypes = any> {
   eventName: TEventName;

@@ -10,6 +10,7 @@ import {
   FindEntityByIdOptions,
   FindEntityOptions,
   FindEntityOrderByOptions,
+  FindEntitySelectRelationOptions,
   IRpdDataAccessor,
   RemoveEntityRelationsOptions,
   RpdDataModel,
@@ -24,9 +25,25 @@ import { IRpdServer, RapidPlugin } from "~/core/server";
 import { getEntityPartChanges } from "~/helpers/entityHelpers";
 import { filter, find, first, forEach, isArray, isObject, keys, map, reject, uniq } from "lodash";
 import { getEntityPropertiesIncludingBase, getEntityProperty, getEntityPropertyByCode } from "./metaHelper";
-import { ColumnQueryOptions, CountRowOptions, FindRowOptions, FindRowOrderByOptions, RowFilterOptions } from "./dataAccessTypes";
+import { ColumnSelectOptions, CountRowOptions, FindRowOptions, FindRowOrderByOptions, RowFilterOptions } from "./dataAccessTypes";
 import { newEntityOperationError } from "~/utilities/errorUtility";
 import { getNowStringWithTimezone } from "~/utilities/timeUtility";
+
+export type FindOneRelationEntitiesOptions = {
+  server: IRpdServer;
+  mainModel: RpdDataModel;
+  relationProperty: RpdDataModelProperty;
+  relationEntityIds: any[];
+  selectRelationOptions?: FindEntitySelectRelationOptions;
+};
+
+export type FindManyRelationEntitiesOptions = {
+  server: IRpdServer;
+  mainModel: RpdDataModel;
+  relationProperty: RpdDataModelProperty;
+  mainEntityIds: any[];
+  selectRelationOptions?: FindEntitySelectRelationOptions;
+};
 
 function convertEntityOrderByToRowOrderBy(server: IRpdServer, model: RpdDataModel, baseModel?: RpdDataModel, orderByList?: FindEntityOrderByOptions[]) {
   if (!orderByList) {
@@ -66,17 +83,23 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     });
   }
 
-  let propertiesToSlect: RpdDataModelProperty[];
+  let propertiesToSelect: RpdDataModelProperty[];
+  let relationOptions = options.relations || {};
+  let relationPropertyCodes = Object.keys(relationOptions) || [];
   if (!options.properties || !options.properties.length) {
-    propertiesToSlect = getEntityPropertiesIncludingBase(server, model).filter((property) => !isRelationProperty(property));
+    propertiesToSelect = getEntityPropertiesIncludingBase(server, model).filter(
+      (property) => !isRelationProperty(property) || relationPropertyCodes.includes(property.code),
+    );
   } else {
-    propertiesToSlect = getEntityPropertiesIncludingBase(server, model).filter((property) => options.properties.includes(property.code));
+    propertiesToSelect = getEntityPropertiesIncludingBase(server, model).filter(
+      (property) => options.properties.includes(property.code) || relationPropertyCodes.includes(property.code),
+    );
   }
 
-  const columnsToSelect: ColumnQueryOptions[] = [];
+  const columnsToSelect: ColumnSelectOptions[] = [];
 
   const relationPropertiesToSelect: RpdDataModelProperty[] = [];
-  forEach(propertiesToSlect, (property) => {
+  forEach(propertiesToSelect, (property) => {
     if (isRelationProperty(property)) {
       relationPropertiesToSelect.push(property);
 
@@ -127,6 +150,30 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     });
   }
 
+  if (options.extraColumnsToSelect) {
+    forEach(options.extraColumnsToSelect, (extraColumnToSelect: ColumnSelectOptions) => {
+      const columnSelectOptionExists = find(columnsToSelect, (item: ColumnSelectOptions) => {
+        if (typeof item === "string") {
+          if (typeof extraColumnToSelect === "string") {
+            return item === extraColumnToSelect;
+          } else {
+            return item == extraColumnToSelect.name;
+          }
+        } else {
+          if (typeof extraColumnToSelect === "string") {
+            return item.name === extraColumnToSelect;
+          } else {
+            return item.name == extraColumnToSelect.name;
+          }
+        }
+      });
+
+      if (!columnSelectOptionExists) {
+        columnsToSelect.push(extraColumnToSelect);
+      }
+    });
+  }
+
   const rowFilters = await convertEntityFiltersToRowFilters(server, model, baseModel, options.filters);
   const findRowOptions: FindRowOptions = {
     filters: rowFilters,
@@ -145,24 +192,36 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
       const isManyRelation = relationProperty.relation === "many";
 
       if (relationProperty.linkTableName) {
-        const targetModel = server.getModel({ singularCode: relationProperty.targetSingularCode! });
-        if (!targetModel) {
+        const relationModel = server.getModel({ singularCode: relationProperty.targetSingularCode! });
+        if (!relationModel) {
           continue;
         }
 
         if (isManyRelation) {
-          const relationLinks = await findManyRelationLinksViaLinkTable(server, targetModel, relationProperty, entityIds);
+          const relationLinks = await findManyRelationLinksViaLinkTable({
+            server,
+            mainModel: relationModel,
+            relationProperty,
+            mainEntityIds: entityIds,
+            selectRelationOptions: relationOptions[relationProperty.code],
+          });
 
           forEach(rows, (row: any) => {
             row[relationProperty.code] = filter(relationLinks, (link: any) => {
               return link[relationProperty.selfIdColumnName!] == row["id"];
-            }).map((link) => mapDbRowToEntity(server, targetModel, link.targetEntity, options.keepNonPropertyFields));
+            }).map((link) => mapDbRowToEntity(server, relationModel, link.targetEntity, options.keepNonPropertyFields));
           });
         }
       } else {
         let relatedEntities: any[];
         if (isManyRelation) {
-          relatedEntities = await findManyRelatedEntitiesViaIdPropertyCode(server, model, relationProperty, entityIds);
+          relatedEntities = await findManyRelatedEntitiesViaIdPropertyCode({
+            server,
+            mainModel: model,
+            relationProperty,
+            mainEntityIds: entityIds,
+            selectRelationOptions: relationOptions[relationProperty.code],
+          });
         } else {
           const targetEntityIds = uniq(
             reject(
@@ -170,7 +229,13 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
               isNullOrUndefined,
             ),
           );
-          relatedEntities = await findOneRelatedEntitiesViaIdPropertyCode(server, model, relationProperty, targetEntityIds);
+          relatedEntities = await findOneRelatedEntitiesViaIdPropertyCode({
+            server,
+            mainModel: model,
+            relationProperty,
+            relationEntityIds: targetEntityIds,
+            selectRelationOptions: relationOptions[relationProperty.code],
+          });
         }
 
         const targetModel = server.getModel({
@@ -451,30 +516,44 @@ async function convertEntityFiltersToRowFilters(
   return replacedFilters;
 }
 
-async function findManyRelationLinksViaLinkTable(server: IRpdServer, targetModel: RpdDataModel, relationProperty: RpdDataModelProperty, entityIds: any[]) {
+async function findManyRelationLinksViaLinkTable(options: FindManyRelationEntitiesOptions) {
+  const { server, relationProperty, mainModel: relationModel, mainEntityIds, selectRelationOptions } = options;
   const command = `SELECT * FROM ${server.queryBuilder.quoteTable({
     schema: relationProperty.linkSchema,
     tableName: relationProperty.linkTableName!,
   })} WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = ANY($1::int[])`;
-  const params = [entityIds];
+  const params = [mainEntityIds];
   const links = await server.queryDatabaseObject(command, params);
   const targetEntityIds = links.map((link) => link[relationProperty.targetIdColumnName!]);
-  const findEntityOptions: FindRowOptions = {
+
+  const dataAccessor = server.getDataAccessor({
+    namespace: relationModel.namespace,
+    singularCode: relationModel.singularCode,
+  });
+
+  const findEntityOptions: FindEntityOptions = {
     filters: [
       {
-        field: {
-          name: "id",
-        },
+        field: "id",
         operator: "in",
         value: targetEntityIds,
       },
     ],
+    keepNonPropertyFields: true,
   };
-  const dataAccessor = server.getDataAccessor({
-    namespace: targetModel.namespace,
-    singularCode: targetModel.singularCode,
-  });
-  const targetEntities = await dataAccessor.find(findEntityOptions);
+
+  if (selectRelationOptions) {
+    if (typeof selectRelationOptions !== "boolean") {
+      if (selectRelationOptions.properties) {
+        findEntityOptions.properties = ["id", ...selectRelationOptions.properties];
+      }
+      if (selectRelationOptions.relations) {
+        findEntityOptions.relations = selectRelationOptions.relations;
+      }
+    }
+  }
+
+  const targetEntities = await findEntities(server, dataAccessor, findEntityOptions);
 
   forEach(links, (link: any) => {
     link.targetEntity = find(targetEntities, (e: any) => e["id"] == link[relationProperty.targetIdColumnName!]);
@@ -483,42 +562,68 @@ async function findManyRelationLinksViaLinkTable(server: IRpdServer, targetModel
   return links;
 }
 
-function findManyRelatedEntitiesViaIdPropertyCode(server: IRpdServer, model: RpdDataModel, relationProperty: RpdDataModelProperty, entityIds: any[]) {
-  const findEntityOptions: FindRowOptions = {
-    filters: [
-      {
-        field: {
-          name: relationProperty.selfIdColumnName,
-        },
-        operator: "in",
-        value: entityIds,
-      },
-    ],
-  };
+async function findManyRelatedEntitiesViaIdPropertyCode(options: FindManyRelationEntitiesOptions) {
+  const { server, relationProperty, mainEntityIds, selectRelationOptions } = options;
   const dataAccessor = server.getDataAccessor({
     singularCode: relationProperty.targetSingularCode as string,
   });
 
-  return dataAccessor.find(findEntityOptions);
+  const findEntityOptions: FindEntityOptions = {
+    filters: [
+      {
+        field: relationProperty.selfIdColumnName,
+        operator: "in",
+        value: mainEntityIds,
+      },
+    ],
+    extraColumnsToSelect: [relationProperty.selfIdColumnName],
+    keepNonPropertyFields: true,
+  };
+
+  if (selectRelationOptions) {
+    if (typeof selectRelationOptions !== "boolean") {
+      if (selectRelationOptions.properties) {
+        findEntityOptions.properties = ["id", ...selectRelationOptions.properties];
+      }
+      if (selectRelationOptions.relations) {
+        findEntityOptions.relations = selectRelationOptions.relations;
+      }
+    }
+  }
+
+  return await findEntities(server, dataAccessor, findEntityOptions);
 }
 
-function findOneRelatedEntitiesViaIdPropertyCode(server: IRpdServer, model: RpdDataModel, relationProperty: RpdDataModelProperty, targetEntityIds: any[]) {
-  const findEntityOptions: FindRowOptions = {
-    filters: [
-      {
-        field: {
-          name: "id",
-        },
-        operator: "in",
-        value: targetEntityIds,
-      },
-    ],
-  };
+async function findOneRelatedEntitiesViaIdPropertyCode(options: FindOneRelationEntitiesOptions) {
+  const { server, relationProperty, relationEntityIds, selectRelationOptions } = options;
+
   const dataAccessor = server.getDataAccessor({
     singularCode: relationProperty.targetSingularCode as string,
   });
 
-  return dataAccessor.find(findEntityOptions);
+  const findEntityOptions: FindEntityOptions = {
+    filters: [
+      {
+        field: "id",
+        operator: "in",
+        value: relationEntityIds,
+      },
+    ],
+    keepNonPropertyFields: true,
+  };
+
+  if (selectRelationOptions) {
+    if (typeof selectRelationOptions !== "boolean") {
+      if (selectRelationOptions.properties) {
+        findEntityOptions.properties = ["id", ...selectRelationOptions.properties];
+      }
+      if (selectRelationOptions.relations) {
+        findEntityOptions.relations = selectRelationOptions.relations;
+      }
+    }
+  }
+
+  return await findEntities(server, dataAccessor, findEntityOptions);
 }
 
 async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, options: CreateEntityOptions, plugin?: RapidPlugin) {
