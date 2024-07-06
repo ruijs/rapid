@@ -146,6 +146,11 @@ export type RapidEntity<TEntitySingularCodes extends string = string, TDictionar
   derivedTypePropertyCode?: string;
 
   /**
+   * 展示实体的属性编码
+   */
+  displayPropertyCode?: string;
+
+  /**
    * 实体字段
    */
   fields: RapidField<TEntitySingularCodes, TDictionaryCodes>[];

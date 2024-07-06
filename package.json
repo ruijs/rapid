@@ -4,6 +4,7 @@
   "scripts": {
     "build": "lerna run build",
     "dev": "pnpm --filter=rapid-example-remix dev",
+    "start": "pnpm --filter=rapid-example-remix start",
     "gen-meta": "pnpm --filter=rapid-example-remix gen-meta",
     "update-rpd-models": "pnpm --filter=rapid-example-remix update-rpd-models",
     "test": "lerna run test",

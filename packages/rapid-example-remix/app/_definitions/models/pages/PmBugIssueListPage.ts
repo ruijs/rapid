@@ -70,9 +70,6 @@ const page: RapidPage = {
           type: "auto",
           code: "project",
           width: "200px",
-          rendererProps: {
-            format: "{{name}}",
-          },
         },
         {
           type: "auto",
@@ -111,9 +108,6 @@ const page: RapidPage = {
           type: "auto",
           code: "createdBy",
           width: "150px",
-          rendererProps: {
-            format: "{{name}}",
-          },
         },
         {
           type: "auto",
@@ -124,9 +118,6 @@ const page: RapidPage = {
           type: "auto",
           code: "updatedBy",
           width: "150px",
-          rendererProps: {
-            format: "{{name}}",
-          },
         },
       ],
       actions: [

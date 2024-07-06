@@ -102,6 +102,17 @@ export function generateDataFormItemForRelationProperty(option: GenerateEntityFo
     listDataSourceCode = `dataFormItemList-${formItemConfig.code}`;
   }
 
+  let fieldTypeRelatedRendererProps: any = {};
+  const relationEntity = rapidAppDefinition.getEntityBySingularCode(field.targetSingularCode);
+  if (relationEntity?.displayPropertyCode) {
+    fieldTypeRelatedRendererProps.format = `{{${relationEntity.displayPropertyCode}}}`;
+  }
+
+  const rendererProps = {
+    ...fieldTypeRelatedRendererProps,
+    ...formItemConfig.rendererProps,
+  };
+
   let formControlProps: Partial<RapidSelectConfig> = {
     allowClear: !formItemConfig.required,
     placeholder: formItemConfig.placeholder,
@@ -120,7 +131,7 @@ export function generateDataFormItemForRelationProperty(option: GenerateEntityFo
     formControlType: formItemConfig.formControlType,
     formControlProps,
     rendererType: formItemConfig.rendererType,
-    rendererProps: formItemConfig.rendererProps,
+    rendererProps,
     $exps: formItemConfig.$exps,
   };
   return formItem;
@@ -344,7 +355,9 @@ export default {
             script: async (event: RockEvent) => {
               message.success("保存成功。");
               if (formConfig.onSaveSuccess) {
-                await handleComponentEvent("onSaveSuccess", event.framework, event.page as any, event.scope, event.sender, formConfig.onSaveSuccess, [event.args[0]]);
+                await handleComponentEvent("onSaveSuccess", event.framework, event.page as any, event.scope, event.sender, formConfig.onSaveSuccess, [
+                  event.args[0],
+                ]);
               }
             },
           },
@@ -355,7 +368,9 @@ export default {
             script: async (event: RockEvent) => {
               message.error(`保存失败：${event.args[0].message}`);
               if (formConfig.onSaveError) {
-                await handleComponentEvent("onSaveError", event.framework, event.page as any, event.scope, event.sender, formConfig.onSaveError, [event.args[0]]);
+                await handleComponentEvent("onSaveError", event.framework, event.page as any, event.scope, event.sender, formConfig.onSaveError, [
+                  event.args[0],
+                ]);
               }
             },
           },

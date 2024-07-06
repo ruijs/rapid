@@ -154,6 +154,11 @@ export default {
             } else {
               rendererType = "rapidObjectRenderer";
             }
+
+            const relationEntity = rapidAppDefinition.getEntityBySingularCode(rpdField.targetSingularCode);
+            if (relationEntity?.displayPropertyCode) {
+              fieldTypeRelatedRendererProps.format = `{{${relationEntity.displayPropertyCode}}}`;
+            }
           }
         }
 
