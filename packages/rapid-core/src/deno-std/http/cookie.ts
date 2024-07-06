@@ -146,7 +146,14 @@ function validateValue(name: string, value: string | null) {
   if (value == null || name == null) return;
   for (let i = 0; i < value.length; i++) {
     const c = value.charAt(i);
-    if (c < String.fromCharCode(0x21) || c == String.fromCharCode(0x22) || c == String.fromCharCode(0x2c) || c == String.fromCharCode(0x3b) || c == String.fromCharCode(0x5c) || c == String.fromCharCode(0x7f)) {
+    if (
+      c < String.fromCharCode(0x21) ||
+      c == String.fromCharCode(0x22) ||
+      c == String.fromCharCode(0x2c) ||
+      c == String.fromCharCode(0x3b) ||
+      c == String.fromCharCode(0x5c) ||
+      c == String.fromCharCode(0x7f)
+    ) {
       throw new Error("RFC2616 cookie '" + name + "' cannot contain character '" + c + "'");
     }
     if (c > String.fromCharCode(0x80)) {

@@ -2,10 +2,10 @@
  * 用于生成模型索引文件，将模型定义按照类型分别导出。
  */
 
-import fs from 'fs';
-import { forEach } from 'lodash';
-import path from 'path';
-import { ensureDirectoryExists, enumFileBaseNamesInDirectory } from '../../utils/file-utility';
+import fs from "fs";
+import { forEach } from "lodash";
+import path from "path";
+import { ensureDirectoryExists, enumFileBaseNamesInDirectory } from "../../utils/file-utility";
 
 interface GenerateModelsIndexFileOption {
   /**
@@ -38,7 +38,6 @@ interface GenerateModelsIndexFileOption {
   flattenModelArray?: boolean;
 }
 
-
 function generateEntityModelIndexFilesOfTypeDir({
   modelsDir,
   outputDir,
@@ -55,9 +54,9 @@ function generateEntityModelIndexFilesOfTypeDir({
 
   const models = fileNames.map((fileName) => {
     return {
-      modelName: fileName.replaceAll('/', '$'),
+      modelName: fileName.replaceAll("/", "$"),
       fileName,
-    }
+    };
   });
 
   const codes = [];
@@ -73,9 +72,9 @@ function generateEntityModelIndexFilesOfTypeDir({
     }
     codes.push(`import ${modelName} from '../models/${categoryDirName}/${fileName}';`);
   }
-  codes.push('');
+  codes.push("");
 
-  codes.push('const entityDefinitions = [');
+  codes.push("const entityDefinitions = [");
   for (const model of models) {
     const { modelName, fileName } = model;
     if (fileName.includes(" ")) {
@@ -89,7 +88,6 @@ function generateEntityModelIndexFilesOfTypeDir({
     }
   }
   codes.push(`];`);
-
 
   codes.push(`const configuredEntities:T${modelTypeName}[] = [`);
 
@@ -106,10 +104,10 @@ function generateEntityModelIndexFilesOfTypeDir({
     }
   }
   codes.push(`];`);
-  codes.push('export default configuredEntities;');
-  codes.push('');
+  codes.push("export default configuredEntities;");
+  codes.push("");
 
-  fs.writeFileSync(path.join(outputDir, modelsFileName + '.ts'), codes.join('\n'));
+  fs.writeFileSync(path.join(outputDir, modelsFileName + ".ts"), codes.join("\n"));
 }
 
 function generateModelIndexFilesOfTypeDir({
@@ -128,9 +126,9 @@ function generateModelIndexFilesOfTypeDir({
 
   const models = fileNames.map((fileName) => {
     return {
-      modelName: fileName.replaceAll('/', '$'),
+      modelName: fileName.replaceAll("/", "$"),
       fileName,
-    }
+    };
   });
 
   const codes = [];
@@ -146,9 +144,9 @@ function generateModelIndexFilesOfTypeDir({
     }
     codes.push(`import ${modelName} from '../models/${categoryDirName}/${fileName}';`);
   }
-  codes.push('');
+  codes.push("");
 
-  codes.push('export default [');
+  codes.push("export default [");
   for (const model of models) {
     const { modelName, fileName } = model;
     if (fileName.includes(" ")) {
@@ -167,19 +165,18 @@ function generateModelIndexFilesOfTypeDir({
       } else {
         codes.push(`  ${modelName},`);
       }
-
     }
   }
   codes.push(`] as T${modelTypeName}[];`);
-  codes.push('');
+  codes.push("");
 
-  fs.writeFileSync(path.join(outputDir, modelsFileName + '.ts'), codes.join('\n'));
+  fs.writeFileSync(path.join(outputDir, modelsFileName + ".ts"), codes.join("\n"));
 }
 
 export function generateModelIndexFiles(declarationsDirectory: string) {
-  const modelsDir = path.join(declarationsDirectory, 'models');
-  const outputDir = path.join(declarationsDirectory, 'meta');
-  const typeDefFilePath = '@ruiapp/rapid-extension';
+  const modelsDir = path.join(declarationsDirectory, "models");
+  const outputDir = path.join(declarationsDirectory, "meta");
+  const typeDefFilePath = "@ruiapp/rapid-extension";
 
   ensureDirectoryExists(outputDir);
 
@@ -187,44 +184,58 @@ export function generateModelIndexFiles(declarationsDirectory: string) {
     modelsDir,
     outputDir,
     typeDefFilePath,
-    categoryDirName: 'entities',
-    modelTypeName: 'RapidEntity',
-    modelsFileName: 'entity-models',
+    categoryDirName: "entities",
+    modelTypeName: "RapidEntity",
+    modelsFileName: "entity-models",
     extraImports: [`import { autoConfigureRapidEntity } from '@ruiapp/rapid-extension';`],
-    modelWrapper: 'autoConfigureRapidEntity',
-  });
-
-  generateModelIndexFilesOfTypeDir({modelsDir, outputDir, typeDefFilePath, categoryDirName: 'data-dictionaries', modelTypeName: 'RapidDataDictionary', modelsFileName: 'data-dictionary-models'});
-  generateModelIndexFilesOfTypeDir({modelsDir, outputDir, typeDefFilePath, categoryDirName: 'pages', modelTypeName: 'RapidPage', modelsFileName: 'page-models'});
-
-  generateModelIndexFilesOfTypeDir({
-    modelsDir,
-    outputDir,
-    typeDefFilePath: '@ruiapp/rapid-core',
-    categoryDirName: 'server-operations',
-    modelTypeName: 'ServerOperation',
-    modelsFileName: 'server-operations',
+    modelWrapper: "autoConfigureRapidEntity",
   });
 
   generateModelIndexFilesOfTypeDir({
     modelsDir,
     outputDir,
-    typeDefFilePath: '@ruiapp/rapid-core',
-    categoryDirName: 'entity-watchers',
-    modelTypeName: 'EntityWatcherType',
-    modelsFileName: 'entity-watchers',
+    typeDefFilePath,
+    categoryDirName: "data-dictionaries",
+    modelTypeName: "RapidDataDictionary",
+    modelsFileName: "data-dictionary-models",
+  });
+  generateModelIndexFilesOfTypeDir({
+    modelsDir,
+    outputDir,
+    typeDefFilePath,
+    categoryDirName: "pages",
+    modelTypeName: "RapidPage",
+    modelsFileName: "page-models",
+  });
+
+  generateModelIndexFilesOfTypeDir({
+    modelsDir,
+    outputDir,
+    typeDefFilePath: "@ruiapp/rapid-core",
+    categoryDirName: "server-operations",
+    modelTypeName: "ServerOperation",
+    modelsFileName: "server-operations",
+  });
+
+  generateModelIndexFilesOfTypeDir({
+    modelsDir,
+    outputDir,
+    typeDefFilePath: "@ruiapp/rapid-core",
+    categoryDirName: "entity-watchers",
+    modelTypeName: "EntityWatcherType",
+    modelsFileName: "entity-watchers",
     flattenModelArray: true,
   });
 
   generateModelIndexFilesOfTypeDir({
     modelsDir,
     outputDir,
-    typeDefFilePath: '@ruiapp/rapid-core',
-    categoryDirName: 'cron-jobs',
-    modelTypeName: 'CronJobConfiguration',
-    modelsFileName: 'cron-jobs',
+    typeDefFilePath: "@ruiapp/rapid-core",
+    categoryDirName: "cron-jobs",
+    modelTypeName: "CronJobConfiguration",
+    modelsFileName: "cron-jobs",
     flattenModelArray: false,
   });
 }
 
-console.log('Generating meta index files...');
+console.log("Generating meta index files...");

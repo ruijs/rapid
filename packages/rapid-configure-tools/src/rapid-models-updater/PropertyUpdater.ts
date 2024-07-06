@@ -1,17 +1,11 @@
-import type { RapidField } from '@ruiapp/rapid-extension';
-import type { AxiosInstance } from 'axios';
-import { detectChangedFields } from './ObjectChangesDetector';
-import type {
-  RapidModel,
-  RapidProperty,
-  CreateRapidPropertyInput,
-  IRapidModelUpdater,
-  UpdateRapidPropertyInput,
-} from './types';
+import type { RapidField } from "@ruiapp/rapid-extension";
+import type { AxiosInstance } from "axios";
+import { detectChangedFields } from "./ObjectChangesDetector";
+import type { RapidModel, RapidProperty, CreateRapidPropertyInput, IRapidModelUpdater, UpdateRapidPropertyInput } from "./types";
 
 export function newPropertyUpdater(rapidConfigApi: AxiosInstance) {
   const propertyUpdater: IRapidModelUpdater<RapidProperty, RapidField, RapidModel> = {
-    modelType: 'property',
+    modelType: "property",
     entityBatchMode: true,
     inputTitlePrinter(input) {
       return input.name;
@@ -21,17 +15,17 @@ export function newPropertyUpdater(rapidConfigApi: AxiosInstance) {
       const res = await rapidConfigApi.post(`meta/properties/operations/find`, {
         filters: [
           {
-            field: 'model',
-            operator: 'exists',
+            field: "model",
+            operator: "exists",
             filters: [
               {
-                field: 'id',
-                operator: 'eq',
+                field: "id",
+                operator: "eq",
                 value: mainEntity.id,
-              }
-            ]
-          }
-        ]
+              },
+            ],
+          },
+        ],
       });
       return res.data.list;
     },
@@ -42,29 +36,26 @@ export function newPropertyUpdater(rapidConfigApi: AxiosInstance) {
 
     isEntityChanged(inputEntity, remoteEntity) {
       const changedFieldNames = detectChangedFields(inputEntity, remoteEntity, [
-        'name',
-        'description',
-        'required',
-        'type',
-        'columnName',
-        'defaultValue',
-        'config',
-        'autoIncrement',
-        'dataDictionary',
-        'minLength',
-        'maxLength',
-        'relation',
-        'targetSingularCode',
-        'targetIdColumnName',
-        'selfIdColumnName',
-        'linkTableName',
-        'linkDbSchema',
+        "name",
+        "description",
+        "required",
+        "type",
+        "columnName",
+        "defaultValue",
+        "config",
+        "autoIncrement",
+        "dataDictionary",
+        "minLength",
+        "maxLength",
+        "relation",
+        "targetSingularCode",
+        "targetIdColumnName",
+        "selfIdColumnName",
+        "linkTableName",
+        "linkDbSchema",
       ]);
       if (changedFieldNames.length) {
-        console.log(
-          `${this.modelType} ${this.inputTitlePrinter(inputEntity)} changed with these fields:`,
-          changedFieldNames,
-        );
+        console.log(`${this.modelType} ${this.inputTitlePrinter(inputEntity)} changed with these fields:`, changedFieldNames);
       }
       return changedFieldNames.length > 0;
     },
@@ -75,15 +66,15 @@ export function newPropertyUpdater(rapidConfigApi: AxiosInstance) {
         model: mainEntity.id,
         ...input,
       };
-      if (createEntityInput.type === 'relation' || createEntityInput.type === 'relation[]') {
+      if (createEntityInput.type === "relation" || createEntityInput.type === "relation[]") {
         delete createEntityInput.columnName;
       }
       const res = await rapidConfigApi.post(`meta/properties`, createEntityInput);
       const { data } = res;
       if (!data.id) {
-        console.log('Response:');
+        console.log("Response:");
         console.log(data);
-        console.log('Input:');
+        console.log("Input:");
         console.log(createEntityInput);
       }
       return data;
@@ -91,23 +82,23 @@ export function newPropertyUpdater(rapidConfigApi: AxiosInstance) {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async updateEntity(input, remoteEntity, mainEntity, inputIndex) {
-      console.log('input');
+      console.log("input");
       console.log(input);
-      console.log('remoteEntity');
+      console.log("remoteEntity");
       console.log(remoteEntity);
       const updateEntityInput: UpdateRapidPropertyInput = {
         model: mainEntity.id,
         ...input,
       };
-      if (updateEntityInput.type === 'relation' || updateEntityInput.type === 'relation[]') {
+      if (updateEntityInput.type === "relation" || updateEntityInput.type === "relation[]") {
         delete updateEntityInput.columnName;
       }
       const res = await rapidConfigApi.patch(`meta/properties/${remoteEntity.id}`, updateEntityInput);
       const { data } = res;
       if (!data.id) {
-        console.log('Response:');
+        console.log("Response:");
         console.log(data);
-        console.log('Input:');
+        console.log("Input:");
         console.log(updateEntityInput);
       }
       return data;

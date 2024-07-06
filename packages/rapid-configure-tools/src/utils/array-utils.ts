@@ -9,13 +9,14 @@ export interface ArrayToTreeOption {
 export function arrayToTree<TA>(arr: TA[], parent?: any, option?: ArrayToTreeOption): TA[] {
   const { parentField = "parent", keyField = "id", childrenField = "children" } = option || {};
 
-  return arr.filter(item => {
-      return get(item, parentField, null) === parent
+  return arr
+    .filter((item) => {
+      return get(item, parentField, null) === parent;
     })
-    .map((child:any) => {
+    .map((child: any) => {
       return {
         ...child,
-        [childrenField]: arrayToTree(arr, child[keyField], option)
-      }
+        [childrenField]: arrayToTree(arr, child[keyField], option),
+      };
     });
 }

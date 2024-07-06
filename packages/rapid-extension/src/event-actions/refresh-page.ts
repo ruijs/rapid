@@ -4,7 +4,15 @@ export interface RockEventHandlerRefreshPage {
   $action: "refreshPage";
 }
 
-export async function refreshPage(eventName: string, framework: Framework, page: Page, scope: Scope, sender: any, eventHandler: RockEventHandlerRefreshPage, eventArgs: any) {
+export async function refreshPage(
+  eventName: string,
+  framework: Framework,
+  page: Page,
+  scope: Scope,
+  sender: any,
+  eventHandler: RockEventHandlerRefreshPage,
+  eventArgs: any,
+) {
   location.reload();
 }
 

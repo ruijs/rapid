@@ -1,9 +1,7 @@
 export function newError(type: string, message?: string, cause?: any) {
-  const error = new Error(
-    message, {
-      cause,
-    }
-  );
+  const error = new Error(message, {
+    cause,
+  });
   error.name = type;
   return error;
 }

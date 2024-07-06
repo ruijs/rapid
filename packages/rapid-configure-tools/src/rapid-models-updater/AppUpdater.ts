@@ -1,5 +1,5 @@
-import { find } from 'lodash';
-import type { IRapidModelUpdater, IRapidModelUpdaterSingleGetMode } from './types';
+import { find } from "lodash";
+import type { IRapidModelUpdater, IRapidModelUpdaterSingleGetMode } from "./types";
 
 export type ModelUpdateOption = {
   modelType: string;
@@ -51,15 +51,11 @@ export default class RapidUpdater {
       }
 
       if (!entityInRapid) {
-        console.log(
-          `${modelUpdater.modelType} ${modelUpdater.inputTitlePrinter(entityToSave)} not exists, try to create.`,
-        );
+        console.log(`${modelUpdater.modelType} ${modelUpdater.inputTitlePrinter(entityToSave)} not exists, try to create.`);
         entityInRapid = await modelUpdater.createEntity(entityToSave, mainEntity, inputIndex);
         entitiesInRapid.push(entityInRapid);
       } else if (modelUpdater.isEntityChanged(entityToSave, entityInRapid)) {
-        console.log(
-          `${modelUpdater.modelType} ${modelUpdater.inputTitlePrinter(entityToSave)} changed, try to update.`,
-        );
+        console.log(`${modelUpdater.modelType} ${modelUpdater.inputTitlePrinter(entityToSave)} changed, try to update.`);
         const updatedEntity = await modelUpdater.updateEntity(entityToSave, entityInRapid, mainEntity, inputIndex);
         Object.assign(entityInRapid, updatedEntity);
       }
@@ -70,9 +66,7 @@ export default class RapidUpdater {
         continue;
       }
 
-      console.log(
-        `update relation fields of ${modelUpdater.modelType} ${modelUpdater.inputTitlePrinter(entityToSave)}`,
-      );
+      console.log(`update relation fields of ${modelUpdater.modelType} ${modelUpdater.inputTitlePrinter(entityToSave)}`);
 
       const entityInRapid = find(entitiesInRapid, modelUpdater.entityExistensePredicate.bind(null, entityToSave));
       if (!entityInRapid) {
@@ -93,15 +87,11 @@ export default class RapidUpdater {
           continue;
         }
 
-        if (relationField.relation === 'one') {
+        if (relationField.relation === "one") {
           // TODO: deal with relation to one object.
-        } else if (relationField.relation === 'many') {
+        } else if (relationField.relation === "many") {
           if ((relatedEntitiesToSave as any[]).length) {
-            await this.updateEntitiesOfType(
-              relatedEntitiesToSave as any[],
-              relationModelUpdateConfiguration,
-              entityInRapid,
-            );
+            await this.updateEntitiesOfType(relatedEntitiesToSave as any[], relationModelUpdateConfiguration, entityInRapid);
           }
         }
       }

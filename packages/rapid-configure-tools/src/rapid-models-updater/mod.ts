@@ -1,14 +1,14 @@
-import axios, { AxiosInstance } from 'axios';
-import { wrapper } from 'axios-cookiejar-support';
-import { CookieJar } from 'tough-cookie';
-import fs from 'fs';
-import path from 'path';
-import AppUpdater from './AppUpdater';
-import { newDictionaryUpdater } from './DictionaryUpdater';
-import { newDictionaryEntryUpdater } from './DictionaryEntryUpdater';
-import { newModelUpdater } from './ModelUpdater';
-import { newPropertyUpdater } from './PropertyUpdater';
-import type { RapidDataDictionary, RapidEntity } from '@ruiapp/rapid-extension';
+import axios, { AxiosInstance } from "axios";
+import { wrapper } from "axios-cookiejar-support";
+import { CookieJar } from "tough-cookie";
+import fs from "fs";
+import path from "path";
+import AppUpdater from "./AppUpdater";
+import { newDictionaryUpdater } from "./DictionaryUpdater";
+import { newDictionaryEntryUpdater } from "./DictionaryEntryUpdater";
+import { newModelUpdater } from "./ModelUpdater";
+import { newPropertyUpdater } from "./PropertyUpdater";
+import type { RapidDataDictionary, RapidEntity } from "@ruiapp/rapid-extension";
 
 export interface RapidModelsUpdateOptions {
   appDataDirLocation: string;
@@ -28,11 +28,11 @@ export default class RapidModelsUpdater {
 
     const { appDataDirLocation, rapidApiUrl } = options;
 
-    const cookieJarStorageLocation = path.join(appDataDirLocation, 'rapid-cookie-jar.json');
+    const cookieJarStorageLocation = path.join(appDataDirLocation, "rapid-cookie-jar.json");
     if (!fs.existsSync(appDataDirLocation)) {
       fs.mkdirSync(appDataDirLocation);
     }
-    
+
     let jar: CookieJar;
     if (fs.existsSync(cookieJarStorageLocation)) {
       const cookieJSON = fs.readFileSync(cookieJarStorageLocation).toString();
@@ -40,7 +40,7 @@ export default class RapidModelsUpdater {
     } else {
       jar = new CookieJar();
     }
-    
+
     this.#rapidConfigApi = wrapper(
       axios.create({
         jar,
@@ -63,12 +63,12 @@ export default class RapidModelsUpdater {
     });
     appUpdater.updateModels([
       {
-        modelType: 'dictionary',
-        entities: this.#dataDictionaries.filter(item => !item.metaOnly),
+        modelType: "dictionary",
+        entities: this.#dataDictionaries.filter((item) => !item.metaOnly),
       },
       {
-        modelType: 'model',
-        entities: this.#entities.filter(item => !item.metaOnly),
+        modelType: "model",
+        entities: this.#entities.filter((item) => !item.metaOnly),
       },
     ]);
   }

@@ -1,8 +1,8 @@
-import dayjs from 'dayjs';
-import type { Logger } from 'winston';
-import { createLogger, transports, format } from 'winston';
-import { MESSAGE } from 'triple-beam';
-import { logLevels } from './app/rui-logger';
+import dayjs from "dayjs";
+import type { Logger } from "winston";
+import { createLogger, transports, format } from "winston";
+import { MESSAGE } from "triple-beam";
+import { logLevels } from "./app/rui-logger";
 
 export const consoleFormat = format((info) => {
   const stringifiedRest = JSON.stringify(
@@ -14,9 +14,9 @@ export const consoleFormat = format((info) => {
     }),
   );
 
-  const padding = (info.padding && info.padding[info.level]) || '';
-  const formattedTime = dayjs(info.timestamp).format('YYYY-MM-DD HH:mm:ss.SSS');
-  if (stringifiedRest !== '{}') {
+  const padding = (info.padding && info.padding[info.level]) || "";
+  const formattedTime = dayjs(info.timestamp).format("YYYY-MM-DD HH:mm:ss.SSS");
+  if (stringifiedRest !== "{}") {
     info[MESSAGE] = `[${formattedTime}] ${info.level}:${padding} ${info.message} ${stringifiedRest}`;
   } else {
     info[MESSAGE] = `[${formattedTime}] ${info.level}:${padding} ${info.message}`;

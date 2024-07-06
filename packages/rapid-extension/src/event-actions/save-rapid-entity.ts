@@ -18,7 +18,15 @@ export interface RockEventHandlerSaveRapidEntity {
   onError?: RockEventHandlerConfig;
 }
 
-export async function saveRapidEntity(eventName: string, framework: Framework, page: Page, scope: Scope, sender: any, eventHandler: RockEventHandlerSaveRapidEntity, eventArgs: any) {
+export async function saveRapidEntity(
+  eventName: string,
+  framework: Framework,
+  page: Page,
+  scope: Scope,
+  sender: any,
+  eventHandler: RockEventHandlerSaveRapidEntity,
+  eventArgs: any,
+) {
   const entity = eventArgs[0];
   const { entityId, onSuccess, onError, customRequest } = eventHandler;
   try {

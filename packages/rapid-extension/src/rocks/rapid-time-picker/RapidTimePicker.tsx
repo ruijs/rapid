@@ -23,7 +23,7 @@ export default {
         }
 
         props.onChange?.(value);
-      }
+      },
     };
 
     return renderRock({ context, rockConfig });

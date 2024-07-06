@@ -2,8 +2,24 @@
  * Meta manager plugin
  */
 
-import { IQueryBuilder, QuoteTableOptions, RpdApplicationConfig, RpdDataModel, RpdDataModelProperty, RpdDataPropertyTypes, RpdEntityCreateEventPayload, RpdEntityDeleteEventPayload, RpdEntityUpdateEventPayload } from "~/types";
-import { IRpdServer, RapidPlugin, RpdConfigurationItemOptions, RpdServerPluginConfigurableTargetOptions, RpdServerPluginExtendingAbilities } from "~/core/server";
+import {
+  IQueryBuilder,
+  QuoteTableOptions,
+  RpdApplicationConfig,
+  RpdDataModel,
+  RpdDataModelProperty,
+  RpdDataPropertyTypes,
+  RpdEntityCreateEventPayload,
+  RpdEntityDeleteEventPayload,
+  RpdEntityUpdateEventPayload,
+} from "~/types";
+import {
+  IRpdServer,
+  RapidPlugin,
+  RpdConfigurationItemOptions,
+  RpdServerPluginConfigurableTargetOptions,
+  RpdServerPluginExtendingAbilities,
+} from "~/core/server";
 
 import * as listMetaModels from "./actionHandlers/listMetaModels";
 import * as listMetaRoutes from "./actionHandlers/listMetaRoutes";
@@ -90,7 +106,10 @@ async function handleEntityUpdateEvent(server: IRpdServer, sender: RapidPlugin, 
     const modelChanges: Partial<RpdDataModel> = payload.changes;
     if (modelChanges.tableName) {
       const modelBefore: RpdDataModel = payload.before;
-      await server.queryDatabaseObject(`ALTER TABLE ${queryBuilder.quoteTable(modelBefore)} RENAME TO ${queryBuilder.quoteTable(modelChanges as QuoteTableOptions)}`, []);
+      await server.queryDatabaseObject(
+        `ALTER TABLE ${queryBuilder.quoteTable(modelBefore)} RENAME TO ${queryBuilder.quoteTable(modelChanges as QuoteTableOptions)}`,
+        [],
+      );
     }
   }
 }
@@ -220,7 +239,10 @@ async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdAppl
           }
         } else if (property.relation === "many") {
           if (property.linkTableName) {
-            const tableInDb = find(tablesInDb, { table_schema: property.linkSchema || server.databaseConfig.dbDefaultSchema, table_name: property.linkTableName });
+            const tableInDb = find(tablesInDb, {
+              table_schema: property.linkSchema || server.databaseConfig.dbDefaultSchema,
+              table_name: property.linkTableName,
+            });
             if (!tableInDb) {
               columnDDL = generateLinkTableDDL(queryBuilder, {
                 linkSchema: property.linkSchema,
@@ -289,13 +311,17 @@ async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdAppl
         } else {
           const expectedColumnType = pgPropertyTypeColumnMap[property.type];
           if (columnInDb.udt_name !== expectedColumnType) {
-            const sqlAlterColumnType = `alter table ${queryBuilder.quoteTable(model)} alter column ${queryBuilder.quoteObject(columnName)} type ${expectedColumnType}`;
+            const sqlAlterColumnType = `alter table ${queryBuilder.quoteTable(model)} alter column ${queryBuilder.quoteObject(
+              columnName,
+            )} type ${expectedColumnType}`;
             await server.tryQueryDatabaseObject(sqlAlterColumnType);
           }
 
           if (property.defaultValue) {
             if (!columnInDb.column_default) {
-              const sqlSetColumnDefault = `alter table ${queryBuilder.quoteTable(model)} alter column ${queryBuilder.quoteObject(columnName)} set default ${property.defaultValue}`;
+              const sqlSetColumnDefault = `alter table ${queryBuilder.quoteTable(model)} alter column ${queryBuilder.quoteObject(columnName)} set default ${
+                property.defaultValue
+              }`;
               await server.tryQueryDatabaseObject(sqlSetColumnDefault);
             }
           } else {
@@ -335,7 +361,10 @@ async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdAppl
       constraint_name: expectedContraintName,
     });
     if (!constraintInDb) {
-      await server.queryDatabaseObject(`ALTER TABLE ${queryBuilder.quoteTable(model)} ADD CONSTRAINT ${queryBuilder.quoteObject(expectedContraintName)} PRIMARY KEY (id);`, []);
+      await server.queryDatabaseObject(
+        `ALTER TABLE ${queryBuilder.quoteTable(model)} ADD CONSTRAINT ${queryBuilder.quoteObject(expectedContraintName)} PRIMARY KEY (id);`,
+        [],
+      );
     }
   }
 }

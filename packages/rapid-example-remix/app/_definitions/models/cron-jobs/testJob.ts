@@ -1,13 +1,13 @@
-import type { ActionHandlerContext, CronJobConfiguration } from '@ruiapp/rapid-core';
+import type { ActionHandlerContext, CronJobConfiguration } from "@ruiapp/rapid-core";
 
 export default {
-  code: 'testJob',
+  code: "testJob",
 
-  cronTime: '0 */1 * * * *',
+  cronTime: "0 */1 * * * *",
 
   async handler(ctx: ActionHandlerContext) {
     const { server, logger } = ctx;
 
-    logger.info('Executing test job...');
+    logger.info("Executing test job...");
   },
 } satisfies CronJobConfiguration;

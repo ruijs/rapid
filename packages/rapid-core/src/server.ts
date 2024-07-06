@@ -1,5 +1,23 @@
 import DataAccessor from "./dataAccess/dataAccessor";
-import { GetDataAccessorOptions, GetModelOptions, IDatabaseAccessor, IDatabaseConfig, IQueryBuilder, IRpdDataAccessor, RpdApplicationConfig, RpdDataModel, RpdServerEventTypes, RapidServerConfig, RpdDataModelProperty, CreateEntityOptions, UpdateEntityByIdOptions, EntityWatchHandlerContext, EntityWatcherType, RpdEntityCreateEventPayload, EmitServerEventOptions } from "./types";
+import {
+  GetDataAccessorOptions,
+  GetModelOptions,
+  IDatabaseAccessor,
+  IDatabaseConfig,
+  IQueryBuilder,
+  IRpdDataAccessor,
+  RpdApplicationConfig,
+  RpdDataModel,
+  RpdServerEventTypes,
+  RapidServerConfig,
+  RpdDataModelProperty,
+  CreateEntityOptions,
+  UpdateEntityByIdOptions,
+  EntityWatchHandlerContext,
+  EntityWatcherType,
+  RpdEntityCreateEventPayload,
+  EmitServerEventOptions,
+} from "./types";
 
 import QueryBuilder from "./queryBuilder/queryBuilder";
 import PluginManager from "./core/pluginManager";
@@ -57,7 +75,6 @@ export class RapidServer implements IRpdServer {
   config: RapidServerConfig;
   databaseConfig: IDatabaseConfig;
   #buildedRoutes: (ctx: any, next: any) => any;
-
 
   constructor(options: InitServerOptions) {
     this.#logger = options.logger;
@@ -128,7 +145,10 @@ export class RapidServer implements IRpdServer {
       for (const model of models) {
         const originalModel = find(this.#applicationConfig.models, (item) => item.singularCode == model.singularCode);
         if (originalModel) {
-          merge(originalModel, omit(model, ["id", "maintainedBy", "namespace", "singularCode", "pluralCode", "schema", "tableName", "properties", "extensions"]));
+          merge(
+            originalModel,
+            omit(model, ["id", "maintainedBy", "namespace", "singularCode", "pluralCode", "schema", "tableName", "properties", "extensions"]),
+          );
           originalModel.name = model.name;
           const originalProperties = originalModel.properties;
           for (const property of model.properties) {

@@ -3,7 +3,13 @@
  */
 
 import { RpdApplicationConfig, RpdEntityCreateEventPayload, RpdEntityDeleteEventPayload, RpdEntityUpdateEventPayload, RpdServerEventTypes } from "~/types";
-import { RpdServerPluginExtendingAbilities, RpdServerPluginConfigurableTargetOptions, RpdConfigurationItemOptions, IRpdServer, RapidPlugin } from "~/core/server";
+import {
+  RpdServerPluginExtendingAbilities,
+  RpdServerPluginConfigurableTargetOptions,
+  RpdConfigurationItemOptions,
+  IRpdServer,
+  RapidPlugin,
+} from "~/core/server";
 import { fetchWithTimeout } from "~/utilities/httpUtility";
 import pluginConfig from "./pluginConfig";
 import { indexOf } from "lodash";
@@ -89,7 +95,12 @@ class WebhooksPlugin implements RapidPlugin {
 
   async onApplicationReady(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {}
 
-  async handleEntityEvent(server: IRpdServer, event: keyof RpdServerEventTypes, sender: RapidPlugin, payload: RpdEntityCreateEventPayload | RpdEntityUpdateEventPayload | RpdEntityDeleteEventPayload) {
+  async handleEntityEvent(
+    server: IRpdServer,
+    event: keyof RpdServerEventTypes,
+    sender: RapidPlugin,
+    payload: RpdEntityCreateEventPayload | RpdEntityUpdateEventPayload | RpdEntityDeleteEventPayload,
+  ) {
     if (sender === this) {
       return;
     }

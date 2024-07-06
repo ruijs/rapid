@@ -20,13 +20,10 @@ export function getEntityPropertiesIncludingBase(server: IRpdServer, model: RpdD
       property = cloneDeep(property);
       property.isBaseProperty = true;
       return property;
-    })
+    });
   }
 
-  return [
-    ...baseProperties,
-    ...model.properties,
-  ]
+  return [...baseProperties, ...model.properties];
 }
 
 export function getEntityPropertyByCode(server: IRpdServer, model: RpdDataModel, propertyCode: string) {

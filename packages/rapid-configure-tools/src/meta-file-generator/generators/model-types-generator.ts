@@ -1,36 +1,36 @@
-import fs from 'fs';
-import { uniq, find } from 'lodash';
-import path from 'path';
-import type { RapidDataDictionary, RapidEntity, RapidField } from '@ruiapp/rapid-extension';
+import fs from "fs";
+import { uniq, find } from "lodash";
+import path from "path";
+import type { RapidDataDictionary, RapidEntity, RapidField } from "@ruiapp/rapid-extension";
 
 function convertSdRpdFieldTypeToTypeScriptType(field: RapidField, entities: RapidEntity[]) {
   const { type, dataDictionary, targetSingularCode, relation } = field;
   switch (type) {
-    case 'text':
-      return 'string';
-    case 'boolean':
-      return 'boolean';
-    case 'integer':
-      return 'number';
-    case 'long':
-      return 'string';
-    case 'float':
-      return 'number';
-    case 'double':
-      return 'number';
-    case 'date':
-    case 'time':
-    case 'datetime':
-      return 'string';
-    case 'json':
-      return 'Record<string, any>';
-    case 'option':
+    case "text":
+      return "string";
+    case "boolean":
+      return "boolean";
+    case "integer":
+      return "number";
+    case "long":
+      return "string";
+    case "float":
+      return "number";
+    case "double":
+      return "number";
+    case "date":
+    case "time":
+    case "datetime":
+      return "string";
+    case "json":
+      return "Record<string, any>";
+    case "option":
       return dataDictionary;
-    case 'relation':
+    case "relation":
       const targetCode = find(entities, { singularCode: targetSingularCode })?.code;
-      return relation === 'one' ? `Partial<${targetCode}>` : `Partial<${targetCode}>[]`;
+      return relation === "one" ? `Partial<${targetCode}>` : `Partial<${targetCode}>[]`;
   }
-  return 'any';
+  return "any";
 }
 
 function generateDictionaryTypes(metaDir: string) {
@@ -54,8 +54,8 @@ function generateDictionaryTypes(metaDir: string) {
     codes.push(``);
   }
 
-  const fileName = path.join(metaDir, 'data-dictionary-types.ts');
-  fs.writeFileSync(fileName, codes.join('\n'));
+  const fileName = path.join(metaDir, "data-dictionary-types.ts");
+  fs.writeFileSync(fileName, codes.join("\n"));
 }
 
 function generateEntityTypes(metaDir: string) {
@@ -67,7 +67,7 @@ function generateEntityTypes(metaDir: string) {
   const referencedDictionaryCodes = [];
   for (const entity of entities) {
     for (const field of entity.fields) {
-      if (field.type === 'option' && field.dataDictionary) {
+      if (field.type === "option" && field.dataDictionary) {
         referencedDictionaryCodes.push(field.dataDictionary);
       }
     }
@@ -91,7 +91,7 @@ function generateEntityTypes(metaDir: string) {
       codes.push(`  /**`);
       codes.push(`   * ${field.name}`);
       codes.push(`   */`);
-      codes.push(`  ${field.code}${field.required ? '' : '?'}: ${convertSdRpdFieldTypeToTypeScriptType(field, entities)};`);
+      codes.push(`  ${field.code}${field.required ? "" : "?"}: ${convertSdRpdFieldTypeToTypeScriptType(field, entities)};`);
     }
 
     codes.push(`}`);
@@ -99,18 +99,16 @@ function generateEntityTypes(metaDir: string) {
     codes.push(`/**`);
     codes.push(` * ${entity.name}`);
     codes.push(` */`);
-    codes.push(
-      `export type Save${entity.code}Input = Omit<${entity.code}, 'id' | 'createdAt' | 'createdBy' | 'updatedAt' | 'updatedBy'>;`,
-    );
+    codes.push(`export type Save${entity.code}Input = Omit<${entity.code}, 'id' | 'createdAt' | 'createdBy' | 'updatedAt' | 'updatedBy'>;`);
     codes.push(``);
   }
 
-  const fileName = path.join(metaDir, 'entity-types.ts');
-  fs.writeFileSync(fileName, codes.join('\n'));
+  const fileName = path.join(metaDir, "entity-types.ts");
+  fs.writeFileSync(fileName, codes.join("\n"));
 }
 
 export function generateSdRpdModelTypes(declarationsDirectory: string) {
-  const metaDir = path.join(declarationsDirectory, 'meta');
+  const metaDir = path.join(declarationsDirectory, "meta");
 
   generateDictionaryTypes(metaDir);
   generateEntityTypes(metaDir);

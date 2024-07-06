@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from "fs";
+import path from "path";
 
 export function ensureDirectoryExists(dirPath: string) {
   if (!fs.existsSync(dirPath)) {
@@ -14,7 +14,7 @@ export function enumFileBaseNamesInDirectory(dirPath: string, prefix: string = "
   let fileNames = [];
 
   let resolvedDirPath = dirPath;
-  const isRelative = dirPath.startsWith('.') || dirPath.startsWith('..');
+  const isRelative = dirPath.startsWith(".") || dirPath.startsWith("..");
   if (isRelative) {
     resolvedDirPath = path.join(process.cwd(), dirPath);
   }

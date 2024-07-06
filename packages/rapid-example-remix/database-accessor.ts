@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Pool } from 'pg';
-import type { Logger } from 'winston';
+import { Pool } from "pg";
+import type { Logger } from "winston";
 
 export default class DatabaseAccessor {
   #logger: Logger;
@@ -20,7 +20,7 @@ export default class DatabaseAccessor {
   }
 
   async queryDatabaseObject(sql: any, params: any) {
-    this.#logger.debug('Query database object.', { sql, params });
+    this.#logger.debug("Query database object.", { sql, params });
     const res = await this.#pool.query(sql, params);
     return res.rows;
   }

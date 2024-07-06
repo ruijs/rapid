@@ -7,7 +7,13 @@ import { RpdApplicationConfig } from "~/types";
 import * as downloadDocumentActionHandler from "./actionHandlers/downloadDocument";
 import * as downloadFileActionHandler from "./actionHandlers/downloadFile";
 import * as uploadFileActionHandler from "./actionHandlers/uploadFile";
-import { IRpdServer, RapidPlugin, RpdConfigurationItemOptions, RpdServerPluginConfigurableTargetOptions, RpdServerPluginExtendingAbilities } from "~/core/server";
+import {
+  IRpdServer,
+  RapidPlugin,
+  RpdConfigurationItemOptions,
+  RpdServerPluginConfigurableTargetOptions,
+  RpdServerPluginExtendingAbilities,
+} from "~/core/server";
 
 import pluginRoutes from "./routes";
 

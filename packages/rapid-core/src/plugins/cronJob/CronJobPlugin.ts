@@ -3,7 +3,13 @@ import type { RpdApplicationConfig } from "~/types";
 import pluginActionHandlers from "./actionHandlers";
 import pluginRoutes from "./routes";
 import { CronJobConfiguration, CronJobPluginInitOptions } from "./CronJobPluginTypes";
-import { IRpdServer, RapidPlugin, RpdConfigurationItemOptions, RpdServerPluginConfigurableTargetOptions, RpdServerPluginExtendingAbilities } from "~/core/server";
+import {
+  IRpdServer,
+  RapidPlugin,
+  RpdConfigurationItemOptions,
+  RpdServerPluginConfigurableTargetOptions,
+  RpdServerPluginExtendingAbilities,
+} from "~/core/server";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { find } from "lodash";
 

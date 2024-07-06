@@ -1,3 +1,3 @@
-import RapidExtension from '@ruiapp/rapid-extension';
+import RapidExtension from "@ruiapp/rapid-extension";
 export default RapidExtension;
-export * from '@ruiapp/rapid-extension';
+export * from "@ruiapp/rapid-extension";

@@ -119,6 +119,25 @@ export type RapidSearchFormItemConfig = {
   filterFields?: string[];
 };
 
-export type RapidFormItemType = "auto" | "text" | "textarea" | "number" | "switch" | "checkbox" | "checkboxList" | "radioList" | "date" | "time" | "datetime" | "dateRange" | "dateTimeRange" | "select" | "treeSelect" | "search" | "json" | "file" | "custom";
+export type RapidFormItemType =
+  | "auto"
+  | "text"
+  | "textarea"
+  | "number"
+  | "switch"
+  | "checkbox"
+  | "checkboxList"
+  | "radioList"
+  | "date"
+  | "time"
+  | "datetime"
+  | "dateRange"
+  | "dateTimeRange"
+  | "select"
+  | "treeSelect"
+  | "search"
+  | "json"
+  | "file"
+  | "custom";
 
 export interface RapidFormItemRockConfig extends SimpleRockConfig, RapidFormItemConfig {}

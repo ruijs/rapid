@@ -1,7 +1,20 @@
 import process from "process";
 import express from "express";
 import DatabaseAccessor from "./database-accessor";
-import { RapidServer, createJwt, decodeJwt, verifyJwt, generateJwtSecretKey, MetaManagePlugin, DataManagePlugin, RouteManagePlugin, WebhooksPlugin, AuthPlugin, FileManagePlugin, EntityAccessControlPlugin } from "@ruiapp/rapid-core";
+import {
+  RapidServer,
+  createJwt,
+  decodeJwt,
+  verifyJwt,
+  generateJwtSecretKey,
+  MetaManagePlugin,
+  DataManagePlugin,
+  RouteManagePlugin,
+  WebhooksPlugin,
+  AuthPlugin,
+  FileManagePlugin,
+  EntityAccessControlPlugin,
+} from "@ruiapp/rapid-core";
 import { createRapidRequestHandler } from "@ruiapp/rapid-express";
 
 import "dotenv/config";
@@ -23,7 +36,8 @@ export async function startServer(logger: Logger) {
     },
   };
 
-  const defaultJWTKey = "DyYR1em73ZR5s3rUV32ek3FCZBMxE0YMjuPCvpyQKn+MhCQwlwCiN+8ghgTYcoijtLhKX4G93DPxsJOIuf/ub5qRi0lx5AnHEYGQ8c2zpxJ873viF7marKQ7k5dtBU83f0Oki3aeugSeAfYbOzeK49+LopkgjDeQikgLMyC4JFo=";
+  const defaultJWTKey =
+    "DyYR1em73ZR5s3rUV32ek3FCZBMxE0YMjuPCvpyQKn+MhCQwlwCiN+8ghgTYcoijtLhKX4G93DPxsJOIuf/ub5qRi0lx5AnHEYGQ8c2zpxJ873viF7marKQ7k5dtBU83f0Oki3aeugSeAfYbOzeK49+LopkgjDeQikgLMyC4JFo=";
 
   const rapidConfig = {
     dbHost: env.get("DATABASE_HOST", "127.0.0.1"),
@@ -64,7 +78,15 @@ export async function startServer(logger: Logger) {
       jwtKey: rapidConfig.jwtKey,
       localFileStoragePath: rapidConfig.localFileStoragePath,
     },
-    plugins: [new MetaManagePlugin(), new DataManagePlugin(), new RouteManagePlugin(), new WebhooksPlugin(), new AuthPlugin(), new FileManagePlugin(), new EntityAccessControlPlugin()],
+    plugins: [
+      new MetaManagePlugin(),
+      new DataManagePlugin(),
+      new RouteManagePlugin(),
+      new WebhooksPlugin(),
+      new AuthPlugin(),
+      new FileManagePlugin(),
+      new EntityAccessControlPlugin(),
+    ],
   });
   await rapidServer.start();
 

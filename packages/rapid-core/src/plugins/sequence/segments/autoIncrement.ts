@@ -7,7 +7,12 @@ import { SequenceAutoIncrementSegmentConfig } from "../SequencePluginTypes";
 
 export const segmentType = "autoIncrement";
 
-export async function resolveSegmentValue(server: IRpdServer, ruleCode: string, config: SequenceAutoIncrementSegmentConfig, input: GenerateSequenceNumbersInput): Promise<string> {
+export async function resolveSegmentValue(
+  server: IRpdServer,
+  ruleCode: string,
+  config: SequenceAutoIncrementSegmentConfig,
+  input: GenerateSequenceNumbersInput,
+): Promise<string> {
   const autoIncrementRecordDataAccessor = server.getDataAccessor({
     singularCode: "sequence_auto_increment_record",
   });

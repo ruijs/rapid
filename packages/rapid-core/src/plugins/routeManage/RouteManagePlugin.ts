@@ -3,7 +3,13 @@
  */
 
 import { RpdApplicationConfig } from "~/types";
-import { RpdServerPluginExtendingAbilities, RpdServerPluginConfigurableTargetOptions, RpdConfigurationItemOptions, IRpdServer, RapidPlugin } from "~/core/server";
+import {
+  RpdServerPluginExtendingAbilities,
+  RpdServerPluginConfigurableTargetOptions,
+  RpdConfigurationItemOptions,
+  IRpdServer,
+  RapidPlugin,
+} from "~/core/server";
 import * as httpProxy from "./actionHandlers/httpProxy";
 
 class RouteManager implements RapidPlugin {

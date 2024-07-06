@@ -1,21 +1,17 @@
-import type { RapidDataDictionaryEntry } from '@ruiapp/rapid-extension';
-import type { AxiosInstance } from 'axios';
-import { detectChangedFields } from './ObjectChangesDetector';
+import type { RapidDataDictionaryEntry } from "@ruiapp/rapid-extension";
+import type { AxiosInstance } from "axios";
+import { detectChangedFields } from "./ObjectChangesDetector";
 import type {
   RapidDataDictionaryWithId,
   RapidDataDictionaryEntryWithId,
   CreateDataDictionaryEntryInput,
   IRapidModelUpdater,
   UpdateDataDictionaryEntryInput,
-} from './types';
+} from "./types";
 
 export function newDictionaryEntryUpdater(rapidConfigApi: AxiosInstance) {
-  const dictionaryEntryUpdater: IRapidModelUpdater<
-    RapidDataDictionaryEntryWithId,
-    RapidDataDictionaryEntry,
-    RapidDataDictionaryWithId
-  > = {
-    modelType: 'dictionaryEntry',
+  const dictionaryEntryUpdater: IRapidModelUpdater<RapidDataDictionaryEntryWithId, RapidDataDictionaryEntry, RapidDataDictionaryWithId> = {
+    modelType: "dictionaryEntry",
     entityBatchMode: true,
 
     inputTitlePrinter(input) {
@@ -26,17 +22,17 @@ export function newDictionaryEntryUpdater(rapidConfigApi: AxiosInstance) {
       const res = await rapidConfigApi.post(`meta/data_dictionary_entries/operations/find`, {
         filters: [
           {
-            field: 'dictionary',
-            operator: 'exists',
+            field: "dictionary",
+            operator: "exists",
             filters: [
               {
-                field: 'id',
-                operator: 'eq',
+                field: "id",
+                operator: "eq",
                 value: mainEntity.id,
-              }
-            ]
-          }
-        ]
+              },
+            ],
+          },
+        ],
       });
       return res.data.list;
     },
@@ -46,12 +42,9 @@ export function newDictionaryEntryUpdater(rapidConfigApi: AxiosInstance) {
     },
 
     isEntityChanged(inputEntity, remoteEntity) {
-      const changedFieldNames = detectChangedFields(inputEntity, remoteEntity, ['value', 'description']);
+      const changedFieldNames = detectChangedFields(inputEntity, remoteEntity, ["value", "description"]);
       if (changedFieldNames.length) {
-        console.log(
-          `${this.modelType} ${this.inputTitlePrinter(inputEntity)} changed with these fields:`,
-          changedFieldNames,
-        );
+        console.log(`${this.modelType} ${this.inputTitlePrinter(inputEntity)} changed with these fields:`, changedFieldNames);
       }
       return changedFieldNames.length > 0;
     },
@@ -64,7 +57,7 @@ export function newDictionaryEntryUpdater(rapidConfigApi: AxiosInstance) {
         color: input.color,
         icon: input.icon,
         description: input.description,
-        orderNum: (inputIndex + 1),
+        orderNum: inputIndex + 1,
         disabled: false,
       };
       const res = await rapidConfigApi.post(`meta/data_dictionary_entries`, createEntityInput);
@@ -79,7 +72,7 @@ export function newDictionaryEntryUpdater(rapidConfigApi: AxiosInstance) {
         color: input.color,
         icon: input.icon,
         description: input.description,
-        orderNum: (inputIndex + 1),
+        orderNum: inputIndex + 1,
         disabled: remoteEntity.disabled,
       };
       const res = await rapidConfigApi.patch(`meta/data_dictionary_entries/${remoteEntity.id}`, updateEntityInput);

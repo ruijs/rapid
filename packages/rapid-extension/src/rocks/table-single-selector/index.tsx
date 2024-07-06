@@ -20,7 +20,18 @@ interface ICurrentState {
 
 export default {
   Renderer(context, props: TableSingleSelectorRockConfig) {
-    const { valueKey = "id", labelKey = "name", dropdownMatchSelectWidth = 360, labelFormat, value, pageSize = 20, columns, searchFields, allowClear, placeholder } = props;
+    const {
+      valueKey = "id",
+      labelKey = "name",
+      dropdownMatchSelectWidth = 360,
+      labelFormat,
+      value,
+      pageSize = 20,
+      columns,
+      searchFields,
+      allowClear,
+      placeholder,
+    } = props;
 
     const [currentState, setCurrentState] = useMergeState<ICurrentState>({ offset: 0 });
 

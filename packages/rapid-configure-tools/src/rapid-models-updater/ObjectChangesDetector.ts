@@ -1,4 +1,4 @@
-import { isEqual, isNull, isUndefined } from "lodash"
+import { isEqual, isNull, isUndefined } from "lodash";
 
 function isChanged(obj1: any, obj2: any) {
   if (isUndefined(obj1) || isNull(obj1)) {

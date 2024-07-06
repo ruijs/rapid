@@ -7,7 +7,15 @@ export type SequenceRuleConfig = {
   segments: SequenceSegmentConfig[];
 };
 
-export type SequenceSegmentConfig = SequenceLiteralSegmentConfig | SequenceYearSegmentConfig | SequenceMonthSegmentConfig | SequenceDayOfMonthSegmentConfig | SequenceDayOfWeekSegmentConfig | SequenceDayOfYearSegmentConfig | SequenceParameterSegmentConfig | SequenceAutoIncrementSegmentConfig;
+export type SequenceSegmentConfig =
+  | SequenceLiteralSegmentConfig
+  | SequenceYearSegmentConfig
+  | SequenceMonthSegmentConfig
+  | SequenceDayOfMonthSegmentConfig
+  | SequenceDayOfWeekSegmentConfig
+  | SequenceDayOfYearSegmentConfig
+  | SequenceParameterSegmentConfig
+  | SequenceAutoIncrementSegmentConfig;
 
 export type SequenceLiteralSegmentConfig = {
   type: "literal";

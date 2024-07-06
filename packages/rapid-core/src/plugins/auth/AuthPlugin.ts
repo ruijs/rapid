@@ -3,7 +3,13 @@
  */
 
 import { RpdApplicationConfig } from "~/types";
-import { IRpdServer, RapidPlugin, RpdConfigurationItemOptions, RpdServerPluginConfigurableTargetOptions, RpdServerPluginExtendingAbilities } from "~/core/server";
+import {
+  IRpdServer,
+  RapidPlugin,
+  RpdConfigurationItemOptions,
+  RpdServerPluginConfigurableTargetOptions,
+  RpdServerPluginExtendingAbilities,
+} from "~/core/server";
 
 import pluginActionHandlers from "./actionHandlers";
 import pluginModels from "./models";

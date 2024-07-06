@@ -16,7 +16,13 @@ import * as deleteCollectionEntityById from "./actionHandlers/deleteCollectionEn
 import * as addEntityRelations from "./actionHandlers/addEntityRelations";
 import * as removeEntityRelations from "./actionHandlers/removeEntityRelations";
 import * as queryDatabase from "./actionHandlers/queryDatabase";
-import { RpdServerPluginExtendingAbilities, RpdServerPluginConfigurableTargetOptions, RpdConfigurationItemOptions, IRpdServer, RapidPlugin } from "~/core/server";
+import {
+  RpdServerPluginExtendingAbilities,
+  RpdServerPluginConfigurableTargetOptions,
+  RpdConfigurationItemOptions,
+  IRpdServer,
+  RapidPlugin,
+} from "~/core/server";
 
 const routeConfigs: {
   code: string;

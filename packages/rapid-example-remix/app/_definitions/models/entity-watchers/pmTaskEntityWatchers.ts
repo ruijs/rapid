@@ -1,4 +1,4 @@
-import type {EntityWatcher, EntityWatchHandlerContext} from "@ruiapp/rapid-core";
+import type { EntityWatcher, EntityWatchHandlerContext } from "@ruiapp/rapid-core";
 import { PmTask } from "~/_definitions/meta/entity-types";
 
 export default [
@@ -6,14 +6,14 @@ export default [
     eventName: "entity.beforeResponse",
     modelSingularCode: "pm_task",
     handler: async (ctx: EntityWatchHandlerContext<"entity.beforeResponse">) => {
-      const {server, payload} = ctx;
+      const { server, payload } = ctx;
       const entities: PmTask[] = payload.entities;
 
-      entities.forEach(entity => {
+      entities.forEach((entity) => {
         entity.permissions = {
-          actions: ['task.update', 'task.delete'],
+          actions: ["task.update", "task.delete"],
         };
-      })
+      });
     },
   },
 ] satisfies EntityWatcher<any>[];

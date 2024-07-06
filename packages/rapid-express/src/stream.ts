@@ -127,7 +127,9 @@ class StreamPump {
           this.pause();
         }
       } catch (error: any) {
-        this.controller.error(new Error("Could not create Buffer, chunk must be of type string or an instance of Buffer, ArrayBuffer, or Array or an Array-like Object"));
+        this.controller.error(
+          new Error("Could not create Buffer, chunk must be of type string or an instance of Buffer, ArrayBuffer, or Array or an Array-like Object"),
+        );
         this.cancel();
       }
     }

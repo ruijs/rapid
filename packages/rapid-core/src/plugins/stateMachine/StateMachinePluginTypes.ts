@@ -26,7 +26,15 @@ export type GetStateMachineNextSnapshotOptions = {
   event: StateMachineEvent;
 };
 
-export type DefaultStateMachineSnapshot = MachineSnapshot<MachineContext, EventObject, Record<string, AnyActorRef | undefined>, StateValue, string, unknown, MetaObject>;
+export type DefaultStateMachineSnapshot = MachineSnapshot<
+  MachineContext,
+  EventObject,
+  Record<string, AnyActorRef | undefined>,
+  StateValue,
+  string,
+  unknown,
+  MetaObject
+>;
 
 export type TryGetStateMachineNextSnapshotResult = TryGetStateMachineNextSnapshotPositiveResult | TryGetStateMachineNextSnapshotNegativeResult;
 

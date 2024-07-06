@@ -58,7 +58,7 @@ export function mapDbRowToEntity(server: IRpdServer, model: RpdDataModel, row: a
 export type DbRowWithBaseRow = {
   row?: Record<string, any>;
   baseRow?: Record<string, any>;
-}
+};
 
 export function mapEntityToDbRow(server: IRpdServer, model: RpdDataModel, entity: any): DbRowWithBaseRow {
   let result: DbRowWithBaseRow = {};
@@ -66,8 +66,8 @@ export function mapEntityToDbRow(server: IRpdServer, model: RpdDataModel, entity
     return result;
   }
 
-  const row = result.row = {};
-  const baseRow = result.baseRow = {};
+  const row = (result.row = {});
+  const baseRow = (result.baseRow = {});
   if (!model.properties || !model.properties.length) {
     return result;
   }
