@@ -1,11 +1,5 @@
 import { find } from "lodash";
-import {
-  RpdDataModel,
-  RpdDataModelProperty,
-  CreateEntityOptions,
-  QuoteTableOptions,
-  DatabaseQuery,
-} from "../types";
+import { RpdDataModel, RpdDataModelProperty, CreateEntityOptions, QuoteTableOptions, DatabaseQuery } from "../types";
 import {
   CountRowOptions,
   DeleteRowOptions,
@@ -17,7 +11,7 @@ import {
   RowFilterOptions,
   RowFilterRelationalOperators,
   UpdateRowOptions,
-  ColumnQueryOptions,
+  ColumnSelectOptions,
 } from "~/dataAccess/dataAccessTypes";
 
 const objLeftQuoteChar = '"';
@@ -64,7 +58,7 @@ export default class QueryBuilder {
     return `${objLeftQuoteChar}${name}${objRightQuoteChar}`;
   }
 
-  quoteColumn(column: ColumnQueryOptions, emitTableAlias: boolean) {
+  quoteColumn(column: ColumnSelectOptions, emitTableAlias: boolean) {
     if (typeof column === "string") {
       return `${objLeftQuoteChar}${column}${objRightQuoteChar}`;
     } else if (emitTableAlias && column.tableName) {
@@ -100,7 +94,7 @@ export default class QueryBuilder {
       command += " ORDER BY ";
       command += orderBy
         .map((item) => {
-          const quotedName = this.quoteColumn(item.field,  ctx.emitTableAlias);
+          const quotedName = this.quoteColumn(item.field, ctx.emitTableAlias);
           return item.desc ? quotedName + " DESC" : quotedName;
         })
         .join(", ");
@@ -133,13 +127,17 @@ export default class QueryBuilder {
     if (!columns || !columns.length) {
       command += `${this.quoteObject(derivedModel.tableName)}.* FROM `;
     } else {
-      command += columns.map((column) => {
-        return this.quoteColumn(column, ctx.emitTableAlias);
-      }).join(", ");
+      command += columns
+        .map((column) => {
+          return this.quoteColumn(column, ctx.emitTableAlias);
+        })
+        .join(", ");
       command += " FROM ";
     }
 
-    command += `${this.quoteTable(derivedModel)} LEFT JOIN ${this.quoteTable(baseModel)} ON ${this.quoteObject(derivedModel.tableName)}.id = ${this.quoteObject(baseModel.tableName)}.id`;
+    command += `${this.quoteTable(derivedModel)} LEFT JOIN ${this.quoteTable(baseModel)} ON ${this.quoteObject(derivedModel.tableName)}.id = ${this.quoteObject(
+      baseModel.tableName,
+    )}.id`;
 
     if (filters && filters.length) {
       command += " WHERE ";
@@ -203,7 +201,9 @@ export default class QueryBuilder {
     let { filters } = options;
     let command = 'SELECT COUNT(*)::int as "count" FROM ';
 
-    command += `${this.quoteTable(derivedModel)} LEFT JOIN ${this.quoteTable(baseModel)} ON ${this.quoteObject(derivedModel.tableName)}.id = ${this.quoteObject(baseModel.tableName)}.id`;
+    command += `${this.quoteTable(derivedModel)} LEFT JOIN ${this.quoteTable(baseModel)} ON ${this.quoteObject(derivedModel.tableName)}.id = ${this.quoteObject(
+      baseModel.tableName,
+    )}.id`;
 
     if (filters && filters.length) {
       command += " WHERE ";

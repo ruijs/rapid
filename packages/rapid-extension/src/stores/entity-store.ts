@@ -1,4 +1,15 @@
-import { EventEmitter, Framework, HttpRequestOptions, IStore, MoveStyleUtils, Page, RuiModuleLogger, Scope, StoreConfigBase, StoreMeta } from "@ruiapp/move-style";
+import {
+  EventEmitter,
+  Framework,
+  HttpRequestOptions,
+  IStore,
+  MoveStyleUtils,
+  Page,
+  RuiModuleLogger,
+  Scope,
+  StoreConfigBase,
+  StoreMeta,
+} from "@ruiapp/move-style";
 import { cloneDeep, find, set } from "lodash";
 import rapidAppDefinition from "../rapidAppDefinition";
 import type { FindEntityOptions, RapidEntity } from "../types/rapid-entity-types";
@@ -91,6 +102,7 @@ export class EntityStore implements IStore<EntityStoreConfig> {
       filters: cloneDeep(this.#config.filters),
       orderBy: cloneDeep(this.#config.orderBy),
       properties: cloneDeep(this.#config.properties),
+      relations: cloneDeep(this.#config.relations),
       pagination: cloneDeep(this.#config.pagination),
       keepNonPropertyFields: this.#config.keepNonPropertyFields,
     };
@@ -120,6 +132,7 @@ export class EntityStore implements IStore<EntityStoreConfig> {
         filters: config.filters,
         orderBy: config.orderBy,
         properties: config.properties,
+        relations: config.relations,
         pagination: config.pagination,
         keepNonPropertyFields: config.keepNonPropertyFields,
       },

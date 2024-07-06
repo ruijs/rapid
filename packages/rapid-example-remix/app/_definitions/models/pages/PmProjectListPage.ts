@@ -1,40 +1,28 @@
 import { cloneDeep } from "lodash";
-import type { RapidPage, RapidEntityFormConfig } from "@ruiapp/rapid-extension";
+import type { RapidPage, RapidEntityFormConfig, SonicEntityListRockConfig } from "@ruiapp/rapid-extension";
 
 const formConfig: Partial<RapidEntityFormConfig> = {
   items: [
     {
       type: "auto",
-      code: "project",
-    },
-    {
-      type: "auto",
-      code: "title",
+      code: "name",
     },
     {
       type: "textarea",
       code: "description",
     },
-    {
-      type: "auto",
-      code: "bugLevel",
-    },
-    {
-      type: "auto",
-      code: "state",
-    },
   ],
 };
 
 const page: RapidPage = {
-  code: "pm_bug_issue_list",
-  name: "Bug列表",
-  title: "Bug列表",
+  code: "pm_project_list",
+  name: "项目列表",
+  title: "项目列表",
   permissionCheck: { any: [] },
   view: [
     {
       $type: "sonicEntityList",
-      entityCode: "PmBugIssue",
+      entityCode: "PmProject",
       viewMode: "table",
       listActions: [
         {
@@ -51,7 +39,7 @@ const page: RapidPage = {
           placeholder: "Search",
           actionEventName: "onSearch",
           filterMode: "contains",
-          filterFields: ["title", "description"],
+          filterFields: ["name", "description"],
         },
       ],
       orderBy: [
@@ -63,44 +51,12 @@ const page: RapidPage = {
       columns: [
         {
           type: "auto",
-          code: "code",
-          width: "100px",
-        },
-        {
-          type: "auto",
-          code: "project",
+          code: "name",
           width: "200px",
-          rendererProps: {
-            format: "{{name}}",
-          },
-        },
-        {
-          type: "auto",
-          code: "taskType",
-          width: "100px",
-        },
-        {
-          type: "auto",
-          code: "bugLevel",
-          width: "100px",
-        },
-        {
-          type: "link",
-          code: "title",
-          fixed: "left",
-          width: "300px",
-          rendererProps: {
-            url: "/pages/pm_bug_issue_details?id={{id}}",
-          },
         },
         {
           type: "auto",
           code: "description",
-        },
-        {
-          type: "auto",
-          code: "state",
-          width: "100px",
         },
         {
           type: "auto",
@@ -110,19 +66,6 @@ const page: RapidPage = {
         {
           type: "auto",
           code: "createdBy",
-          width: "150px",
-          rendererProps: {
-            format: "{{name}}",
-          },
-        },
-        {
-          type: "auto",
-          code: "updatedAt",
-          width: "150px",
-        },
-        {
-          type: "auto",
-          code: "updatedBy",
           width: "150px",
           rendererProps: {
             format: "{{name}}",
@@ -142,15 +85,13 @@ const page: RapidPage = {
           actionType: "delete",
           actionText: "删除",
           dataSourceCode: "list",
-          entityCode: "PmBugIssue",
+          entityCode: "PmProject",
         },
       ],
       newForm: cloneDeep(formConfig),
       editForm: cloneDeep(formConfig),
-      $exps: {
-        "newForm.fixedFields.taskType": "'bug'",
-      },
-    },
+      $exps: {},
+    } as SonicEntityListRockConfig,
   ],
 };
 

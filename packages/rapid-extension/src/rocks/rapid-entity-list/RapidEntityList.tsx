@@ -48,6 +48,7 @@ export default {
         fixedFilters: props.fixedFilters,
         keepNonPropertyFields: props.keepNonPropertyFields,
         properties,
+        relations: props.relations,
         orderBy: props.orderBy || [
           {
             field: "id",

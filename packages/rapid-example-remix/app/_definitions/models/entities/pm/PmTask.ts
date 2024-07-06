@@ -1,18 +1,25 @@
-import { PropertySequenceConfig } from '@ruiapp/rapid-core';
-import type { TDictionaryCodes } from '../../../meta/data-dictionary-codes';
-import type { TEntitySingularCodes } from '../../../meta/model-codes';
-import type { RapidEntity } from '@ruiapp/rapid-extension';
+import { PropertySequenceConfig } from "@ruiapp/rapid-core";
+import type { TDictionaryCodes } from "../../../meta/data-dictionary-codes";
+import type { TEntitySingularCodes } from "../../../meta/model-codes";
+import type { RapidEntity } from "@ruiapp/rapid-extension";
 
 const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
-  namespace: 'app',
-  code: 'PmTask',
-  name: '任务',
-  derivedTypePropertyCode: 'taskType',
+  namespace: "app",
+  code: "PmTask",
+  name: "任务",
+  derivedTypePropertyCode: "taskType",
   fields: [
     {
-      code: 'code',
-      name: 'code',
-      type: 'text',
+      code: "project",
+      name: "项目",
+      type: "relation",
+      targetSingularCode: "pm_project",
+      targetIdColumnName: "project_id",
+    },
+    {
+      code: "code",
+      name: "code",
+      type: "text",
       required: true,
       config: {
         sequence: {
@@ -21,7 +28,7 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
             segments: [
               {
                 type: "literal",
-                content: "TASK-"
+                content: "TASK-",
               },
               {
                 type: "autoIncrement",
@@ -34,26 +41,26 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       },
     },
     {
-      code: 'title',
-      name: '标题',
-      type: 'text',
+      code: "title",
+      name: "标题",
+      type: "text",
       required: true,
     },
     {
-      code: 'description',
-      name: '描述',
-      type: 'text',
+      code: "description",
+      name: "描述",
+      type: "text",
     },
     {
-      code: 'taskType',
-      name: '任务类型',
-      type: 'text',
+      code: "taskType",
+      name: "任务类型",
+      type: "text",
     },
     {
-      code: 'state',
-      name: '状态',
-      type: 'option',
-      dataDictionary: 'TaskState',
+      code: "state",
+      name: "状态",
+      type: "option",
+      dataDictionary: "TaskState",
       defaultValue: "'pending'",
       config: {
         stateMachine: {
@@ -62,37 +69,37 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
             states: {
               done: {
                 on: {
-                  close: 'closed',
-                  reopen: 'reopened',
+                  close: "closed",
+                  reopen: "reopened",
                 },
               },
               closed: {},
               pending: {
                 on: {
-                  start: 'processing',
+                  start: "processing",
                 },
               },
               reopened: {
                 on: {
-                  start: 'processing',
+                  start: "processing",
                 },
               },
               processing: {
                 on: {
-                  pause: 'pending',
-                  finish: 'done',
+                  pause: "pending",
+                  finish: "done",
                 },
               },
             },
-            initial: 'pending',
+            initial: "pending",
           },
         },
       },
     },
     {
-      code: 'permissions',
-      name: '权限',
-      type: 'json',
+      code: "permissions",
+      name: "权限",
+      type: "json",
     },
   ],
 };

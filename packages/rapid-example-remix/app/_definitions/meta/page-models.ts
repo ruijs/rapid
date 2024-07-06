@@ -5,6 +5,7 @@ import OcRoleDetailsPage from '../models/pages/OcRoleDetailsPage';
 import OcRoleListPage from '../models/pages/OcRoleListPage';
 import OcUserListPage from '../models/pages/OcUserListPage';
 import PmBugIssueListPage from '../models/pages/PmBugIssueListPage';
+import PmProjectListPage from '../models/pages/PmProjectListPage';
 import PmTaskListPage from '../models/pages/PmTaskListPage';
 
 export default [
@@ -14,5 +15,6 @@ export default [
   OcRoleListPage,
   OcUserListPage,
   PmBugIssueListPage,
+  PmProjectListPage,
   PmTaskListPage,
 ] as TRapidPage[];

@@ -271,6 +271,57 @@ export interface PmBugIssue {
 export type SavePmBugIssueInput = Omit<PmBugIssue, 'id' | 'createdAt' | 'createdBy' | 'updatedAt' | 'updatedBy'>;
 
 /**
+ * 项目
+ */
+export interface PmProject {
+  /**
+   * id
+   */
+  id: number;
+  /**
+   * 名称
+   */
+  name: string;
+  /**
+   * 描述
+   */
+  description?: string;
+  /**
+   * 任务
+   */
+  tasks?: any;
+  /**
+   * 创建时间
+   */
+  createdAt?: string;
+  /**
+   * 创建人
+   */
+  createdBy?: Partial<OcUser>;
+  /**
+   * 更新时间
+   */
+  updatedAt?: string;
+  /**
+   * 更新人
+   */
+  updatedBy?: Partial<OcUser>;
+  /**
+   * 删除时间
+   */
+  deletedAt?: string;
+  /**
+   * 删除人
+   */
+  deletedBy?: Partial<OcUser>;
+}
+
+/**
+ * 项目
+ */
+export type SavePmProjectInput = Omit<PmProject, 'id' | 'createdAt' | 'createdBy' | 'updatedAt' | 'updatedBy'>;
+
+/**
  * 任务
  */
 export interface PmTask {
@@ -278,6 +329,10 @@ export interface PmTask {
    * id
    */
   id: number;
+  /**
+   * 项目
+   */
+  project?: Partial<PmProject>;
   /**
    * code
    */
