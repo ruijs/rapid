@@ -1,4 +1,9 @@
-export function getEntityPartChanges(before: any, after: any): Record<string, any> | null {
+import { isNumber, isObject } from "lodash";
+import { IRpdServer } from "~/core/server";
+import { getEntityPropertyByCode, isOneRelationProperty } from "~/helpers/metaHelper";
+import { RpdDataModel } from "~/types";
+
+export function getEntityPartChanges(server: IRpdServer, model: RpdDataModel, before: any, after: any): Record<string, any> | null {
   if (!before) {
     throw new Error("Argument 'before' can not be null.");
   }
@@ -7,15 +12,65 @@ export function getEntityPartChanges(before: any, after: any): Record<string, an
     throw new Error("Argument 'after' can not be null.");
   }
 
-  let changed = null;
+  let changed = false;
+  let changes = {};
   for (const key in after) {
-    if (after[key] != before[key]) {
-      if (changed) {
-        changed[key] = after[key];
+    const property = getEntityPropertyByCode(server, model, key);
+    if (isOneRelationProperty(property)) {
+      const afterValue: number | { id: number } | null = after[key];
+      const beforeValue: number | { id: number } | null = before[key] || before[property.targetIdColumnName];
+      if (afterValue) {
+        if (isNumber(afterValue)) {
+          if (beforeValue) {
+            if (isNumber(beforeValue)) {
+              if (afterValue != beforeValue) {
+                changed = true;
+                changes[key] = afterValue;
+              }
+            } else {
+              if (afterValue != beforeValue.id) {
+                changed = true;
+                changes[key] = afterValue;
+              }
+            }
+          } else {
+            changed = true;
+            changes[key] = afterValue;
+          }
+        } else {
+          if (beforeValue) {
+            if (isNumber(beforeValue)) {
+              if (afterValue.id != beforeValue) {
+                changed = true;
+                changes[key] = afterValue;
+              }
+            } else {
+              if (afterValue.id != beforeValue.id) {
+                changed = true;
+                changes[key] = afterValue;
+              }
+            }
+          } else {
+            changed = true;
+            changes[key] = afterValue;
+          }
+        }
       } else {
-        changed = { [key]: after[key] };
+        if (beforeValue) {
+          changed = true;
+          changes[key] = null;
+        }
+      }
+    } else {
+      if (after[key] != before[key]) {
+        changed = true;
+        changes[key] = after[key];
       }
     }
   }
-  return changed;
+
+  if (changed) {
+    return changes;
+  }
+  return null;
 }

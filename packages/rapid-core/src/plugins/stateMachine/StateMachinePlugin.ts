@@ -18,7 +18,7 @@ import { filter, find, first, get, isEqual } from "lodash";
 import { PropertyStateMachineConfig } from "./StateMachinePluginTypes";
 import { isNullOrUndefined } from "~/utilities/typeUtility";
 import { getStateMachineNextSnapshot } from "./stateMachineHelper";
-import { getEntityPropertiesIncludingBase } from "~/dataAccess/metaHelper";
+import { getEntityPropertiesIncludingBase } from "~/helpers/metaHelper";
 
 class StateMachinePlugin implements RapidPlugin {
   get code(): string {

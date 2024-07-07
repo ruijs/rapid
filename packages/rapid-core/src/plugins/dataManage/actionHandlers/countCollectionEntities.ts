@@ -1,6 +1,6 @@
 import { CountEntityOptions, RunEntityActionHandlerOptions } from "~/types";
 import runCollectionEntityActionHandler from "~/helpers/runCollectionEntityActionHandler";
-import { removeFiltersWithNullValue } from "~/dataAccess/filterHelper";
+import { removeFiltersWithNullValue } from "~/helpers/filterHelper";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 

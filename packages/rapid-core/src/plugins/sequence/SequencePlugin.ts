@@ -18,7 +18,7 @@ import { PropertySequenceConfig } from "./SequencePluginTypes";
 import { isEqual } from "lodash";
 import SequenceService from "./SequenceService";
 import { isNullOrUndefined } from "~/utilities/typeUtility";
-import { getEntityPropertiesIncludingBase } from "~/dataAccess/metaHelper";
+import { getEntityPropertiesIncludingBase } from "~/helpers/metaHelper";
 
 class SequencePlugin implements RapidPlugin {
   #sequenceService!: SequenceService;

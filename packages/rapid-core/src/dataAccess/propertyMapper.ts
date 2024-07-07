@@ -1,5 +1,5 @@
 import { RpdDataModel } from "~/types";
-import { isRelationProperty } from "~/utilities/rapidUtility";
+import { isRelationProperty } from "../helpers/metaHelper";
 
 export function mapPropertyNameToColumnName(model: RpdDataModel, propertyName: string) {
   if (!model.properties) {
