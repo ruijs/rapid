@@ -2,6 +2,18 @@ import { cloneDeep } from "lodash";
 import { IRpdServer } from "~/core/server";
 import { RpdDataModel, RpdDataModelProperty } from "~/types";
 
+export function isRelationProperty(property: RpdDataModelProperty) {
+  return property.type === "relation" || property.type === "relation[]";
+}
+
+export function isOneRelationProperty(property: RpdDataModelProperty) {
+  return isRelationProperty(property) && property.relation === "one";
+}
+
+export function isManyRelationProperty(property: RpdDataModelProperty) {
+  return isRelationProperty(property) && property.relation === "many";
+}
+
 export function getEntityProperties(server: IRpdServer, model: RpdDataModel) {
   return model.properties;
 }

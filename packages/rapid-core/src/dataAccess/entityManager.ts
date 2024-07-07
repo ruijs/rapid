@@ -20,11 +20,10 @@ import {
 import { isNullOrUndefined } from "~/utilities/typeUtility";
 import { mapDbRowToEntity, mapEntityToDbRow } from "./entityMapper";
 import { mapPropertyNameToColumnName } from "./propertyMapper";
-import { isRelationProperty } from "~/utilities/rapidUtility";
 import { IRpdServer, RapidPlugin } from "~/core/server";
 import { getEntityPartChanges } from "~/helpers/entityHelpers";
-import { filter, find, first, forEach, isArray, isObject, keys, map, reject, uniq } from "lodash";
-import { getEntityPropertiesIncludingBase, getEntityProperty, getEntityPropertyByCode } from "./metaHelper";
+import { filter, find, first, forEach, isArray, isNumber, isObject, keys, map, reject, uniq } from "lodash";
+import { getEntityPropertiesIncludingBase, getEntityProperty, getEntityPropertyByCode, isRelationProperty } from "../helpers/metaHelper";
 import { ColumnSelectOptions, CountRowOptions, FindRowOptions, FindRowOrderByOptions, RowFilterOptions } from "./dataAccessTypes";
 import { newEntityOperationError } from "~/utilities/errorUtility";
 import { getNowStringWithTimezone } from "~/utilities/timeUtility";
@@ -710,7 +709,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
         newEntityOneRelationProps[property.code] = targetEntity;
         targetRow[property.targetIdColumnName!] = targetEntityId;
       }
-    } else {
+    } else if (isNumber(fieldValue)) {
       // fieldValue is id;
       const targetEntityId = fieldValue;
       const targetEntity = await findById(server, targetDataAccessor, {
@@ -724,6 +723,9 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
       }
       newEntityOneRelationProps[property.code] = targetEntity;
       targetRow[property.targetIdColumnName!] = targetEntityId;
+    } else {
+      newEntityOneRelationProps[property.code] = null;
+      targetRow[property.targetIdColumnName!] = null;
     }
   }
 
@@ -844,15 +846,16 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
   }
 
   const entity = await findById(server, dataAccessor, {
-    id,
     routeContext,
+    id,
+    keepNonPropertyFields: true,
   });
   if (!entity) {
     throw new Error(`${model.namespace}.${model.singularCode}  with id "${id}" was not found.`);
   }
 
   let { entityToSave } = options;
-  let changes = getEntityPartChanges(entity, entityToSave);
+  let changes = getEntityPartChanges(server, model, entity, entityToSave);
   if (!changes && !options.operation) {
     return entity;
   }
@@ -887,7 +890,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     routeContext: options.routeContext,
   });
 
-  changes = getEntityPartChanges(entity, entityToSave);
+  changes = getEntityPartChanges(server, model, entity, entityToSave);
 
   const oneRelationPropertiesToUpdate: RpdDataModelProperty[] = [];
   const manyRelationPropertiesToUpdate: RpdDataModelProperty[] = [];
@@ -939,7 +942,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
         updatedEntityOneRelationProps[property.code] = targetEntity;
         targetRow[property.targetIdColumnName!] = targetEntityId;
       }
-    } else {
+    } else if (isNumber(fieldValue)) {
       // fieldValue is id;
       const targetEntityId = fieldValue;
       const targetEntity = await findById(server, targetDataAccessor, {
@@ -953,6 +956,9 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
       }
       updatedEntityOneRelationProps[property.code] = targetEntity;
       targetRow[property.targetIdColumnName!] = targetEntityId;
+    } else {
+      updatedEntityOneRelationProps[property.code] = null;
+      targetRow[property.targetIdColumnName!] = null;
     }
   }
 

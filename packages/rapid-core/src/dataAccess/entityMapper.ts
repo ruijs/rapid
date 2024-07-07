@@ -1,7 +1,6 @@
 import type { IRpdServer } from "~/core/server";
 import { RpdDataModel } from "~/types";
-import { isRelationProperty } from "~/utilities/rapidUtility";
-import { getEntityProperty, getEntityPropertyByCode } from "./metaHelper";
+import { getEntityProperty, getEntityPropertyByCode, isRelationProperty } from "../helpers/metaHelper";
 
 // TODO Generate mapper and cache it.
 

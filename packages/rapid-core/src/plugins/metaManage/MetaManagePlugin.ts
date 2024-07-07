@@ -24,9 +24,8 @@ import {
 import * as listMetaModels from "./actionHandlers/listMetaModels";
 import * as listMetaRoutes from "./actionHandlers/listMetaRoutes";
 import * as getMetaModelDetail from "./actionHandlers/getMetaModelDetail";
-import { isRelationProperty } from "~/utilities/rapidUtility";
 import { find } from "lodash";
-import { getEntityPropertiesIncludingBase } from "~/dataAccess/metaHelper";
+import { getEntityPropertiesIncludingBase, isRelationProperty } from "~/helpers/metaHelper";
 
 class MetaManager implements RapidPlugin {
   get code(): string {
