@@ -16,13 +16,15 @@ export type SettingItemSetting = {
 };
 
 export type SystemSettingItem = {
+  id: number;
   groupCode: string;
   itemCode: string;
   value: any;
 };
 
 export type UserSettingItem = {
-  userId: number;
+  id: number;
+  ownerId: number;
   groupCode: string;
   itemCode: string;
   value: any;

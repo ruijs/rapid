@@ -32,6 +32,9 @@ export { default as FileManagePlugin } from "./plugins/fileManage/FileManagePlug
 export { default as ServerOperationPlugin } from "./plugins/serverOperation/ServerOperationPlugin";
 export * from "./plugins/serverOperation/ServerOperationPluginTypes";
 
+export { default as SettingPlugin } from "./plugins/setting/SettingPlugin";
+export * from "./plugins/setting/SettingPluginTypes";
+
 export { default as CronJobPlugin } from "./plugins/cronJob/CronJobPlugin";
 export * from "./plugins/cronJob/CronJobPluginTypes";
 

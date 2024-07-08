@@ -2,14 +2,14 @@ import { RpdRoute } from "~/types";
 
 export default {
   namespace: "svc",
-  name: "svc.getSystemSettingValues",
-  code: "svc.getSystemSettingValues",
+  name: "svc.getUserSettingValues",
+  code: "svc.getUserSettingValues",
   type: "RESTful",
   method: "GET",
-  endpoint: "/svc/systemSettingValues",
+  endpoint: "/svc/userSettingValues",
   actions: [
     {
-      code: "getSystemSettingValues",
+      code: "getUserSettingValues",
     },
   ],
 } satisfies RpdRoute;
