@@ -49,6 +49,7 @@ export default {
       name: "items",
       code: "items",
       type: "relation[]",
+      relation: "many",
       targetSingularCode: "system_setting_item_setting",
       selfIdColumnName: "group_id",
     },
