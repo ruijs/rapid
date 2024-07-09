@@ -50,7 +50,7 @@ export default {
     {
       name: "name",
       code: "name",
-      columnName: "scnameope",
+      columnName: "name",
       type: "text",
       required: false,
     },
