@@ -24,7 +24,7 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
 
   const settingService = server.getService<SettingService>("settingService");
 
-  const settingValues = await settingService.getSystemSettingValues(input);
+  const settingValues = await settingService.getSystemSettingValues(input.groupCode);
 
   ctx.output = settingValues;
 }

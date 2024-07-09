@@ -2,7 +2,7 @@
  * Setting plugin
  */
 
-import { CreateEntityOptions, RpdApplicationConfig, RpdDataModel, RpdDataModelProperty } from "~/types";
+import { RpdApplicationConfig } from "~/types";
 import {
   IRpdServer,
   RapidPlugin,
@@ -14,10 +14,7 @@ import {
 import pluginActionHandlers from "./actionHandlers";
 import pluginModels from "./models";
 import pluginRoutes from "./routes";
-import { isEqual } from "lodash";
 import SettingService from "./SettingService";
-import { isNullOrUndefined } from "~/utilities/typeUtility";
-import { getEntityPropertiesIncludingBase } from "~/helpers/metaHelper";
 
 class SettingPlugin implements RapidPlugin {
   #settingService!: SettingService;

@@ -18,9 +18,9 @@ export default {
       autoIncrement: true,
     },
     {
-      name: "userId",
-      code: "userId",
-      columnName: "user_id",
+      name: "ownerId",
+      code: "ownerId",
+      columnName: "owner_id",
       type: "integer",
       required: true,
     },
