@@ -21,6 +21,7 @@ export default {
       name: "group",
       code: "group",
       type: "relation",
+      relation: "one",
       targetSingularCode: "system_setting_group_setting",
       targetIdColumnName: "group_id",
       required: true,
