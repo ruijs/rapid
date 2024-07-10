@@ -22,7 +22,7 @@ import { mapDbRowToEntity, mapEntityToDbRow } from "./entityMapper";
 import { mapPropertyNameToColumnName } from "./propertyMapper";
 import { IRpdServer, RapidPlugin } from "~/core/server";
 import { getEntityPartChanges } from "~/helpers/entityHelpers";
-import { filter, find, first, forEach, isArray, isNumber, isObject, keys, map, reject, uniq } from "lodash";
+import { filter, find, first, forEach, isArray, isNumber, isObject, isString, keys, map, reject, uniq } from "lodash";
 import { getEntityPropertiesIncludingBase, getEntityProperty, getEntityPropertyByCode, isRelationProperty } from "../helpers/metaHelper";
 import { ColumnSelectOptions, CountRowOptions, FindRowOptions, FindRowOrderByOptions, RowFilterOptions } from "./dataAccessTypes";
 import { newEntityOperationError } from "~/utilities/errorUtility";
@@ -709,7 +709,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
         newEntityOneRelationProps[property.code] = targetEntity;
         targetRow[property.targetIdColumnName!] = targetEntityId;
       }
-    } else if (isNumber(fieldValue)) {
+    } else if (isNumber(fieldValue) || isString(fieldValue)) {
       // fieldValue is id;
       const targetEntityId = fieldValue;
       const targetEntity = await findById(server, targetDataAccessor, {
@@ -942,7 +942,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
         updatedEntityOneRelationProps[property.code] = targetEntity;
         targetRow[property.targetIdColumnName!] = targetEntityId;
       }
-    } else if (isNumber(fieldValue)) {
+    } else if (isNumber(fieldValue) || isString(fieldValue)) {
       // fieldValue is id;
       const targetEntityId = fieldValue;
       const targetEntity = await findById(server, targetDataAccessor, {
