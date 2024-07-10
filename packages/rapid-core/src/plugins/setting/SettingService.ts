@@ -6,6 +6,11 @@ export interface GetSystemSettingValuesInput {
   groupCode: string;
 }
 
+export interface SetSystemSettingValuesInput {
+  groupCode: string;
+  values: Record<string, any>;
+}
+
 export interface GetUserSettingValuesInput {
   groupCode: string;
 }
@@ -80,12 +85,14 @@ export default class SettingService {
     });
 
     if (settingItem) {
-      await this.#systemSettingItemManager.updateEntityById({
-        id: settingItem.id,
-        entityToSave: {
-          value,
-        },
-      });
+      if (settingItem.value !== value) {
+        await this.#systemSettingItemManager.updateEntityById({
+          id: settingItem.id,
+          entityToSave: {
+            value,
+          },
+        });
+      }
     } else {
       await this.#systemSettingItemManager.createEntity({
         entity: {
