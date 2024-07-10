@@ -1,4 +1,4 @@
-import { ContainerRockConfig, RockConfig, RockEventHandlerConfig } from "@ruiapp/move-style";
+import { ContainerRockConfig, RockEventHandlerConfig } from "@ruiapp/move-style";
 import { RapidFormItemConfig } from "../rapid-form-item/rapid-form-item-types";
 
 export type RapidFormConfig = {
@@ -48,6 +48,8 @@ export type RapidFormConfig = {
    * 表单默认字段，可用于新建表单设置默认值
    */
   defaultFormFields?: Record<string, any>;
+
+  onFinish: RockEventHandlerConfig;
 };
 
 /**
