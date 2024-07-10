@@ -259,7 +259,8 @@ export class RapidServer implements IRpdServer {
 
   async emitEvent<TEventName extends keyof RpdServerEventTypes>(event: EmitServerEventOptions<TEventName>) {
     const { eventName, payload, sender, routeContext: routerContext } = event;
-    this.#logger.debug(`Emitting '${eventName}' event.`, { eventName, payload });
+    this.#logger.debug(`Emitting '${eventName}' event.`, { eventName });
+    this.#logger.verbose(`Event payload: `, { payload });
     await this.#eventManager.emit<TEventName>(eventName, sender, payload as any, routerContext);
 
     // TODO: should move this logic into metaManager
