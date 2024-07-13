@@ -23,10 +23,18 @@ import { mapPropertyNameToColumnName } from "./propertyMapper";
 import { IRpdServer, RapidPlugin } from "~/core/server";
 import { getEntityPartChanges } from "~/helpers/entityHelpers";
 import { filter, find, first, forEach, isArray, isNumber, isObject, isString, keys, map, reject, uniq } from "lodash";
-import { getEntityPropertiesIncludingBase, getEntityProperty, getEntityPropertyByCode, isRelationProperty } from "../helpers/metaHelper";
+import {
+  getEntityPropertiesIncludingBase,
+  getEntityProperty,
+  getEntityPropertyByCode,
+  getEntityPropertyByFieldName,
+  isManyRelationProperty,
+  isRelationProperty,
+} from "../helpers/metaHelper";
 import { ColumnSelectOptions, CountRowOptions, FindRowOptions, FindRowOrderByOptions, RowFilterOptions } from "./dataAccessTypes";
 import { newEntityOperationError } from "~/utilities/errorUtility";
 import { getNowStringWithTimezone } from "~/utilities/timeUtility";
+import { or } from "xstate";
 
 export type FindOneRelationEntitiesOptions = {
   server: IRpdServer;
@@ -50,26 +58,62 @@ function convertEntityOrderByToRowOrderBy(server: IRpdServer, model: RpdDataMode
   }
 
   return orderByList.map((orderBy) => {
-    let property = getEntityPropertyByCode(server, model, orderBy.field);
-    if (!property) {
-      property = getEntityProperty(server, model, (item) => item.relation === "one" && item.targetIdColumnName === orderBy.field);
+    const fields = orderBy.field.split(".");
+    let orderField: string;
+    let relationField: string;
+    if (fields.length === 1) {
+      orderField = fields[0];
+    } else {
+      orderField = fields[1];
+      relationField = fields[0];
     }
+    if (relationField) {
+      const relationProperty = getEntityPropertyByCode(server, model, relationField);
+      if (!isRelationProperty(relationProperty)) {
+        throw new Error("orderBy[].relation must be a one-relation property.");
+      }
 
-    if (!property) {
-      property = getEntityProperty(server, model, (item) => item.columnName === orderBy.field);
+      if (isManyRelationProperty(relationProperty)) {
+        throw new Error("orderBy[].relation must be a one-relation property.");
+      }
+
+      const relationModel = server.getModel({ singularCode: relationProperty.targetSingularCode });
+      let relationBaseModel: RpdDataModel = null;
+      if (relationModel.base) {
+        relationBaseModel = server.getModel({ singularCode: relationModel.base });
+      }
+      let property = getEntityPropertyByFieldName(server, relationModel, orderField);
+      if (!property) {
+        throw new Error(`Unkown orderBy field '${orderField}' of relation '${relationField}'`);
+      }
+
+      return {
+        field: {
+          name: mapPropertyNameToColumnName(server, relationModel, orderField),
+          tableName: property.isBaseProperty ? relationBaseModel.tableName : relationModel.tableName,
+          schema: property.isBaseProperty ? relationBaseModel.schema : relationModel.schema,
+        },
+        relationField: {
+          name: mapPropertyNameToColumnName(server, model, relationField),
+          tableName: relationProperty.isBaseProperty ? baseModel.tableName : model.tableName,
+          schema: relationProperty.isBaseProperty ? baseModel.schema : model.schema,
+        },
+        desc: !!orderBy.desc,
+      } as FindRowOrderByOptions;
+    } else {
+      let property = getEntityPropertyByFieldName(server, model, orderField);
+      if (!property) {
+        throw new Error(`Unkown orderBy field '${orderField}'`);
+      }
+
+      return {
+        field: {
+          name: mapPropertyNameToColumnName(server, model, orderField),
+          tableName: property.isBaseProperty ? baseModel.tableName : model.tableName,
+        },
+        desc: !!orderBy.desc,
+      } as FindRowOrderByOptions;
     }
-
-    if (!property) {
-      throw new Error(`Unkown orderBy field '${orderBy.field}'`);
-    }
-
-    return {
-      field: {
-        name: mapPropertyNameToColumnName(model, orderBy.field),
-        tableName: property.isBaseProperty ? baseModel.tableName : model.tableName,
-      },
-      desc: !!orderBy.desc,
-    } as FindRowOrderByOptions;
   });
 }
 

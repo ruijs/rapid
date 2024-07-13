@@ -5,6 +5,10 @@ const formConfig: Partial<RapidEntityFormConfig> = {
   items: [
     {
       type: "auto",
+      code: "orderNum",
+    },
+    {
+      type: "auto",
       code: "name",
     },
     {
@@ -44,11 +48,16 @@ const page: RapidPage = {
       ],
       orderBy: [
         {
-          field: "id",
+          field: "orderNum",
         },
       ],
       pageSize: 20,
       columns: [
+        {
+          type: "auto",
+          code: "orderNum",
+          width: "200px",
+        },
         {
           type: "auto",
           code: "name",

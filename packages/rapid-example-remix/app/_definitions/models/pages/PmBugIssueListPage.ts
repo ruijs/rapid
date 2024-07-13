@@ -43,6 +43,11 @@ const page: RapidPage = {
           icon: "PlusOutlined",
           actionStyle: "primary",
         },
+        {
+          $type: "sonicToolbarRefreshButton",
+          text: "刷新",
+          icon: "ReloadOutlined",
+        },
       ],
       extraActions: [
         {
@@ -56,7 +61,10 @@ const page: RapidPage = {
       ],
       orderBy: [
         {
-          field: "id",
+          field: "project.orderNum",
+        },
+        {
+          field: "code",
         },
       ],
       pageSize: 20,

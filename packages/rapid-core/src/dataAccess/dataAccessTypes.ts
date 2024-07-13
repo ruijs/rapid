@@ -43,6 +43,7 @@ export type ColumnSelectOptions = string | ColumnNameWithTableName;
 export type ColumnNameWithTableName = {
   name: string;
   tableName?: string;
+  schema?: string;
 };
 
 export interface FindRowOptions {
@@ -91,8 +92,20 @@ export interface FindRowPaginationOptions {
 }
 
 export interface FindRowOrderByOptions {
+  /**
+   * 排序字段
+   */
   field: ColumnSelectOptions;
+
+  /**
+   * 是否倒序
+   */
   desc?: boolean;
+
+  /**
+   * 关系字段
+   */
+  relationField?: ColumnNameWithTableName;
 }
 
 export interface CountRowOptions {

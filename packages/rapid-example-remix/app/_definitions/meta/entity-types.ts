@@ -287,6 +287,10 @@ export interface PmProject {
    */
   description?: string;
   /**
+   * 排序号
+   */
+  orderNum?: number;
+  /**
    * 任务
    */
   tasks?: any;
