@@ -61,3 +61,16 @@ export function getEntityProperty(server: IRpdServer, model: RpdDataModel, predi
 
   return property;
 }
+
+export function getEntityPropertyByFieldName(server: IRpdServer, model: RpdDataModel, fieldName: string) {
+  let property = getEntityPropertyByCode(server, model, fieldName);
+  if (!property) {
+    property = getEntityProperty(server, model, (item) => item.relation === "one" && item.targetIdColumnName === fieldName);
+  }
+
+  if (!property) {
+    property = getEntityProperty(server, model, (item) => item.columnName === fieldName);
+  }
+
+  return property;
+}

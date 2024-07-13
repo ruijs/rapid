@@ -1,27 +1,28 @@
 import { RpdDataModel } from "~/types";
-import { isRelationProperty } from "../helpers/metaHelper";
+import { getEntityPropertyByCode, isOneRelationProperty } from "../helpers/metaHelper";
+import { IRpdServer } from "~/core/server";
 
-export function mapPropertyNameToColumnName(model: RpdDataModel, propertyName: string) {
+export function mapPropertyNameToColumnName(server: IRpdServer, model: RpdDataModel, propertyName: string) {
   if (!model.properties) {
     return propertyName;
   }
 
-  const property = model.properties.find((item) => item.code === propertyName);
+  const property = getEntityPropertyByCode(server, model, propertyName);
   if (!property) {
     return propertyName;
   }
 
-  if (isRelationProperty(property) && property.relation === "one") {
+  if (isOneRelationProperty(property)) {
     return property.targetIdColumnName!;
   }
 
   return property.columnName || property.code;
 }
 
-export function mapPropertyNamesToColumnNames(model: RpdDataModel, propertyNames: string[]) {
+export function mapPropertyNamesToColumnNames(server: IRpdServer, model: RpdDataModel, propertyNames: string[]) {
   if (!propertyNames || !propertyNames.length) {
     return [];
   }
 
-  return propertyNames.map((fieldName) => mapPropertyNameToColumnName(model, fieldName));
+  return propertyNames.map((fieldName) => mapPropertyNameToColumnName(server, model, fieldName));
 }

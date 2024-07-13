@@ -48,7 +48,7 @@ const page: RapidPage = {
       ],
       orderBy: [
         {
-          field: "id",
+          field: "project.orderNum",
         },
       ],
       pageSize: 20,
@@ -56,6 +56,11 @@ const page: RapidPage = {
         {
           type: "auto",
           code: "code",
+          width: "100px",
+        },
+        {
+          type: "auto",
+          code: "project",
           width: "100px",
         },
         {
