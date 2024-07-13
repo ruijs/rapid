@@ -23,6 +23,7 @@ export default {
       try {
         const values = await form.validateFields();
         form.submit();
+        await handleComponentEvent("onFormSubmit", message.framework, message.page as any, state.scope, props, props.onFormSubmit, [{ form: state.form }]);
       } catch (err) {
         message.framework.getRockLogger().error(props, `Failed to submit form: ${err.message}`, { error: err });
       }

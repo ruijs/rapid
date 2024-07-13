@@ -34,6 +34,8 @@ export interface RapidEntityFormConfig extends RapidFormConfig {
    */
   defaultFormFields?: Record<string, any>;
 
+  onFormSubmit?: RockEventHandlerConfig;
+
   onFormRefresh?: RockEventHandlerConfig;
 
   onValuesChange?: RockEventHandlerConfig;

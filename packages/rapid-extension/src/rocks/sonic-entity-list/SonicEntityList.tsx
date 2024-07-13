@@ -80,6 +80,14 @@ export default {
               entityCode: entityCode,
               mode: "new",
               ...omit(props.newForm, ["entityCode"]),
+              onFormSubmit: [
+                {
+                  $action: "setVars",
+                  vars: {
+                    "modal-saving": true,
+                  },
+                },
+              ],
               onSaveSuccess: [
                 {
                   $action: "setVars",
@@ -104,12 +112,6 @@ export default {
             },
           ],
           onOk: [
-            {
-              $action: "setVars",
-              vars: {
-                "modal-saving": true,
-              },
-            },
             {
               $action: "sendComponentMessage",
               componentId: props.$id,
@@ -150,6 +152,14 @@ export default {
               $exps: {
                 entityId: "$scope.vars.activeEntityId",
               },
+              onFormSubmit: [
+                {
+                  $action: "setVars",
+                  vars: {
+                    "modal-saving": true,
+                  },
+                },
+              ],
               onSaveSuccess: [
                 {
                   $action: "setVars",
@@ -174,12 +184,6 @@ export default {
             },
           ],
           onOk: [
-            {
-              $action: "setVars",
-              vars: {
-                "modal-saving": true,
-              },
-            },
             {
               $action: "sendComponentMessage",
               componentId: props.$id,
