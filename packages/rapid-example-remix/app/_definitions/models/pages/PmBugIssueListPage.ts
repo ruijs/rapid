@@ -1,5 +1,5 @@
 import { cloneDeep } from "lodash";
-import type { RapidPage, RapidEntityFormConfig } from "@ruiapp/rapid-extension";
+import type { RapidPage, RapidEntityFormConfig, SonicEntityListRockConfig } from "@ruiapp/rapid-extension";
 
 const formConfig: Partial<RapidEntityFormConfig> = {
   items: [
@@ -77,6 +77,14 @@ const page: RapidPage = {
         {
           type: "auto",
           code: "project",
+          fieldName: "project.name",
+          width: "200px",
+        },
+        {
+          type: "auto",
+          code: "project",
+          title: "项目创建时间",
+          fieldName: "project.createdAt",
           width: "200px",
         },
         {
@@ -92,7 +100,6 @@ const page: RapidPage = {
         {
           type: "link",
           code: "title",
-          fixed: "left",
           width: "300px",
           rendererProps: {
             url: "/pages/pm_bug_issue_details?id={{id}}",
@@ -149,7 +156,7 @@ const page: RapidPage = {
       $exps: {
         "newForm.fixedFields.taskType": "'bug'",
       },
-    },
+    } as SonicEntityListRockConfig,
   ],
 };
 
