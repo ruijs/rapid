@@ -100,7 +100,21 @@ export default {
 
       let rpdField: RapidField | undefined;
       if (mainEntity) {
-        rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, column.code);
+        const fieldName = column.fieldName || column.code;
+        const fieldNameParts = fieldName.split(".");
+        rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, fieldNameParts[0]);
+
+        if (!column.title && rpdField) {
+          column.title = rpdField.name;
+        }
+
+        if (fieldNameParts.length > 1 && rpdField) {
+          const rpdRelationEntity = rapidAppDefinition.getEntityBySingularCode(rpdField.targetSingularCode);
+          if (rpdRelationEntity) {
+            rpdField = rapidAppDefinition.getEntityFieldByCode(rpdRelationEntity, fieldNameParts[1]);
+          }
+        }
+
         if (!rpdField) {
           logger.warn(props, `Unknown field code '${column.code}'`);
         }
@@ -111,10 +125,6 @@ export default {
           $self: column,
           $parent: props,
         });
-      }
-
-      if (!column.title && rpdField) {
-        column.title = rpdField.name;
       }
 
       if (column.cell) {
