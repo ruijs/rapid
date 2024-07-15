@@ -47,7 +47,12 @@ export default {
       rowKey: props.rowKey || "id",
       bordered: props.bordered,
       size: props.size,
-      pagination: props.pagination,
+      pagination: props.pagination
+        ? {
+            showSizeChanger: false,
+            ...props.pagination,
+          }
+        : props.pagination,
       ...eventHandlers,
       ...slotProps,
       columns: tableColumns,
