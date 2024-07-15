@@ -1,4 +1,4 @@
-import { MoveStyleUtils, RockChildrenConfig, type Rock, type RockConfig } from "@ruiapp/move-style";
+import { MoveStyleUtils, RockChildrenConfig, RockEventHandler, type Rock, type RockConfig } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./SonicEntityListMeta";
 import type { SonicEntityListRockConfig } from "./sonic-entity-list-types";
@@ -79,7 +79,7 @@ export default {
               $id: `${props.$id}-newForm`,
               entityCode: entityCode,
               mode: "new",
-              ...omit(props.newForm, ["entityCode"]),
+              ...omit(props.newForm, ["entityCode", "onSaveSuccess", "onSaveError"]),
               onFormSubmit: [
                 {
                   $action: "setVars",
@@ -96,10 +96,14 @@ export default {
                     "modal-saving": false,
                   },
                 },
-                {
-                  $action: "loadStoreData",
-                  storeName: "list",
-                },
+                ...(props.newForm?.onSaveSuccess
+                  ? (props.newForm.onSaveSuccess as RockEventHandler[])
+                  : [
+                      {
+                        $action: "loadStoreData",
+                        storeName: "list",
+                      },
+                    ]),
               ],
               onSaveError: [
                 {
@@ -108,6 +112,7 @@ export default {
                     "modal-saving": false,
                   },
                 },
+                ...((props.newForm?.onSaveError as RockEventHandler[]) || []),
               ],
             },
           ],
@@ -168,10 +173,14 @@ export default {
                     "modal-saving": false,
                   },
                 },
-                {
-                  $action: "loadStoreData",
-                  storeName: "list",
-                },
+                ...(props.editForm?.onSaveSuccess
+                  ? (props.editForm.onSaveSuccess as RockEventHandler[])
+                  : [
+                      {
+                        $action: "loadStoreData",
+                        storeName: "list",
+                      },
+                    ]),
               ],
               onSaveError: [
                 {
@@ -180,6 +189,7 @@ export default {
                     "modal-saving": false,
                   },
                 },
+                ...((props.editForm?.onSaveError as RockEventHandler[]) || []),
               ],
             },
           ],

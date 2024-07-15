@@ -105,6 +105,10 @@ export default {
       form: props.form,
       children: childRock,
       rules: props.rules,
+      extra: props.extra,
+      labelAlign: props.labelAlign,
+      labelCol: props.labelCol,
+      wrapperCol: props.wrapperCol,
       $exps: props.$exps,
     };
     return renderRock({ context, rockConfig });
