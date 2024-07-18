@@ -11,51 +11,59 @@ export default {
   $type: "rapidUploaderFormInput",
 
   Renderer(context, props) {
-    const onUploadChange = useCallback<UploadProps["onChange"]>((info) => {
-      const file = info.file;
-      if (file) {
-        if (file.status === "done") {
-          const rpdFileInfo: RapidFileInfo = {
-            name: file.name,
-            key: file.response.fileKey,
-            size: file.size,
-            type: file.type,
-          };
-          if (props.onUploaded) {
-            const eventArgs = [rpdFileInfo];
-            handleComponentEvent("onUploaded", context.framework, context.page, context.scope, props, props.onUploaded, eventArgs);
-          } else {
-            let value: RapidFileInfo | RapidFileInfo[] | undefined = props.value;
-            if (props.multiple) {
-              if (!value) {
-                value = [rpdFileInfo];
-              } else {
-                (value as RapidFileInfo[]).push(rpdFileInfo);
-              }
+    const onUploadChange = useCallback<UploadProps["onChange"]>(
+      (info) => {
+        const file = info.file;
+        if (file) {
+          if (file.status === "done") {
+            const rpdFileInfo: RapidFileInfo = {
+              name: file.name,
+              key: file.response.fileKey,
+              size: file.size,
+              type: file.type,
+            };
+            if (props.onUploaded) {
+              const eventArgs = [rpdFileInfo];
+              handleComponentEvent("onUploaded", context.framework, context.page, context.scope, props, props.onUploaded, eventArgs);
             } else {
-              value = rpdFileInfo;
+              let value: RapidFileInfo | RapidFileInfo[] | undefined = props.value;
+              if (props.multiple) {
+                if (isArray(value)) {
+                  (value as RapidFileInfo[]).push(rpdFileInfo);
+                } else if (value) {
+                  value = [value, rpdFileInfo];
+                } else {
+                  value = [rpdFileInfo];
+                }
+              } else {
+                value = rpdFileInfo;
+              }
+              props.onChange?.(value);
             }
-            props.onChange?.(value);
           }
         }
-      }
-    }, []);
+      },
+      [props.value, props.onChange],
+    );
 
-    const onRemoveFile = useCallback<UploadProps["onRemove"]>((file) => {
-      let { value } = props;
-      if (!value) {
-        return;
-      }
+    const onRemoveFile = useCallback<UploadProps["onRemove"]>(
+      (file) => {
+        let { value } = props;
+        if (!value) {
+          return;
+        }
 
-      if (isArray(value)) {
-        const fileKey = file.uid;
-        remove(value, (item) => item.key === fileKey);
-      } else {
-        value = null;
-      }
+        if (isArray(value)) {
+          const fileKey = file.uid;
+          remove(value, (item) => item.key === fileKey);
+        } else {
+          value = null;
+        }
 
-      props.onChange?.(value);
-    }, []);
+        props.onChange?.(value);
+      },
+      [props.value, props.onChange],
+    );
 
     const defaultFileList = useMemo(() => {
       const { value } = props;
