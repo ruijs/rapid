@@ -46,6 +46,7 @@ export * from "./rocks/rapid-select/rapid-select-types";
 export * from "./rocks/rapid-form/rapid-form-types";
 export * from "./rocks/rapid-form-item/rapid-form-item-types";
 export * from "./rocks/rapid-form-modal-record-action/rapid-form-modal-record-action-types";
+export * from "./rocks/rapid-json-form-input/rapid-json-form-input-types";
 export * from "./rocks/rapid-percent-renderer/rapid-percent-renderer-types";
 export * from "./rocks/rapid-table/rapid-table-types";
 export * from "./rocks/rapid-table-action/rapid-table-action-types";

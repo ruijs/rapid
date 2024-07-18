@@ -23,7 +23,7 @@ const formItemTypeToControlRockTypeMap: Record<string, string> = {
   treeSelect: "rapidTreeSelect",
   search: "antdInputSearch",
   file: "rapidUploaderFormInput",
-  json: "jsonSetterInput",
+  json: "rapidJsonFormInput",
 };
 
 const defaultControlPropsOfFormItemType: Record<string, Record<string, any>> = {
@@ -40,9 +40,11 @@ const defaultControlPropsOfFormItemType: Record<string, Record<string, any>> = {
   },
 
   file: {
-    name: "file",
-    action: "/api/upload",
-    headers: {},
+    uploadProps: {
+      name: "files",
+      action: "/api/upload",
+      headers: {},
+    },
   },
 };
 
