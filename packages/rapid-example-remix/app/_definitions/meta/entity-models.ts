@@ -5,6 +5,7 @@ import oc$OcDepartment from '../models/entities/oc/OcDepartment';
 import oc$OcRole from '../models/entities/oc/OcRole';
 import oc$OcUser from '../models/entities/oc/OcUser';
 import pm$PmBugIssue from '../models/entities/pm/PmBugIssue';
+import pm$PmLog from '../models/entities/pm/PmLog';
 import pm$PmProject from '../models/entities/pm/PmProject';
 import pm$PmTask from '../models/entities/pm/PmTask';
 import sys$SysAction from '../models/entities/sys/SysAction';
@@ -16,6 +17,7 @@ const entityDefinitions = [
   oc$OcRole,
   oc$OcUser,
   pm$PmBugIssue,
+  pm$PmLog,
   pm$PmProject,
   pm$PmTask,
   sys$SysAction,
@@ -27,6 +29,7 @@ const configuredEntities:TRapidEntity[] = [
   autoConfigureRapidEntity(oc$OcRole, entityDefinitions),
   autoConfigureRapidEntity(oc$OcUser, entityDefinitions),
   autoConfigureRapidEntity(pm$PmBugIssue, entityDefinitions),
+  autoConfigureRapidEntity(pm$PmLog, entityDefinitions),
   autoConfigureRapidEntity(pm$PmProject, entityDefinitions),
   autoConfigureRapidEntity(pm$PmTask, entityDefinitions),
   autoConfigureRapidEntity(sys$SysAction, entityDefinitions),

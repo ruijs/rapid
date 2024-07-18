@@ -60,6 +60,11 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       type: "date",
     },
     {
+      code: "avatar",
+      name: "头像",
+      type: "json",
+    },
+    {
       code: "department",
       name: "部门",
       type: "relation",

@@ -213,6 +213,10 @@ export interface OcUser {
    */
   birthday?: string;
   /**
+   * 头像
+   */
+  avatar?: Record<string, any>;
+  /**
    * 部门
    */
   department?: Partial<OcDepartment>;
@@ -269,6 +273,61 @@ export interface PmBugIssue {
  * Bug
  */
 export type SavePmBugIssueInput = Omit<PmBugIssue, 'id' | 'createdAt' | 'createdBy' | 'updatedAt' | 'updatedBy'>;
+
+/**
+ * 项目日志
+ */
+export interface PmLog {
+  /**
+   * id
+   */
+  id: number;
+  /**
+   * 项目
+   */
+  project?: Partial<PmProject>;
+  /**
+   * 日期
+   */
+  logDate: string;
+  /**
+   * 内容
+   */
+  content?: string;
+  /**
+   * 附件
+   */
+  attachments?: Record<string, any>;
+  /**
+   * 创建时间
+   */
+  createdAt?: string;
+  /**
+   * 创建人
+   */
+  createdBy?: Partial<OcUser>;
+  /**
+   * 更新时间
+   */
+  updatedAt?: string;
+  /**
+   * 更新人
+   */
+  updatedBy?: Partial<OcUser>;
+  /**
+   * 删除时间
+   */
+  deletedAt?: string;
+  /**
+   * 删除人
+   */
+  deletedBy?: Partial<OcUser>;
+}
+
+/**
+ * 项目日志
+ */
+export type SavePmLogInput = Omit<PmLog, 'id' | 'createdAt' | 'createdBy' | 'updatedAt' | 'updatedBy'>;
 
 /**
  * 项目
