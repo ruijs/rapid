@@ -1,6 +1,6 @@
 import type { Rock } from "@ruiapp/move-style";
-import meta from "./meta";
-import { EditableTableColumn, EditableTableRockConfig } from "./type";
+import meta from "./EditableTableMeta";
+import { EditableTableColumn, EditableTableRockConfig } from "./editable-table-types";
 import { get, set } from "lodash";
 import { Button, DatePicker, Input, InputNumber, Select, Table, TableProps } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";

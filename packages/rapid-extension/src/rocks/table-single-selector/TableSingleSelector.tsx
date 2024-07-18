@@ -1,15 +1,16 @@
 import type { Rock } from "@ruiapp/move-style";
-import TableSingleSelectorMeta from "./meta";
-import type { TableSingleSelectorRockConfig } from "./type";
+import TableSingleSelectorMeta from "./TableSingleSelectorMeta";
+import type { TableSingleSelectorRockConfig } from "./table-single-selector-types";
 import { convertToEventHandlers } from "@ruiapp/react-renderer";
-import { Table, Select, Input, TableProps } from "antd";
+import { Table, Select, Input, TableProps, Empty, Spin } from "antd";
 import { get, isFunction, isString } from "lodash";
 import { useEffect } from "react";
 import { useMergeState } from "../../hooks/use-merge-state";
-const Search = Input.Search;
-
-import "./style.css";
 import rapidApi from "../../rapidApi";
+
+import "./table-single-selector-style.css";
+
+const Search = Input.Search;
 
 interface ICurrentState {
   offset: number;
@@ -133,35 +134,40 @@ export default {
                   />
                 </div>
               ) : null}
-              <Table
-                size="small"
-                rowKey="id"
-                loading={apiIns.loading}
-                scroll={{ x: tableWidth, y: 200 }}
-                columns={tableColumns}
-                dataSource={apiIns.records || []}
-                rowClassName={(record) => (get(record, valueKey) === value ? "pm-table-row-pointer--selected" : `pm-table-row-pointer`)}
-                onRow={(record) => {
-                  return {
-                    onClick: () => {
-                      setCurrentState({ selectedRecord: record, visible: false });
-                      eventHandlers.onChange?.(get(record, valueKey));
-                      eventHandlers.onSelectedRecord?.(record);
-                    },
-                  };
-                }}
-                pagination={{
-                  size: "small",
-                  current: currentState.offset / pageSize + 1,
-                  pageSize,
-                  total: apiIns.total || 0,
-                  hideOnSinglePage: true,
-                  showSizeChanger: false,
-                  onChange(page) {
-                    setCurrentState({ offset: (page - 1) * pageSize });
-                  },
-                }}
-              />
+              <Spin spinning={apiIns.loading || false}>
+                {!apiIns.records?.length ? (
+                  <Empty style={{ margin: "24px 0" }} />
+                ) : (
+                  <Table
+                    size="small"
+                    rowKey="id"
+                    scroll={{ x: tableWidth, y: 200 }}
+                    columns={tableColumns}
+                    dataSource={apiIns.records || []}
+                    rowClassName={(record) => (get(record, valueKey) === value ? "pm-table-row-pointer--selected" : `pm-table-row-pointer`)}
+                    onRow={(record) => {
+                      return {
+                        onClick: () => {
+                          setCurrentState({ selectedRecord: record, visible: false });
+                          eventHandlers.onChange?.(get(record, valueKey));
+                          eventHandlers.onSelectedRecord?.(record);
+                        },
+                      };
+                    }}
+                    pagination={{
+                      size: "small",
+                      current: currentState.offset / pageSize + 1,
+                      pageSize,
+                      total: apiIns.total || 0,
+                      hideOnSinglePage: true,
+                      showSizeChanger: false,
+                      onChange(page) {
+                        setCurrentState({ offset: (page - 1) * pageSize });
+                      },
+                    }}
+                  />
+                )}
+              </Spin>
             </div>
           );
         }}
