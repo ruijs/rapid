@@ -16,6 +16,7 @@ const fieldTypeToDisplayRockTypeMap: Record<RapidFieldType, string> = {
   relation: "rapidObjectRenderer",
   "relation[]": "rapidObjectRenderer",
   json: "rapidJsonRenderer",
+  file: "rapidFileInfoRenderer",
 };
 
 const defaultDisplayPropsOfFieldType: Record<string, Record<string, any>> = {

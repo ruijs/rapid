@@ -11,6 +11,8 @@ export interface RapidArrayRendererRockConfig extends SimpleRockConfig {
 
   separator?: RockConfig;
 
+  noSeparator?: boolean;
+
   listContainer?: ContainerRockConfig;
 
   itemContainer?: ContainerRockConfig;

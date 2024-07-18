@@ -8,7 +8,7 @@ export default {
   $type: "rapidArrayRenderer",
 
   Renderer(context, props: RapidArrayRendererRockConfig) {
-    const { value, format, item, separator, listContainer, itemContainer, defaultText } = props;
+    const { value, format, item, separator, noSeparator, listContainer, itemContainer, defaultText } = props;
     if (!value) {
       return defaultText || "";
     }
@@ -20,10 +20,12 @@ export default {
         listContainer,
         itemContainer,
         item,
-        separator: separator || {
-          $type: "antdDivider",
-          type: "vertical",
-        },
+        separator: noSeparator
+          ? null
+          : separator || {
+              $type: "antdDivider",
+              type: "vertical",
+            },
         dataSource: value,
       };
       return renderRock({ context, rockConfig });

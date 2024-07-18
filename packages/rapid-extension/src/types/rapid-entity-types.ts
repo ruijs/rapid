@@ -81,6 +81,7 @@ export type RapidFieldType =
   | "datetime"
   | "json"
   | "option"
+  | "file"
   | "relation"
   | "relation[]";
 
@@ -306,6 +307,7 @@ export interface SearchFormFilterConfiguration {
 
 export type EntityFilterOptions =
   | FindEntityRelationalFilterOptions
+  | FindEntitySetFilterOptions
   | FindEntityLogicalFilterOptions
   | FindEntityUnaryFilterOptions
   | FindEntityExistenceFilterOptions;
@@ -330,6 +332,13 @@ export interface FindEntityRelationalFilterOptions {
   field: string;
   operator: EntityFilterRelationalOperators;
   value: any;
+}
+
+export interface FindEntitySetFilterOptions {
+  field: string;
+  operator: EntityFilterSetOperators;
+  value: any[];
+  itemType?: string;
 }
 
 export interface FindEntityLogicalFilterOptions {
@@ -374,8 +383,6 @@ export type EntityFilterRelationalOperators =
   | "lte"
   | "gt"
   | "gte"
-  | "in"
-  | "notIn"
   | "contains"
   | "notContains"
   | "containsCS"
@@ -384,6 +391,8 @@ export type EntityFilterRelationalOperators =
   | "notStartsWith"
   | "endsWith"
   | "notEndsWith";
+
+export type EntityFilterSetOperators = "in" | "notIn";
 
 export type EntityFilterLogicalOperators = "or" | "and";
 

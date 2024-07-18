@@ -8,18 +8,23 @@ export const code = "downloadFile";
 export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: any) {
   const { server, applicationConfig, routerContext, input } = ctx;
   const { request, response } = routerContext;
+  //TODO: only public files can download by this handler
 
-  const dataAccessor = ctx.server.getDataAccessor({
-    singularCode: "ecm_storage_object",
-  });
+  let fileKey: string = input.fileKey;
 
-  const storageObject = await dataAccessor.findById(input.fileId);
-  if (!storageObject) {
-    ctx.output = { error: new Error("Storage object not found.") };
-    return;
+  if (!fileKey && input.fileId) {
+    const dataAccessor = ctx.server.getDataAccessor({
+      singularCode: "ecm_storage_object",
+    });
+
+    const storageObject = await dataAccessor.findById(input.fileId);
+    if (!storageObject) {
+      ctx.output = { error: new Error("Storage object not found.") };
+      return;
+    }
+
+    fileKey = storageObject.key;
   }
-
-  const fileKey = storageObject.key;
   const filePathName = path.join(server.config.localFileStoragePath, fileKey);
   const attachmentFileName = input.fileName || path.basename(fileKey);
 

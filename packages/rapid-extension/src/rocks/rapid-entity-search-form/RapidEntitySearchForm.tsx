@@ -37,6 +37,7 @@ const fieldTypeToFormItemTypeMap: Record<RapidFieldType, RapidFormItemType | nul
   relation: "select",
   "relation[]": "select",
   json: "json",
+  file: "text",
 };
 
 const validationMessagesByFieldType: Partial<Record<RapidFieldType, any>> = {

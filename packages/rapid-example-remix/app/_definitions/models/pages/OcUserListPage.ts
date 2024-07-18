@@ -16,6 +16,10 @@ const formConfig: Partial<RapidEntityFormConfig> = {
       code: "email",
     },
     {
+      type: "file",
+      code: "avatar",
+    },
+    {
       type: "auto",
       code: "birthday",
     },
@@ -100,6 +104,20 @@ const page: RapidPage = {
           type: "auto",
           code: "email",
           width: "200px",
+        },
+        {
+          type: "auto",
+          code: "avatar",
+          width: "200px",
+          rendererType: "antdAvatar",
+          rendererProps: {
+            shape: "square",
+            size: "large",
+            $exps: {
+              _hidden: "!$slot.value",
+              src: "`/api/download/file?fileKey=${encodeURIComponent($slot.value?.key)}`",
+            },
+          },
         },
         {
           type: "auto",

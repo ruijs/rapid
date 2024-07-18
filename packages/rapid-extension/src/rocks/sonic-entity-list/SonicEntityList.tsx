@@ -139,6 +139,7 @@ export default {
           title: `新建${entityName}`,
           okText: "确定",
           cancelText: "取消",
+          maskClosable: false,
           $exps: {
             open: "!!$scope.vars['modal-newEntity-open']",
             confirmLoading: "!!$scope.vars['modal-saving']",
@@ -213,6 +214,7 @@ export default {
           title: `修改${entityName}`,
           okText: "确定",
           cancelText: "取消",
+          maskClosable: false,
           $exps: {
             open: "!!$scope.vars['modal-editEntity-open']",
             confirmLoading: "!!$scope.vars['modal-saving']",

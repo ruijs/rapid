@@ -39,6 +39,7 @@ export * from "./rocks/rapid-document-form-control/rapid-document-form-control-t
 export * from "./rocks/rapid-entity-form/rapid-entity-form-types";
 export * from "./rocks/rapid-entity-list/rapid-entity-list-types";
 export * from "./rocks/rapid-entity-search-form/rapid-entity-search-form-types";
+export * from "./rocks/rapid-file-info-renderer/rapid-file-info-renderer-types";
 export * from "./rocks/rapid-file-size-renderer/rapid-file-size-renderer-types";
 export * from "./rocks/rapid-radio-list-form-input/rapid-radio-list-form-input-types";
 export * from "./rocks/rapid-reference-renderer/rapid-reference-renderer-types";
@@ -46,6 +47,7 @@ export * from "./rocks/rapid-select/rapid-select-types";
 export * from "./rocks/rapid-form/rapid-form-types";
 export * from "./rocks/rapid-form-item/rapid-form-item-types";
 export * from "./rocks/rapid-form-modal-record-action/rapid-form-modal-record-action-types";
+export * from "./rocks/rapid-json-form-input/rapid-json-form-input-types";
 export * from "./rocks/rapid-percent-renderer/rapid-percent-renderer-types";
 export * from "./rocks/rapid-table/rapid-table-types";
 export * from "./rocks/rapid-table-action/rapid-table-action-types";
