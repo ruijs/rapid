@@ -15,7 +15,7 @@ import type {
 } from "../../types/rapid-entity-types";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import type { EntityStoreConfig } from "../../stores/entity-store";
-import type { RapidFormItemConfig, RapidFormItemType } from "../rapid-form-item/rapid-form-item-types";
+import type { RapidFormItemConfig, RapidFormItemType, RapidSearchFormItemConfig } from "../rapid-form-item/rapid-form-item-types";
 import type { RapidFormAction, RapidFormRockConfig } from "../rapid-form/rapid-form-types";
 import type { RapidSelectConfig } from "../rapid-select/rapid-select-types";
 import { RapidOptionFieldRendererConfig } from "../rapid-option-field-renderer/rapid-option-field-renderer-types";
@@ -57,7 +57,7 @@ const defaultValidationMessages = {
 };
 
 export interface GenerateEntityFormItemOption {
-  formItemConfig: RapidFormItemConfig;
+  formItemConfig: RapidFormItemConfig & RapidSearchFormItemConfig;
   mainEntity: RapidEntity;
   dataDictionaries: RapidDataDictionary[];
 }
@@ -77,6 +77,8 @@ function generateSearchFormItemForOptionProperty(option: GenerateEntityFormItemO
   let formControlProps: Partial<RapidSelectConfig> = {
     allowClear: !formItemConfig.required,
     placeholder: formItemConfig.placeholder,
+    mode: formItemConfig.filterMode === "in" ? "multiple" : undefined,
+    multiple: formItemConfig.filterMode === "in",
     listDataSource: {
       data: {
         list: entries,
@@ -124,6 +126,8 @@ export function generateSearchFormItemForRelationProperty(option: GenerateEntity
   let formControlProps: Partial<RapidSelectConfig> = {
     allowClear: !formItemConfig.required,
     placeholder: formItemConfig.placeholder,
+    mode: formItemConfig.filterMode === "in" ? "multiple" : undefined,
+    multiple: formItemConfig.filterMode === "in",
     valueFieldName: "id",
     ...formItemConfig.formControlProps,
     listDataSourceCode,
@@ -161,6 +165,12 @@ function generateSearchFormItem(logger: RuiRockLogger, entityFormProps: any, opt
     return generateSearchFormItemForRelationProperty(option, rpdField);
   }
 
+  const formControlProps = {
+    mode: formItemConfig.filterMode === "in" ? "multiple" : undefined,
+    multiple: formItemConfig.filterMode === "in",
+    ...(formItemConfig.formControlProps || {}),
+  };
+
   let formItem: Omit<RapidFormItemConfig, "$type"> = {
     type: formItemConfig.type,
     code: formItemConfig.code,
@@ -171,7 +181,7 @@ function generateSearchFormItem(logger: RuiRockLogger, entityFormProps: any, opt
     valueFieldName: formItemConfig.valueFieldName,
     multipleValues: formItemConfig.multipleValues,
     formControlType: formItemConfig.formControlType,
-    formControlProps: formItemConfig.formControlProps,
+    formControlProps,
     rendererType: formItemConfig.rendererType,
     rendererProps: formItemConfig.rendererProps,
     $exps: formItemConfig.$exps,
@@ -317,6 +327,7 @@ export default {
               code: formItem.code,
               filterMode: formItem.filterMode,
               filterFields: formItem.filterFields,
+              filterConfig: formItem.formControlProps,
             });
           }
 

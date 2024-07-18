@@ -1,6 +1,8 @@
 import typescript from "rollup-plugin-typescript2";
 // import tsConfigPaths from "rollup-plugin-tsconfig-paths"
 import postcss from "rollup-plugin-postcss";
+import nodeResolve from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
 
 export default {
   input: ["src/mod.ts"],
@@ -13,6 +15,8 @@ export default {
     },
   ],
   plugins: [
+    nodeResolve(),
+    commonjs(),
     typescript(),
     // tsConfigPaths(),
     postcss({ extract: true }),

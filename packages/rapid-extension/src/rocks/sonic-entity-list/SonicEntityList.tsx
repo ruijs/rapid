@@ -63,42 +63,45 @@ export default {
       $id: `${props.$id}-rapidEntityList`,
     };
 
-    const toolbarExtraActions: RockConfig[] = props.extraActions || [];
+    let toolbarExtraActions: RockConfig[] = props.extraActions || [];
     if (props.searchForm) {
-      toolbarExtraActions.push({
-        $id: `${props.$id}-advancedSearchButton`,
-        $type: "anchor",
-        children: [
-          {
-            $type: "text",
-            text: "高级搜索 ",
-          },
-          {
-            $type: "antdIcon",
-            name: "DownOutlined",
-            $exps: {
-              name: `$scope.vars["searchBoxVisible"] ? "UpOutlined" : "DownOutlined"`,
+      toolbarExtraActions = [
+        ...toolbarExtraActions,
+        {
+          $id: `${props.$id}-advancedSearchButton`,
+          $type: "anchor",
+          children: [
+            {
+              $type: "text",
+              text: "高级搜索 ",
             },
-          },
-        ],
-        onClick: [
-          {
-            $action: "script",
-            script: (event: RockEvent) => {
-              event.scope.setVars({
-                searchBoxVisible: !event.scope.vars["searchBoxVisible"],
-              });
+            {
+              $type: "antdIcon",
+              name: "DownOutlined",
+              $exps: {
+                name: `$scope.vars["searchBoxVisible"] ? "UpOutlined" : "DownOutlined"`,
+              },
             },
-          },
-        ],
-      });
+          ],
+          onClick: [
+            {
+              $action: "script",
+              script: (event: RockEvent) => {
+                event.scope.setVars({
+                  searchBoxVisible: !event.scope.vars["searchBoxVisible"],
+                });
+              },
+            },
+          ],
+        },
+      ];
     }
 
     const toolbarRockConfig: RapidToolbarRockConfig = {
       $id: `${props.$id}-toolbar`,
       $type: "rapidToolbar",
       items: props.listActions,
-      extras: props.extraActions,
+      extras: toolbarExtraActions,
       dataSourceCode: props.dataSourceCode,
     };
 
@@ -116,6 +119,10 @@ export default {
                 const store: EntityStore = event.scope.getStore("list");
                 store.updateConfig({
                   filters: event.args[0].filters,
+                  pagination: {
+                    limit: pageSize,
+                    offset: 0,
+                  },
                 });
                 // 重新加载数据
                 store.loadData();

@@ -1,15 +1,16 @@
 import type { Rock } from "@ruiapp/move-style";
-import TableSingleSelectorMeta from "./meta";
-import type { TableSingleSelectorRockConfig } from "./type";
+import TableSingleSelectorMeta from "./TableSingleSelectorMeta";
+import type { TableSingleSelectorRockConfig } from "./table-single-selector-types";
 import { convertToEventHandlers } from "@ruiapp/react-renderer";
 import { Table, Select, Input, TableProps, Empty, Spin } from "antd";
 import { get, isFunction, isString } from "lodash";
 import { useEffect } from "react";
 import { useMergeState } from "../../hooks/use-merge-state";
-const Search = Input.Search;
-
-import "./style.css";
 import rapidApi from "../../rapidApi";
+
+import "./table-single-selector-style.css";
+
+const Search = Input.Search;
 
 interface ICurrentState {
   offset: number;

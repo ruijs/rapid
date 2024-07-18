@@ -1,0 +1,14 @@
+.rui-rich-text-editor {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ccc;
+}
+
+.rui-rich-text-editor--toolbar {
+  border-bottom: 1px solid #ccc;
+}
+
+.rui-rich-text-editor--body {
+  flex: 1 0 0;
+  min-height: 0;
+}
