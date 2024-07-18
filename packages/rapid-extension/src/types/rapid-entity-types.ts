@@ -81,6 +81,7 @@ export type RapidFieldType =
   | "datetime"
   | "json"
   | "option"
+  | "file"
   | "relation"
   | "relation[]";
 

@@ -182,6 +182,11 @@ export default {
             ...(column.rendererProps?.$exps || {}),
           },
         };
+      } else {
+        cell = {
+          $type: "text",
+          text: `Unknown column type: ${column.type}`,
+        };
       }
 
       const tableColumnRock: RockConfig = {
