@@ -7,6 +7,7 @@ import {
   QuoteTableOptions,
   RpdApplicationConfig,
   RpdDataModel,
+  RpdDataModelIndex,
   RpdDataModelProperty,
   RpdDataPropertyTypes,
   RpdEntityCreateEventPayload,
@@ -24,8 +25,8 @@ import {
 import * as listMetaModels from "./actionHandlers/listMetaModels";
 import * as listMetaRoutes from "./actionHandlers/listMetaRoutes";
 import * as getMetaModelDetail from "./actionHandlers/getMetaModelDetail";
-import { find } from "lodash";
-import { getEntityPropertiesIncludingBase, isRelationProperty } from "~/helpers/metaHelper";
+import { find, isString, map } from "lodash";
+import { getEntityPropertiesIncludingBase, getEntityPropertyByCode, isOneRelationProperty, isRelationProperty } from "~/helpers/metaHelper";
 
 class MetaManager implements RapidPlugin {
   get code(): string {
@@ -366,6 +367,18 @@ async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdAppl
       );
     }
   }
+
+  // generate indexes
+  for (const model of applicationConfig.models) {
+    if (!model.indexes || !model.indexes.length) {
+      continue;
+    }
+
+    for (const index of model.indexes) {
+      const sqlCreateIndex = generateTableIndexDDL(queryBuilder, server, model, index);
+      await server.tryQueryDatabaseObject(sqlCreateIndex, []);
+    }
+  }
 }
 
 function generateCreateColumnDDL(
@@ -420,6 +433,56 @@ function generateLinkTableDDL(
   columnDDL += `${queryBuilder.quoteObject(options.targetIdColumnName)} integer not null);`;
 
   return columnDDL;
+}
+
+function generateTableIndexDDL(queryBuilder: IQueryBuilder, server: IRpdServer, model: RpdDataModel, index: RpdDataModelIndex) {
+  let indexName = index.name;
+  if (!indexName) {
+    indexName = model.tableName;
+    for (const indexProp of index.properties) {
+      const propCode = isString(indexProp) ? indexProp : indexProp.code;
+      const property = getEntityPropertyByCode(server, model, propCode);
+      if (!isRelationProperty(property)) {
+        indexName += "_" + property.columnName;
+      } else if (isOneRelationProperty(property)) {
+        indexName += "_" + property.targetIdColumnName;
+      }
+    }
+    indexName += index.unique ? "_uindex" : "_index";
+  }
+
+  const indexColumns = map(index.properties, (indexProp) => {
+    let columnName: string;
+    const propCode = isString(indexProp) ? indexProp : indexProp.code;
+    const property = getEntityPropertyByCode(server, model, propCode);
+    if (!isRelationProperty(property)) {
+      columnName = property.columnName;
+    } else if (isOneRelationProperty(property)) {
+      columnName = property.targetIdColumnName;
+    }
+
+    if (isString(indexProp)) {
+      return columnName;
+    }
+
+    if (indexProp.order === "desc") {
+      return `${columnName} desc`;
+    }
+
+    return columnName;
+  });
+
+  let ddl = `CREATE ${index.unique ? "UNIQUE" : ""} INDEX ${indexName} `;
+  ddl += `ON ${queryBuilder.quoteTable({
+    schema: model.schema,
+    tableName: model.tableName,
+  })} (${indexColumns.join(", ")})`;
+
+  if (index.conditions) {
+    ddl += ` WHERE ${queryBuilder.buildFiltersExpression(model, index.conditions)}`;
+  }
+
+  return ddl;
 }
 
 const pgPropertyTypeColumnMap: Partial<Record<RpdDataPropertyTypes, string>> = {

@@ -158,6 +158,8 @@ export type RapidEntity<TEntitySingularCodes extends string = string, TDictionar
    */
   fields: RapidField<TEntitySingularCodes, TDictionaryCodes>[];
 
+  indexes?: RapidEntityIndex[];
+
   /**
    * 权限控制策略
    */
@@ -274,6 +276,26 @@ export type RapidField<TEntitySingularCodes extends string = string, TDictionary
   maxLength?: number;
 };
 
+export interface RapidEntityIndex {
+  name?: string;
+  unique?: boolean;
+  properties: RapidEntityIndexPropertyConfig[];
+  conditions?: RapidEntityIndexOptions[];
+}
+
+export type RapidEntityIndexPropertyConfig =
+  | string
+  | {
+      code: string;
+      order?: "asc" | "desc";
+    };
+
+export type RapidEntityIndexOptions =
+  | FindEntityRelationalFilterOptions
+  | FindEntitySetFilterOptions
+  | FindEntityLogicalFilterOptions<RapidEntityIndexOptions>
+  | FindEntityUnaryFilterOptions;
+
 export type RapidSearchFormItemFilterMode = EntityFilterRelationalOperators | EntityFilterSetOperators | "range";
 
 export interface SearchFormFilterConfiguration extends RapidSearchFormItemConfig {
@@ -324,7 +346,7 @@ export interface FindEntitySetFilterOptions {
   itemType?: string;
 }
 
-export interface FindEntityLogicalFilterOptions {
+export interface FindEntityLogicalFilterOptions<TFilter = EntityFilterOptions> {
   operator: EntityFilterLogicalOperators;
   filters: EntityFilterOptions[];
 }
