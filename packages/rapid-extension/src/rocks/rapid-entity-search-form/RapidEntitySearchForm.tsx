@@ -298,6 +298,8 @@ export default {
 
     const formItems: RapidFormItemConfig[] = [];
 
+    const formId = `${props.$id}-rapidForm`;
+
     if (formConfig && formConfig.items) {
       formConfig.items.forEach((formItemConfig) => {
         const formItem = generateSearchFormItem(logger, props, {
@@ -312,6 +314,21 @@ export default {
     }
 
     const formActions: RapidFormAction[] = [
+      {
+        actionType: "reset",
+        actionText: "重置",
+        actionProps: {
+          onClick: [
+            {
+              $action: "script",
+              script: (event: RockEvent) => {
+                event.page.sendComponentMessage(formId, { name: "resetFields" });
+                event.page.sendComponentMessage(formId, { name: "submit" });
+              },
+            },
+          ],
+        },
+      },
       {
         actionType: "submit",
         actionText: "搜索",
@@ -328,7 +345,8 @@ export default {
               code: formItem.code,
               filterMode: formItem.filterMode,
               filterFields: formItem.filterFields,
-              filterConfig: formItem.formControlProps,
+              itemType: formItem.itemType,
+              filterExtra: formItem.filterExtra,
             });
           }
 
@@ -340,7 +358,7 @@ export default {
     ];
 
     const rockConfig: RapidFormRockConfig = {
-      $id: `${props.$id}-rapidForm`,
+      $id: formId,
       $type: "rapidForm",
       size: formConfig.size,
       layout: formConfig.layout,

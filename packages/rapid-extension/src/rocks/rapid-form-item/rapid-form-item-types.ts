@@ -104,6 +104,19 @@ export type RapidFormItemConfig = {
   $exps?: RockPropExpressions;
 };
 
+export interface FilterFieldConfig {
+  field: string;
+  operator: string;
+  filters?: FilterFieldConfig[];
+  itemType?: string;
+  extra?: {
+    /**
+     * 时间过滤开始、结束区间的单位
+     */
+    rangeUnit?: "year" | "month" | "quarter" | "week" | "day" | "hour" | "minute" | "second";
+  };
+}
+
 /**
  * 搜索表单项
  */
@@ -116,7 +129,17 @@ export type RapidSearchFormItemConfig = {
   /**
    * 过滤应用于哪些字段，多个字段任意一个满足条件即可。默认使用表单项编码`code`作为过滤字段。
    */
-  filterFields?: string[];
+  filterFields?: (string | FilterFieldConfig)[];
+
+  /**
+   * 请求参数值类型
+   */
+  itemType?: string;
+
+  /**
+   * 过滤项额外配置
+   */
+  filterExtra?: FilterFieldConfig["extra"];
 };
 
 export type RapidFormItemType =

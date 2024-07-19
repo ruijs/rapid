@@ -1,7 +1,8 @@
 import type { FunctionMeta } from "@ruiapp/move-style";
-import { isArray, isEmpty, isNull, isUndefined, map } from "lodash";
+import { forEach, isArray, isEmpty, isNull, isString, isUndefined, map } from "lodash";
 import { SearchFormFilterConfiguration } from "../types/rapid-entity-types";
 import moment from "moment";
+import { FilterFieldConfig } from "../mod";
 
 export const searchParamsToFilters = (filterConfigurations: SearchFormFilterConfiguration[], searchParams: Record<string, any>) => {
   const filters: any[] = [];
@@ -18,43 +19,8 @@ export const searchParamsToFilters = (filterConfigurations: SearchFormFilterConf
       filterFields = [filterConfig.code];
     }
 
-    if (filterFields.length === 1) {
-      if (filterMode === "range") {
-        const { rangeUnit } = filterConfig.filterConfig || {};
-
-        if (!isArray(paramValue)) {
-          continue;
-        }
-
-        filters.push({
-          field: filterFields[0],
-          operator: "gte",
-          value: paramValue[0] && rangeUnit ? moment(paramValue[0]).startOf(rangeUnit) : paramValue[0],
-        });
-        filters.push({
-          field: filterFields[0],
-          operator: "lte",
-          value: paramValue[1] && rangeUnit ? moment(paramValue[1]).endOf(rangeUnit) : paramValue[1],
-        });
-      } else {
-        filters.push({
-          field: filterFields[0],
-          operator: filterMode,
-          value: paramValue,
-        });
-      }
-    } else {
-      filters.push({
-        operator: "or",
-        filters: map(filterFields, (filterField) => {
-          return {
-            field: filterField,
-            operator: filterMode,
-            value: paramValue,
-          };
-        }),
-      });
-    }
+    const filterConfigs = map(filterFields, (f) => (isString(f) ? { field: f, operator: filterMode, itemType: filterConfig.itemType } : f));
+    filters.push(...parseConfigToFilters(filterConfigs, paramValue));
   }
 
   return filters;
@@ -64,3 +30,49 @@ export default {
   name: "searchParamsToFilters",
   func: searchParamsToFilters,
 } as FunctionMeta;
+
+function parseConfigToFilters(filterConfigs: FilterFieldConfig[], value: any) {
+  let filters: any[] = [];
+
+  forEach(filterConfigs, (c) => {
+    if (c.filters && !isEmpty(c.filters)) {
+      filters.push({
+        field: c.field,
+        operator: c.operator,
+        filters: parseConfigToFilters(c.filters, value),
+      });
+      return;
+    }
+
+    if (c.operator === "range") {
+      const { rangeUnit } = c.extra || {};
+
+      if (!isArray(value)) {
+        return;
+      }
+
+      filters.push({
+        field: c.field,
+        operator: "gte",
+        value: value[0] && rangeUnit ? moment(value[0]).startOf(rangeUnit) : value[0],
+        itemType: c.itemType,
+      });
+      filters.push({
+        field: c.field,
+        operator: "lte",
+        value: value[1] && rangeUnit ? moment(value[1]).endOf(rangeUnit) : value[1],
+        itemType: c.itemType,
+      });
+      return;
+    }
+
+    filters.push({
+      field: c.field,
+      operator: c.operator,
+      itemType: c.itemType,
+      value,
+    });
+  });
+
+  return filters;
+}
