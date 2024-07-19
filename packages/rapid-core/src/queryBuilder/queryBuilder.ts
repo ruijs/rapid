@@ -1,4 +1,4 @@
-import { find } from "lodash";
+import { find, isBoolean, isNull, isNumber, isString, isUndefined } from "lodash";
 import { RpdDataModel, RpdDataModelProperty, CreateEntityOptions, QuoteTableOptions, DatabaseQuery } from "../types";
 import {
   CountRowOptions,
@@ -32,6 +32,10 @@ export interface BuildQueryContext {
   builder: QueryBuilder;
   params: any[];
   emitTableAlias: boolean;
+  /**
+   * emit parameter value to sql literal.
+   */
+  paramToLiteral: boolean;
 }
 
 export interface InitQueryBuilderOptions {
@@ -82,6 +86,7 @@ export default class QueryBuilder {
       builder: this,
       params: [],
       emitTableAlias: true,
+      paramToLiteral: false,
     };
     let { fields: columns, filters, orderBy, pagination } = options;
     let command = "SELECT ";
@@ -143,6 +148,7 @@ export default class QueryBuilder {
       builder: this,
       params: [],
       emitTableAlias: true,
+      paramToLiteral: false,
     };
     let { fields: columns, filters, orderBy, pagination } = options;
     let command = "SELECT ";
@@ -210,6 +216,7 @@ export default class QueryBuilder {
       builder: this,
       params: [],
       emitTableAlias: false,
+      paramToLiteral: false,
     };
     let { filters } = options;
     let command = 'SELECT COUNT(*)::int as "count" FROM ';
@@ -233,6 +240,7 @@ export default class QueryBuilder {
       builder: this,
       params: [],
       emitTableAlias: true,
+      paramToLiteral: false,
     };
     let { filters } = options;
     let command = 'SELECT COUNT(*)::int as "count" FROM ';
@@ -259,6 +267,7 @@ export default class QueryBuilder {
       builder: this,
       params,
       emitTableAlias: false,
+      paramToLiteral: false,
     };
     const { entity } = options;
     let command = "INSERT INTO ";
@@ -302,6 +311,7 @@ export default class QueryBuilder {
       builder: this,
       params,
       emitTableAlias: false,
+      paramToLiteral: false,
     };
     let { entity, filters } = options;
     let command = "UPDATE ";
@@ -349,6 +359,7 @@ export default class QueryBuilder {
       builder: this,
       params,
       emitTableAlias: false,
+      paramToLiteral: false,
     };
     let { filters } = options;
     let command = "DELETE FROM ";
@@ -364,6 +375,19 @@ export default class QueryBuilder {
       command,
       params: ctx.params,
     };
+  }
+
+  buildFiltersExpression(model: RpdDataModel, filters: RowFilterOptions[]) {
+    const params: any[] = [];
+    const ctx: BuildQueryContext = {
+      model,
+      builder: this,
+      params,
+      emitTableAlias: false,
+      paramToLiteral: true,
+    };
+
+    return buildFiltersQuery(ctx, filters);
   }
 }
 
@@ -434,8 +458,13 @@ function buildInFilterQuery(ctx: BuildQueryContext, filter: FindRowSetFilterOpti
   } else {
     command += " <> ";
   }
-  ctx.params.push(filter.value);
-  command += `ANY($${ctx.params.length}::${filter.itemType || "int"}[])`;
+
+  if (ctx.paramToLiteral) {
+    // TODO: implement it
+  } else {
+    ctx.params.push(filter.value);
+    command += `ANY($${ctx.params.length}::${filter.itemType || "int"}[])`;
+  }
 
   return command;
 }
@@ -444,8 +473,13 @@ function buildContainsFilterQuery(ctx: BuildQueryContext, filter: FindRowRelatio
   let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
 
   command += " LIKE ";
-  ctx.params.push(`%${filter.value}%`);
-  command += "$" + ctx.params.length;
+
+  if (ctx.paramToLiteral) {
+    // TODO: implement it
+  } else {
+    ctx.params.push(`%${filter.value}%`);
+    command += "$" + ctx.params.length;
+  }
 
   return command;
 }
@@ -454,8 +488,12 @@ function buildNotContainsFilterQuery(ctx: BuildQueryContext, filter: FindRowRela
   let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
 
   command += " NOT LIKE ";
-  ctx.params.push(`%${filter.value}%`);
-  command += "$" + ctx.params.length;
+  if (ctx.paramToLiteral) {
+    // TODO: implement it
+  } else {
+    ctx.params.push(`%${filter.value}%`);
+    command += "$" + ctx.params.length;
+  }
 
   return command;
 }
@@ -464,8 +502,13 @@ function buildStartsWithFilterQuery(ctx: BuildQueryContext, filter: FindRowRelat
   let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
 
   command += " LIKE ";
-  ctx.params.push(`${filter.value}%`);
-  command += "$" + ctx.params.length;
+
+  if (ctx.paramToLiteral) {
+    // TODO: implement it
+  } else {
+    ctx.params.push(`${filter.value}%`);
+    command += "$" + ctx.params.length;
+  }
 
   return command;
 }
@@ -474,8 +517,13 @@ function buildNotStartsWithFilterQuery(ctx: BuildQueryContext, filter: FindRowRe
   let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
 
   command += " NOT LIKE ";
-  ctx.params.push(`${filter.value}%`);
-  command += "$" + ctx.params.length;
+
+  if (ctx.paramToLiteral) {
+    // TODO: implement it
+  } else {
+    ctx.params.push(`${filter.value}%`);
+    command += "$" + ctx.params.length;
+  }
 
   return command;
 }
@@ -484,8 +532,13 @@ function buildEndsWithFilterQuery(ctx: BuildQueryContext, filter: FindRowRelatio
   let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
 
   command += " LIKE ";
-  ctx.params.push(`%${filter.value}`);
-  command += "$" + ctx.params.length;
+
+  if (ctx.paramToLiteral) {
+    // TODO: implement it
+  } else {
+    ctx.params.push(`%${filter.value}`);
+    command += "$" + ctx.params.length;
+  }
 
   return command;
 }
@@ -494,8 +547,13 @@ function buildNotEndsWithFilterQuery(ctx: BuildQueryContext, filter: FindRowRela
   let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
 
   command += " NOT LIKE ";
-  ctx.params.push(`%${filter.value}`);
-  command += "$" + ctx.params.length;
+
+  if (ctx.paramToLiteral) {
+    // TODO: implement it
+  } else {
+    ctx.params.push(`%${filter.value}`);
+    command += "$" + ctx.params.length;
+  }
 
   return command;
 }
@@ -505,8 +563,32 @@ function buildRelationalFilterQuery(ctx: BuildQueryContext, filter: FindRowRelat
 
   command += relationalOperatorsMap.get(filter.operator);
 
-  ctx.params.push(filter.value);
-  command += "$" + ctx.params.length;
+  if (ctx.paramToLiteral) {
+    command += formatValueToSqlLiteral(filter.value);
+  } else {
+    ctx.params.push(filter.value);
+    command += "$" + ctx.params.length;
+  }
 
   return command;
+}
+
+function formatValueToSqlLiteral(value: any) {
+  if (isNull(value) || isUndefined(value)) {
+    return "null";
+  }
+
+  if (isString(value)) {
+    return `'${value.replaceAll("'", "''")}'`;
+  }
+
+  if (isBoolean(value)) {
+    return value ? "true" : "false";
+  }
+
+  if (isNumber(value)) {
+    return value.toString();
+  }
+
+  return `'${value.toString().replaceAll("'", "''")}'`;
 }

@@ -81,6 +81,23 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       selfIdColumnName: "user_id",
     },
   ],
+  indexes: [
+    {
+      unique: true,
+      properties: ["login"],
+      conditions: [
+        {
+          operator: "eq",
+          field: "state",
+          value: "enabled",
+        },
+        {
+          operator: "null",
+          field: "deleted_at",
+        },
+      ],
+    },
+  ],
 };
 
 export default entity;

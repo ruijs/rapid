@@ -14,6 +14,8 @@ import {
   IRpdDataAccessor,
   RemoveEntityRelationsOptions,
   RpdDataModel,
+  RpdDataModelIndex,
+  RpdDataModelIndexOptions,
   RpdDataModelProperty,
   UpdateEntityByIdOptions,
 } from "~/types";
@@ -22,7 +24,7 @@ import { mapDbRowToEntity, mapEntityToDbRow } from "./entityMapper";
 import { mapPropertyNameToColumnName } from "./propertyMapper";
 import { IRpdServer, RapidPlugin } from "~/core/server";
 import { getEntityPartChanges } from "~/helpers/entityHelpers";
-import { filter, find, first, forEach, isArray, isNumber, isObject, isString, keys, map, reject, uniq } from "lodash";
+import { cloneDeep, filter, find, first, forEach, isArray, isNumber, isObject, isString, keys, map, reject, uniq } from "lodash";
 import {
   getEntityPropertiesIncludingBase,
   getEntityProperty,
@@ -35,6 +37,7 @@ import { ColumnSelectOptions, CountRowOptions, FindRowOptions, FindRowOrderByOpt
 import { newEntityOperationError } from "~/utilities/errorUtility";
 import { getNowStringWithTimezone } from "~/utilities/timeUtility";
 import { or } from "xstate";
+import { RouteContext } from "~/core/routeContext";
 
 export type FindOneRelationEntitiesOptions = {
   server: IRpdServer;
@@ -703,6 +706,26 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     routeContext,
   });
 
+  // check unique constraints
+  if (!options.postponeUniquenessCheck) {
+    if (model.indexes && model.indexes.length) {
+      for (const indexConfig of model.indexes) {
+        if (!indexConfig.unique) {
+          continue;
+        }
+
+        const duplicate = await willEntityDuplicate(server, dataAccessor, {
+          routeContext: options.routeContext,
+          entityToSave: entity,
+          indexConfig,
+        });
+        if (duplicate) {
+          throw new Error(getEntityDuplicatedErrorMessage(server, model, indexConfig));
+        }
+      }
+    }
+  }
+
   const oneRelationPropertiesToCreate: RpdDataModelProperty[] = [];
   const manyRelationPropertiesToCreate: RpdDataModelProperty[] = [];
   keys(entity).forEach((propertyCode) => {
@@ -936,6 +959,27 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
 
   changes = getEntityPartChanges(server, model, entity, entityToSave);
 
+  // check unique constraints
+  if (!options.postponeUniquenessCheck) {
+    if (model.indexes && model.indexes.length) {
+      for (const indexConfig of model.indexes) {
+        if (!indexConfig.unique) {
+          continue;
+        }
+
+        const duplicate = await willEntityDuplicate(server, dataAccessor, {
+          routeContext: options.routeContext,
+          entityId: id,
+          entityToSave: changes,
+          indexConfig,
+        });
+        if (duplicate) {
+          throw new Error(getEntityDuplicatedErrorMessage(server, model, indexConfig));
+        }
+      }
+    }
+  }
+
   const oneRelationPropertiesToUpdate: RpdDataModelProperty[] = [];
   const manyRelationPropertiesToUpdate: RpdDataModelProperty[] = [];
   keys(changes).forEach((propertyCode) => {
@@ -1132,6 +1176,68 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
   });
 
   return updatedEntity;
+}
+
+export type CheckEntityDuplicatedOptions = {
+  routeContext?: RouteContext;
+  entityId?: number;
+  entityToSave: any;
+  indexConfig: RpdDataModelIndex;
+};
+
+async function willEntityDuplicate(server: IRpdServer, dataAccessor: IRpdDataAccessor, options: CheckEntityDuplicatedOptions): Promise<boolean> {
+  const { entityId, entityToSave, routeContext, indexConfig } = options;
+
+  let filters: EntityFilterOptions[] = [];
+  if (indexConfig.conditions) {
+    filters = cloneDeep(indexConfig.conditions);
+  }
+
+  for (const propConfig of indexConfig.properties) {
+    let propCode: string;
+    if (isString(propConfig)) {
+      propCode = propConfig;
+    } else {
+      propCode = propConfig.code;
+    }
+
+    if (!entityToSave.hasOwnProperty(propCode)) {
+      // skip duplicate checking when  any index prop missing in entityToSave.
+      return false;
+    }
+
+    filters.push({
+      operator: "eq",
+      field: propCode,
+      value: entityToSave[propCode],
+    });
+  }
+
+  const entityInDb = await findEntity(server, dataAccessor, {
+    filters,
+    routeContext,
+  });
+
+  if (entityId) {
+    return entityInDb && entityInDb.Id !== entityId;
+  } else {
+    return !!entityInDb;
+  }
+}
+
+function getEntityDuplicatedErrorMessage(server: IRpdServer, model: RpdDataModel, indexConfig: RpdDataModelIndex) {
+  const propertyNames = indexConfig.properties.map((propConfig) => {
+    let propCode: string;
+    if (isString(propConfig)) {
+      propCode = propConfig;
+    } else {
+      propCode = propConfig.code;
+    }
+    const prop = getEntityPropertyByCode(server, model, propCode);
+    return prop.name;
+  });
+
+  return `已存在 ${propertyNames.join(", ")} 相同的记录。`;
 }
 
 export default class EntityManager<TEntity = any> {

@@ -1,6 +1,6 @@
 import { RouteContext } from "./core/routeContext";
 import { IRpdServer, RapidPlugin } from "./core/server";
-import { ColumnSelectOptions, CountRowOptions, FindRowOptions } from "./dataAccess/dataAccessTypes";
+import { ColumnSelectOptions, CountRowOptions, FindRowOptions, RowFilterOptions } from "./dataAccess/dataAccessTypes";
 
 export type RapidServerConfig = {
   baseUrl?: string;
@@ -172,6 +172,7 @@ export interface QuoteTableOptions {
 export interface IQueryBuilder {
   quoteTable: (options: QuoteTableOptions) => string;
   quoteObject: (name: string) => string;
+  buildFiltersExpression(model: RpdDataModel, filters: RowFilterOptions[]);
 }
 
 export interface RpdApplicationConfig {
@@ -206,6 +207,7 @@ export interface RpdDataModel {
    */
   displayPropertyCode?: string;
   properties: RpdDataModelProperty[];
+  indexes?: RpdDataModelIndex[];
   extensions?: RpdDataModelExtension[];
   permissionPolicies?: RpdDataModelPermissionPolicies;
 }
@@ -376,6 +378,26 @@ export interface RpdDataModelExtension {
   config: any;
 }
 
+export interface RpdDataModelIndex {
+  name?: string;
+  unique?: boolean;
+  properties: RpdDataModelIndexPropertyConfig[];
+  conditions?: RpdDataModelIndexOptions[];
+}
+
+export type RpdDataModelIndexPropertyConfig =
+  | string
+  | {
+      code: string;
+      order?: "asc" | "desc";
+    };
+
+export type RpdDataModelIndexOptions =
+  | FindEntityRelationalFilterOptions
+  | FindEntitySetFilterOptions
+  | FindEntityLogicalFilterOptions<RpdDataModelIndexOptions>
+  | FindEntityUnaryFilterOptions;
+
 export type EventHandler<T = any> = (sender: RapidPlugin, payload: T) => void;
 
 export interface RpdRoute {
@@ -478,9 +500,9 @@ export interface FindEntitySetFilterOptions {
   itemType?: string;
 }
 
-export interface FindEntityLogicalFilterOptions {
+export interface FindEntityLogicalFilterOptions<TFilter = EntityFilterOptions> {
   operator: EntityFilterLogicalOperators;
-  filters: EntityFilterOptions[];
+  filters: TFilter[];
 }
 
 export interface FindEntityUnaryFilterOptions {
@@ -529,6 +551,7 @@ export interface DeleteEntityByIdOptions {
 export interface CreateEntityOptions {
   routeContext?: RouteContext;
   entity: any;
+  postponeUniquenessCheck?: boolean;
 }
 
 export interface UpdateEntityOptions {
@@ -545,6 +568,7 @@ export interface UpdateEntityByIdOptions {
     type: string;
   };
   stateProperties?: string[];
+  postponeUniquenessCheck?: boolean;
 }
 
 export interface DeleteEntityOptions {

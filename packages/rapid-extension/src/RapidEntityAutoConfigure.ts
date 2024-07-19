@@ -75,6 +75,7 @@ export function autoConfigureRapidEntity(sourceEntity: RapidEntity, entityDefini
       "derivedType",
       "derivedTypePropertyCode",
       "displayPropertyName",
+      "indexes",
       "permissionPolicies",
     ]) as any),
 

@@ -106,6 +106,42 @@ export default {
           targetSingularCode: "property",
           selfIdColumnName: "model_id",
         },
+        {
+          name: "indexes",
+          code: "indexes",
+          columnName: "indexes",
+          type: "json",
+          required: false,
+        },
+      ],
+      indexes: [
+        {
+          name: "meta_models_singular_code_uindex",
+          properties: [
+            {
+              code: "singularCode",
+            },
+          ],
+          unique: true,
+        },
+        {
+          name: "meta_models_table_name_uindex",
+          properties: [
+            {
+              code: "tableName",
+            },
+          ],
+          unique: true,
+        },
+        {
+          name: "meta_models_name_index",
+          properties: [
+            {
+              code: "name",
+            },
+          ],
+          unique: false,
+        },
       ],
     },
     {
@@ -261,6 +297,20 @@ export default {
           columnName: "data_dictionary",
           type: "text",
           required: false,
+        },
+      ],
+      indexes: [
+        {
+          name: "meta_properties_model_id_code_uindex",
+          properties: [
+            {
+              code: "model",
+            },
+            {
+              code: "code",
+            },
+          ],
+          unique: true,
         },
       ],
     },
