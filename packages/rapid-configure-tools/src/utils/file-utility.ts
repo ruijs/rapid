@@ -40,5 +40,6 @@ export function enumFileBaseNamesInDirectory(dirPath: string, prefix: string = "
     }
   }
 
+  fileNames.sort();
   return fileNames;
 }
