@@ -112,7 +112,11 @@ export default {
                 textAlign: props.actionsAlign || "left",
               },
               wrapperCol: isHorizonLayout ? { offset: 8 } : null,
-              children: formActionRocks,
+              children: {
+                $type: "antdSpace",
+                size: 16,
+                children: formActionRocks,
+              },
             },
           ],
         },
