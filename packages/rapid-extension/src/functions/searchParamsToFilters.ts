@@ -19,7 +19,9 @@ export const searchParamsToFilters = (filterConfigurations: SearchFormFilterConf
       filterFields = [filterConfig.code];
     }
 
-    const filterConfigs = map(filterFields, (f) => (isString(f) ? { field: f, operator: filterMode, itemType: filterConfig.itemType } : f));
+    const filterConfigs = map(filterFields, (f) =>
+      isString(f) ? { field: f, operator: filterMode, itemType: filterConfig.itemType, extra: filterConfig.filterExtra } : f,
+    );
     filters.push(...parseConfigToFilters(filterConfigs, paramValue));
   }
 
