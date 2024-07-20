@@ -31,6 +31,7 @@ import {
   getEntityPropertyByCode,
   getEntityPropertyByFieldName,
   isManyRelationProperty,
+  isOneRelationProperty,
   isRelationProperty,
 } from "../helpers/metaHelper";
 import { ColumnSelectOptions, CountRowOptions, FindRowOptions, FindRowOrderByOptions, RowFilterOptions } from "./dataAccessTypes";
@@ -520,13 +521,17 @@ async function convertEntityFiltersToRowFilters(
       }
     } else {
       const filterField = (filter as EntityNonRelationPropertyFilterOptions).field;
-      let property: RpdDataModelProperty = getEntityProperty(server, model, (property) => {
-        return property.code === filterField;
-      });
+      let property: RpdDataModelProperty = getEntityPropertyByCode(server, model, filterField);
 
       let columnName = "";
       if (property) {
-        columnName = property.columnName || property.code;
+        if (isOneRelationProperty(property)) {
+          columnName = property.targetIdColumnName;
+        } else if (isManyRelationProperty(property)) {
+          throw new Error(`Operator "${operator}" is not supported on many-relation property "${property.code}"`);
+        } else {
+          columnName = property.columnName || property.code;
+        }
       } else {
         property = getEntityProperty(server, model, (property) => {
           return property.columnName === filterField;
