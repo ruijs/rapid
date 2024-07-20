@@ -13,7 +13,9 @@ import {
   UpdateRowOptions,
   ColumnSelectOptions,
   ColumnNameWithTableName,
+  DataAccessPgColumnTypes,
 } from "~/dataAccess/dataAccessTypes";
+import { pgPropertyTypeColumnMap } from "~/dataAccess/columnTypeMapper";
 
 const objLeftQuoteChar = '"';
 const objRightQuoteChar = '"';
@@ -285,8 +287,8 @@ export default class QueryBuilder {
       if (model) {
         property = find(model.properties, (e: RpdDataModelProperty) => e.code === propertyName);
       }
-
-      if (property && property.type === "json") {
+      const columnType: DataAccessPgColumnTypes | null = property ? pgPropertyTypeColumnMap[property.type] : null;
+      if (columnType === "jsonb") {
         params.push(JSON.stringify(entity[propertyName]));
         values += `$${params.length}::jsonb`;
       } else {
@@ -325,17 +327,19 @@ export default class QueryBuilder {
         command += ", ";
       }
 
+      command += `${this.quoteObject(propertyName)}=`;
+
       let property: RpdDataModelProperty | null = null;
       if (model) {
         property = find(model.properties, (e: RpdDataModelProperty) => (e.columnName || e.code) === propertyName);
       }
-
-      if (property && property.type === "json") {
+      const columnType: DataAccessPgColumnTypes | null = property ? pgPropertyTypeColumnMap[property.type] : null;
+      if (columnType === "jsonb") {
         params.push(JSON.stringify(entity[propertyName]));
-        command += `${this.quoteObject(propertyName)}=$${params.length}::jsonb`;
+        command += `$${params.length}::jsonb`;
       } else {
         params.push(entity[propertyName]);
-        command += `${this.quoteObject(propertyName)}=$${params.length}`;
+        command += `$${params.length}`;
       }
     });
 

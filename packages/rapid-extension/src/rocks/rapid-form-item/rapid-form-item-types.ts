@@ -147,6 +147,7 @@ export type RapidFormItemType =
   | "box"
   | "text"
   | "textarea"
+  | "password"
   | "number"
   | "switch"
   | "checkbox"
@@ -162,6 +163,9 @@ export type RapidFormItemType =
   | "search"
   | "json"
   | "file"
+  | "fileList"
+  | "image"
+  | "imageList"
   | "custom";
 
 export interface RapidFormItemRockConfig extends SimpleRockConfig, RapidFormItemConfig {}

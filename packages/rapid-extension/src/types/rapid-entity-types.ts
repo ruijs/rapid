@@ -71,21 +71,24 @@ export type RapidDataDictionaryEntry = {
 };
 
 export type RapidFieldType =
-  | "text"
-  | "boolean"
   | "integer"
   | "long"
   | "float"
   | "double"
   | "decimal"
+  | "text"
+  | "boolean"
   | "date"
   | "time"
   | "datetime"
   | "json"
+  | "relation"
+  | "relation[]"
   | "option"
   | "file"
-  | "relation"
-  | "relation[]";
+  | "file[]"
+  | "image"
+  | "image[]";
 
 export type RapidEntity<TEntitySingularCodes extends string = string, TDictionaryCodes extends string = string> = {
   /**

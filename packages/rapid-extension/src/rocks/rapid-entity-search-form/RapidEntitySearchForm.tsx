@@ -19,10 +19,11 @@ import type { RapidFormItemConfig, RapidFormItemType, RapidSearchFormItemConfig 
 import type { RapidFormAction, RapidFormRockConfig } from "../rapid-form/rapid-form-types";
 import type { RapidSelectConfig } from "../rapid-select/rapid-select-types";
 import { RapidOptionFieldRendererConfig } from "../rapid-option-field-renderer/rapid-option-field-renderer-types";
-import { message } from "antd";
 import { searchParamsToFilters } from "../../functions/searchParamsToFilters";
 
-const fieldTypeToFormItemTypeMap: Record<RapidFieldType, RapidFormItemType | null> = {
+type SearchableFieldType = Exclude<RapidFieldType, "file" | "file[]" | "image" | "image[]">;
+
+const fieldTypeToFormItemTypeMap: Record<SearchableFieldType, RapidFormItemType | null> = {
   text: "text",
   boolean: "switch",
   integer: "number",
@@ -37,7 +38,6 @@ const fieldTypeToFormItemTypeMap: Record<RapidFieldType, RapidFormItemType | nul
   relation: "select",
   "relation[]": "select",
   json: "json",
-  file: "text",
 };
 
 const validationMessagesByFieldType: Partial<Record<RapidFieldType, any>> = {

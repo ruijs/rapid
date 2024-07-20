@@ -316,7 +316,11 @@ export type RpdDataPropertyTypes =
   | "json"
   | "relation"
   | "relation[]"
-  | "option";
+  | "option"
+  | "file"
+  | "file[]"
+  | "image"
+  | "image[]";
 
 /**
  * 数据字典

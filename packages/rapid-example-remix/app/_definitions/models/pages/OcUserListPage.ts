@@ -16,7 +16,7 @@ const formConfig: Partial<RapidEntityFormConfig> = {
       code: "email",
     },
     {
-      type: "file",
+      type: "auto",
       code: "avatar",
     },
     {

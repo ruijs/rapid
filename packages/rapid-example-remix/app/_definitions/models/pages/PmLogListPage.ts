@@ -17,14 +17,15 @@ const formConfig: Partial<RapidEntityFormConfig> = {
     },
     {
       type: "auto",
+      code: "pictures",
+    },
+    {
+      type: "json",
       code: "attachments",
     },
     {
-      type: "file",
+      type: "auto",
       code: "attachments",
-      formControlProps: {
-        multiple: true,
-      },
     },
   ],
 };
@@ -81,9 +82,13 @@ const page: RapidPage = {
         },
         {
           type: "auto",
+          code: "pictures",
+          width: "100px",
+        },
+        {
+          type: "auto",
           code: "attachments",
           width: "300px",
-          fieldType: "file",
           rendererProps: {
             showFileSize: true,
           },

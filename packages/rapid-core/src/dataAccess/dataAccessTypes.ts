@@ -1,3 +1,18 @@
+export type DataAccessPgColumnTypes =
+  | "int4"
+  | "int8"
+  | "float4"
+  | "float8"
+  | "decimal"
+  | "text"
+  | "bool"
+  | "date"
+  | "time"
+  | "timestamptz"
+  | "jsonb"
+  | "text"
+  | "jsonb";
+
 export type RowFilterRelationalOperators =
   | "eq"
   | "ne"

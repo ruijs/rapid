@@ -82,6 +82,7 @@ const entityFieldCodes = {
     'project',
     'logDate',
     'content',
+    'pictures',
     'attachments',
     'createdAt',
     'createdBy',
