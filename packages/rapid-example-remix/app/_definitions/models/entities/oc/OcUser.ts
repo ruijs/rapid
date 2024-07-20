@@ -62,7 +62,7 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
     {
       code: "avatar",
       name: "头像",
-      type: "json",
+      type: "image",
     },
     {
       code: "department",

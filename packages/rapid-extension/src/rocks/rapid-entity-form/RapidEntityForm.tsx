@@ -26,10 +26,14 @@ const fieldTypeToFormItemTypeMap: Record<RapidFieldType, RapidFormItemType | nul
   time: "time",
   datetime: "datetime",
   option: "select",
+  "option[]": "select",
   relation: "select",
   "relation[]": "select",
   json: "json",
   file: "file",
+  "file[]": "fileList",
+  image: "image",
+  "image[]": "imageList",
 };
 
 const validationMessagesByFieldType: Partial<Record<RapidFieldType, any>> = {
@@ -55,7 +59,7 @@ export interface GenerateEntityFormItemOption {
   dataDictionaries: RapidDataDictionary[];
 }
 
-function generateDataFormItemForOptionProperty(option: GenerateEntityFormItemOption) {
+function generateDataFormItemForOptionProperty(option: GenerateEntityFormItemOption, valueFieldType: "option" | "option[]") {
   const { formItemConfig, mainEntity } = option;
 
   let entries: RapidDataDictionaryEntry[] = [];
@@ -79,12 +83,14 @@ function generateDataFormItemForOptionProperty(option: GenerateEntityFormItemOpt
     listValueFieldName: "value",
     ...formItemConfig.formControlProps,
   };
+
   let rendererProps: RapidOptionFieldRendererConfig = {
     dictionaryCode: dataDictionaryCode,
   };
   let formItem: RapidFormItemConfig = {
     type: formItemConfig.type,
-    valueFieldType: "option",
+    valueFieldType: valueFieldType,
+    multipleValues: valueFieldType === "option[]",
     code: formItemConfig.code,
     required: formItemConfig.required,
     label: formItemConfig.label,
@@ -148,8 +154,8 @@ function generateDataFormItem(logger: RuiRockLogger, entityFormProps: any, optio
 
   let valueFieldType = formItemConfig.valueFieldType || rpdField?.type || "text";
 
-  if (valueFieldType === "option") {
-    return generateDataFormItemForOptionProperty(option);
+  if (valueFieldType === "option" || valueFieldType === "option[]") {
+    return generateDataFormItemForOptionProperty(option, valueFieldType);
   } else if (valueFieldType === "relation" || valueFieldType === "relation[]") {
     return generateDataFormItemForRelationProperty(option, rpdField);
   }

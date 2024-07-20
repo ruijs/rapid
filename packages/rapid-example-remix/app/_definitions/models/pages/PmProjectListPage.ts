@@ -15,6 +15,14 @@ const formConfig: Partial<RapidEntityFormConfig> = {
       type: "textarea",
       code: "description",
     },
+    {
+      type: "auto",
+      code: "state",
+    },
+    {
+      type: "auto",
+      code: "allowedTaskTypes",
+    },
   ],
 };
 
@@ -52,6 +60,27 @@ const page: RapidPage = {
         },
       ],
       pageSize: 20,
+      searchForm: {
+        items: [
+          {
+            type: "auto",
+            code: "name",
+            filterMode: "contains",
+          },
+          {
+            type: "auto",
+            code: "state",
+            filterMode: "in",
+            itemType: "text",
+          },
+          {
+            type: "auto",
+            code: "allowedTaskTypes",
+            filterMode: "arrayOverlap",
+            multipleValues: true,
+          },
+        ],
+      },
       columns: [
         {
           type: "auto",
@@ -59,13 +88,26 @@ const page: RapidPage = {
           width: "200px",
         },
         {
-          type: "auto",
+          type: "link",
           code: "name",
           width: "200px",
+          rendererProps: {
+            url: "/pages/pm_project_details?id={{id}}",
+          },
         },
         {
           type: "auto",
           code: "description",
+        },
+        {
+          type: "auto",
+          code: "state",
+          width: "100px",
+        },
+        {
+          type: "auto",
+          code: "allowedTaskTypes",
+          width: "250px",
         },
         {
           type: "auto",

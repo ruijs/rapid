@@ -27,6 +27,8 @@ import * as listMetaRoutes from "./actionHandlers/listMetaRoutes";
 import * as getMetaModelDetail from "./actionHandlers/getMetaModelDetail";
 import { find, isString, map } from "lodash";
 import { getEntityPropertiesIncludingBase, getEntityPropertyByCode, isOneRelationProperty, isRelationProperty } from "~/helpers/metaHelper";
+import { DataAccessPgColumnTypes } from "~/dataAccess/dataAccessTypes";
+import { pgPropertyTypeColumnMap } from "~/dataAccess/columnTypeMapper";
 
 class MetaManager implements RapidPlugin {
   get code(): string {
@@ -484,18 +486,3 @@ function generateTableIndexDDL(queryBuilder: IQueryBuilder, server: IRpdServer, 
 
   return ddl;
 }
-
-const pgPropertyTypeColumnMap: Partial<Record<RpdDataPropertyTypes, string>> = {
-  integer: "int4",
-  long: "int8",
-  float: "float4",
-  double: "float8",
-  decimal: "decimal",
-  text: "text",
-  boolean: "bool",
-  date: "date",
-  time: "time",
-  datetime: "timestamptz",
-  json: "jsonb",
-  option: "text",
-};

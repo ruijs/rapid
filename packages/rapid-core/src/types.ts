@@ -316,7 +316,12 @@ export type RpdDataPropertyTypes =
   | "json"
   | "relation"
   | "relation[]"
-  | "option";
+  | "option"
+  | "option[]"
+  | "file"
+  | "file[]"
+  | "image"
+  | "image[]";
 
 /**
  * 数据字典
@@ -444,6 +449,8 @@ export type EntityFilterRelationalOperators =
   | "endsWith"
   | "notEndsWith";
 
+export type EntityFilterArrayOperators = "arrayContains" | "arrayOverlap";
+
 export type EntityFilterSetOperators = "in" | "notIn";
 
 export type EntityFilterLogicalOperators = "or" | "and";
@@ -454,6 +461,7 @@ export type EntityFilterExistenceOperators = "exists" | "notExists";
 
 export type EntityFilterOperators =
   | EntityFilterRelationalOperators
+  | EntityFilterArrayOperators
   | EntityFilterSetOperators
   | EntityFilterLogicalOperators
   | EntityFilterUnaryOperators
@@ -461,12 +469,17 @@ export type EntityFilterOperators =
 
 export type EntityFilterOptions =
   | FindEntityRelationalFilterOptions
+  | FindEntityArrayFilterOptions
   | FindEntitySetFilterOptions
   | FindEntityLogicalFilterOptions
   | FindEntityUnaryFilterOptions
   | FindEntityExistenceFilterOptions;
 
-export type EntityNonRelationPropertyFilterOptions = FindEntityRelationalFilterOptions | FindEntitySetFilterOptions | FindEntityUnaryFilterOptions;
+export type EntityNonRelationPropertyFilterOptions =
+  | FindEntityRelationalFilterOptions
+  | FindEntityArrayFilterOptions
+  | FindEntitySetFilterOptions
+  | FindEntityUnaryFilterOptions;
 
 export interface FindEntityOptions {
   routeContext?: RouteContext;
@@ -491,6 +504,13 @@ export interface FindEntityRelationalFilterOptions {
   field: string;
   operator: EntityFilterRelationalOperators;
   value: any;
+}
+
+export interface FindEntityArrayFilterOptions {
+  field: string;
+  operator: EntityFilterArrayOperators;
+  value: any[];
+  itemType?: string;
 }
 
 export interface FindEntitySetFilterOptions {

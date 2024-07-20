@@ -27,9 +27,14 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       type: "text",
     },
     {
+      code: "pictures",
+      name: "照片",
+      type: "image[]",
+    },
+    {
       code: "attachments",
       name: "附件",
-      type: "json",
+      type: "file[]",
     },
   ],
 };

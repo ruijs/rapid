@@ -154,7 +154,7 @@ export default {
         let defaultRendererProps: any = RapidExtensionSetting.getDefaultRendererProps(fieldType, rendererType);
         let fieldTypeRelatedRendererProps: any = {};
         if (rpdField) {
-          if (fieldType === "option") {
+          if (fieldType === "option" || fieldType === "option[]") {
             fieldTypeRelatedRendererProps = {
               dictionaryCode: rpdField.dataDictionary,
             };

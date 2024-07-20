@@ -1,10 +1,10 @@
 import { Rock, RockConfig } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidFormItemMeta from "./RapidFormItemMeta";
-import { RapidFormItemRockConfig } from "./rapid-form-item-types";
+import { RapidFormItemRockConfig, RapidFormItemType } from "./rapid-form-item-types";
 import RapidExtensionSetting from "../../RapidExtensionSetting";
 
-const formItemTypeToControlRockTypeMap: Record<string, string> = {
+const formItemTypeToControlRockTypeMap: Record<Exclude<RapidFormItemType, "auto" | "custom">, string> = {
   box: "box",
   text: "antdInput",
   textarea: "antdInputTextArea",
@@ -23,10 +23,19 @@ const formItemTypeToControlRockTypeMap: Record<string, string> = {
   treeSelect: "rapidTreeSelect",
   search: "antdInputSearch",
   file: "rapidUploaderFormInput",
+  fileList: "rapidUploaderFormInput",
+  image: "rapidUploaderFormInput",
+  imageList: "rapidUploaderFormInput",
   json: "rapidJsonFormInput",
 };
 
-const defaultControlPropsOfFormItemType: Record<string, Record<string, any>> = {
+const defaultUploadProps = {
+  name: "files",
+  action: "/api/upload",
+  headers: {},
+};
+
+const defaultControlPropsOfFormItemType: Partial<Record<RapidFormItemType, Record<string, any>>> = {
   datetime: {
     showTime: true,
   },
@@ -40,11 +49,21 @@ const defaultControlPropsOfFormItemType: Record<string, Record<string, any>> = {
   },
 
   file: {
-    uploadProps: {
-      name: "files",
-      action: "/api/upload",
-      headers: {},
-    },
+    uploadProps: defaultUploadProps,
+  },
+
+  fileList: {
+    uploadProps: defaultUploadProps,
+    multiple: true,
+  },
+
+  image: {
+    uploadProps: defaultUploadProps,
+  },
+
+  imageList: {
+    uploadProps: defaultUploadProps,
+    multiple: true,
   },
 };
 
@@ -74,16 +93,16 @@ export default {
       };
 
       // for antdSelect
+      // TODO: may be we should remove `multipleValues` prop from RapidFormItemConfig
       if (props.multipleValues) {
         childRock.mode = "multiple";
       }
     } else {
       let rendererType = props.rendererType;
       if (!rendererType) {
-        if (props.multipleValues) {
+        rendererType = RapidExtensionSetting.getDefaultRendererTypeOfFieldType(props.valueFieldType);
+        if (props.valueFieldType === "relation[]") {
           rendererType = "rapidArrayRenderer";
-        } else {
-          rendererType = RapidExtensionSetting.getDefaultRendererTypeOfFieldType(props.valueFieldType);
         }
       }
       const defaultRendererProps = RapidExtensionSetting.getDefaultRendererProps(props.valueFieldType, rendererType);

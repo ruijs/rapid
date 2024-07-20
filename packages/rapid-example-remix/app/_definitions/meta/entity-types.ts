@@ -215,7 +215,7 @@ export interface OcUser {
   /**
    * 头像
    */
-  avatar?: Record<string, any>;
+  avatar?: any;
   /**
    * 部门
    */
@@ -295,9 +295,13 @@ export interface PmLog {
    */
   content?: string;
   /**
+   * 照片
+   */
+  pictures?: any;
+  /**
    * 附件
    */
-  attachments?: Record<string, any>;
+  attachments?: any;
   /**
    * 创建时间
    */
@@ -349,6 +353,14 @@ export interface PmProject {
    * 排序号
    */
   orderNum?: number;
+  /**
+   * 项目状态
+   */
+  state?: undefined;
+  /**
+   * 任务类型
+   */
+  allowedTaskTypes?: any;
   /**
    * 任务
    */

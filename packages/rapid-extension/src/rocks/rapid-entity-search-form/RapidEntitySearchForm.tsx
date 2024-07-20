@@ -19,10 +19,11 @@ import type { RapidFormItemConfig, RapidFormItemType, RapidSearchFormItemConfig 
 import type { RapidFormAction, RapidFormRockConfig } from "../rapid-form/rapid-form-types";
 import type { RapidSelectConfig } from "../rapid-select/rapid-select-types";
 import { RapidOptionFieldRendererConfig } from "../rapid-option-field-renderer/rapid-option-field-renderer-types";
-import { message } from "antd";
 import { searchParamsToFilters } from "../../functions/searchParamsToFilters";
 
-const fieldTypeToFormItemTypeMap: Record<RapidFieldType, RapidFormItemType | null> = {
+type SearchableFieldType = Exclude<RapidFieldType, "file" | "file[]" | "image" | "image[]">;
+
+const fieldTypeToFormItemTypeMap: Record<SearchableFieldType, RapidFormItemType | null> = {
   text: "text",
   boolean: "switch",
   integer: "number",
@@ -34,10 +35,10 @@ const fieldTypeToFormItemTypeMap: Record<RapidFieldType, RapidFormItemType | nul
   time: "time",
   datetime: "dateTimeRange",
   option: "select",
+  "option[]": "select",
   relation: "select",
   "relation[]": "select",
   json: "json",
-  file: "text",
 };
 
 const validationMessagesByFieldType: Partial<Record<RapidFieldType, any>> = {
@@ -63,7 +64,7 @@ export interface GenerateEntityFormItemOption {
   dataDictionaries: RapidDataDictionary[];
 }
 
-function generateSearchFormItemForOptionProperty(option: GenerateEntityFormItemOption) {
+function generateSearchFormItemForOptionProperty(option: GenerateEntityFormItemOption, valueFieldType: RapidFieldType) {
   const { formItemConfig, mainEntity } = option;
 
   let entries: RapidDataDictionaryEntry[] = [];
@@ -75,11 +76,14 @@ function generateSearchFormItemForOptionProperty(option: GenerateEntityFormItemO
     entries = dataDictionary?.entries || [];
   }
 
+  const { filterMode } = formItemConfig;
+  const isMultiple = formItemConfig.multipleValues || filterMode === "in" || filterMode === "overlap";
+
   let formControlProps: Partial<RapidSelectConfig> = {
     allowClear: !formItemConfig.required,
     placeholder: formItemConfig.placeholder,
-    mode: formItemConfig.filterMode === "in" ? "multiple" : undefined,
-    multiple: formItemConfig.filterMode === "in",
+    mode: isMultiple ? "multiple" : undefined,
+    multiple: isMultiple,
     listDataSource: {
       data: {
         list: entries,
@@ -160,8 +164,8 @@ function generateSearchFormItem(logger: RuiRockLogger, entityFormProps: any, opt
 
   let valueFieldType = formItemConfig.valueFieldType || rpdField?.type || "text";
 
-  if (valueFieldType === "option") {
-    return generateSearchFormItemForOptionProperty(option);
+  if (valueFieldType === "option" || valueFieldType === "option[]") {
+    return generateSearchFormItemForOptionProperty(option, valueFieldType);
   } else if (valueFieldType === "relation" || valueFieldType === "relation[]") {
     return generateSearchFormItemForRelationProperty(option, rpdField);
   }

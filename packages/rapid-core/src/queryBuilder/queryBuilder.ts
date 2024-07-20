@@ -13,7 +13,10 @@ import {
   UpdateRowOptions,
   ColumnSelectOptions,
   ColumnNameWithTableName,
+  DataAccessPgColumnTypes,
+  FindRowArrayFilterOptions,
 } from "~/dataAccess/dataAccessTypes";
+import { pgPropertyTypeColumnMap } from "~/dataAccess/columnTypeMapper";
 
 const objLeftQuoteChar = '"';
 const objRightQuoteChar = '"';
@@ -285,8 +288,8 @@ export default class QueryBuilder {
       if (model) {
         property = find(model.properties, (e: RpdDataModelProperty) => e.code === propertyName);
       }
-
-      if (property && property.type === "json") {
+      const columnType: DataAccessPgColumnTypes | null = property ? pgPropertyTypeColumnMap[property.type] : null;
+      if (columnType === "jsonb") {
         params.push(JSON.stringify(entity[propertyName]));
         values += `$${params.length}::jsonb`;
       } else {
@@ -325,17 +328,19 @@ export default class QueryBuilder {
         command += ", ";
       }
 
+      command += `${this.quoteObject(propertyName)}=`;
+
       let property: RpdDataModelProperty | null = null;
       if (model) {
         property = find(model.properties, (e: RpdDataModelProperty) => (e.columnName || e.code) === propertyName);
       }
-
-      if (property && property.type === "json") {
+      const columnType: DataAccessPgColumnTypes | null = property ? pgPropertyTypeColumnMap[property.type] : null;
+      if (columnType === "jsonb") {
         params.push(JSON.stringify(entity[propertyName]));
-        command += `${this.quoteObject(propertyName)}=$${params.length}::jsonb`;
+        command += `$${params.length}::jsonb`;
       } else {
         params.push(entity[propertyName]);
-        command += `${this.quoteObject(propertyName)}=$${params.length}`;
+        command += `$${params.length}`;
       }
     });
 
@@ -420,6 +425,10 @@ function buildFilterQuery(level: number, ctx: BuildQueryContext, filter: RowFilt
     return buildEndsWithFilterQuery(ctx, filter);
   } else if (operator === "notEndsWith") {
     return buildNotEndsWithFilterQuery(ctx, filter);
+  } else if (operator === "arrayContains") {
+    return buildArrayContainsFilterQuery(ctx, filter);
+  } else if (operator === "arrayOverlap") {
+    return buildArrayOverlapFilterQuery(ctx, filter);
   } else {
     throw new Error(`Filter operator '${operator}' is not supported.`);
   }
@@ -565,6 +574,36 @@ function buildRelationalFilterQuery(ctx: BuildQueryContext, filter: FindRowRelat
 
   if (ctx.paramToLiteral) {
     command += formatValueToSqlLiteral(filter.value);
+  } else {
+    ctx.params.push(filter.value);
+    command += "$" + ctx.params.length;
+  }
+
+  return command;
+}
+
+function buildArrayContainsFilterQuery(ctx: BuildQueryContext, filter: FindRowArrayFilterOptions) {
+  let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
+
+  command += " @> ";
+
+  if (ctx.paramToLiteral) {
+    // TODO: implement it
+  } else {
+    ctx.params.push(filter.value);
+    command += "$" + ctx.params.length;
+  }
+
+  return command;
+}
+
+function buildArrayOverlapFilterQuery(ctx: BuildQueryContext, filter: FindRowArrayFilterOptions) {
+  let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
+
+  command += " && ";
+
+  if (ctx.paramToLiteral) {
+    // TODO: implement it
   } else {
     ctx.params.push(filter.value);
     command += "$" + ctx.params.length;

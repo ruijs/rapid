@@ -15,6 +15,7 @@ import RapidFileSizeRenderer from "./rapid-file-size-renderer/RapidFileSizeRende
 import RapidForm from "./rapid-form/RapidForm";
 import RapidFormItem from "./rapid-form-item/RapidFormItem";
 import RapidFormModalRecordAction from "./rapid-form-modal-record-action/RapidFormModalRecordAction";
+import RapidImageRenderer from "./rapid-image-renderer/RapidImageRenderer";
 import RapidJsonFormInput from "./rapid-json-form-input/RapidJsonFormInput";
 import RapidJsonRenderer from "./rapid-json-renderer/RapidJsonRenderer";
 import RapidLinkRenderer from "./rapid-link-renderer/RapidLinkRenderer";
@@ -73,6 +74,7 @@ export default [
   RapidForm,
   RapidFormItem,
   RapidFormModalRecordAction,
+  RapidImageRenderer,
   RapidJsonFormInput,
   RapidJsonRenderer,
   RapidLinkRenderer,

@@ -13,10 +13,14 @@ const fieldTypeToDisplayRockTypeMap: Record<RapidFieldType, string> = {
   time: "rapidTextRenderer",
   datetime: "rapidDateTimeRenderer",
   option: "rapidOptionFieldRenderer",
+  "option[]": "rapidOptionFieldRenderer",
   relation: "rapidObjectRenderer",
   "relation[]": "rapidObjectRenderer",
   json: "rapidJsonRenderer",
   file: "rapidFileInfoRenderer",
+  "file[]": "rapidFileInfoRenderer",
+  image: "rapidImageRenderer",
+  "image[]": "rapidImageRenderer",
 };
 
 const defaultDisplayPropsOfFieldType: Record<string, Record<string, any>> = {
