@@ -5,12 +5,11 @@ export type DataAccessPgColumnTypes =
   | "float8"
   | "decimal"
   | "text"
+  | "text[]"
   | "bool"
   | "date"
   | "time"
   | "timestamptz"
-  | "jsonb"
-  | "text"
   | "jsonb";
 
 export type RowFilterRelationalOperators =
@@ -29,6 +28,8 @@ export type RowFilterRelationalOperators =
   | "endsWith"
   | "notEndsWith";
 
+export type RowFilterArrayOperators = "arrayContains" | "arrayOverlap";
+
 export type RowFilterSetOperators = "in" | "notIn";
 
 export type RowFilterLogicalOperators = "or" | "and";
@@ -39,6 +40,7 @@ export type RowFilterExistenceOperators = "exists" | "notExists";
 
 export type RowFilterOperators =
   | RowFilterRelationalOperators
+  | RowFilterArrayOperators
   | RowFilterSetOperators
   | RowFilterLogicalOperators
   | RowFilterUnaryOperators
@@ -46,12 +48,17 @@ export type RowFilterOperators =
 
 export type RowFilterOptions =
   | FindRowRelationalFilterOptions
+  | FindRowArrayFilterOptions
   | FindRowSetFilterOptions
   | FindRowLogicalFilterOptions
   | FindRowUnaryFilterOptions
   | FindRowExistenceFilterOptions;
 
-export type RowNonRelationPropertyFilterOptions = FindRowRelationalFilterOptions | FindRowSetFilterOptions | FindRowUnaryFilterOptions;
+export type RowNonRelationPropertyFilterOptions =
+  | FindRowRelationalFilterOptions
+  | FindRowArrayFilterOptions
+  | FindRowSetFilterOptions
+  | FindRowUnaryFilterOptions;
 
 export type ColumnSelectOptions = string | ColumnNameWithTableName;
 
@@ -75,6 +82,13 @@ export interface FindRowRelationalFilterOptions {
   field: ColumnSelectOptions;
   operator: RowFilterRelationalOperators;
   value: any;
+}
+
+export interface FindRowArrayFilterOptions {
+  field: ColumnSelectOptions;
+  operator: RowFilterArrayOperators;
+  value: any[];
+  itemType?: string;
 }
 
 export interface FindRowSetFilterOptions {

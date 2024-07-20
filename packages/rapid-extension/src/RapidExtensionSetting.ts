@@ -13,6 +13,7 @@ const fieldTypeToDisplayRockTypeMap: Record<RapidFieldType, string> = {
   time: "rapidTextRenderer",
   datetime: "rapidDateTimeRenderer",
   option: "rapidOptionFieldRenderer",
+  "option[]": "rapidOptionFieldRenderer",
   relation: "rapidObjectRenderer",
   "relation[]": "rapidObjectRenderer",
   json: "rapidJsonRenderer",

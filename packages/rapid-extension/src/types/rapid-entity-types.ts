@@ -85,6 +85,7 @@ export type RapidFieldType =
   | "relation"
   | "relation[]"
   | "option"
+  | "option[]"
   | "file"
   | "file[]"
   | "image"
@@ -299,7 +300,7 @@ export type RapidEntityIndexOptions =
   | FindEntityLogicalFilterOptions<RapidEntityIndexOptions>
   | FindEntityUnaryFilterOptions;
 
-export type RapidSearchFormItemFilterMode = EntityFilterRelationalOperators | EntityFilterSetOperators | "range";
+export type RapidSearchFormItemFilterMode = EntityFilterRelationalOperators | EntityFilterArrayOperators | EntityFilterSetOperators | "range";
 
 export interface SearchFormFilterConfiguration extends RapidSearchFormItemConfig {
   /**
@@ -316,6 +317,7 @@ export interface SearchFormFilterConfiguration extends RapidSearchFormItemConfig
 export type EntityFilterOptions =
   | FindEntityRelationalFilterOptions
   | FindEntitySetFilterOptions
+  | FindEntityArrayFilterOptions
   | FindEntityLogicalFilterOptions
   | FindEntityUnaryFilterOptions
   | FindEntityExistenceFilterOptions;
@@ -345,6 +347,13 @@ export interface FindEntityRelationalFilterOptions {
 export interface FindEntitySetFilterOptions {
   field: string;
   operator: EntityFilterSetOperators;
+  value: any[];
+  itemType?: string;
+}
+
+export interface FindEntityArrayFilterOptions {
+  field: string;
+  operator: EntityFilterArrayOperators;
   value: any[];
   itemType?: string;
 }
@@ -401,6 +410,8 @@ export type EntityFilterRelationalOperators =
   | "notEndsWith";
 
 export type EntityFilterSetOperators = "in" | "notIn";
+
+export type EntityFilterArrayOperators = "contains" | "overlap";
 
 export type EntityFilterLogicalOperators = "or" | "and";
 

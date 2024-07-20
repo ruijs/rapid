@@ -14,6 +14,7 @@ import {
   ColumnSelectOptions,
   ColumnNameWithTableName,
   DataAccessPgColumnTypes,
+  FindRowArrayFilterOptions,
 } from "~/dataAccess/dataAccessTypes";
 import { pgPropertyTypeColumnMap } from "~/dataAccess/columnTypeMapper";
 
@@ -424,6 +425,10 @@ function buildFilterQuery(level: number, ctx: BuildQueryContext, filter: RowFilt
     return buildEndsWithFilterQuery(ctx, filter);
   } else if (operator === "notEndsWith") {
     return buildNotEndsWithFilterQuery(ctx, filter);
+  } else if (operator === "arrayContains") {
+    return buildArrayContainsFilterQuery(ctx, filter);
+  } else if (operator === "arrayOverlap") {
+    return buildArrayOverlapFilterQuery(ctx, filter);
   } else {
     throw new Error(`Filter operator '${operator}' is not supported.`);
   }
@@ -569,6 +574,36 @@ function buildRelationalFilterQuery(ctx: BuildQueryContext, filter: FindRowRelat
 
   if (ctx.paramToLiteral) {
     command += formatValueToSqlLiteral(filter.value);
+  } else {
+    ctx.params.push(filter.value);
+    command += "$" + ctx.params.length;
+  }
+
+  return command;
+}
+
+function buildArrayContainsFilterQuery(ctx: BuildQueryContext, filter: FindRowArrayFilterOptions) {
+  let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
+
+  command += " @> ";
+
+  if (ctx.paramToLiteral) {
+    // TODO: implement it
+  } else {
+    ctx.params.push(filter.value);
+    command += "$" + ctx.params.length;
+  }
+
+  return command;
+}
+
+function buildArrayOverlapFilterQuery(ctx: BuildQueryContext, filter: FindRowArrayFilterOptions) {
+  let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
+
+  command += " && ";
+
+  if (ctx.paramToLiteral) {
+    // TODO: implement it
   } else {
     ctx.params.push(filter.value);
     command += "$" + ctx.params.length;

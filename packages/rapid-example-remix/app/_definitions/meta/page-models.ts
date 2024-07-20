@@ -7,6 +7,7 @@ import OcUserDetailsPage from '../models/pages/OcUserDetailsPage';
 import OcUserListPage from '../models/pages/OcUserListPage';
 import PmBugIssueListPage from '../models/pages/PmBugIssueListPage';
 import PmLogListPage from '../models/pages/PmLogListPage';
+import PmProjectDetailsPage from '../models/pages/PmProjectDetailsPage';
 import PmProjectListPage from '../models/pages/PmProjectListPage';
 import PmTaskListPage from '../models/pages/PmTaskListPage';
 
@@ -19,6 +20,7 @@ export default [
   OcUserListPage,
   PmBugIssueListPage,
   PmLogListPage,
+  PmProjectDetailsPage,
   PmProjectListPage,
   PmTaskListPage,
 ] as TRapidPage[];

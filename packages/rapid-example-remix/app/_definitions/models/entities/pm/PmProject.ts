@@ -25,6 +25,18 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       type: "integer",
     },
     {
+      code: "state",
+      name: "项目状态",
+      type: "option",
+      dataDictionary: "PmProjectState",
+    },
+    {
+      code: "allowedTaskTypes",
+      name: "任务类型",
+      type: "option[]",
+      dataDictionary: "TaskType",
+    },
+    {
       code: "tasks",
       name: "任务",
       type: "relation[]",

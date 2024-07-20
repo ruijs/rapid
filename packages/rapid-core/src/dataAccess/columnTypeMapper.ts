@@ -14,6 +14,7 @@ export const pgPropertyTypeColumnMap: Record<Exclude<RpdDataPropertyTypes, "rela
   datetime: "timestamptz",
   json: "jsonb",
   option: "text",
+  "option[]": "text[]",
   file: "jsonb",
   "file[]": "jsonb",
   image: "jsonb",

@@ -96,6 +96,8 @@ const entityFieldCodes = {
     'name',
     'description',
     'orderNum',
+    'state',
+    'allowedTaskTypes',
     'tasks',
     'createdAt',
     'createdBy',

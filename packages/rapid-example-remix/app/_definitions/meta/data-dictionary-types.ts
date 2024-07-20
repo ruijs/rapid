@@ -16,6 +16,15 @@ export type EnabledDisabledState =
   ;
 
 /**
+ * 项目状态
+ */
+export type PmProjectState =
+  | 'active'
+  | 'suspended'
+  | 'closed'
+  ;
+
+/**
  * 发布状态
  */
 export type PublishState =
@@ -35,6 +44,18 @@ export type TaskState =
   | 'done'
   | 'closed'
   | 'reopened'
+  ;
+
+/**
+ * 任务类型
+ */
+export type TaskType =
+  | 'documenting'
+  | 'development'
+  | 'bug'
+  | 'deployment'
+  | 'training'
+  | 'meeting'
   ;
 
 /**

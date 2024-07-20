@@ -54,7 +54,7 @@ export type RapidFormConfig = {
    */
   defaultFormFields?: Record<string, any>;
 
-  onFinish: RockEventHandlerConfig;
+  onFinish?: RockEventHandlerConfig;
 };
 
 /**

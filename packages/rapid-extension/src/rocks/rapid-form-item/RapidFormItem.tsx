@@ -93,16 +93,16 @@ export default {
       };
 
       // for antdSelect
+      // TODO: may be we should remove `multipleValues` prop from RapidFormItemConfig
       if (props.multipleValues) {
         childRock.mode = "multiple";
       }
     } else {
       let rendererType = props.rendererType;
       if (!rendererType) {
-        if (props.multipleValues) {
+        rendererType = RapidExtensionSetting.getDefaultRendererTypeOfFieldType(props.valueFieldType);
+        if (props.valueFieldType === "relation[]") {
           rendererType = "rapidArrayRenderer";
-        } else {
-          rendererType = RapidExtensionSetting.getDefaultRendererTypeOfFieldType(props.valueFieldType);
         }
       }
       const defaultRendererProps = RapidExtensionSetting.getDefaultRendererProps(props.valueFieldType, rendererType);

@@ -354,6 +354,14 @@ export interface PmProject {
    */
   orderNum?: number;
   /**
+   * 项目状态
+   */
+  state?: undefined;
+  /**
+   * 任务类型
+   */
+  allowedTaskTypes?: any;
+  /**
    * 任务
    */
   tasks?: any;

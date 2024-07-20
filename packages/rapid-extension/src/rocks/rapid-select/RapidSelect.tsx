@@ -33,15 +33,19 @@ export default {
 
     let selectedValue: string | string[];
     if (props.mode === "multiple") {
-      if (props.valueFieldName) {
-        selectedValue = map(props.value, (item) => {
-          if (isObject(item)) {
-            return get(item, props.valueFieldName);
-          }
-          return item;
-        });
+      if (props.value) {
+        if (props.valueFieldName) {
+          selectedValue = map(props.value, (item) => {
+            if (isObject(item)) {
+              return get(item, props.valueFieldName);
+            }
+            return item;
+          });
+        } else {
+          selectedValue = props.value;
+        }
       } else {
-        selectedValue = props.value;
+        selectedValue = [];
       }
     } else {
       if (props.valueFieldName) {
