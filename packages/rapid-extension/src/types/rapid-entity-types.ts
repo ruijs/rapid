@@ -411,7 +411,7 @@ export type EntityFilterRelationalOperators =
 
 export type EntityFilterSetOperators = "in" | "notIn";
 
-export type EntityFilterArrayOperators = "contains" | "overlap";
+export type EntityFilterArrayOperators = "arrayContains" | "arrayOverlap";
 
 export type EntityFilterLogicalOperators = "or" | "and";
 
