@@ -13,16 +13,20 @@ export const searchParamsToFilters = (filterConfigurations: SearchFormFilterConf
       continue;
     }
 
-    const filterMode = filterConfig.filterMode || "eq";
-    let filterFields = filterConfig.filterFields || [filterConfig.code];
-    if (!filterFields.length) {
-      filterFields = [filterConfig.code];
-    }
+    if (isArray(filterConfig.filters) && !isEmpty(filterConfig.filters)) {
+      filters.push(...parseConfigToFilters(filterConfig.filters, paramValue));
+    } else {
+      const filterMode = filterConfig.filterMode || "eq";
+      let filterFields = filterConfig.filterFields || [filterConfig.code];
+      if (!filterFields.length) {
+        filterFields = [filterConfig.code];
+      }
 
-    const filterConfigs = map(filterFields, (f) =>
-      isString(f) ? { field: f, operator: filterMode, itemType: filterConfig.itemType, extra: filterConfig.filterExtra } : f,
-    );
-    filters.push(...parseConfigToFilters(filterConfigs, paramValue));
+      const filterConfigs = map(filterFields, (f) =>
+        isString(f) ? { field: f, operator: filterMode, itemType: filterConfig.itemType, extra: filterConfig.filterExtra } : f,
+      );
+      filters.push(...parseConfigToFilters(filterConfigs, paramValue));
+    }
   }
 
   return filters;
@@ -61,8 +65,8 @@ function parseConfigToFilters(filterConfigs: FilterFieldConfig[], value: any) {
       });
       filters.push({
         field: c.field,
-        operator: "lte",
-        value: value[1] && rangeUnit ? moment(value[1]).endOf(rangeUnit) : value[1],
+        operator: "lt",
+        value: value[1] && rangeUnit ? moment(value[1]).add(1, rangeUnit).startOf(rangeUnit) : value[1],
         itemType: c.itemType,
       });
       return;
