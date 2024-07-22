@@ -300,7 +300,7 @@ export type RapidEntityIndexOptions =
   | FindEntityLogicalFilterOptions<RapidEntityIndexOptions>
   | FindEntityUnaryFilterOptions;
 
-export type RapidSearchFormItemFilterMode = EntityFilterRelationalOperators | EntityFilterArrayOperators | EntityFilterSetOperators | "range";
+export type RapidSearchFormItemFilterMode = EntityFilterRelationalOperators | EntityFilterArrayOperators | EntityFilterSetOperators | "range" | "overlap";
 
 export interface SearchFormFilterConfiguration extends RapidSearchFormItemConfig {
   /**
