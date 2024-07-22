@@ -277,28 +277,28 @@ export default class QueryBuilder {
 
     command += this.quoteTable(model);
 
-    const propertyNames: string[] = Object.keys(entity);
+    const columnNames: string[] = Object.keys(entity);
     let values = "";
-    propertyNames.forEach((propertyName, index) => {
+    columnNames.forEach((columnName, index) => {
       if (index) {
         values += ", ";
       }
 
       let property: RpdDataModelProperty | null = null;
       if (model) {
-        property = find(model.properties, (e: RpdDataModelProperty) => e.code === propertyName);
+        property = find(model.properties, (e: RpdDataModelProperty) => (e.columnName || e.code) === columnName);
       }
       const columnType: DataAccessPgColumnTypes | null = property ? pgPropertyTypeColumnMap[property.type] : null;
       if (columnType === "jsonb") {
-        params.push(JSON.stringify(entity[propertyName]));
+        params.push(JSON.stringify(entity[columnName]));
         values += `$${params.length}::jsonb`;
       } else {
-        params.push(entity[propertyName]);
+        params.push(entity[columnName]);
         values += `$${params.length}`;
       }
     });
 
-    command += ` (${propertyNames.map(this.quoteObject).join(", ")})`;
+    command += ` (${columnNames.map(this.quoteObject).join(", ")})`;
     command += ` VALUES (${values}) RETURNING *`;
 
     return {
@@ -322,24 +322,24 @@ export default class QueryBuilder {
     command += this.quoteTable(model);
 
     command += " SET ";
-    const propertyNames: string[] = Object.keys(entity);
-    propertyNames.forEach((propertyName, index) => {
+    const columnNames: string[] = Object.keys(entity);
+    columnNames.forEach((columnName, index) => {
       if (index) {
         command += ", ";
       }
 
-      command += `${this.quoteObject(propertyName)}=`;
+      command += `${this.quoteObject(columnName)}=`;
 
       let property: RpdDataModelProperty | null = null;
       if (model) {
-        property = find(model.properties, (e: RpdDataModelProperty) => (e.columnName || e.code) === propertyName);
+        property = find(model.properties, (e: RpdDataModelProperty) => (e.columnName || e.code) === columnName);
       }
       const columnType: DataAccessPgColumnTypes | null = property ? pgPropertyTypeColumnMap[property.type] : null;
       if (columnType === "jsonb") {
-        params.push(JSON.stringify(entity[propertyName]));
+        params.push(JSON.stringify(entity[columnName]));
         command += `$${params.length}::jsonb`;
       } else {
-        params.push(entity[propertyName]);
+        params.push(entity[columnName]);
         command += `$${params.length}`;
       }
     });
