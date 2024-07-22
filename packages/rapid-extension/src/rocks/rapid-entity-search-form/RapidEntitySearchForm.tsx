@@ -128,11 +128,13 @@ export function generateSearchFormItemForRelationProperty(option: GenerateEntity
     ...formItemConfig.rendererProps,
   };
 
+  const isMultiple = formItemConfig.multipleValues || formItemConfig.filterMode === "in" || formItemConfig.filterMode === "overlap";
+
   let formControlProps: Partial<RapidSelectConfig> = {
     allowClear: !formItemConfig.required,
     placeholder: formItemConfig.placeholder,
-    mode: formItemConfig.filterMode === "in" ? "multiple" : undefined,
-    multiple: formItemConfig.filterMode === "in",
+    mode: isMultiple ? "multiple" : undefined,
+    multiple: isMultiple,
     valueFieldName: "id",
     ...formItemConfig.formControlProps,
     listDataSourceCode,
@@ -170,9 +172,11 @@ function generateSearchFormItem(logger: RuiRockLogger, entityFormProps: any, opt
     return generateSearchFormItemForRelationProperty(option, rpdField);
   }
 
+  const isMultiple = formItemConfig.multipleValues || formItemConfig.filterMode === "in" || formItemConfig.filterMode === "overlap";
+
   const formControlProps = {
-    mode: formItemConfig.filterMode === "in" ? "multiple" : undefined,
-    multiple: formItemConfig.filterMode === "in",
+    mode: isMultiple ? "multiple" : undefined,
+    multiple: isMultiple,
     ...(formItemConfig.formControlProps || {}),
   };
 

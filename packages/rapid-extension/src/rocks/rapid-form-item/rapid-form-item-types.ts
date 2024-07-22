@@ -124,7 +124,7 @@ export type RapidSearchFormItemConfig = {
   /**
    * 过滤模式。
    */
-  filterMode: RapidSearchFormItemFilterMode;
+  filterMode?: RapidSearchFormItemFilterMode;
 
   /**
    * 过滤应用于哪些字段，多个字段任意一个满足条件即可。默认使用表单项编码`code`作为过滤字段。
@@ -140,6 +140,11 @@ export type RapidSearchFormItemConfig = {
    * 过滤项额外配置
    */
   filterExtra?: FilterFieldConfig["extra"];
+
+  /**
+   * 查询配置项，该配置会覆盖 filterMode + filterFields + filterExtra + itemType
+   */
+  filters?: FilterFieldConfig[];
 };
 
 export type RapidFormItemType =
