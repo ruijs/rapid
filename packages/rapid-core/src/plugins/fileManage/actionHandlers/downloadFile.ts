@@ -3,12 +3,21 @@ import { readFile } from "~/utilities/fsUtility";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 
+export type DownloadFileInput = {
+  fileId?: string;
+  fileKey?: string;
+  fileName?: string;
+  inline?: boolean;
+};
+
 export const code = "downloadFile";
 
 export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: any) {
-  const { server, applicationConfig, routerContext, input } = ctx;
+  const { server, applicationConfig, routerContext } = ctx;
   const { request, response } = routerContext;
   //TODO: only public files can download by this handler
+
+  const input: DownloadFileInput = ctx.input;
 
   let fileKey: string = input.fileKey;
 
@@ -29,5 +38,7 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
   const attachmentFileName = input.fileName || path.basename(fileKey);
 
   response.body = await readFile(filePathName);
-  response.headers.set("Content-Disposition", `attachment; filename="${encodeURIComponent(attachmentFileName)}"`);
+
+  const dispositionType = input.inline ? "inline" : "attachment";
+  response.headers.set("Content-Disposition", `${dispositionType}; filename="${encodeURIComponent(attachmentFileName)}"`);
 }
