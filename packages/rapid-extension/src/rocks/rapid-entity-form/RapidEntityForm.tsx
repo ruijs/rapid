@@ -232,6 +232,7 @@ export default {
             value: "",
           },
         ],
+        relations: props.relations,
         // TODO: Expression should be a static string, so that we can configure it at design time.
         $exps: {
           frozon: `!(${props.$exps?.entityId || `${props.entityId}`})`,
