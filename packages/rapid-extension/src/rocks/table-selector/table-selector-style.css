@@ -1,0 +1,14 @@
+.pm-table-selector {
+}
+
+.pm-table-selector--toolbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 8px;
+}
+
+.pm-table-row {
+  cursor: pointer;
+}

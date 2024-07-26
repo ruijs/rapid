@@ -49,6 +49,8 @@ import SonicToolbarRefreshButton from "./sonic-toolbar-refresh-button/SonicToolb
 import SonicToolbarSelectEntityButton from "./sonic-toolbar-select-entity-button/SonicToolbarSelectEntityButton";
 
 // 自定义组件
+import TableSelector from "./table-selector/TableSelector";
+import ModelTableSelector from "./model-table-selector/ModelTableSelector";
 import TableSingleSelector from "./table-single-selector/TableSingleSelector";
 import EditableTable from "./editable-table/EditableTable";
 
@@ -107,6 +109,8 @@ export default [
   SonicToolbarRefreshButton,
   SonicToolbarSelectEntityButton,
 
+  TableSelector,
+  ModelTableSelector,
   TableSingleSelector,
   EditableTable,
 
