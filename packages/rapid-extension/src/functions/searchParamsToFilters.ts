@@ -37,7 +37,7 @@ export default {
   func: searchParamsToFilters,
 } as FunctionMeta;
 
-function parseConfigToFilters(filterConfigs: FilterFieldConfig[], value: any) {
+export function parseConfigToFilters(filterConfigs: FilterFieldConfig[], value: any) {
   let filters: any[] = [];
 
   forEach(filterConfigs, (c) => {
