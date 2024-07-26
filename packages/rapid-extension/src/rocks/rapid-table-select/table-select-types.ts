@@ -1,9 +1,9 @@
-import type { RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
+import type { RockEventHandlerConfig, RockPropExpressions, SimpleRockConfig } from "@ruiapp/move-style";
 import { ReactNode } from "react";
 import { FindEntityOptions } from "../../rapid-types";
 import { FilterFieldConfig } from "../rapid-form-item/rapid-form-item-types";
 
-export interface TableSelectorColumn {
+export interface TableSelectColumn {
   code: string;
   title?: string;
   width?: number;
@@ -12,26 +12,26 @@ export interface TableSelectorColumn {
   render?: string | ((record: any) => ReactNode);
 }
 
-export interface TableSelectorRockConfig extends SimpleRockConfig {
+export interface TableSelectRockConfig extends SimpleRockConfig {
   searchPlaceholder?: string;
   placeholder?: string;
   allowClear?: boolean;
   pageSize?: number;
-  multiple?: boolean;
-  searchFields?: (string | FilterFieldConfig)[]; // 默认 name、code
-  labelFormat?: string;
-  labelKey?: string; // 默认 name
-  valueKey?: string; // 默认 id
-  columns?: TableSelectorColumn[];
+  mode?: "multiple" | "single";
+  listFilterFields?: (string | FilterFieldConfig)[]; // 默认 name、code
+  listTextFormat?: string;
+  listTextFieldName?: string; // 默认 name
+  listValueFieldName?: string; // 默认 id
+  columns?: TableSelectColumn[];
   dropdownMatchSelectWidth?: number;
   requestConfig: {
     baseUrl?: string;
     url: string;
     method?: "post" | "get"; // 默认 post
-    params?: {
-      properties?: string[];
+    params?: FindEntityOptions & {
       fixedFilters?: FindEntityOptions["filters"];
-      orderBy?: FindEntityOptions["orderBy"];
+
+      $exps?: RockPropExpressions;
     };
   };
   value?: string | string[];

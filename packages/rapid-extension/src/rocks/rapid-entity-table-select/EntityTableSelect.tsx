@@ -1,7 +1,7 @@
 import { RockConfig, type Rock } from "@ruiapp/move-style";
-import { ModelTableSelectorRockConfig } from "./model-table-selector-types";
+import { EntityTableSelectRockConfig } from "./entity-table-select-types";
 import { renderRock } from "@ruiapp/react-renderer";
-import ModelTableSelectorMeta from "./ModelTableSelectorMeta";
+import ModelTableSelectorMeta from "./EntityTableSelectMeta";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { autoConfigureRapidEntity } from "../../mod";
 
@@ -16,7 +16,7 @@ export default {
     }
 
     const rockConfig: RockConfig = {
-      $type: "tableSelector",
+      $type: "rapidTableSelect",
       ...restProps,
       requestConfig: {
         url: `/${entityConfig?.namespace}/${entityConfig?.pluralCode}/operations/find`,
@@ -26,10 +26,11 @@ export default {
           ...(requestParams || {}),
         },
       },
+      $exps: props.$exps,
     };
 
     return renderRock({ context, rockConfig });
   },
 
   ...ModelTableSelectorMeta,
-} as Rock<ModelTableSelectorRockConfig>;
+} as Rock<EntityTableSelectRockConfig>;
