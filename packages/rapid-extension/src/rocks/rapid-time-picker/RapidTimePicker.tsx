@@ -1,4 +1,4 @@
-import { Rock, RockConfig } from "@ruiapp/move-style";
+import { handleComponentEvent, Rock, RockConfig } from "@ruiapp/move-style";
 import RapidToolbarLinkMeta from "./RapidTimePickerMeta";
 import { renderRock } from "@ruiapp/react-renderer";
 import { RapidTimePickerRockConfig } from "./rapid-time-picker-types";
@@ -9,6 +9,7 @@ export default {
   $type: "rapidTimePicker",
 
   Renderer(context, props) {
+    const { framework, page, scope } = context;
     if (isString(props.value)) {
       props.value = moment(moment().format("YYYY-MM-DD") + " " + props.value);
     }
@@ -22,7 +23,7 @@ export default {
           value = value.format("HH:mm:ss");
         }
 
-        props.onChange?.(value);
+        handleComponentEvent("onChange", framework, page, scope, props, props.onChange, [value]);
       },
     };
 
