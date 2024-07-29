@@ -49,14 +49,13 @@ import SonicToolbarRefreshButton from "./sonic-toolbar-refresh-button/SonicToolb
 import SonicToolbarSelectEntityButton from "./sonic-toolbar-select-entity-button/SonicToolbarSelectEntityButton";
 
 // 自定义组件
-import TableSelector from "./table-selector/TableSelector";
-import ModelTableSelector from "./model-table-selector/ModelTableSelector";
-import TableSingleSelector from "./table-single-selector/TableSingleSelector";
-import EditableTable from "./editable-table/EditableTable";
+import RapidTableSelect from "./rapid-table-select/TableSelect";
+import RapidEntityTableSelect from "./rapid-entity-table-select/EntityTableSelect";
+import RapidEditableTable from "./rapid-editable-table/EditableTable";
 
 // RichText
-import RichTextRenderer from "./rich-text-renderer/RichTextRenderer";
-import RichTextEditor from "./rich-text-editor/RichTextEditor";
+import RapidRichTextRenderer from "./rapid-rich-text-renderer/RichTextRenderer";
+import RapidRichTextEditor from "./rapid-rich-text-editor/RichTextEditor";
 
 export default [
   RapidArrayRenderer,
@@ -109,11 +108,10 @@ export default [
   SonicToolbarRefreshButton,
   SonicToolbarSelectEntityButton,
 
-  TableSelector,
-  ModelTableSelector,
-  TableSingleSelector,
-  EditableTable,
+  RapidTableSelect,
+  RapidEntityTableSelect,
+  RapidEditableTable,
 
-  RichTextRenderer,
-  RichTextEditor,
+  RapidRichTextRenderer,
+  RapidRichTextEditor,
 ];

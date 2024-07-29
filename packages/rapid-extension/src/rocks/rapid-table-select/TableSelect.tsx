@@ -1,18 +1,18 @@
-import type { Rock } from "@ruiapp/move-style";
-import TableSelectorMeta from "./TableSelectorMeta";
-import type { TableSelectorRockConfig } from "./table-selector-types";
+import type { Rock, RockInstanceContext } from "@ruiapp/move-style";
+import TableSelectorMeta from "./TableSelectMeta";
+import type { TableSelectRockConfig } from "./table-select-types";
 import { convertToEventHandlers } from "@ruiapp/react-renderer";
 import { Table, Select, Input, TableProps, Empty, Spin } from "antd";
-import { debounce, forEach, get, isArray, isFunction, isObject, isString, omit, pick, split } from "lodash";
+import { debounce, forEach, get, isArray, isFunction, isObject, isString, omit, pick, set, split } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMergeState } from "../../hooks/use-merge-state";
 import rapidApi from "../../rapidApi";
 import { FindEntityOptions } from "../../rapid-types";
-
-import "./table-selector-style.css";
 import { parseConfigToFilters } from "../../functions/searchParamsToFilters";
 
-const DEFAULT_COLUMNS: TableSelectorRockConfig["columns"] = [{ title: "名称", code: "name", width: 120 }];
+import "./table-select-style.css";
+
+const DEFAULT_COLUMNS: TableSelectRockConfig["columns"] = [{ title: "名称", code: "name", width: 120 }];
 
 interface ICurrentState {
   offset: number;
@@ -22,18 +22,20 @@ interface ICurrentState {
 }
 
 export default {
-  Renderer(context, props: TableSelectorRockConfig) {
+  Renderer(context, props: TableSelectRockConfig) {
     const {
-      valueKey = "id",
-      labelKey = "name",
+      listValueFieldName = "id",
+      listTextFieldName = "name",
       dropdownMatchSelectWidth = 360,
-      labelFormat,
+      listTextFormat,
       pageSize = 20,
       columns = DEFAULT_COLUMNS,
-      searchFields = ["name"],
+      listFilterFields = ["name"],
       allowClear,
       placeholder,
     } = props;
+
+    const isMultiple = props.mode === "multiple";
 
     const [currentState, setCurrentState] = useMergeState<ICurrentState>({ offset: 0, selectedRecordMap: {} });
     const [debouncedKeyword, setDebouncedKeyword] = useState<string>("");
@@ -42,10 +44,10 @@ export default {
       [],
     );
 
-    const apiIns = useRequest(props.requestConfig);
+    const apiIns = useRequest(props.requestConfig, context);
     const { loadSelectedRecords, loading } = useSelectedRecords(props, (records) => {
       forEach(records, (record) => {
-        const recordValue = get(record, valueKey);
+        const recordValue = get(record, listValueFieldName);
         setCurrentState((draft) => {
           return { ...draft, selectedRecordMap: { ...draft.selectedRecordMap, [recordValue]: record } };
         });
@@ -61,11 +63,11 @@ export default {
         },
       };
 
-      if (currentState.keyword && searchFields?.length) {
+      if (currentState.keyword && listFilterFields?.length) {
         params.filters = [
           {
             operator: "or",
-            filters: searchFields.map((field) => {
+            filters: listFilterFields.map((field) => {
               if (isString(field)) {
                 const filterCodes = split(field, ".");
                 return parseSelectedRecordFilters(filterCodes, "contains", currentState.keyword)[0];
@@ -85,11 +87,11 @@ export default {
     }, [props.requestConfig?.url, currentState.offset, debouncedKeyword]);
 
     const getLabel = (record: Record<string, any>) => {
-      if (!labelFormat) {
-        return get(record, labelKey);
+      if (!listTextFormat) {
+        return get(record, listTextFieldName);
       }
 
-      return replaceLabel(labelFormat, record);
+      return replaceLabel(listTextFormat, record);
     };
 
     const selectedKeys = useMemo(() => {
@@ -112,7 +114,7 @@ export default {
       return Object.keys(currentState.selectedRecordMap)
         .map((k) => {
           const record = currentState.selectedRecordMap[k];
-          return record ? { label: getLabel(record), value: get(record, valueKey) } : null;
+          return record ? { label: getLabel(record), value: get(record, listValueFieldName) } : null;
         })
         .filter((record) => record != null);
     }, [currentState.selectedRecordMap]);
@@ -144,10 +146,10 @@ export default {
       });
     });
 
-    const current = props.multiple ? selectedKeys : selectedKeys[0];
+    const current = isMultiple ? selectedKeys : selectedKeys[0];
 
     const onSelect = (record: any) => {
-      const recordValue = get(record, valueKey);
+      const recordValue = get(record, listValueFieldName);
 
       const isExisted = selectedKeys?.some((k) => k === recordValue);
 
@@ -163,13 +165,13 @@ export default {
         s.selectedRecordMap = omit(s.selectedRecordMap, recordValue);
       }
 
-      if (!props.multiple) {
+      if (!isMultiple) {
         s.visible = false;
       }
 
       setCurrentState(s);
 
-      eventHandlers.onChange?.(props.multiple ? keys : keys[0]);
+      eventHandlers.onChange?.(isMultiple ? keys : keys[0]);
       eventHandlers.onSelectedRecord?.(isExisted ? null : record, s);
     };
 
@@ -193,7 +195,7 @@ export default {
         dropdownRender={(menu) => {
           return (
             <div>
-              {searchFields?.length ? (
+              {listFilterFields?.length ? (
                 <div className="pm-table-selector--toolbar">
                   <Input
                     allowClear
@@ -213,14 +215,14 @@ export default {
                 ) : (
                   <Table
                     size="small"
-                    rowKey={(record) => get(record, valueKey)}
+                    rowKey={(record) => get(record, listValueFieldName)}
                     scroll={{ x: tableWidth, y: 200 }}
                     columns={tableColumns}
                     dataSource={apiIns.records || []}
                     rowClassName="pm-table-row"
                     rowSelection={{
                       fixed: true,
-                      type: props.multiple ? "checkbox" : "radio",
+                      type: isMultiple ? "checkbox" : "radio",
                       selectedRowKeys: selectedKeys,
                       onSelect(record) {
                         onSelect(record);
@@ -264,7 +266,7 @@ interface IRequestState {
   total?: number;
 }
 
-function useRequest(config: TableSelectorRockConfig["requestConfig"]) {
+function useRequest(config: TableSelectRockConfig["requestConfig"], context: RockInstanceContext) {
   const [state, setState] = useMergeState<IRequestState>({});
 
   const request = async (params: any) => {
@@ -276,11 +278,24 @@ function useRequest(config: TableSelectorRockConfig["requestConfig"]) {
       return;
     }
 
+    let configParams = config.params || {};
+    const expressions = config.params.$exps;
+    if (expressions) {
+      for (const propName in expressions) {
+        const interpretedValue = context.page.interpreteExpression(expressions[propName], {
+          $scope: context.scope,
+          $page: context.page,
+        });
+
+        set(configParams, propName, interpretedValue);
+      }
+    }
+
     setState({ loading: true });
     rapidApi[config.method || "post"](`${config.baseUrl || ""}${config.url || ""}`, {
-      ...omit(config.params || {}, "fixedFilters"),
+      ...omit(configParams || {}, "fixedFilters"),
       ...params,
-      filters: [...(config.params?.fixedFilters || []), ...params.filters],
+      filters: [...(configParams?.fixedFilters || []), ...params.filters],
     })
       .then((res) => {
         let records = res.data?.list || [];
@@ -299,8 +314,8 @@ function useRequest(config: TableSelectorRockConfig["requestConfig"]) {
   return { request, ...state };
 }
 
-function useSelectedRecords(props: TableSelectorRockConfig, onSuccess: (records: any[]) => void) {
-  const { requestConfig: config, valueKey } = props;
+function useSelectedRecords(props: TableSelectRockConfig, onSuccess: (records: any[]) => void) {
+  const { requestConfig: config, listValueFieldName } = props;
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -311,7 +326,7 @@ function useSelectedRecords(props: TableSelectorRockConfig, onSuccess: (records:
 
     setLoading(true);
 
-    const filterCodes = split(valueKey, ".");
+    const filterCodes = split(listValueFieldName, ".");
 
     rapidApi[config.method || "post"](`${config.baseUrl || ""}${config.url || ""}`, {
       ...pick(config.params || {}, "properties"),

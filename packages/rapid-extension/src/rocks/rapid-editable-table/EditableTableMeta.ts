@@ -1,7 +1,7 @@
 import { RockMeta } from "@ruiapp/move-style";
 
 export default {
-  $type: "editableTable",
+  $type: "rapidEditableTable",
 
   propertyPanels: [],
 } as RockMeta;
