@@ -306,6 +306,44 @@ export default {
       });
     }
 
+    // childrenConfig.push({
+    //   $type: "box",
+    //   $id: `${props.$id}_toolbox`,
+    //   children: [
+    //     {
+    //       $id: `${props.$id}_toolbox_space`,
+    //       $type: "antdSpace",
+    //       size: 16,
+    //       attributes: {
+    //         style: { fontSize: 16 },
+    //       },
+    //       children: [
+    //         {
+    //           $type: "htmlElement",
+    //           htmlTag: "span",
+    //           $id: `${props.$id}_toolbox_space_span`,
+    //           children: {
+    //             $id: `${props.$id}_toolbox_space_reload`,
+    //             $type: "antdIcon",
+    //             name: "ReloadOutlined",
+    //           },
+    //           onClick: [
+    //             {
+    //               $action: "loadStoreData",
+    //               storeName: "list",
+    //             },
+    //           ],
+    //         },
+    //         {
+    //           $type: "rapidEntityListShowOrHideColumnSettings",
+    //           $id: `${props.$id}_toolbox_space_settings`,
+    //           columns: entityListRockConfig.columns || [],
+    //         },
+    //       ],
+    //     },
+    //   ],
+    // });
+
     childrenConfig.push(entityListRockConfig);
     if (newModalRockConfig) {
       childrenConfig.push(newModalRockConfig);
