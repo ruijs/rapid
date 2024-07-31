@@ -279,7 +279,7 @@ function useRequest(config: TableSelectRockConfig["requestConfig"], context: Roc
     }
 
     let configParams = config.params || {};
-    const expressions = config.params.$exps;
+    const expressions = configParams.$exps;
     if (expressions) {
       for (const propName in expressions) {
         const interpretedValue = context.page.interpreteExpression(expressions[propName], {
@@ -315,7 +315,7 @@ function useRequest(config: TableSelectRockConfig["requestConfig"], context: Roc
 }
 
 function useSelectedRecords(props: TableSelectRockConfig, onSuccess: (records: any[]) => void) {
-  const { requestConfig: config, listValueFieldName } = props;
+  const { requestConfig: config, listValueFieldName = "id" } = props;
 
   const [loading, setLoading] = useState<boolean>(false);
 
