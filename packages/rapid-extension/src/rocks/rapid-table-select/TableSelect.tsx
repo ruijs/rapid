@@ -3,7 +3,7 @@ import TableSelectorMeta from "./TableSelectMeta";
 import type { TableSelectRockConfig } from "./table-select-types";
 import { convertToEventHandlers } from "@ruiapp/react-renderer";
 import { Table, Select, Input, TableProps, Empty, Spin } from "antd";
-import { debounce, forEach, get, isArray, isFunction, isObject, isString, omit, pick, set, split } from "lodash";
+import { debounce, forEach, get, isArray, isFunction, isObject, isPlainObject, isString, omit, pick, set, split } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMergeState } from "../../hooks/use-merge-state";
 import rapidApi from "../../rapidApi";
@@ -95,12 +95,12 @@ export default {
     };
 
     const selectedKeys = useMemo(() => {
-      let val: string | string[] = props.value != null ? props.value : [];
+      let val: any | any[] = props.value != null ? props.value : [];
       if (!isArray(val)) {
         val = val !== "" ? [val] : [];
       }
 
-      return val;
+      return val.map((item) => (isPlainObject(item) ? get(item, listValueFieldName) : item));
     }, [props.value]);
 
     useEffect(() => {
