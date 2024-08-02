@@ -1,7 +1,7 @@
 const NAME_SPACE = "RAPID_EXTENSION_STORAGE.";
 
 export class RapidExtStorage {
-  static get(key: string) {
+  static get<T = any>(key: string): T {
     try {
       const k = `${NAME_SPACE}${key}`;
       const d = localStorage.getItem(k);
@@ -11,7 +11,7 @@ export class RapidExtStorage {
     }
   }
 
-  static set(key: string, val: any) {
+  static set<T = any>(key: string, val: T) {
     try {
       const k = `${NAME_SPACE}${key}`;
       localStorage.setItem(k, JSON.stringify(val) || "null");

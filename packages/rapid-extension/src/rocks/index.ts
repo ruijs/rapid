@@ -9,6 +9,7 @@ import RapidDictionaryEntryRenderer from "./rapid-dictionary-entry-renderer/Rapi
 import RapidDocumentFormControl from "./rapid-document-form-control/RapidDocumentFormControl";
 import RapidEntityForm from "./rapid-entity-form/RapidEntityForm";
 import RapidEntityList from "./rapid-entity-list/RapidEntityList";
+import RapidEntityListToolbox from "./rapid-entity-list-toolbox/RapidEntityListToolbox";
 import RapidEntitySearchForm from "./rapid-entity-search-form/RapidEntitySearchForm";
 import RapidFileInfoRenderer from "./rapid-file-info-renderer/RapidFileInfoRenderer";
 import RapidFileSizeRenderer from "./rapid-file-size-renderer/RapidFileSizeRenderer";
@@ -40,7 +41,6 @@ import RapidToolbar from "./rapid-toolbar/RapidToolbar";
 import RapidTreeSelect from "./rapid-tree-select/RapidTreeSelect";
 import RapidUploaderFormInput from "./rapid-uploader-form-input/RapidUploaderFormInput";
 import SonicEntityList from "./sonic-entity-list/SonicEntityList";
-import ShowOrHideColumnSettings from "./sonic-entity-list/ShowOrHideColumnSettings";
 import SonicMainSecondaryLayout from "./sonic-main-secondary-layout/SonicMainSecondaryLayout";
 import SonicRecordActionDeleteEntity from "./sonic-record-action-delete-entity/SonicRecordActionDeleteEntity";
 import SonicRecordActionEditEntity from "./sonic-record-action-edit-entity/SonicRecordActionEditEntity";
@@ -70,6 +70,7 @@ export default [
   RapidDocumentFormControl,
   RapidEntityForm,
   RapidEntityList,
+  RapidEntityListToolbox,
   RapidEntitySearchForm,
   RapidFileInfoRenderer,
   RapidFileSizeRenderer,
@@ -101,7 +102,6 @@ export default [
   RapidTreeSelect,
   RapidUploaderFormInput,
   SonicEntityList,
-  ShowOrHideColumnSettings,
   SonicMainSecondaryLayout,
   SonicRecordActionDeleteEntity,
   SonicRecordActionEditEntity,
