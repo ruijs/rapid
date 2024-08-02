@@ -2,16 +2,30 @@ import { MoveStyleUtils, RockChildrenConfig, RockEvent, RockEventHandler, type R
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./SonicEntityListMeta";
 import type { SonicEntityListRockConfig } from "./sonic-entity-list-types";
-import { find, get, isArray, omit } from "lodash";
+import { differenceBy, find, get, isArray, isEmpty, keyBy, omit, set } from "lodash";
 import type { RapidEntityListConfig, RapidEntityListRockConfig } from "../rapid-entity-list/rapid-entity-list-types";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import { RapidEntity } from "../../types/rapid-entity-types";
-import { EntityStore, RapidToolbarRockConfig } from "../../mod";
+import { EntityStore, RapidTableColumnConfig, RapidToolbarRockConfig } from "../../mod";
+import { useEffect, useMemo, useState } from "react";
+import moment from "moment";
+import { RapidExtStorage } from "../../utils/storage-utility";
+import { getColumnUniqueKey, ICacheRapidTableColumn } from "../rapid-entity-list-toolbox/RapidEntityListToolbox";
 
 const DEFAULT_PAGE_SIZE = 10;
 
 export default {
+  onResolveState(props, state) {
+    const [rerenderKey, setRerenderKey] = useState<string | number>("");
+
+    return {
+      rerenderKey,
+      rerenderDom: () => {
+        setRerenderKey(moment().unix());
+      },
+    };
+  },
   onReceiveMessage(message, state, props) {
     if (message.name === "refreshView") {
       message.page.sendComponentMessage(`${props.$id}-rapidEntityList`, {
@@ -33,13 +47,69 @@ export default {
       message.page.sendComponentMessage(`${props.$id}-editForm`, {
         name: "resetFields",
       });
+    } else if (message.name === "rerenderDom") {
+      state.rerenderDom();
     }
   },
 
-  Renderer(context, props) {
+  Renderer(context, props, state) {
     const entities = rapidAppDefinition.getEntities();
     const entityCode = props.entityCode;
     let entityName = props.entityName;
+
+    const dataSourceCode = props.dataSourceCode || "list";
+    const pageSize = get(props, "pageSize", DEFAULT_PAGE_SIZE);
+    const entityListRockConfig: RapidEntityListRockConfig = {
+      ...(omit(MoveStyleUtils.omitSystemRockConfigFields(props), ["newForm", "editForm"]) as RapidEntityListConfig),
+      dataSourceCode,
+      pageSize,
+      $type: "rapidEntityList",
+      $id: `${props.$id}-rapidEntityList`,
+    };
+
+    const toolboxRockConfig = {
+      $type: "rapidEntityListToolbox",
+      $id: `${props.$id}_toolbox`,
+      columns: props.columns,
+      config: props.toolbox || {
+        columnCacheKey: props.entityCode || props.entityName,
+      },
+      onRerender: [
+        {
+          $action: "script",
+          script: () => {
+            state.rerenderDom();
+          },
+        },
+      ],
+    };
+
+    const originColumns = props.columns || [];
+    const cacheColumns = RapidExtStorage.get<ICacheRapidTableColumn[]>(toolboxRockConfig.config.columnCacheKey);
+    if (isArray(cacheColumns) && !isEmpty(cacheColumns)) {
+      const diffOriginColumns = differenceBy(originColumns, cacheColumns, getColumnUniqueKey);
+      const originByCodeMap = keyBy<RapidTableColumnConfig>(originColumns, getColumnUniqueKey);
+
+      let sortedColumns: RapidEntityListRockConfig["columns"] = [];
+      let showColumns: RapidEntityListRockConfig["columns"] = [];
+      let hideColumnCodes: string[] = [];
+      cacheColumns.forEach((col) => {
+        const uniqueKey = getColumnUniqueKey(col as any);
+        const originColumn = originByCodeMap[uniqueKey];
+        if (originColumn) {
+          sortedColumns.push(originColumn);
+          if (!col.hidden) {
+            showColumns.push(originColumn);
+          } else {
+            hideColumnCodes.push(col.code);
+          }
+        }
+      });
+
+      entityListRockConfig.extraProperties = [...(entityListRockConfig.extraProperties || []), ...hideColumnCodes];
+      entityListRockConfig.columns = [...showColumns, ...diffOriginColumns];
+      toolboxRockConfig.columns = [...sortedColumns, ...diffOriginColumns];
+    }
 
     let mainEntity: RapidEntity | undefined;
     if (entityCode) {
@@ -52,16 +122,6 @@ export default {
         return renderRock({ context, rockConfig: generateRockConfigOfError(new Error(`Entity '${entityCode}' not found.`)) });
       }
     }
-
-    const dataSourceCode = props.dataSourceCode || "list";
-    const pageSize = get(props, "pageSize", DEFAULT_PAGE_SIZE);
-    const entityListRockConfig: RapidEntityListRockConfig = {
-      ...(omit(MoveStyleUtils.omitSystemRockConfigFields(props), ["newForm", "editForm"]) as RapidEntityListConfig),
-      dataSourceCode,
-      pageSize,
-      $type: "rapidEntityList",
-      $id: `${props.$id}-rapidEntityList`,
-    };
 
     let toolbarExtraActions: RockConfig[] = props.extraActions || [];
     if (props.searchForm) {
@@ -306,43 +366,7 @@ export default {
       });
     }
 
-    // childrenConfig.push({
-    //   $type: "box",
-    //   $id: `${props.$id}_toolbox`,
-    //   children: [
-    //     {
-    //       $id: `${props.$id}_toolbox_space`,
-    //       $type: "antdSpace",
-    //       size: 16,
-    //       attributes: {
-    //         style: { fontSize: 16 },
-    //       },
-    //       children: [
-    //         {
-    //           $type: "htmlElement",
-    //           htmlTag: "span",
-    //           $id: `${props.$id}_toolbox_space_span`,
-    //           children: {
-    //             $id: `${props.$id}_toolbox_space_reload`,
-    //             $type: "antdIcon",
-    //             name: "ReloadOutlined",
-    //           },
-    //           onClick: [
-    //             {
-    //               $action: "loadStoreData",
-    //               storeName: "list",
-    //             },
-    //           ],
-    //         },
-    //         {
-    //           $type: "rapidEntityListShowOrHideColumnSettings",
-    //           $id: `${props.$id}_toolbox_space_settings`,
-    //           columns: entityListRockConfig.columns || [],
-    //         },
-    //       ],
-    //     },
-    //   ],
-    // });
+    childrenConfig.push(toolboxRockConfig);
 
     childrenConfig.push(entityListRockConfig);
     if (newModalRockConfig) {

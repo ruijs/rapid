@@ -15,6 +15,7 @@ export { default as rapidAppDefinition } from "./rapidAppDefinition";
 
 export { autoConfigureRapidEntity } from "./RapidEntityAutoConfigure";
 export * from "./utils/format-utility";
+export * from "./utils/storage-utility";
 
 export { default as RapidExtensionSetting } from "./RapidExtensionSetting";
 
