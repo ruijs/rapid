@@ -3,7 +3,7 @@ import { handleComponentEvent } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityFormMeta from "./RapidEntityFormMeta";
 import type { RapidEntityFormRockConfig } from "./rapid-entity-form-types";
-import { filter, isUndefined, map, uniq } from "lodash";
+import { filter, isUndefined, map, merge, uniq } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import type { RapidDataDictionary, RapidDataDictionaryEntry, RapidEntity, RapidField, RapidFieldType } from "../../types/rapid-entity-types";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
@@ -13,6 +13,7 @@ import type { RapidFormRockConfig } from "../rapid-form/rapid-form-types";
 import type { RapidSelectConfig } from "../rapid-select/rapid-select-types";
 import { RapidOptionFieldRendererConfig } from "../rapid-option-field-renderer/rapid-option-field-renderer-types";
 import { message } from "antd";
+import { EntityTableSelectRockConfig } from "../rapid-entity-table-select/entity-table-select-types";
 
 const fieldTypeToFormItemTypeMap: Record<RapidFieldType, RapidFormItemType | null> = {
   text: "text",
@@ -27,8 +28,8 @@ const fieldTypeToFormItemTypeMap: Record<RapidFieldType, RapidFormItemType | nul
   datetime: "datetime",
   option: "select",
   "option[]": "select",
-  relation: "select",
-  "relation[]": "select",
+  relation: "entityTableSelect",
+  "relation[]": "entityTableSelect",
   json: "json",
   file: "file",
   "file[]": "fileList",
@@ -120,12 +121,16 @@ export function generateDataFormItemForRelationProperty(option: GenerateEntityFo
     ...formItemConfig.rendererProps,
   };
 
-  let formControlProps: Partial<RapidSelectConfig> = {
+  let formControlProps: Partial<EntityTableSelectRockConfig> = {
     allowClear: !formItemConfig.required,
     placeholder: formItemConfig.placeholder,
     valueFieldName: "id",
     ...formItemConfig.formControlProps,
     listDataSourceCode,
+    entityCode: relationEntity.code,
+    mode: field.relation === "many" ? "multiple" : "single",
+    multiple: field.relation === "many",
+    requestParams: merge({}, formItemConfig.listDataFindOptions, formItemConfig.formControlProps?.requestParams),
   };
 
   let formItem: RapidFormItemConfig = {
@@ -249,39 +254,39 @@ export default {
           return;
         }
 
-        if (rpdField.type === "relation" || rpdField.type === "relation[]") {
-          let listDataSourceCode = formItemConfig.formControlProps?.listDataSourceCode;
-          if (listDataSourceCode) {
-            // use specified data store.
-            return;
-          }
+        // if (rpdField.type === "relation" || rpdField.type === "relation[]") {
+        //   let listDataSourceCode = formItemConfig.formControlProps?.listDataSourceCode;
+        //   if (listDataSourceCode) {
+        //     // use specified data store.
+        //     return;
+        //   }
 
-          const listDataStoreName = `dataFormItemList-${formItemConfig.code}`;
+        // const listDataStoreName = `dataFormItemList-${formItemConfig.code}`;
 
-          const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
-          const targetEntity = rapidAppDefinition.getEntityBySingularCode(rpdField.targetSingularCode);
+        // const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
+        // const targetEntity = rapidAppDefinition.getEntityBySingularCode(rpdField.targetSingularCode);
 
-          let { listDataFindOptions = {} } = formItemConfig;
+        // let { listDataFindOptions = {} } = formItemConfig;
 
-          const listDataStoreConfig: EntityStoreConfig = {
-            type: "entityStore",
-            name: listDataStoreName,
-            entityModel: targetEntity,
-            fixedFilters: listDataFindOptions.fixedFilters,
-            filters: listDataFindOptions.filters,
-            properties: listDataFindOptions.properties || [],
-            orderBy: listDataFindOptions.orderBy || [
-              {
-                field: "id",
-              },
-            ],
-            pagination: listDataFindOptions.pagination,
-            keepNonPropertyFields: listDataFindOptions.keepNonPropertyFields,
-            $exps: listDataFindOptions.$exps,
-          };
+        // const listDataStoreConfig: EntityStoreConfig = {
+        //   type: "entityStore",
+        //   name: listDataStoreName,
+        //   entityModel: targetEntity,
+        //   fixedFilters: listDataFindOptions.fixedFilters,
+        //   filters: listDataFindOptions.filters,
+        //   properties: listDataFindOptions.properties || [],
+        //   orderBy: listDataFindOptions.orderBy || [
+        //     {
+        //       field: "id",
+        //     },
+        //   ],
+        //   pagination: listDataFindOptions.pagination,
+        //   keepNonPropertyFields: listDataFindOptions.keepNonPropertyFields,
+        //   $exps: listDataFindOptions.$exps,
+        // };
 
-          context.scope.addStore(listDataStoreConfig);
-        }
+        // context.scope.addStore(listDataStoreConfig);
+        // }
       });
     }
   },

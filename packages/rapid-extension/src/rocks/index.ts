@@ -53,6 +53,7 @@ import SonicToolbarSelectEntityButton from "./sonic-toolbar-select-entity-button
 import RapidTableSelect from "./rapid-table-select/TableSelect";
 import RapidEntityTableSelect from "./rapid-entity-table-select/EntityTableSelect";
 import RapidEditableTable from "./rapid-editable-table/EditableTable";
+import SonicEntityTableSelect from "./sonic-entity-table-select/SonicEntityTableSelect";
 
 // RichText
 import RapidRichTextRenderer from "./rapid-rich-text-renderer/RichTextRenderer";
@@ -113,6 +114,7 @@ export default [
   RapidTableSelect,
   RapidEntityTableSelect,
   RapidEditableTable,
+  SonicEntityTableSelect,
 
   RapidRichTextRenderer,
   RapidRichTextEditor,

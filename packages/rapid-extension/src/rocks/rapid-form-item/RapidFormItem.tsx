@@ -21,6 +21,8 @@ const formItemTypeToControlRockTypeMap: Record<Exclude<RapidFormItemType, "auto"
   dateTimeRange: "antdDatePickerRangePicker",
   select: "rapidSelect",
   treeSelect: "rapidTreeSelect",
+  tableSelect: "rapidTableSelect",
+  entityTableSelect: "sonicEntityTableSelect",
   search: "antdInputSearch",
   file: "rapidUploaderFormInput",
   fileList: "rapidUploaderFormInput",

@@ -165,6 +165,8 @@ export type RapidFormItemType =
   | "dateTimeRange"
   | "select"
   | "treeSelect"
+  | "tableSelect"
+  | "entityTableSelect"
   | "search"
   | "json"
   | "file"
