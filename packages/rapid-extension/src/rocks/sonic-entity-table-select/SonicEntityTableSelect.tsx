@@ -1,6 +1,6 @@
 import type { Rock, RockInstanceContext } from "@ruiapp/move-style";
-import TableSelectorMeta from "./TableSelectMeta";
-import type { TableSelectRockConfig } from "./table-select-types";
+import SonicEntityTableSelectMeta from "./SonicEntityTableSelectMeta";
+import type { SonicEntityTableSelectRockConfig } from "./sonic-entity-table-select-types";
 import { convertToEventHandlers } from "@ruiapp/react-renderer";
 import { Table, Select, Input, TableProps, Empty, Spin } from "antd";
 import { debounce, forEach, get, isArray, isFunction, isObject, isPlainObject, isString, omit, pick, set, split } from "lodash";
@@ -9,10 +9,11 @@ import { useMergeState } from "../../hooks/use-merge-state";
 import rapidApi from "../../rapidApi";
 import { FindEntityOptions } from "../../rapid-types";
 import { parseConfigToFilters } from "../../functions/searchParamsToFilters";
+import { autoConfigureRapidEntity, EntityStoreConfig, rapidAppDefinition } from "../../mod";
 
-import "./table-select-style.css";
+import "../rapid-table-select/table-select-style.css";
 
-const DEFAULT_COLUMNS: TableSelectRockConfig["columns"] = [{ title: "名称", code: "name", width: 120 }];
+const DEFAULT_COLUMNS: SonicEntityTableSelectRockConfig["columns"] = [{ title: "名称", code: "name", width: 120 }];
 
 interface ICurrentState {
   offset: number;
@@ -22,7 +23,7 @@ interface ICurrentState {
 }
 
 export default {
-  Renderer(context, props: TableSelectRockConfig) {
+  Renderer(context, props: SonicEntityTableSelectRockConfig) {
     const {
       listValueFieldName = "id",
       listTextFieldName = "name",
@@ -30,6 +31,7 @@ export default {
       listTextFormat,
       pageSize = 20,
       columns = DEFAULT_COLUMNS,
+      listDataSourceCode,
       listFilterFields = ["name"],
       allowClear,
       placeholder,
@@ -44,7 +46,7 @@ export default {
       [],
     );
 
-    const apiIns = useRequest(props.requestConfig, context);
+    const apiIns = useRequest(props, context);
     const { loadSelectedRecords, loading } = useSelectedRecords(props, (records) => {
       forEach(records, (record) => {
         const recordValue = get(record, listValueFieldName);
@@ -84,7 +86,7 @@ export default {
 
     useEffect(() => {
       loadData();
-    }, [props.requestConfig?.url, currentState.offset, debouncedKeyword]);
+    }, [props.entityCode, currentState.offset, debouncedKeyword]);
 
     const getLabel = (record: Record<string, any>) => {
       if (!listTextFormat) {
@@ -175,6 +177,8 @@ export default {
       eventHandlers.onSelectedRecord?.(isExisted ? null : record, s);
     };
 
+    const data = context.scope.getStore(listDataSourceCode)?.data;
+
     return (
       <Select
         allowClear={allowClear}
@@ -212,7 +216,7 @@ export default {
                 </div>
               ) : null}
               <Spin spinning={apiIns.loading || loading || false}>
-                {!apiIns.records?.length ? (
+                {!data?.list?.length ? (
                   <Empty style={{ margin: "24px 0" }} />
                 ) : (
                   <Table
@@ -220,7 +224,7 @@ export default {
                     rowKey={(record) => get(record, listValueFieldName)}
                     scroll={{ x: tableWidth, y: 200 }}
                     columns={tableColumns}
-                    dataSource={apiIns.records || []}
+                    dataSource={data.list || []}
                     rowClassName="pm-table-row"
                     rowSelection={{
                       fixed: true,
@@ -241,7 +245,7 @@ export default {
                       size: "small",
                       current: currentState.offset / pageSize + 1,
                       pageSize,
-                      total: apiIns.total || 0,
+                      total: data?.total || 0,
                       hideOnSinglePage: true,
                       showSizeChanger: false,
                       onChange(page) {
@@ -258,29 +262,53 @@ export default {
     );
   },
 
-  ...TableSelectorMeta,
+  ...SonicEntityTableSelectMeta,
 } as Rock;
 
 interface IRequestState {
   loading?: boolean;
-  records?: any[];
-  page?: number;
-  total?: number;
 }
 
-function useRequest(config: TableSelectRockConfig["requestConfig"], context: RockInstanceContext) {
+function useRequest(props: SonicEntityTableSelectRockConfig, context: RockInstanceContext) {
   const [state, setState] = useMergeState<IRequestState>({});
 
-  const request = async (params: any) => {
-    if (!config?.url) {
+  useEffect(() => {
+    const listDataSourceCode = props.listDataSourceCode;
+    const store = context.scope.getStore(listDataSourceCode);
+    if (store) {
       return;
     }
 
+    const entity = rapidAppDefinition.getEntityByCode(props.entityCode);
+
+    let { requestParams = {} } = props;
+
+    const listDataStoreConfig: EntityStoreConfig = {
+      type: "entityStore",
+      name: listDataSourceCode,
+      entityModel: entity,
+      fixedFilters: requestParams.fixedFilters,
+      filters: requestParams.filters,
+      properties: requestParams.properties || [],
+      orderBy: requestParams.orderBy || [
+        {
+          field: "id",
+        },
+      ],
+      pagination: requestParams.pagination || { limit: props.pageSize || 20, offset: 0 },
+      keepNonPropertyFields: requestParams.keepNonPropertyFields,
+      $exps: requestParams.$exps,
+    };
+
+    context.scope.addStore(listDataStoreConfig);
+  }, []);
+
+  const request = async (params: any) => {
     if (state.loading) {
       return;
     }
 
-    let configParams = config.params || {};
+    let configParams = props.requestParams || {};
     const expressions = configParams.$exps;
     if (expressions) {
       for (const propName in expressions) {
@@ -294,30 +322,22 @@ function useRequest(config: TableSelectRockConfig["requestConfig"], context: Roc
     }
 
     setState({ loading: true });
-    rapidApi[config.method || "post"](`${config.baseUrl || ""}${config.url || ""}`, {
-      ...omit(configParams || {}, "fixedFilters"),
-      ...params,
-      filters: [...(configParams?.fixedFilters || []), ...params.filters],
-    })
-      .then((res) => {
-        let records = res.data?.list || [];
-        let total = res.data?.total || 0;
-        if (res.status < 200 || res.status >= 300) {
-          setState({ loading: false });
-        } else {
-          setState({ loading: false, records, total });
-        }
-      })
-      .catch((e) => {
-        setState({ loading: false });
+    try {
+      await context.scope.loadStoreData(props.listDataSourceCode, {
+        ...omit(configParams || {}, "fixedFilters"),
+        ...params,
+        filters: [...(configParams?.fixedFilters || []), ...params.filters],
       });
+    } finally {
+      setState({ loading: false });
+    }
   };
 
   return { request, ...state };
 }
 
-function useSelectedRecords(props: TableSelectRockConfig, onSuccess: (records: any[]) => void) {
-  const { requestConfig: config, listValueFieldName = "id" } = props;
+function useSelectedRecords(props: SonicEntityTableSelectRockConfig, onSuccess: (records: any[]) => void) {
+  const { requestParams, listValueFieldName = "id" } = props;
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -326,18 +346,22 @@ function useSelectedRecords(props: TableSelectRockConfig, onSuccess: (records: a
       return;
     }
 
+    const entity = rapidAppDefinition.getEntityByCode(props.entityCode);
+    const entityConfig = autoConfigureRapidEntity(entity, rapidAppDefinition.getEntities());
+
     setLoading(true);
 
     const filterCodes = split(listValueFieldName, ".");
 
-    rapidApi[config.method || "post"](`${config.baseUrl || ""}${config.url || ""}`, {
-      ...pick(config.params || {}, "properties"),
-      pagination: {
-        limit: 100,
-        offset: 0,
-      },
-      filters: parseSelectedRecordFilters(filterCodes, "in", keys),
-    })
+    rapidApi
+      .post(`/${entityConfig.namespace}/${entityConfig.pluralCode}/operations/find`, {
+        ...pick(requestParams || {}, "properties"),
+        pagination: {
+          limit: 100,
+          offset: 0,
+        },
+        filters: parseSelectedRecordFilters(filterCodes, "in", keys),
+      })
       .then((res) => {
         let records = res.data?.list || [];
         if (res.status >= 200 && res.status < 300) {

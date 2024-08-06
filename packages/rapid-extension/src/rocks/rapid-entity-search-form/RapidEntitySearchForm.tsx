@@ -3,7 +3,7 @@ import { handleComponentEvent } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntitySearchFormMeta from "./RapidEntitySearchFormMeta";
 import type { RapidEntitySearchFormRockConfig } from "./rapid-entity-search-form-types";
-import { assign, each, filter, isUndefined, map, uniq } from "lodash";
+import { assign, each, filter, isUndefined, map, merge, uniq } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import type {
   RapidDataDictionary,
@@ -14,12 +14,12 @@ import type {
   SearchFormFilterConfiguration,
 } from "../../types/rapid-entity-types";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
-import type { EntityStoreConfig } from "../../stores/entity-store";
 import type { RapidFormItemConfig, RapidFormItemType, RapidSearchFormItemConfig } from "../rapid-form-item/rapid-form-item-types";
 import type { RapidFormAction, RapidFormRockConfig } from "../rapid-form/rapid-form-types";
 import type { RapidSelectConfig } from "../rapid-select/rapid-select-types";
 import { RapidOptionFieldRendererConfig } from "../rapid-option-field-renderer/rapid-option-field-renderer-types";
 import { searchParamsToFilters } from "../../functions/searchParamsToFilters";
+import { EntityTableSelectRockConfig } from "../rapid-entity-table-select/entity-table-select-types";
 
 type SearchableFieldType = Exclude<RapidFieldType, "file" | "file[]" | "image" | "image[]">;
 
@@ -36,8 +36,8 @@ const fieldTypeToFormItemTypeMap: Record<SearchableFieldType, RapidFormItemType 
   datetime: "dateTimeRange",
   option: "select",
   "option[]": "select",
-  relation: "select",
-  "relation[]": "select",
+  relation: "entityTableSelect",
+  "relation[]": "entityTableSelect",
   json: "json",
 };
 
@@ -114,7 +114,7 @@ export function generateSearchFormItemForRelationProperty(option: GenerateEntity
 
   let listDataSourceCode = formItemConfig.formControlProps?.listDataSourceCode;
   if (!listDataSourceCode) {
-    listDataSourceCode = `dataFormItemList-${formItemConfig.code}`;
+    listDataSourceCode = `searchFormItemList-${formItemConfig.code}`;
   }
 
   let fieldTypeRelatedRendererProps: any = {};
@@ -128,9 +128,10 @@ export function generateSearchFormItemForRelationProperty(option: GenerateEntity
     ...formItemConfig.rendererProps,
   };
 
-  const isMultiple = formItemConfig.multipleValues || formItemConfig.filterMode === "in" || formItemConfig.filterMode === "overlap";
+  const isMultiple =
+    field.relation === "many" || formItemConfig.multipleValues || formItemConfig.filterMode === "in" || formItemConfig.filterMode === "overlap";
 
-  let formControlProps: Partial<RapidSelectConfig> = {
+  let formControlProps: Partial<EntityTableSelectRockConfig> = {
     allowClear: !formItemConfig.required,
     placeholder: formItemConfig.placeholder,
     mode: isMultiple ? "multiple" : undefined,
@@ -138,12 +139,14 @@ export function generateSearchFormItemForRelationProperty(option: GenerateEntity
     valueFieldName: "id",
     ...formItemConfig.formControlProps,
     listDataSourceCode,
+    entityCode: relationEntity.code,
+    requestParams: merge({}, formItemConfig.listDataFindOptions, formItemConfig.formControlProps?.requestParams),
   };
 
   let formItem: RapidFormItemConfig = {
     type: formItemConfig.type,
     valueFieldType: "relation",
-    multipleValues: field.relation === "many",
+    multipleValues: isMultiple,
     code: formItemConfig.code,
     required: formItemConfig.required,
     label: formItemConfig.label,
@@ -235,39 +238,39 @@ export default {
           return;
         }
 
-        if (rpdField.type === "relation" || rpdField.type === "relation[]") {
-          let listDataSourceCode = formItemConfig.formControlProps?.listDataSourceCode;
-          if (listDataSourceCode) {
-            // use specified data store.
-            return;
-          }
+        // if (rpdField.type === "relation" || rpdField.type === "relation[]") {
+        //   let listDataSourceCode = formItemConfig.formControlProps?.listDataSourceCode;
+        //   if (listDataSourceCode) {
+        //     // use specified data store.
+        //     return;
+        //   }
 
-          const listDataStoreName = `searchFormItemList-${formItemConfig.code}`;
+        //   const listDataStoreName = `searchFormItemList-${formItemConfig.code}`;
 
-          const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
-          const targetEntity = rapidAppDefinition.getEntityBySingularCode(rpdField.targetSingularCode);
+        //   const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
+        //   const targetEntity = rapidAppDefinition.getEntityBySingularCode(rpdField.targetSingularCode);
 
-          let { listDataFindOptions = {} } = formItemConfig;
+        //   let { listDataFindOptions = {} } = formItemConfig;
 
-          const listDataStoreConfig: EntityStoreConfig = {
-            type: "entityStore",
-            name: listDataStoreName,
-            entityModel: targetEntity,
-            fixedFilters: listDataFindOptions.fixedFilters,
-            filters: listDataFindOptions.filters,
-            properties: listDataFindOptions.properties || [],
-            orderBy: listDataFindOptions.orderBy || [
-              {
-                field: "id",
-              },
-            ],
-            pagination: listDataFindOptions.pagination,
-            keepNonPropertyFields: listDataFindOptions.keepNonPropertyFields,
-            $exps: listDataFindOptions.$exps,
-          };
+        //   const listDataStoreConfig: EntityStoreConfig = {
+        //     type: "entityStore",
+        //     name: listDataStoreName,
+        //     entityModel: targetEntity,
+        //     fixedFilters: listDataFindOptions.fixedFilters,
+        //     filters: listDataFindOptions.filters,
+        //     properties: listDataFindOptions.properties || [],
+        //     orderBy: listDataFindOptions.orderBy || [
+        //       {
+        //         field: "id",
+        //       },
+        //     ],
+        //     pagination: listDataFindOptions.pagination,
+        //     keepNonPropertyFields: listDataFindOptions.keepNonPropertyFields,
+        //     $exps: listDataFindOptions.$exps,
+        //   };
 
-          context.scope.addStore(listDataStoreConfig);
-        }
+        //   context.scope.addStore(listDataStoreConfig);
+        // }
       });
     }
   },
