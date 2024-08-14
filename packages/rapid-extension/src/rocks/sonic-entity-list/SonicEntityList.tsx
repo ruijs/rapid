@@ -59,13 +59,18 @@ export default {
 
     const dataSourceCode = props.dataSourceCode || "list";
     const pageSize = get(props, "pageSize", DEFAULT_PAGE_SIZE);
-    const entityListRockConfig: RapidEntityListRockConfig = {
+    let entityListRockConfig: RapidEntityListRockConfig = {
       ...(omit(MoveStyleUtils.omitSystemRockConfigFields(props), ["newForm", "editForm"]) as RapidEntityListConfig),
       dataSourceCode,
       pageSize,
       $type: "rapidEntityList",
       $id: `${props.$id}-rapidEntityList`,
     };
+
+    // 动态 开启/关闭 树展示
+    if (get(props, "$exps.convertListToTree")) {
+      set(entityListRockConfig, "$exps.convertListToTree", get(props, "$exps.convertListToTree"));
+    }
 
     const toolboxRockConfig = {
       $type: "rapidEntityListToolbox",
@@ -179,10 +184,13 @@ export default {
                 const store: EntityStore = event.scope.getStore("list");
                 store.updateConfig({
                   filters: event.args[0].filters,
-                  pagination: {
-                    limit: pageSize,
-                    offset: 0,
-                  },
+                  pagination:
+                    pageSize > 0
+                      ? {
+                          limit: pageSize,
+                          offset: 0,
+                        }
+                      : undefined,
                 });
                 // 重新加载数据
                 store.loadData();
