@@ -42,8 +42,17 @@ export default {
                 filterMode: props.filterMode,
                 filterFields: props.filterFields,
               });
+
+              const filters = searchParamsToFilters(filterConfigurations, scope.vars);
               store.updateConfig({
-                filters: searchParamsToFilters(filterConfigurations, scope.vars),
+                filters: filters.length
+                  ? [
+                      {
+                        operator: "or",
+                        filters,
+                      },
+                    ]
+                  : filters,
               });
               // 重新加载数据
               store.loadData();
