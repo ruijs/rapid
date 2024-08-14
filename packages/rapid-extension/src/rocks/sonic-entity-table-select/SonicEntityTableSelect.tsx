@@ -34,6 +34,7 @@ export default {
       listDataSourceCode,
       listFilterFields = ["name"],
       allowClear,
+      disabled,
       placeholder,
     } = props;
 
@@ -182,6 +183,7 @@ export default {
     return (
       <Select
         allowClear={allowClear}
+        disabled={disabled}
         loading={apiIns.loading || loading}
         placeholder={placeholder || "请选择"}
         value={current}

@@ -6,6 +6,7 @@ export interface SonicEntityTableSelectRockConfig extends SimpleRockConfig {
   searchPlaceholder?: string;
   placeholder?: string;
   allowClear?: boolean;
+  disabled?: boolean;
   pageSize?: number;
   mode?: "multiple" | "single";
   listFilterFields?: (string | FilterFieldConfig)[]; // 默认 name、code
