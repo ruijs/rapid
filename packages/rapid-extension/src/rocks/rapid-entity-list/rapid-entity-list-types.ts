@@ -98,6 +98,11 @@ export interface RapidEntityListConfig {
   selectOnClickRow?: boolean;
 
   onSelectedIdsChange?: RockEventHandlerConfig;
+
+  /**
+   * dataSource 适配器， 遵循 rui expression 规范（解析）
+   */
+  dataSourceAdapter?: string;
 }
 
 export interface RapidEntityListRockConfig extends SimpleRockConfig, RapidEntityListConfig {}

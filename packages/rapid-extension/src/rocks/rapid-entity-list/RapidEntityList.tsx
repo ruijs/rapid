@@ -264,6 +264,7 @@ export default {
       showHeader: props.showHeader,
       ...props.tableProps,
       convertListToTree: props.convertListToTree,
+      dataSourceAdapter: props.dataSourceAdapter,
       listIdField: props.listIdField,
       listParentField: props.listParentField,
       treeChildrenField: props.treeChildrenField,

@@ -17,6 +17,11 @@ export type RapidTableConfig = {
   convertListToTree?: boolean;
 
   /**
+   * dataSource 适配器， 遵循 rui expression 规范（解析）
+   */
+  dataSourceAdapter?: string;
+
+  /**
    * 列表中的上级字段名。通常为`parent.id`或者`parentId`等。
    */
   listParentField?: string;

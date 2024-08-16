@@ -2,9 +2,10 @@ import { MoveStyleUtils, Rock, handleComponentEvent } from "@ruiapp/move-style";
 import { toRenderRockSlot, convertToEventHandlers, convertToSlotProps } from "@ruiapp/react-renderer";
 import { Table, TableProps } from "antd";
 import { ColumnType } from "antd/lib/table/interface";
-import { filter, map, reduce } from "lodash";
+import { filter, map, reduce, trim } from "lodash";
 import RapidTableMeta from "./RapidTableMeta";
 import { RapidTableRockConfig } from "./rapid-table-types";
+import { parseRockExpressionFunc } from "../../utils/parse-utility";
 
 export default {
   Renderer(context, props: RapidTableRockConfig) {
@@ -40,6 +41,9 @@ export default {
         listParentField: props.listParentField,
         treeChildrenField: props.treeChildrenField,
       });
+    } else if (typeof props.dataSourceAdapter === "string" && trim(props.dataSourceAdapter)) {
+      const adapter = parseRockExpressionFunc(props.dataSourceAdapter, { data: dataSource }, context);
+      dataSource = adapter();
     }
 
     const antdProps: TableProps<any> = {

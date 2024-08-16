@@ -55,6 +55,11 @@ export type RapidFormConfig = {
   defaultFormFields?: Record<string, any>;
 
   onFinish?: RockEventHandlerConfig;
+
+  /**
+   * formData 适配器， 遵循 rui expression 规范（解析）
+   */
+  formDataAdapter?: string;
 };
 
 /**
