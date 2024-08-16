@@ -400,6 +400,7 @@ export default {
       colon: formConfig.colon,
       actions: formConfig.actions,
       defaultFormFields: formConfig.defaultFormFields,
+      formDataAdapter: formConfig.formDataAdapter,
       onFormSubmit: formConfig.onFormSubmit,
       onFormRefresh: formConfig.onFormRefresh,
       onValuesChange: formConfig.onValuesChange,

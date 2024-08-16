@@ -2,9 +2,10 @@ import { Rock, RockConfig, RockEvent, RockEventHandlerScript, handleComponentEve
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidFormMeta from "./RapidFormMeta";
 import type { RapidFormRockConfig } from "./rapid-form-types";
-import { assign, each, get } from "lodash";
+import { assign, each, get, trim } from "lodash";
 import { Form, message as antdMessage } from "antd";
 import { useEffect, useMemo, useState } from "react";
+import { parseRockExpressionFunc } from "../../mod";
 
 export default {
   $type: "rapidForm",
@@ -133,6 +134,11 @@ export default {
         };
       } else {
         values = props.defaultFormFields;
+      }
+
+      if (typeof props.formDataAdapter === "string" && trim(props.formDataAdapter)) {
+        const adapter = parseRockExpressionFunc(props.formDataAdapter, { data: values, form: state.form }, context);
+        values = adapter();
       }
 
       return values || {};

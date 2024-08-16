@@ -375,13 +375,13 @@ function parseSelectedRecordFilters(codes: string[], operator: FindEntityOptions
       },
     ];
   } else if (currentCode) {
-    return [
-      {
-        field: currentCode,
-        operator: operator as any,
-        value: value,
-      },
-    ];
+    const filterItem: any = { field: currentCode, operator: operator as any, value: value };
+
+    if (isString(value) || (isArray(value) && isString(value[0]))) {
+      filterItem.itemType = "text";
+    }
+
+    return [filterItem];
   } else {
     return [];
   }
