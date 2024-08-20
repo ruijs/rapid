@@ -83,6 +83,9 @@
 }
 
 .rui-toolbar-extras {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .rui-toolbar .ant-form-item {

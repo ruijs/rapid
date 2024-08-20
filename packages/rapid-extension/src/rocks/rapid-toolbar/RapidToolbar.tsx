@@ -3,11 +3,18 @@ import RapidToolbarMeta from "./RapidToolbarMeta";
 import type { RapidToolbarRockConfig } from "./rapid-toolbar-types";
 import { renderRock } from "@ruiapp/react-renderer";
 
+import "./style.css";
+
 export default {
   $type: "rapidToolbar",
 
   Renderer(context, props: RapidToolbarRockConfig) {
     const { extraClassName } = props;
+
+    if (!props.items?.length && !props.extras?.length && !props.rightExtras?.length) {
+      return <></>;
+    }
+
     const className = extraClassName ? "rui-toolbar " + extraClassName : "rui-toolbar";
     const rockConfig: RockConfig = {
       $id: props.$id,
@@ -43,6 +50,7 @@ export default {
                 },
               ],
             },
+            ...(props.rightExtras || []),
           ],
         },
       ],

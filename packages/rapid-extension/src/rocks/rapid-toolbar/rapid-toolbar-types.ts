@@ -6,6 +6,7 @@ export type RapidToolbarConfig = {
   extraClassName?: "";
   items?: RockConfig[];
   extras?: RockConfig[];
+  rightExtras?: RockConfig[];
 };
 
 // export type RapidToolbarItem = RapidToolbarButtonItem | RapidToolbarSearchFormItem;
