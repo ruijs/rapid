@@ -1,25 +1,24 @@
-.rapid-entity-list-toolbar {
+.rapid-entity-list-toolbox {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  /* margin-bottom: 8px; */
-  margin-left: 8px;
+  margin-left: 16px;
 }
 
-.rapid-entity-list-toolbar--iconBtn {
+.rapid-entity-list-toolbox--iconBtn {
   cursor: pointer;
   font-size: 14px;
 }
 
-.rapid-entity-list-toolbar--iconBtn:hover {
+.rapid-entity-list-toolbox--iconBtn:hover {
   color: #1890ff;
 }
 
-.rapid-entity-list-toolbar-settings .ant-tree-switcher {
+.rapid-entity-list-toolbox-settings .ant-tree-switcher {
   width: 0;
 }
 
-.rapid-entity-list-toolbar-settings--title {
+.rapid-entity-list-toolbox-settings--title {
   color: rgba(42, 46, 54, 0.65);
   font-size: 14px;
   padding-left: 8px;

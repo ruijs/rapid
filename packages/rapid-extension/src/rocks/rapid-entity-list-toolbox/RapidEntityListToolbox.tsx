@@ -2,7 +2,7 @@ import type { Rock, SimpleRockConfig } from "@ruiapp/move-style";
 import { get, isArray, isEmpty, keyBy, set, split } from "lodash";
 import { Checkbox, Popover, Space, Tree } from "antd";
 import { ReloadOutlined, SettingOutlined } from "@ant-design/icons";
-import { useMemo, useState } from "react";
+import { CSSProperties, useMemo, useState } from "react";
 import { RapidExtStorage } from "../../utils/storage-utility";
 import { convertToEventHandlers } from "@ruiapp/react-renderer";
 import { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
@@ -18,6 +18,8 @@ export interface ICacheRapidTableColumn extends Pick<RapidTableColumnConfig, "co
 }
 
 interface IProps extends SimpleRockConfig {
+  style?: CSSProperties;
+  className?: string;
   config: IRapidEntityListToolboxConfig;
   columns: any[];
   onRerender?(): void;
@@ -89,11 +91,11 @@ export default {
     };
 
     return (
-      <div className="rapid-entity-list-toolbar">
+      <div className={`rapid-entity-list-toolbox ${props.className || ""}`} style={props.style}>
         <div></div>
         <Space size={16}>
           <span
-            className="rapid-entity-list-toolbar--iconBtn"
+            className="rapid-entity-list-toolbox--iconBtn"
             onClick={(e) => {
               e.stopPropagation();
 
@@ -112,7 +114,7 @@ export default {
             trigger={["click"]}
             placement="leftTop"
             content={
-              <div className="rapid-entity-list-toolbar-settings">
+              <div className="rapid-entity-list-toolbox-settings">
                 <Tree draggable blockNode selectable={false} checkable checkedKeys={checkedKeys} onCheck={onTreeCheck} onDrop={onTreeDrop}>
                   {(columns || []).map((col) => (
                     <Tree.TreeNode key={getColumnUniqueKey(col)} title={col.title} />
@@ -121,7 +123,7 @@ export default {
               </div>
             }
           >
-            <span className="rapid-entity-list-toolbar--iconBtn">
+            <span className="rapid-entity-list-toolbox--iconBtn">
               <SettingOutlined />
             </span>
           </Popover>

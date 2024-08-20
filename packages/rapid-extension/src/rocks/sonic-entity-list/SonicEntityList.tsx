@@ -159,7 +159,6 @@ export default {
             },
           ],
         },
-        toolboxRockConfig,
       ];
     }
 
@@ -168,6 +167,7 @@ export default {
       $type: "rapidToolbar",
       items: props.listActions,
       extras: toolbarExtraActions,
+      rightExtras: [toolboxRockConfig],
       dataSourceCode: props.dataSourceCode,
     };
 
