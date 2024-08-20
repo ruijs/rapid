@@ -18,6 +18,10 @@ export default {
   },
 
   onInit(context, props) {
+    if (props.dataSourceType === "dataSource") {
+      return;
+    }
+
     const entityCode = props.entityCode;
     if (!entityCode) {
       return;
@@ -75,6 +79,10 @@ export default {
 
   onReceiveMessage(message, state, props) {
     if (message.name === "refreshView") {
+      if (props.dataSourceType === "dataSource") {
+        return;
+      }
+
       state.scope.stores[props.dataSourceCode]?.loadData();
     }
   },
@@ -242,15 +250,31 @@ export default {
       };
     }
 
+    const dataSourceTotal = (props.dataSource || []).length;
+    let tableExps: Record<string, string> = {
+      pagination:
+        props.pageSize > 0
+          ? `{pageSize: ${props.pageSize}, current: $scope.vars["${`stores-${dataSourceCode}-pageNum`}"], total: ${dataSourceTotal} }`
+          : "false",
+    };
+
+    if (props.dataSourceType !== "dataSource") {
+      tableExps = {
+        dataSource: `$scope.stores.${dataSourceCode}?.data?.list`,
+        pagination:
+          props.pageSize > 0
+            ? `{pageSize: ${
+                props.pageSize
+              }, current: $scope.vars["${`stores-${dataSourceCode}-pageNum`}"], total: $scope.stores.${dataSourceCode}?.data?.total}`
+            : "false",
+      };
+    }
+
     const tableRockConfig: RockConfig = {
       $id: `${props.$id}-table`,
       $type: "rapidTable",
       $exps: {
-        dataSource: `$scope.stores.${dataSourceCode}.data?.list`,
-        pagination:
-          props.pageSize > 0
-            ? `{pageSize: ${props.pageSize}, current: $scope.vars["${`stores-${dataSourceCode}-pageNum`}"], total: $scope.stores.${dataSourceCode}.data?.total}`
-            : "false",
+        ...tableExps,
         ...(selectionMode !== "none"
           ? {
               "rowSelection.selectedRowKeys": `$scope.vars['${props.$id}-selectedIds']`,
@@ -261,6 +285,8 @@ export default {
       rowKey: "id",
       rowSelection,
       columns: tableColumnRocks,
+      dataSource: props.dataSource,
+      expandedRow: props.expandedRow,
       showHeader: props.showHeader,
       ...props.tableProps,
       convertListToTree: props.convertListToTree,
@@ -311,14 +337,19 @@ export default {
           $action: "script",
           script: async (event: RockEvent) => {
             const [pagination] = event.args;
+            event.scope.setVars({
+              [`stores-${dataSourceCode}-pageNum`]: pagination.current,
+            });
+
+            if (props.dataSourceType === "dataSource") {
+              return;
+            }
+
             const store: EntityStore = event.scope.stores[dataSourceCode] as any;
             // store.setPagination({
             //   limit: props.pageSize,
             //   offset: ((pagination.current || 1) - 1) * props.pageSize
             // });
-            event.scope.setVars({
-              [`stores-${dataSourceCode}-pageNum`]: pagination.current,
-            });
             await store.loadData();
           },
         },

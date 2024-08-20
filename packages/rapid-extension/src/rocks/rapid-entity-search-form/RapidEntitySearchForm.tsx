@@ -363,6 +363,13 @@ export default {
 
           const searchParams = event.args[0];
           const filters = searchParamsToFilters(filterConfigurations, searchParams);
+
+          const dataSourceCode = props.dataSourceCode || "list";
+          // 设置搜索变量
+          event.scope.setVars({
+            [`stores-${dataSourceCode}-pageNum`]: 1,
+          });
+
           await handleComponentEvent("onSearch", event.framework, event.page as any, event.scope, props, props.onSearch, [{ filters }]);
         },
       },

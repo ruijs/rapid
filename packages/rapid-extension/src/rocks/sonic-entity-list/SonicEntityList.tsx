@@ -159,6 +159,7 @@ export default {
             },
           ],
         },
+        toolboxRockConfig,
       ];
     }
 
@@ -373,8 +374,6 @@ export default {
         },
       });
     }
-
-    childrenConfig.push(toolboxRockConfig);
 
     childrenConfig.push(entityListRockConfig);
     if (newModalRockConfig) {

@@ -1,5 +1,5 @@
 import { MoveStyleUtils, Rock, handleComponentEvent } from "@ruiapp/move-style";
-import { toRenderRockSlot, convertToEventHandlers, convertToSlotProps } from "@ruiapp/react-renderer";
+import { toRenderRockSlot, convertToEventHandlers, convertToSlotProps, renderRock } from "@ruiapp/react-renderer";
 import { Table, TableProps } from "antd";
 import { ColumnType } from "antd/lib/table/interface";
 import { filter, map, reduce, trim } from "lodash";
@@ -46,6 +46,24 @@ export default {
       dataSource = adapter();
     }
 
+    let expandable: any = null;
+    if (props.expandedRow) {
+      expandable = {
+        expandedRowRender: (record, index) => {
+          const expandedRow = { ...props.expandedRow, record, recordIndex: index };
+
+          if (expandedRow.$exps) {
+            page.interpreteComponentProperties(null, expandedRow, {});
+          }
+
+          return renderRock({
+            context,
+            rockConfig: expandedRow,
+          });
+        },
+      };
+    }
+
     const antdProps: TableProps<any> = {
       dataSource: dataSource,
       rowKey: props.rowKey || "id",
@@ -61,6 +79,7 @@ export default {
       ...slotProps,
       columns: tableColumns,
       showHeader: props.showHeader,
+      expandable,
       scroll: {
         x: columnsTotalWidth,
       },

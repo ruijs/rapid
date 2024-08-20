@@ -20,6 +20,16 @@ export interface RapidEntityListConfig {
   viewMode: "table";
 
   /**
+   * 数据源类型  默认：store, 从store中读取对应的数据
+   */
+  dataSourceType?: "store" | "dataSource";
+
+  /**
+   * 数据
+   */
+  dataSource?: any[];
+
+  /**
    * 数据源编号
    */
   dataSourceCode?: string;
