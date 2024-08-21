@@ -764,6 +764,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
       if (!targetEntityId) {
         const targetEntity = fieldValue;
         const newTargetEntity = await createEntity(server, targetDataAccessor, {
+          routeContext,
           entity: targetEntity,
         });
         newEntityOneRelationProps[property.code] = newTargetEntity;
@@ -837,6 +838,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
             targetEntity[property.selfIdColumnName!] = newEntity.id;
           }
           const newTargetEntity = await createEntity(server, targetDataAccessor, {
+            routeContext,
             entity: targetEntity,
           });
 
@@ -1018,6 +1020,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
       if (!targetEntityId) {
         const targetEntity = fieldValue;
         const newTargetEntity = await createEntity(server, targetDataAccessor, {
+          routeContext,
           entity: targetEntity,
         });
         updatedEntityOneRelationProps[property.code] = newTargetEntity;
@@ -1104,6 +1107,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
             targetEntity[property.selfIdColumnName!] = id;
           }
           const newTargetEntity = await createEntity(server, targetDataAccessor, {
+            routeContext,
             entity: targetEntity,
           });
 
