@@ -1,16 +1,18 @@
-import type { Rock, RockInstanceContext } from "@ruiapp/move-style";
+import { EventEmitter, type Rock, type RockInstanceContext } from "@ruiapp/move-style";
 import TableSelectorMeta from "./TableSelectMeta";
 import type { TableSelectRockConfig } from "./table-select-types";
 import { convertToEventHandlers } from "@ruiapp/react-renderer";
 import { Table, Select, Input, TableProps, Empty, Spin } from "antd";
 import { debounce, forEach, get, isArray, isFunction, isObject, isPlainObject, isString, last, omit, pick, set, slice, split, trim } from "lodash";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMergeState } from "../../hooks/use-merge-state";
 import rapidApi from "../../rapidApi";
 import { FindEntityOptions } from "../../rapid-types";
 import { parseConfigToFilters } from "../../functions/searchParamsToFilters";
 
 import "./table-select-style.css";
+
+const bus = new EventEmitter();
 
 const DEFAULT_COLUMNS: TableSelectRockConfig["columns"] = [{ title: "名称", code: "name", width: 120 }];
 
@@ -22,6 +24,11 @@ interface ICurrentState {
 }
 
 export default {
+  onReceiveMessage(message, state, props) {
+    if (message.name === "refreshData") {
+      bus.emit(`${props.$id}-refresh`, message.payload);
+    }
+  },
   Renderer(context, props: TableSelectRockConfig) {
     const {
       listValueFieldName = "id",
@@ -38,6 +45,7 @@ export default {
 
     const isMultiple = props.mode === "multiple";
 
+    const refreshDataRef = useRef<Function>(null);
     const [currentState, setCurrentState] = useMergeState<ICurrentState>({ offset: 0, selectedRecordMap: {} });
     const [debouncedKeyword, setDebouncedKeyword] = useState<string>("");
     const debouncedCallBack = useCallback(
@@ -82,6 +90,19 @@ export default {
 
       apiIns.request(params);
     };
+
+    refreshDataRef.current = loadData;
+    useEffect(() => {
+      const handler = () => {
+        refreshDataRef.current?.();
+      };
+
+      bus.on(`${props.$id}-refresh`, handler);
+
+      return () => {
+        (bus as any).off?.(`${props.$id}-refresh`, handler);
+      };
+    }, [props.$id]);
 
     useEffect(() => {
       loadData();
