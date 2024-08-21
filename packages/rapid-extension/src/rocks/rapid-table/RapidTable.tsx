@@ -65,21 +65,18 @@ export default {
     }
 
     const antdProps: TableProps<any> = {
+      ...MoveStyleUtils.omitSystemRockConfigFields(props),
+      ...eventHandlers,
+      ...slotProps,
       dataSource: dataSource,
       rowKey: props.rowKey || "id",
-      bordered: props.bordered,
-      size: props.size,
       pagination: props.pagination
         ? {
             showSizeChanger: false,
             ...props.pagination,
           }
         : props.pagination,
-      ...eventHandlers,
-      ...slotProps,
       columns: tableColumns,
-      showHeader: props.showHeader,
-      expandable,
       scroll: {
         x: columnsTotalWidth,
       },
