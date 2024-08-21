@@ -395,11 +395,11 @@ importers:
   packages/rapid-extension:
     dependencies:
       '@ruiapp/move-style':
-        specifier: ^0.1.28
-        version: 0.1.28(lodash@4.17.21)
+        specifier: ^0.2.6
+        version: 0.2.6(lodash@4.17.21)
       '@ruiapp/react-renderer':
         specifier: ^0.1.28
-        version: 0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 0.1.28(@ruiapp/move-style@0.2.6(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       axios:
         specifier: ^1.1.2
         version: 1.6.7
@@ -2333,6 +2333,11 @@ packages:
 
   '@ruiapp/move-style@0.1.28':
     resolution: {integrity: sha512-QomZhcTPYZXqkAHBNQbfNQD769neLxDcbC9pJHGShoIXq/hqAzqtUuwWrd2mCHvGVJkyZASGT/zJcjAeH8VX9w==}
+    peerDependencies:
+      lodash: ^4.17.21
+
+  '@ruiapp/move-style@0.2.6':
+    resolution: {integrity: sha512-OUFvg22k4WqBQ55ZG4vpo6JHQ9khDa7Bvc1vxXf1h/KNbSHgWgey8rAZN+ATHPKJMCpI9b84gVUangxJRrMYqQ==}
     peerDependencies:
       lodash: ^4.17.21
 
@@ -10220,9 +10225,24 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
+  '@ruiapp/move-style@0.2.6(lodash@4.17.21)':
+    dependencies:
+      axios: 1.6.8
+      events: 3.3.0
+      lodash: 4.17.21
+      qs: 6.12.1
+    transitivePeerDependencies:
+      - debug
+
   '@ruiapp/react-renderer@0.1.28(@ruiapp/move-style@0.1.28(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@ruiapp/move-style': 0.1.28(lodash@4.17.21)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+
+  '@ruiapp/react-renderer@0.1.28(@ruiapp/move-style@0.2.6(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+    dependencies:
+      '@ruiapp/move-style': 0.2.6(lodash@4.17.21)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 

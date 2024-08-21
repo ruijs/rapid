@@ -177,6 +177,7 @@ export default {
           $type: "rapidEntitySearchForm",
           entityCode: entityCode,
           items: props.searchForm.items,
+          onValuesChange: props.searchForm.onValuesChange,
           actionsAlign: "right",
           onSearch: [
             {
