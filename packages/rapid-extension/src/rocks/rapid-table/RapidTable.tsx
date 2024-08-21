@@ -54,7 +54,7 @@ export default {
           const slotProps = { record, index };
 
           if (expandedRow.$exps) {
-            page.interpreteComponentProperties(null, expandedRow, {});
+            page.interpreteComponentProperties(null, expandedRow, { $slot: slotProps });
           }
 
           return renderRock({
