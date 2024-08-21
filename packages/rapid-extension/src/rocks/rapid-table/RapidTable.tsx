@@ -2,7 +2,7 @@ import { MoveStyleUtils, Rock, handleComponentEvent } from "@ruiapp/move-style";
 import { toRenderRockSlot, convertToEventHandlers, convertToSlotProps, renderRock } from "@ruiapp/react-renderer";
 import { Table, TableProps } from "antd";
 import { ColumnType } from "antd/lib/table/interface";
-import { filter, map, reduce, trim } from "lodash";
+import { filter, map, merge, omit, reduce, trim } from "lodash";
 import RapidTableMeta from "./RapidTableMeta";
 import { RapidTableRockConfig } from "./rapid-table-types";
 import { parseRockExpressionFunc } from "../../utils/parse-utility";
@@ -50,7 +50,8 @@ export default {
     if (props.expandedRow) {
       expandable = {
         expandedRowRender: (record, index) => {
-          const expandedRow = { ...props.expandedRow, record, recordIndex: index };
+          const expandedRow = { ...props.expandedRow };
+          const slotProps = { record, index };
 
           if (expandedRow.$exps) {
             page.interpreteComponentProperties(null, expandedRow, {});
@@ -59,13 +60,19 @@ export default {
           return renderRock({
             context,
             rockConfig: expandedRow,
+            expVars: {
+              $slot: slotProps,
+            },
+            fixedProps: {
+              $slot: slotProps,
+            },
           });
         },
       };
     }
 
     const antdProps: TableProps<any> = {
-      ...MoveStyleUtils.omitSystemRockConfigFields(props),
+      ...omit(merge({ expandable }, MoveStyleUtils.omitSystemRockConfigFields(props)), "expandedRow"),
       ...eventHandlers,
       ...slotProps,
       dataSource: dataSource,
