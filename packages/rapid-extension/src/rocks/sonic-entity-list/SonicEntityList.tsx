@@ -57,6 +57,18 @@ export default {
     const entityCode = props.entityCode;
     let entityName = props.entityName;
 
+    let mainEntity: RapidEntity | undefined;
+    if (entityCode) {
+      mainEntity = find(entities, (item) => item.code === entityCode);
+      if (!entityName) {
+        entityName = mainEntity?.name;
+      }
+
+      if (!mainEntity) {
+        return renderRock({ context, rockConfig: generateRockConfigOfError(new Error(`Entity '${entityCode}' not found.`)) });
+      }
+    }
+
     const dataSourceCode = props.dataSourceCode || "list";
     const pageSize = get(props, "pageSize", DEFAULT_PAGE_SIZE);
     let entityListRockConfig: RapidEntityListRockConfig = {
@@ -72,59 +84,52 @@ export default {
       set(entityListRockConfig, "$exps.convertListToTree", get(props, "$exps.convertListToTree"));
     }
 
-    const toolboxRockConfig = {
-      $type: "rapidEntityListToolbox",
-      $id: `${props.$id}_toolbox`,
-      columns: props.columns,
-      config: props.toolbox || {
-        columnCacheKey: props.entityCode || props.entityName,
-      },
-      onRerender: [
-        {
-          $action: "script",
-          script: () => {
-            state.rerenderDom();
-          },
+    const toolboxEnabled = !props.toolbox?.disabled;
+    let toolboxRockConfig: RockConfig | null = null;
+
+    if (toolboxEnabled) {
+      toolboxRockConfig = {
+        $type: "rapidEntityListToolbox",
+        $id: `${props.$id}_toolbox`,
+        columns: props.columns,
+        config: props.toolbox || {
+          columnCacheKey: props.entityCode || props.entityName,
         },
-      ],
-    };
+        onRerender: [
+          {
+            $action: "script",
+            script: () => {
+              state.rerenderDom();
+            },
+          },
+        ],
+      };
 
-    const originColumns = props.columns || [];
-    const cacheColumns = RapidExtStorage.get<ICacheRapidTableColumn[]>(toolboxRockConfig.config.columnCacheKey);
-    if (isArray(cacheColumns) && !isEmpty(cacheColumns)) {
-      const diffOriginColumns = differenceBy(originColumns, cacheColumns, getColumnUniqueKey);
-      const originByCodeMap = keyBy<RapidTableColumnConfig>(originColumns, getColumnUniqueKey);
+      const originColumns = props.columns || [];
+      const cacheColumns = RapidExtStorage.get<ICacheRapidTableColumn[]>(toolboxRockConfig.config.columnCacheKey);
+      if (isArray(cacheColumns) && !isEmpty(cacheColumns)) {
+        const diffOriginColumns = differenceBy(originColumns, cacheColumns, getColumnUniqueKey);
+        const originByCodeMap = keyBy<RapidTableColumnConfig>(originColumns, getColumnUniqueKey);
 
-      let sortedColumns: RapidEntityListRockConfig["columns"] = [];
-      let showColumns: RapidEntityListRockConfig["columns"] = [];
-      let hideColumnCodes: string[] = [];
-      cacheColumns.forEach((col) => {
-        const uniqueKey = getColumnUniqueKey(col as any);
-        const originColumn = originByCodeMap[uniqueKey];
-        if (originColumn) {
-          sortedColumns.push(originColumn);
-          if (!col.hidden) {
-            showColumns.push(originColumn);
-          } else {
-            hideColumnCodes.push(col.code);
+        let sortedColumns: RapidEntityListRockConfig["columns"] = [];
+        let showColumns: RapidEntityListRockConfig["columns"] = [];
+        let hideColumnCodes: string[] = [];
+        cacheColumns.forEach((col) => {
+          const uniqueKey = getColumnUniqueKey(col as any);
+          const originColumn = originByCodeMap[uniqueKey];
+          if (originColumn) {
+            sortedColumns.push(originColumn);
+            if (!col.hidden) {
+              showColumns.push(originColumn);
+            } else {
+              hideColumnCodes.push(col.code);
+            }
           }
-        }
-      });
+        });
 
-      entityListRockConfig.extraProperties = [...(entityListRockConfig.extraProperties || []), ...hideColumnCodes];
-      entityListRockConfig.columns = [...showColumns, ...diffOriginColumns];
-      toolboxRockConfig.columns = [...sortedColumns, ...diffOriginColumns];
-    }
-
-    let mainEntity: RapidEntity | undefined;
-    if (entityCode) {
-      mainEntity = find(entities, (item) => item.code === entityCode);
-      if (!entityName) {
-        entityName = mainEntity?.name;
-      }
-
-      if (!mainEntity) {
-        return renderRock({ context, rockConfig: generateRockConfigOfError(new Error(`Entity '${entityCode}' not found.`)) });
+        entityListRockConfig.extraProperties = [...(entityListRockConfig.extraProperties || []), ...hideColumnCodes];
+        entityListRockConfig.columns = [...showColumns, ...diffOriginColumns];
+        toolboxRockConfig.columns = [...sortedColumns, ...diffOriginColumns];
       }
     }
 
@@ -167,7 +172,7 @@ export default {
       $type: "rapidToolbar",
       items: props.listActions,
       extras: toolbarExtraActions,
-      rightExtras: [toolboxRockConfig],
+      rightExtras: toolboxEnabled ? [toolboxRockConfig] : [],
       dataSourceCode: props.dataSourceCode,
     };
 
