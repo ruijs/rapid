@@ -10,6 +10,7 @@ import { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column
 import "./style.css";
 
 export interface IRapidEntityListToolboxConfig {
+  disabled?: boolean;
   columnCacheKey?: string;
 }
 
