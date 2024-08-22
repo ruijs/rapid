@@ -12,6 +12,8 @@ export * from "./core/actionHandler";
 
 export * from "./utilities/jwtUtility";
 
+export { mapDbRowToEntity } from "./dataAccess/entityMapper";
+
 export * as bootstrapApplicationConfig from "./bootstrapApplicationConfig";
 
 export { default as MetaManagePlugin } from "./plugins/metaManage/MetaManagePlugin";
