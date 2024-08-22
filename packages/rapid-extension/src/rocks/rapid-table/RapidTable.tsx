@@ -6,6 +6,29 @@ import { filter, map, merge, omit, reduce, trim } from "lodash";
 import RapidTableMeta from "./RapidTableMeta";
 import { RapidTableRockConfig } from "./rapid-table-types";
 import { parseRockExpressionFunc } from "../../utils/parse-utility";
+import { memo } from "react";
+
+const ExpandedRowComponent = memo<Record<string, any>>((props) => {
+  const { expandedRow, record, index, context } = props;
+
+  const page = context.page;
+  const slotProps = { record, index };
+
+  if (expandedRow.$exps) {
+    page.interpreteComponentProperties(null, expandedRow, { $slot: slotProps });
+  }
+
+  return renderRock({
+    context,
+    rockConfig: expandedRow,
+    expVars: {
+      $slot: slotProps,
+    },
+    fixedProps: {
+      $slot: slotProps,
+    },
+  }) as any;
+});
 
 export default {
   Renderer(context, props: RapidTableRockConfig) {
@@ -51,22 +74,8 @@ export default {
       expandable = {
         expandedRowRender: (record, index) => {
           const expandedRow = { ...props.expandedRow };
-          const slotProps = { record, index };
 
-          if (expandedRow.$exps) {
-            page.interpreteComponentProperties(null, expandedRow, {});
-          }
-
-          return renderRock({
-            context,
-            rockConfig: expandedRow,
-            expVars: {
-              $slot: slotProps,
-            },
-            fixedProps: {
-              $slot: slotProps,
-            },
-          });
+          return <ExpandedRowComponent expandedRow={expandedRow} record={record} index={index} context={context} />;
         },
       };
     }

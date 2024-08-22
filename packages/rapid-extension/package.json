@@ -1,6 +1,6 @@
 {
   "name": "@ruiapp/rapid-extension",
-  "version": "0.1.53",
+  "version": "0.1.55",
   "description": "",
   "main": "dist/mod.js",
   "types": "dist/mod.d.ts",
@@ -35,7 +35,7 @@
   },
   "peerDependencies": {
     "@ant-design/icons": "^4.7.0",
-    "@ruiapp/move-style": "^0.2.6",
+    "@ruiapp/move-style": "^0.3.1",
     "@ruiapp/react-renderer": "^0.1.28",
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-react": "^1.0.6",
