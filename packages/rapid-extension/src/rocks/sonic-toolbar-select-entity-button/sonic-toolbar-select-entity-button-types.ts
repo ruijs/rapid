@@ -2,6 +2,7 @@ import type { RockConfig, RockEventHandlerConfig, SimpleRockConfig } from "@ruia
 import type { EntityFilterFieldOperators, EntityFilterOptions, FindEntityOrderByOptions } from "../../types/rapid-entity-types";
 import type { RapidToolbarButtonConfig } from "../rapid-toolbar-button/rapid-toolbar-button-types";
 import type { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
+import { IRapidEntityListToolboxConfig } from "../rapid-entity-list-toolbox/RapidEntityListToolbox";
 
 export interface SonicToolbarSelectEntityButtonConfig extends Omit<RapidToolbarButtonConfig, "actionEventName"> {
   /**
@@ -47,6 +48,8 @@ export interface SonicToolbarSelectEntityButtonConfig extends Omit<RapidToolbarB
   columns: RapidTableColumnConfig[];
 
   extraActions?: RockConfig[];
+
+  toolbox?: IRapidEntityListToolboxConfig;
 
   quickSearchMode?: EntityFilterFieldOperators;
 
