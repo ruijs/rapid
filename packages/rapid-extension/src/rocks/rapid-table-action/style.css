@@ -1,0 +1,9 @@
+.rui-table-action-link + .rui-table-action-link {
+  margin-left: 6px;
+}
+
+.rui-table-action-link--disabled {
+  cursor: not-allowed;
+  user-select: none;
+  color: #999;
+}
