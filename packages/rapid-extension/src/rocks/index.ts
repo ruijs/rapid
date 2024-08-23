@@ -58,6 +58,7 @@ import SonicEntityTableSelect from "./sonic-entity-table-select/SonicEntityTable
 // RichText
 import RapidRichTextRenderer from "./rapid-rich-text-renderer/RichTextRenderer";
 import RapidRichTextEditor from "./rapid-rich-text-editor/RichTextEditor";
+import RapidToolbarModalButton from "./rapid-toolbar-modal-button/RapidToolbarModalButton";
 
 export default [
   RapidArrayRenderer,
@@ -98,6 +99,7 @@ export default [
   RapidToolbar,
   RapidToolbarButton,
   RapidToolbarFormModalButton,
+  RapidToolbarModalButton,
   RapidToolbarLink,
   RapidToolbarPageLink,
   RapidTreeSelect,

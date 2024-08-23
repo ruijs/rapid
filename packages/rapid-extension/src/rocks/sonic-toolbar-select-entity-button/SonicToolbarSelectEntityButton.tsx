@@ -4,6 +4,7 @@ import RapidEntityListMeta from "./SonicToolbarSelectEntityButtonMeta";
 import type { SonicToolbarSelectEntityButtonRockConfig } from "./sonic-toolbar-select-entity-button-types";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { find } from "lodash";
+import { SonicEntityListRockConfig } from "../sonic-entity-list/sonic-entity-list-types";
 
 export default {
   onInit(context, props) {},
@@ -70,6 +71,7 @@ export default {
                   },
                 ]
               : null),
+          toolbox: props.toolbox || { disabled: true },
           columns: props.columns || [
             {
               type: "auto",
@@ -86,7 +88,7 @@ export default {
               },
             },
           ],
-        },
+        } satisfies SonicEntityListRockConfig,
       ],
       onOk: [
         {
