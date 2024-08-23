@@ -9,9 +9,11 @@ import { useMergeState } from "../../hooks/use-merge-state";
 import rapidApi from "../../rapidApi";
 import { FindEntityOptions } from "../../rapid-types";
 import { parseConfigToFilters } from "../../functions/searchParamsToFilters";
-import { autoConfigureRapidEntity, EntityStore, EntityStoreConfig, rapidAppDefinition } from "../../mod";
 
 import "../rapid-table-select/table-select-style.css";
+import rapidAppDefinition from "../../rapidAppDefinition";
+import { EntityStore, EntityStoreConfig } from "../../stores/entity-store";
+import { autoConfigureRapidEntity } from "../../RapidEntityAutoConfigure";
 
 const bus = new EventEmitter();
 

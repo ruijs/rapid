@@ -3,7 +3,7 @@ import { EntityTableSelectRockConfig } from "./entity-table-select-types";
 import { renderRock } from "@ruiapp/react-renderer";
 import ModelTableSelectorMeta from "./EntityTableSelectMeta";
 import rapidAppDefinition from "../../rapidAppDefinition";
-import { autoConfigureRapidEntity } from "../../mod";
+import { autoConfigureRapidEntity } from "../../RapidEntityAutoConfigure";
 
 export default {
   Renderer(context, props) {
