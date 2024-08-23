@@ -3,7 +3,7 @@ import SonicEntityTableSelectMeta from "./SonicEntityTableSelectMeta";
 import type { SonicEntityTableSelectRockConfig } from "./sonic-entity-table-select-types";
 import { convertToEventHandlers } from "@ruiapp/react-renderer";
 import { Table, Select, Input, TableProps, Empty, Spin } from "antd";
-import { debounce, forEach, get, isArray, isFunction, isObject, isPlainObject, isString, omit, pick, set, split } from "lodash";
+import { debounce, filter, forEach, get, isArray, isFunction, isObject, isPlainObject, isString, omit, pick, set, split } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMergeState } from "../../hooks/use-merge-state";
 import rapidApi from "../../rapidApi";
@@ -172,22 +172,26 @@ export default {
 
     const current = isMultiple ? selectedKeys : selectedKeys[0];
 
-    const onSelect = (record: any) => {
-      const recordValue = get(record, listValueFieldName);
+    const onSelectRows = (records: any[]) => {
+      let keys = selectedKeys || [];
+      let s = { ...currentState, selectedRecordMap: { ...currentState.selectedRecordMap } };
 
-      const isExisted = selectedKeys?.some((k) => k === recordValue);
+      forEach(records, (record) => {
+        const recordValue = get(record, listValueFieldName);
 
-      let keys = selectedKeys;
-      if (isExisted) {
-        keys = selectedKeys.filter((k) => k !== recordValue);
-      } else {
-        keys = [recordValue, ...selectedKeys];
-      }
+        const isExisted = keys.some((k) => k === recordValue);
 
-      let s = { ...currentState, selectedRecordMap: { ...currentState.selectedRecordMap, [recordValue]: record } };
-      if (isExisted) {
-        s.selectedRecordMap = omit(s.selectedRecordMap, recordValue);
-      }
+        if (isExisted) {
+          keys = keys.filter((k) => k !== recordValue);
+        } else {
+          keys = [recordValue, ...keys];
+        }
+
+        s.selectedRecordMap[recordValue] = record;
+        if (isExisted) {
+          s.selectedRecordMap = omit(s.selectedRecordMap, recordValue);
+        }
+      });
 
       if (!isMultiple) {
         s.visible = false;
@@ -196,7 +200,10 @@ export default {
       setCurrentState(s);
 
       eventHandlers.onChange?.(isMultiple ? keys : keys[0]);
-      eventHandlers.onSelectedRecord?.(isExisted ? null : record, s);
+
+      const validRecords = filter(records, (record) => s.selectedRecordMap[get(record, listValueFieldName)] != null);
+
+      eventHandlers.onSelectedRecord?.(isMultiple ? validRecords : validRecords[0], s);
     };
 
     const data = context.scope.getStore(listDataSourceCode)?.data;
@@ -253,14 +260,17 @@ export default {
                       fixed: true,
                       type: isMultiple ? "checkbox" : "radio",
                       selectedRowKeys: selectedKeys,
+                      onSelectAll(selected, selectedRows, changeRows) {
+                        onSelectRows(changeRows || []);
+                      },
                       onSelect(record) {
-                        onSelect(record);
+                        onSelectRows([record]);
                       },
                     }}
                     onRow={(record) => {
                       return {
                         onClick: () => {
-                          onSelect(record);
+                          onSelectRows([record]);
                         },
                       };
                     }}
