@@ -1,7 +1,7 @@
 import type { RockEventHandlerConfig, RockPropExpressions } from "@ruiapp/move-style";
 
 export type RapidActionBase = {
-  code: string;
+  code?: string;
   /**
    * 图标名称
    */
@@ -51,7 +51,7 @@ export type RapidRecordAction<TBlock> =
 export type RapidRecordActionBase = {
   $type: string;
 
-  code: string;
+  code?: string;
 
   icon?: string;
 
