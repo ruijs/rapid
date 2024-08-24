@@ -3,7 +3,7 @@ import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./SonicToolbarSelectEntityButtonMeta";
 import type { SonicToolbarSelectEntityButtonRockConfig } from "./sonic-toolbar-select-entity-button-types";
 import rapidAppDefinition from "../../rapidAppDefinition";
-import { find } from "lodash";
+import { find, get } from "lodash";
 import { SonicEntityListRockConfig } from "../sonic-entity-list/sonic-entity-list-types";
 
 export default {
@@ -48,6 +48,7 @@ export default {
           entityCode: entityCode,
           viewMode: "table",
           selectionMode: "multiple",
+          selectOnClickRow: get(props, "selectOnClickRow", true),
           fixedFilters: props.fixedFilters,
           extraProperties: props.extraProperties,
           queryProperties: props.queryProperties,

@@ -55,6 +55,11 @@ export interface SonicToolbarSelectEntityButtonConfig extends Omit<RapidToolbarB
 
   quickSearchFields?: string[];
 
+  /**
+   * 是否在点击行时选中
+   */
+  selectOnClickRow?: boolean;
+
   onSelected?: RockEventHandlerConfig;
 }
 
