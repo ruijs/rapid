@@ -27,6 +27,11 @@ export type RapidActionBase = {
    */
   actionEventName?: string;
 
+  /**
+   * 执行Action前的确认提示文字
+   */
+  confirmText?: string;
+
   onAction?: RockEventHandlerConfig;
 };
 

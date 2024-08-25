@@ -1,12 +1,14 @@
-import { Rock, RockConfig } from "@ruiapp/move-style";
+import { handleComponentEvent, Rock, RockConfig, RockEvent } from "@ruiapp/move-style";
 import RapidToolbarMeta from "./RapidToolbarButtonMeta";
 import { renderRock } from "@ruiapp/react-renderer";
 import { RapidToolbarButtonRockConfig } from "./rapid-toolbar-button-types";
+import { Modal } from "antd";
 
 export default {
   $type: "rapidToolbarButton",
 
   Renderer(context, props: RapidToolbarButtonRockConfig) {
+    const { onAction, confirmText } = props;
     const actionEventName = props.actionEventName || "onClick";
 
     const rockConfig: RockConfig = {
@@ -33,8 +35,24 @@ export default {
       rockConfig.href = props.url;
     }
 
-    if (props.onAction) {
-      rockConfig[actionEventName] = props.onAction;
+    if (onAction) {
+      rockConfig[actionEventName] = [
+        {
+          $action: "script",
+          script: (event: RockEvent) => {
+            if (confirmText) {
+              Modal.confirm({
+                title: confirmText,
+                onOk: async () => {
+                  handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, []);
+                },
+              });
+            } else {
+              handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, []);
+            }
+          },
+        },
+      ];
     }
     return renderRock({ context, rockConfig });
   },
