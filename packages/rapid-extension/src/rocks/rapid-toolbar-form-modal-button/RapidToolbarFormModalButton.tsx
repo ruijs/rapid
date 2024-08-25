@@ -1,4 +1,4 @@
-import { MoveStyleUtils, type Rock, type RockConfig } from "@ruiapp/move-style";
+import { handleComponentEvent, MoveStyleUtils, RockEvent, type Rock, type RockConfig } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./RapidToolbarFormModalButtonMeta";
 import type { RapidToolbarFormModalButtonRockConfig } from "./rapid-toolbar-form-modal-button-types";
@@ -9,11 +9,18 @@ export default {
   onReceiveMessage(message, state, props) {},
 
   Renderer(context, props) {
+    const { onAction } = props;
     const buttonRockConfig: RockConfig = {
       ...MoveStyleUtils.omitSystemRockConfigFields(props),
       $id: `${props.$id}-btn`,
       $type: "rapidToolbarButton",
       onAction: [
+        {
+          $action: "script",
+          script: async (event: RockEvent) => {
+            await handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, []);
+          },
+        },
         {
           $action: "setVars",
           vars: {
