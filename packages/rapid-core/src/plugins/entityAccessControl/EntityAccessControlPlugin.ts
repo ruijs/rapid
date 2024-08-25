@@ -95,7 +95,7 @@ class EntityAccessControlPlugin implements RapidPlugin {
           if (permissionPolicies.update) {
             set(action, "config.permissionCheck", permissionPolicies.update);
           }
-        } else if (action.code === "deleteCollectionEntityById") {
+        } else if (action.code === "deleteCollectionEntityById" || action.code === "deleteCollectionEntities") {
           const model = find(applicationConfig.models, (item) => item.singularCode === action.config.singularCode);
           if (!model) {
             continue;

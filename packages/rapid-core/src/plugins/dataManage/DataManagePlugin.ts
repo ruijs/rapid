@@ -12,6 +12,7 @@ import * as countCollectionEntities from "./actionHandlers/countCollectionEntiti
 import * as createCollectionEntity from "./actionHandlers/createCollectionEntity";
 import * as createCollectionEntitiesBatch from "./actionHandlers/createCollectionEntitiesBatch";
 import * as updateCollectionEntityById from "./actionHandlers/updateCollectionEntityById";
+import * as deleteCollectionEntities from "./actionHandlers/deleteCollectionEntities";
 import * as deleteCollectionEntityById from "./actionHandlers/deleteCollectionEntityById";
 import * as addEntityRelations from "./actionHandlers/addEntityRelations";
 import * as removeEntityRelations from "./actionHandlers/removeEntityRelations";
@@ -47,6 +48,12 @@ const routeConfigs: {
     method: "POST",
     endpoint: "/operations/count",
     handlerCode: "countCollectionEntities",
+  },
+  {
+    code: "delete",
+    method: "POST",
+    endpoint: "/operations/delete",
+    handlerCode: "deleteCollectionEntities",
   },
   {
     code: "addRelations",
@@ -116,6 +123,7 @@ class DataManager implements RapidPlugin {
     server.registerActionHandler(this, updateCollectionEntityById);
     server.registerActionHandler(this, addEntityRelations);
     server.registerActionHandler(this, removeEntityRelations);
+    server.registerActionHandler(this, deleteCollectionEntities);
     server.registerActionHandler(this, deleteCollectionEntityById);
     server.registerActionHandler(this, queryDatabase);
   }
