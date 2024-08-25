@@ -13,7 +13,7 @@ import moment from "moment";
 import { RapidExtStorage } from "../../utils/storage-utility";
 import { getColumnUniqueKey, ICacheRapidTableColumn } from "../rapid-entity-list-toolbox/RapidEntityListToolbox";
 
-const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_PAGE_SIZE = 20;
 
 export default {
   onResolveState(props, state) {

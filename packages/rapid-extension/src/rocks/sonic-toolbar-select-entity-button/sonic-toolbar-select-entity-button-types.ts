@@ -28,7 +28,7 @@ export interface SonicToolbarSelectEntityButtonConfig extends Omit<RapidToolbarB
   /**
    * 分页大小。小于或者等于0时表示不分页。
    */
-  pageSize: number;
+  pageSize?: number;
 
   /**
    * 指定数据查询的属性。如果指定了`queryProperties`，则不会自动从`columns`和`extraProperties`中提取查询属性。
@@ -54,6 +54,11 @@ export interface SonicToolbarSelectEntityButtonConfig extends Omit<RapidToolbarB
   quickSearchMode?: EntityFilterFieldOperators;
 
   quickSearchFields?: string[];
+
+  /**
+   * 是否在点击行时选中
+   */
+  selectOnClickRow?: boolean;
 
   onSelected?: RockEventHandlerConfig;
 }

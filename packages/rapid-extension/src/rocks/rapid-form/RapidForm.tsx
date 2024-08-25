@@ -5,7 +5,7 @@ import type { RapidFormRockConfig } from "./rapid-form-types";
 import { assign, each, get, trim } from "lodash";
 import { Form, message as antdMessage } from "antd";
 import { useEffect, useMemo, useState } from "react";
-import { parseRockExpressionFunc } from "../../mod";
+import { parseRockExpressionFunc } from "../../utils/parse-utility";
 
 export default {
   $type: "rapidForm",
