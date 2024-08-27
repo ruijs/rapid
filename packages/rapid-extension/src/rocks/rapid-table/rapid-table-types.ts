@@ -4,6 +4,7 @@ import { RapidTableColumnRockConfig } from "../rapid-table-column/rapid-table-co
 
 export type RapidTableConfig = {
   size: SizeType;
+  height?: string | number;
   bordered: boolean;
   showHeader?: boolean;
   rowKey?: string;
