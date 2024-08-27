@@ -472,7 +472,11 @@ function buildInFilterQuery(ctx: BuildQueryContext, filter: FindRowSetFilterOpti
     // TODO: implement it
   } else {
     ctx.params.push(filter.value);
-    command += `ANY($${ctx.params.length}::${filter.itemType || "int"}[])`;
+    if (filter.operator === "in") {
+      command += `ANY($${ctx.params.length}::${filter.itemType || "int"}[])`;
+    } else {
+      command += `ALL($${ctx.params.length}::${filter.itemType || "int"}[])`;
+    }
   }
 
   return command;
