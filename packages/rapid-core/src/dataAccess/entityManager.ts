@@ -1085,15 +1085,50 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
       throw new Error(`Value of field '${property.code}' should be an array.`);
     }
 
+    const targetIdsToKeep = [];
+    for (const relatedEntityToBeSaved of relatedEntitiesToBeSaved) {
+      let relatedEntityId: any;
+      if (isObject(relatedEntityToBeSaved)) {
+        relatedEntityId = relatedEntityToBeSaved["id"];
+      } else {
+        relatedEntityId = relatedEntityToBeSaved;
+      }
+      if (relatedEntityId) {
+        targetIdsToKeep.push(relatedEntityId);
+      }
+    }
+
+    let currentTargetIds: any[] = [];
     if (property.linkTableName) {
-      // TODO: should support removing relation
-      await server.queryDatabaseObject(
-        `DELETE FROM ${server.queryBuilder.quoteTable({
+      const targetLinks = await server.queryDatabaseObject(
+        `SELECT ${server.queryBuilder.quoteObject(property.targetIdColumnName)} FROM ${server.queryBuilder.quoteTable({
           schema: property.linkSchema,
           tableName: property.linkTableName,
         })} WHERE ${server.queryBuilder.quoteObject(property.selfIdColumnName!)} = $1`,
         [id],
       );
+      currentTargetIds = targetLinks.map((item) => item[property.targetIdColumnName]);
+
+      await server.queryDatabaseObject(
+        `DELETE FROM ${server.queryBuilder.quoteTable({
+          schema: property.linkSchema,
+          tableName: property.linkTableName,
+        })} WHERE ${server.queryBuilder.quoteObject(property.selfIdColumnName!)} = $1
+              AND ${server.queryBuilder.quoteObject(property.targetIdColumnName!)} <> ALL($2::int[])`,
+        [id, targetIdsToKeep],
+      );
+    } else {
+      const targetModel = server.getModel({
+        singularCode: property.targetSingularCode,
+      });
+      const targetRows = await server.queryDatabaseObject(
+        `SELECT id FROM ${server.queryBuilder.quoteTable({
+          schema: targetModel.schema,
+          tableName: targetModel.tableName,
+        })} WHERE ${server.queryBuilder.quoteObject(property.selfIdColumnName!)} = $1`,
+        [id],
+      );
+      currentTargetIds = targetRows.map((item) => item.id);
     }
 
     for (const relatedEntityToBeSaved of relatedEntitiesToBeSaved) {
@@ -1128,16 +1163,18 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
             throw new Error(`Entity with id '${relatedEntityId}' in field '${property.code}' is not exists.`);
           }
 
-          if (property.linkTableName) {
-            const command = `INSERT INTO ${server.queryBuilder.quoteTable({
-              schema: property.linkSchema,
-              tableName: property.linkTableName,
-            })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
-            const params = [id, relatedEntityId];
-            await server.queryDatabaseObject(command, params);
-          } else {
-            await targetDataAccessor.updateById(targetEntity.id, { [property.selfIdColumnName!]: id });
-            targetEntity[property.selfIdColumnName!] = id;
+          if (!currentTargetIds.includes(relatedEntityId)) {
+            if (property.linkTableName) {
+              const command = `INSERT INTO ${server.queryBuilder.quoteTable({
+                schema: property.linkSchema,
+                tableName: property.linkTableName,
+              })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
+              const params = [id, relatedEntityId];
+              await server.queryDatabaseObject(command, params);
+            } else {
+              await targetDataAccessor.updateById(targetEntity.id, { [property.selfIdColumnName!]: id });
+              targetEntity[property.selfIdColumnName!] = id;
+            }
           }
           relatedEntities.push(targetEntity);
         }
@@ -1149,16 +1186,18 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
           throw new Error(`Entity with id '${relatedEntityId}' in field '${property.code}' is not exists.`);
         }
 
-        if (property.linkTableName) {
-          const command = `INSERT INTO ${server.queryBuilder.quoteTable({
-            schema: property.linkSchema,
-            tableName: property.linkTableName,
-          })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
-          const params = [id, relatedEntityId];
-          await server.queryDatabaseObject(command, params);
-        } else {
-          await targetDataAccessor.updateById(targetEntity.id, { [property.selfIdColumnName!]: id });
-          targetEntity[property.selfIdColumnName!] = id;
+        if (!currentTargetIds.includes(relatedEntityId)) {
+          if (property.linkTableName) {
+            const command = `INSERT INTO ${server.queryBuilder.quoteTable({
+              schema: property.linkSchema,
+              tableName: property.linkTableName,
+            })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
+            const params = [id, relatedEntityId];
+            await server.queryDatabaseObject(command, params);
+          } else {
+            await targetDataAccessor.updateById(targetEntity.id, { [property.selfIdColumnName!]: id });
+            targetEntity[property.selfIdColumnName!] = id;
+          }
         }
 
         relatedEntities.push(targetEntity);
