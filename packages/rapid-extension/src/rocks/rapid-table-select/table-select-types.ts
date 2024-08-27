@@ -37,5 +37,5 @@ export interface TableSelectRockConfig extends SimpleRockConfig {
   };
   value?: string | string[];
   onChange?(value: string): void;
-  onSelectedRecord?(record: Record<string, any>): void;
+  onSelectedRecord?(record: Record<string, any>, selectedRecords: Record<string, any>[]): void;
 }

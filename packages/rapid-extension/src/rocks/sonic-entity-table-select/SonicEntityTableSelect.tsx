@@ -3,7 +3,7 @@ import SonicEntityTableSelectMeta from "./SonicEntityTableSelectMeta";
 import type { SonicEntityTableSelectRockConfig } from "./sonic-entity-table-select-types";
 import { convertToEventHandlers } from "@ruiapp/react-renderer";
 import { Table, Select, Input, TableProps, Empty, Spin } from "antd";
-import { debounce, filter, forEach, get, isArray, isFunction, isObject, isPlainObject, isString, omit, pick, set, split } from "lodash";
+import { debounce, filter, forEach, get, isArray, isFunction, isObject, isPlainObject, isString, last, omit, pick, set, split } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMergeState } from "../../hooks/use-merge-state";
 import rapidApi from "../../rapidApi";
@@ -126,7 +126,15 @@ export default {
         val = val !== "" ? [val] : [];
       }
 
-      return val.map((item) => (isPlainObject(item) ? get(item, listValueFieldName) : item));
+      return val.map((item) => {
+        if (isPlainObject(item)) {
+          const lastCode = last(split(listValueFieldName, "."));
+
+          return get(item, listValueFieldName) || get(item, lastCode);
+        }
+
+        return item;
+      });
     }, [props.value]);
 
     useEffect(() => {
@@ -203,9 +211,10 @@ export default {
 
       eventHandlers.onChange?.(isMultiple ? keys : keys[0]);
 
+      const selectedRecords = keys.map((k) => s.selectedRecordMap[k]);
       const validRecords = filter(records, (record) => s.selectedRecordMap[get(record, listValueFieldName)] != null);
 
-      eventHandlers.onSelectedRecord?.(isMultiple ? validRecords : validRecords[0], s);
+      eventHandlers.onSelectedRecord?.(isMultiple ? validRecords : validRecords[0], selectedRecords, s);
     };
 
     const data = context.scope.getStore(listDataSourceCode)?.data;
@@ -221,8 +230,10 @@ export default {
         open={currentState.visible}
         onChange={(v) => {
           const arrs = isArray(v) ? v : v != null ? [v] : [];
+          const selectedRecords = arrs?.map((k) => currentState.selectedRecordMap[k]);
+
           eventHandlers.onChange?.(v);
-          eventHandlers.onSelectedRecord?.(v, pick(currentState.selectedRecordMap, arrs));
+          eventHandlers.onSelectedRecord?.(null, selectedRecords, pick(currentState.selectedRecordMap, arrs));
         }}
         onDropdownVisibleChange={(v) => {
           setCurrentState({ visible: v });
