@@ -95,6 +95,7 @@ export default {
       columns: tableColumns,
       scroll: {
         x: columnsTotalWidth,
+        y: props.height,
       },
     };
 
