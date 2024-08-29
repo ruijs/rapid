@@ -2,12 +2,13 @@ import { handleComponentEvent, type Rock, type RockChildrenConfig, type RockConf
 import { renderRock, renderRockChildren } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./RapidEntityListMeta";
 import type { RapidEntityListRockConfig, RapidEntityListState } from "./rapid-entity-list-types";
-import { filter, findIndex, forEach, map, reject, set, uniq } from "lodash";
+import { filter, findIndex, forEach, map, merge, reject, set, trim, uniq } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import type { RapidEntity, RapidField } from "../../types/rapid-entity-types";
 import type { EntityStore, EntityStoreConfig } from "../../stores/entity-store";
 import RapidExtensionSetting from "../../RapidExtensionSetting";
+import { parseRockExpressionFunc } from "../../mod";
 
 export default {
   onResolveState(props, state) {
@@ -217,10 +218,11 @@ export default {
       }
     }
 
-    let rowSelection = null;
+    let rowSelection = props.rowSelection;
     const selectionMode = props.selectionMode || "multiple";
     if (selectionMode !== "none") {
       rowSelection = {
+        ...rowSelection,
         type: selectionMode === "multiple" ? "checkbox" : "radio",
         onChange: [
           {
@@ -260,6 +262,15 @@ export default {
             }, current: $scope.vars["${`stores-${dataSourceCode}-pageNum`}"], total: $scope.stores.${dataSourceCode}?.data?.total}`
             : "false",
       };
+    }
+
+    if (typeof props.getRowSelectionCheckboxProps === "string" && trim(props.getRowSelectionCheckboxProps)) {
+      rowSelection = merge({}, rowSelection, {
+        getCheckboxProps: (record) => {
+          const adapter = parseRockExpressionFunc(props.getRowSelectionCheckboxProps, { record }, context);
+          return adapter();
+        },
+      });
     }
 
     const tableRockConfig: RockConfig = {
