@@ -73,6 +73,9 @@ function convertEntityOrderByToRowOrderBy(server: IRpdServer, model: RpdDataMode
     }
     if (relationField) {
       const relationProperty = getEntityPropertyByCode(server, model, relationField);
+      if (!relationProperty) {
+        throw new Error(`Property '${relationProperty}' was not found in ${model.namespace}.${model.singularCode}`);
+      }
       if (!isRelationProperty(relationProperty)) {
         throw new Error("orderBy[].relation must be a one-relation property.");
       }
@@ -135,7 +138,12 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
   let relationPropertyCodes = Object.keys(relationOptions) || [];
   if (!options.properties || !options.properties.length) {
     propertiesToSelect = getEntityPropertiesIncludingBase(server, model).filter(
-      (property) => !isRelationProperty(property) || relationPropertyCodes.includes(property.code),
+      (property) => {
+        if (!property) {
+          throw new Error(`Property '${property}' was not found in ${model.namespace}.${model.singularCode}`);
+        }
+        return !options.keepNonPropertyFields || isRelationProperty(property) || relationPropertyCodes.includes(property.code);
+      },
     );
   } else {
     propertiesToSelect = getEntityPropertiesIncludingBase(server, model).filter(
@@ -147,6 +155,9 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
 
   const relationPropertiesToSelect: RpdDataModelProperty[] = [];
   forEach(propertiesToSelect, (property) => {
+    if (!property) {
+      throw new Error(`Property '${property}' was not found in ${model.namespace}.${model.singularCode}`);
+    }
     if (isRelationProperty(property)) {
       relationPropertiesToSelect.push(property);
 
@@ -736,8 +747,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
   keys(entity).forEach((propertyCode) => {
     const property = getEntityPropertyByCode(server, model, propertyCode);
     if (!property) {
-      // Unknown property
-      return;
+      throw new Error(`Property '${property}' was not found in ${model.namespace}.${model.singularCode}`);
     }
 
     if (isRelationProperty(property)) {
@@ -992,8 +1002,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
   keys(changes).forEach((propertyCode) => {
     const property = getEntityPropertyByCode(server, model, propertyCode);
     if (!property) {
-      // Unknown property
-      return;
+      throw new Error(`Property '${property}' was not found in ${model.namespace}.${model.singularCode}`);
     }
 
     if (isRelationProperty(property)) {
