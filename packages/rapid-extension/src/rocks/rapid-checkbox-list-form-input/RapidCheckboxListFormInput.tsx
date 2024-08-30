@@ -19,9 +19,9 @@ export default {
       groupList = scope.stores[groupsDataSourceCode]?.data?.list;
     }
 
-    let itemList = listDataSource?.data?.list;
+    let itemList = listDataSource?.data?.list || [];
     if (listDataSourceCode) {
-      itemList = scope.stores[listDataSourceCode]?.data?.list;
+      itemList = scope.stores[listDataSourceCode]?.data?.list || [];
     }
 
     const listTextFieldName = props.listTextFieldName || "name";

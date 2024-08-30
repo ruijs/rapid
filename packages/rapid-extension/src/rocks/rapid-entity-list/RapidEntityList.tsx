@@ -69,13 +69,13 @@ export default {
     }
   },
 
-  onReceiveMessage(message, state, props) {
+  onReceiveMessage(message, state, props, rockInstance) {
     if (message.name === "refreshView") {
       if (props.dataSourceType === "dataSource") {
         return;
       }
 
-      state.scope.stores[props.dataSourceCode]?.loadData();
+      rockInstance._scope.stores[props.dataSourceCode]?.loadData();
     }
   },
 
