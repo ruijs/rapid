@@ -5,9 +5,9 @@ import type { SonicMainSecondaryLayoutRockConfig } from "./sonic-main-secondary-
 import { each, map } from "lodash";
 
 export default {
-  onReceiveMessage(message, state, props) {
+  onReceiveMessage(message, state, props, rockInstance) {
     if (message.name === "notifySelectedIdsChange") {
-      handleComponentEvent("onSelectedIdsChange", message.framework, message.page as any, props._state.scope, props, props.main.onSelectedIdsChange, [
+      handleComponentEvent("onSelectedIdsChange", message.framework, message.page as any, rockInstance._scope, props, props.main.onSelectedIdsChange, [
         {
           selectedIds: message.payload.selectedIds,
         },

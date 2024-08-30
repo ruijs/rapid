@@ -17,14 +17,16 @@ export default {
     };
   },
 
-  async onReceiveMessage(message, state, props) {
+  async onReceiveMessage(message, state, props, rockInstance) {
     // TODO: refactor to write less if-else
     if (message.name === "submit") {
       const form = state.form;
       try {
         const values = await form.validateFields();
         form.submit();
-        await handleComponentEvent("onFormSubmit", message.framework, message.page as any, state.scope, props, props.onFormSubmit, [{ form: state.form }]);
+        await handleComponentEvent("onFormSubmit", message.framework, message.page as any, rockInstance._scope, props, props.onFormSubmit, [
+          { form: state.form },
+        ]);
       } catch (err) {
         message.framework.getRockLogger().error(props, `Failed to submit form: ${err.message}`, { error: err });
       }
@@ -34,10 +36,10 @@ export default {
       state.form.setFieldsValue(message.payload);
     } else if (message.name === "resetFields") {
       state.form.resetFields();
-      handleComponentEvent("onFormRefresh", message.framework, message.page as any, state.scope, props, props.onFormRefresh, [{ form: state.form }]);
+      handleComponentEvent("onFormRefresh", message.framework, message.page as any, rockInstance._scope, props, props.onFormRefresh, [{ form: state.form }]);
     } else if (message.name === "refreshView") {
       state.form.resetFields();
-      handleComponentEvent("onFormRefresh", message.framework, message.page as any, state.scope, props, props.onFormRefresh, [{ form: state.form }]);
+      handleComponentEvent("onFormRefresh", message.framework, message.page as any, rockInstance._scope, props, props.onFormRefresh, [{ form: state.form }]);
     }
   },
 

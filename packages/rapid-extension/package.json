@@ -35,8 +35,8 @@
   },
   "peerDependencies": {
     "@ant-design/icons": "^4.7.0",
-    "@ruiapp/move-style": "^0.3.3",
-    "@ruiapp/react-renderer": "^0.3.3",
+    "@ruiapp/move-style": "^0.3.4",
+    "@ruiapp/react-renderer": "^0.3.4",
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-react": "^1.0.6",
     "antd": "^4.23.6",
