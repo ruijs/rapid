@@ -5,7 +5,6 @@ import type { RapidEntityListRockConfig, RapidEntityListState } from "./rapid-en
 import { filter, findIndex, forEach, map, reject, set, uniq } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
-import type { RapidToolbarRockConfig } from "../rapid-toolbar/rapid-toolbar-types";
 import type { RapidEntity, RapidField } from "../../types/rapid-entity-types";
 import type { EntityStore, EntityStoreConfig } from "../../stores/entity-store";
 import RapidExtensionSetting from "../../RapidExtensionSetting";
@@ -61,16 +60,16 @@ export default {
         pagination:
           pageSize > 0
             ? {
-                limit: pageSize,
-                offset: ((props.pageNum || 1) - 1) * pageSize,
-              }
+              limit: pageSize,
+              offset: ((props.pageNum || 1) - 1) * pageSize,
+            }
             : undefined,
         $exps:
           pageSize > 0
             ? {
-                "pagination.limit": `${pageSize}`,
-                "pagination.offset": `(($scope.vars['stores-${dataSourceCode}-pageNum'] || 1) - 1) * ${pageSize}`,
-              }
+              "pagination.limit": `${pageSize}`,
+              "pagination.offset": `(($scope.vars['stores-${dataSourceCode}-pageNum'] || 1) - 1) * ${pageSize}`,
+            }
             : undefined,
       };
       context.scope.addStore(listDataStoreConfig);
@@ -264,8 +263,8 @@ export default {
         pagination:
           props.pageSize > 0
             ? `{pageSize: ${
-                props.pageSize
-              }, current: $scope.vars["${`stores-${dataSourceCode}-pageNum`}"], total: $scope.stores.${dataSourceCode}?.data?.total}`
+              props.pageSize
+            }, current: $scope.vars["${`stores-${dataSourceCode}-pageNum`}"], total: $scope.stores.${dataSourceCode}?.data?.total}`
             : "false",
       };
     }
@@ -277,8 +276,8 @@ export default {
         ...tableExps,
         ...(selectionMode !== "none"
           ? {
-              "rowSelection.selectedRowKeys": `$scope.vars['${props.$id}-selectedIds']`,
-            }
+            "rowSelection.selectedRowKeys": `$scope.vars['${props.$id}-selectedIds']`,
+          }
           : {}),
       },
       size: "small",
@@ -296,41 +295,41 @@ export default {
       treeChildrenField: props.treeChildrenField,
       onRowClick: props.selectOnClickRow
         ? [
-            {
-              $action: "script",
-              script: async (event: RockEvent) => {
-                const { framework, page, scope } = event;
-                let nextSelectedIds = [];
-                let nextSelectedRecords = [];
-                const { record } = event.args[0];
-                const recordId = record.id;
-                if (selectionMode === "single") {
-                  nextSelectedIds.push(recordId);
-                  nextSelectedRecords.push(record);
-                } else if (selectionMode === "multiple") {
-                  const currentSelectedIds = scope.vars[`${props.$id}-selectedIds`] || [];
-                  const currentSelectedRecords = scope.vars[`${props.$id}-selectedRecords`] || [];
-                  if (findIndex(currentSelectedIds, (item) => item === recordId) === -1) {
-                    nextSelectedIds = [...currentSelectedIds, recordId];
-                    nextSelectedRecords = [...currentSelectedRecords, record];
-                  } else {
-                    nextSelectedIds = reject(currentSelectedIds, (item) => item === recordId);
-                    nextSelectedRecords = reject(currentSelectedRecords, (item) => item.id === recordId);
-                  }
+          {
+            $action: "script",
+            script: async (event: RockEvent) => {
+              const { framework, page, scope } = event;
+              let nextSelectedIds = [];
+              let nextSelectedRecords = [];
+              const { record } = event.args[0];
+              const recordId = record.id;
+              if (selectionMode === "single") {
+                nextSelectedIds.push(recordId);
+                nextSelectedRecords.push(record);
+              } else if (selectionMode === "multiple") {
+                const currentSelectedIds = scope.vars[`${props.$id}-selectedIds`] || [];
+                const currentSelectedRecords = scope.vars[`${props.$id}-selectedRecords`] || [];
+                if (findIndex(currentSelectedIds, (item) => item === recordId) === -1) {
+                  nextSelectedIds = [...currentSelectedIds, recordId];
+                  nextSelectedRecords = [...currentSelectedRecords, record];
+                } else {
+                  nextSelectedIds = reject(currentSelectedIds, (item) => item === recordId);
+                  nextSelectedRecords = reject(currentSelectedRecords, (item) => item.id === recordId);
                 }
-                scope.setVars({
-                  [`${props.$id}-selectedIds`]: nextSelectedIds,
-                  [`${props.$id}-selectedRecords`]: nextSelectedRecords,
-                });
-                handleComponentEvent("onSelectedIdsChange", framework, page as any, scope, props, props.onSelectedIdsChange, [
-                  {
-                    selectedIds: nextSelectedIds,
-                    selectedRecords: nextSelectedRecords,
-                  },
-                ]);
-              },
+              }
+              scope.setVars({
+                [`${props.$id}-selectedIds`]: nextSelectedIds,
+                [`${props.$id}-selectedRecords`]: nextSelectedRecords,
+              });
+              handleComponentEvent("onSelectedIdsChange", framework, page as any, scope, props, props.onSelectedIdsChange, [
+                {
+                  selectedIds: nextSelectedIds,
+                  selectedRecords: nextSelectedRecords,
+                },
+              ]);
             },
-          ]
+          },
+        ]
         : null,
       onChange: [
         {

@@ -1,8 +1,8 @@
 import type { Rock, SimpleRockConfig } from "@ruiapp/move-style";
-import { get, isArray, isEmpty, keyBy, set, split } from "lodash";
-import { Checkbox, Popover, Space, Tree } from "antd";
+import { isArray, isEmpty, keyBy, split } from "lodash";
+import { Popover, Space, Tree } from "antd";
 import { ReloadOutlined, SettingOutlined } from "@ant-design/icons";
-import { CSSProperties, useMemo, useState } from "react";
+import { CSSProperties, useState } from "react";
 import { RapidExtStorage } from "../../utils/storage-utility";
 import { convertToEventHandlers } from "@ruiapp/react-renderer";
 import { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
@@ -23,7 +23,9 @@ interface IProps extends SimpleRockConfig {
   className?: string;
   config: IRapidEntityListToolboxConfig;
   columns: any[];
+
   onRerender?(): void;
+
   onReload?(): void;
 }
 

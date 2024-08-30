@@ -1,4 +1,4 @@
-import type { IStore, Rock, RockEvent } from "@ruiapp/move-style";
+import type { Rock, RockEvent } from "@ruiapp/move-style";
 import RapidToolbarFormItemMeta from "./SonicToolbarFormItemMeta";
 import { renderRock } from "@ruiapp/react-renderer";
 import type { SonicToolbarFormItemRockConfig } from "./sonic-toolbar-form-item-types";
@@ -47,11 +47,11 @@ export default {
               store.updateConfig({
                 filters: filters.length
                   ? [
-                      {
-                        operator: "or",
-                        filters,
-                      },
-                    ]
+                    {
+                      operator: "or",
+                      filters,
+                    },
+                  ]
                   : filters,
               });
               // 重新加载数据
