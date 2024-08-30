@@ -1,8 +1,8 @@
 import type { Rock, SimpleRockConfig } from "@ruiapp/move-style";
-import { get, isArray, isEmpty, keyBy, set, split } from "lodash";
-import { Checkbox, Popover, Space, Tree } from "antd";
+import { isArray, isEmpty, keyBy, split } from "lodash";
+import { Popover, Space, Tree } from "antd";
 import { ReloadOutlined, SettingOutlined } from "@ant-design/icons";
-import { CSSProperties, useMemo, useState } from "react";
+import { CSSProperties, useState } from "react";
 import { RapidExtStorage } from "../../utils/storage-utility";
 import { convertToEventHandlers } from "@ruiapp/react-renderer";
 import { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
@@ -21,9 +21,12 @@ export interface ICacheRapidTableColumn extends Pick<RapidTableColumnConfig, "co
 interface IProps extends SimpleRockConfig {
   style?: CSSProperties;
   className?: string;
+  dataSourceCode: string;
   config: IRapidEntityListToolboxConfig;
   columns: any[];
+
   onRerender?(): void;
+
   onReload?(): void;
 }
 
@@ -37,6 +40,7 @@ export default {
   Renderer(context, props: IProps) {
     const { columns } = props;
     const { columnCacheKey } = props.config;
+    const dataSourceCode = props.dataSourceCode;
 
     const [checkedKeys, setCheckedKeys] = useState<string[]>(() => {
       const cacheColumns = RapidExtStorage.get<ICacheRapidTableColumn[]>(columnCacheKey);
@@ -105,7 +109,7 @@ export default {
                 return;
               }
 
-              context.scope.loadStoreData("list", {});
+              context.scope.loadStoreData(dataSourceCode, {});
             }}
           >
             <ReloadOutlined />

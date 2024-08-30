@@ -8,7 +8,7 @@ import rapidAppDefinition from "../../rapidAppDefinition";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import { RapidEntity } from "../../types/rapid-entity-types";
 import { EntityStore, RapidTableColumnConfig, RapidToolbarRockConfig } from "../../mod";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import moment from "moment";
 import { RapidExtStorage } from "../../utils/storage-utility";
 import { getColumnUniqueKey, ICacheRapidTableColumn } from "../rapid-entity-list-toolbox/RapidEntityListToolbox";
@@ -91,6 +91,7 @@ export default {
       toolboxRockConfig = {
         $type: "rapidEntityListToolbox",
         $id: `${props.$id}_toolbox`,
+        dataSourceCode,
         columns: props.columns,
         config: props.toolbox || {
           columnCacheKey: props.entityCode || props.entityName,
@@ -178,186 +179,190 @@ export default {
 
     const searchFormRockConfig: RockConfig | null = props.searchForm
       ? {
-          $id: `${props.$id}-searchForm`,
-          $type: "rapidEntitySearchForm",
-          entityCode: entityCode,
-          items: props.searchForm.items,
-          onValuesChange: props.searchForm.onValuesChange,
-          actionsAlign: "right",
-          onSearch: [
-            {
-              $action: "script",
-              script: async (event: RockEvent) => {
-                const store: EntityStore = event.scope.getStore("list");
-                store.updateConfig({
-                  filters: event.args[0].filters,
-                  pagination:
-                    pageSize > 0
-                      ? {
-                          limit: pageSize,
-                          offset: 0,
-                        }
-                      : undefined,
-                });
-                // 重新加载数据
-                store.loadData();
-              },
+        $id: `${props.$id}-searchForm`,
+        $type: "rapidEntitySearchForm",
+        entityCode: entityCode,
+        items: props.searchForm.items,
+        onValuesChange: props.searchForm.onValuesChange,
+        actionsAlign: "right",
+        onSearch: [
+          {
+            $action: "script",
+            script: async (event: RockEvent) => {
+              const store: EntityStore = event.scope.getStore(dataSourceCode);
+              // 设置搜索变量
+              event.scope.setVars({
+                [`stores-${dataSourceCode}-pageNum`]: 1,
+              });
+              store.updateConfig({
+                filters: event.args[0].filters,
+                pagination:
+                  pageSize > 0
+                    ? {
+                      limit: pageSize,
+                      offset: 0,
+                    }
+                    : undefined,
+              });
+              // 重新加载数据
+              store.loadData();
             },
-          ],
-        }
+          },
+        ],
+      }
       : null;
 
     const newModalRockConfig: RockConfig | null = props.newForm
       ? {
-          $type: "antdModal",
-          $id: `${props.$id}-newModal`,
-          title: `新建${entityName}`,
-          okText: "确定",
-          cancelText: "取消",
-          maskClosable: false,
-          $exps: {
-            open: "!!$scope.vars['modal-newEntity-open']",
-            confirmLoading: "!!$scope.vars['modal-saving']",
+        $type: "antdModal",
+        $id: `${props.$id}-newModal`,
+        title: `新建${entityName}`,
+        okText: "确定",
+        cancelText: "取消",
+        maskClosable: false,
+        $exps: {
+          open: "!!$scope.vars['modal-newEntity-open']",
+          confirmLoading: "!!$scope.vars['modal-saving']",
+        },
+        children: [
+          {
+            $type: "rapidEntityForm",
+            $id: `${props.$id}-newForm`,
+            entityCode: entityCode,
+            mode: "new",
+            ...omit(props.newForm, ["entityCode", "onSaveSuccess", "onSaveError"]),
+            onFormSubmit: [
+              {
+                $action: "setVars",
+                vars: {
+                  "modal-saving": true,
+                },
+              },
+            ],
+            onSaveSuccess: [
+              {
+                $action: "setVars",
+                vars: {
+                  "modal-newEntity-open": false,
+                  "modal-saving": false,
+                },
+              },
+              ...(props.newForm?.onSaveSuccess
+                ? (props.newForm.onSaveSuccess as RockEventHandler[])
+                : [
+                  {
+                    $action: "loadStoreData",
+                    storeName: dataSourceCode,
+                  },
+                ]),
+            ],
+            onSaveError: [
+              {
+                $action: "setVars",
+                vars: {
+                  "modal-saving": false,
+                },
+              },
+              ...((props.newForm?.onSaveError as RockEventHandler[]) || []),
+            ],
           },
-          children: [
-            {
-              $type: "rapidEntityForm",
-              $id: `${props.$id}-newForm`,
-              entityCode: entityCode,
-              mode: "new",
-              ...omit(props.newForm, ["entityCode", "onSaveSuccess", "onSaveError"]),
-              onFormSubmit: [
-                {
-                  $action: "setVars",
-                  vars: {
-                    "modal-saving": true,
-                  },
-                },
-              ],
-              onSaveSuccess: [
-                {
-                  $action: "setVars",
-                  vars: {
-                    "modal-newEntity-open": false,
-                    "modal-saving": false,
-                  },
-                },
-                ...(props.newForm?.onSaveSuccess
-                  ? (props.newForm.onSaveSuccess as RockEventHandler[])
-                  : [
-                      {
-                        $action: "loadStoreData",
-                        storeName: "list",
-                      },
-                    ]),
-              ],
-              onSaveError: [
-                {
-                  $action: "setVars",
-                  vars: {
-                    "modal-saving": false,
-                  },
-                },
-                ...((props.newForm?.onSaveError as RockEventHandler[]) || []),
-              ],
+        ],
+        onOk: [
+          {
+            $action: "sendComponentMessage",
+            componentId: props.$id,
+            message: {
+              name: "submitNewForm",
             },
-          ],
-          onOk: [
-            {
-              $action: "sendComponentMessage",
-              componentId: props.$id,
-              message: {
-                name: "submitNewForm",
-              },
+          },
+        ],
+        onCancel: [
+          {
+            $action: "setVars",
+            vars: {
+              "modal-newEntity-open": false,
             },
-          ],
-          onCancel: [
-            {
-              $action: "setVars",
-              vars: {
-                "modal-newEntity-open": false,
-              },
-            },
-          ],
-        }
+          },
+        ],
+      }
       : null;
 
     const editModalRockConfig: RockConfig | null = props.editForm
       ? {
-          $type: "antdModal",
-          $id: `${props.$id}-editModal`,
-          title: `修改${entityName}`,
-          okText: "确定",
-          cancelText: "取消",
-          maskClosable: false,
-          $exps: {
-            open: "!!$scope.vars['modal-editEntity-open']",
-            confirmLoading: "!!$scope.vars['modal-saving']",
+        $type: "antdModal",
+        $id: `${props.$id}-editModal`,
+        title: `修改${entityName}`,
+        okText: "确定",
+        cancelText: "取消",
+        maskClosable: false,
+        $exps: {
+          open: "!!$scope.vars['modal-editEntity-open']",
+          confirmLoading: "!!$scope.vars['modal-saving']",
+        },
+        children: [
+          {
+            $type: "rapidEntityForm",
+            $id: `${props.$id}-editForm`,
+            entityCode: entityCode,
+            mode: "edit",
+            ...omit(props.editForm, ["entityCode"]),
+            $exps: {
+              entityId: "$scope.vars.activeEntityId",
+            },
+            onFormSubmit: [
+              {
+                $action: "setVars",
+                vars: {
+                  "modal-saving": true,
+                },
+              },
+            ],
+            onSaveSuccess: [
+              {
+                $action: "setVars",
+                vars: {
+                  "modal-editEntity-open": false,
+                  "modal-saving": false,
+                },
+              },
+              ...(props.editForm?.onSaveSuccess
+                ? (props.editForm.onSaveSuccess as RockEventHandler[])
+                : [
+                  {
+                    $action: "loadStoreData",
+                    storeName: dataSourceCode,
+                  },
+                ]),
+            ],
+            onSaveError: [
+              {
+                $action: "setVars",
+                vars: {
+                  "modal-saving": false,
+                },
+              },
+              ...((props.editForm?.onSaveError as RockEventHandler[]) || []),
+            ],
           },
-          children: [
-            {
-              $type: "rapidEntityForm",
-              $id: `${props.$id}-editForm`,
-              entityCode: entityCode,
-              mode: "edit",
-              ...omit(props.editForm, ["entityCode"]),
-              $exps: {
-                entityId: "$scope.vars.activeEntityId",
-              },
-              onFormSubmit: [
-                {
-                  $action: "setVars",
-                  vars: {
-                    "modal-saving": true,
-                  },
-                },
-              ],
-              onSaveSuccess: [
-                {
-                  $action: "setVars",
-                  vars: {
-                    "modal-editEntity-open": false,
-                    "modal-saving": false,
-                  },
-                },
-                ...(props.editForm?.onSaveSuccess
-                  ? (props.editForm.onSaveSuccess as RockEventHandler[])
-                  : [
-                      {
-                        $action: "loadStoreData",
-                        storeName: "list",
-                      },
-                    ]),
-              ],
-              onSaveError: [
-                {
-                  $action: "setVars",
-                  vars: {
-                    "modal-saving": false,
-                  },
-                },
-                ...((props.editForm?.onSaveError as RockEventHandler[]) || []),
-              ],
+        ],
+        onOk: [
+          {
+            $action: "sendComponentMessage",
+            componentId: props.$id,
+            message: {
+              name: "submitEditForm",
             },
-          ],
-          onOk: [
-            {
-              $action: "sendComponentMessage",
-              componentId: props.$id,
-              message: {
-                name: "submitEditForm",
-              },
+          },
+        ],
+        onCancel: [
+          {
+            $action: "setVars",
+            vars: {
+              "modal-editEntity-open": false,
             },
-          ],
-          onCancel: [
-            {
-              $action: "setVars",
-              vars: {
-                "modal-editEntity-open": false,
-              },
-            },
-          ],
-        }
+          },
+        ],
+      }
       : null;
 
     const childrenConfig: RockChildrenConfig = [];
@@ -408,7 +413,7 @@ export default {
           handlers: [
             {
               $action: "loadStoreData",
-              storeName: "list",
+              storeName: dataSourceCode,
             },
           ],
         },

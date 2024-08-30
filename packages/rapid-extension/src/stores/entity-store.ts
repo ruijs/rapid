@@ -76,6 +76,12 @@ export class EntityStore implements IStore<EntityStoreConfig> {
     }
   }
 
+  clearPaginationOffset(): void {
+    if (this.#config.pagination) {
+      this.#config.pagination.offset = 0;
+    }
+  }
+
   setFrozon(frozon: boolean) {
     this.#config.frozon = frozon;
   }
