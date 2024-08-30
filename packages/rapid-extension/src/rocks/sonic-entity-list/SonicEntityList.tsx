@@ -91,6 +91,7 @@ export default {
       toolboxRockConfig = {
         $type: "rapidEntityListToolbox",
         $id: `${props.$id}_toolbox`,
+        dataSourceCode,
         columns: props.columns,
         config: props.toolbox || {
           columnCacheKey: props.entityCode || props.entityName,
@@ -188,7 +189,11 @@ export default {
           {
             $action: "script",
             script: async (event: RockEvent) => {
-              const store: EntityStore = event.scope.getStore("list");
+              const store: EntityStore = event.scope.getStore(dataSourceCode);
+              // 设置搜索变量
+              event.scope.setVars({
+                [`stores-${dataSourceCode}-pageNum`]: 1,
+              });
               store.updateConfig({
                 filters: event.args[0].filters,
                 pagination:
@@ -247,7 +252,7 @@ export default {
                 : [
                   {
                     $action: "loadStoreData",
-                    storeName: "list",
+                    storeName: dataSourceCode,
                   },
                 ]),
             ],
@@ -325,7 +330,7 @@ export default {
                 : [
                   {
                     $action: "loadStoreData",
-                    storeName: "list",
+                    storeName: dataSourceCode,
                   },
                 ]),
             ],
@@ -408,7 +413,7 @@ export default {
           handlers: [
             {
               $action: "loadStoreData",
-              storeName: "list",
+              storeName: dataSourceCode,
             },
           ],
         },

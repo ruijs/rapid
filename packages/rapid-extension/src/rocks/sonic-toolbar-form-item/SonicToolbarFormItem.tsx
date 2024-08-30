@@ -54,6 +54,7 @@ export default {
                   ]
                   : filters,
               });
+              store.clearPaginationOffset();
               // 重新加载数据
               store.loadData();
             },

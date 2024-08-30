@@ -64,13 +64,6 @@ export default {
               offset: ((props.pageNum || 1) - 1) * pageSize,
             }
             : undefined,
-        $exps:
-          pageSize > 0
-            ? {
-              "pagination.limit": `${pageSize}`,
-              "pagination.offset": `(($scope.vars['stores-${dataSourceCode}-pageNum'] || 1) - 1) * ${pageSize}`,
-            }
-            : undefined,
       };
       context.scope.addStore(listDataStoreConfig);
     }
@@ -345,10 +338,10 @@ export default {
             }
 
             const store: EntityStore = event.scope.stores[dataSourceCode] as any;
-            // store.setPagination({
-            //   limit: props.pageSize,
-            //   offset: ((pagination.current || 1) - 1) * props.pageSize
-            // });
+            store.setPagination({
+              limit: props.pageSize,
+              offset: ((pagination.current || 1) - 1) * props.pageSize
+            });
             await store.loadData();
           },
         },

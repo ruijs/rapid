@@ -21,6 +21,7 @@ export interface ICacheRapidTableColumn extends Pick<RapidTableColumnConfig, "co
 interface IProps extends SimpleRockConfig {
   style?: CSSProperties;
   className?: string;
+  dataSourceCode: string;
   config: IRapidEntityListToolboxConfig;
   columns: any[];
 
@@ -39,6 +40,7 @@ export default {
   Renderer(context, props: IProps) {
     const { columns } = props;
     const { columnCacheKey } = props.config;
+    const dataSourceCode = props.dataSourceCode;
 
     const [checkedKeys, setCheckedKeys] = useState<string[]>(() => {
       const cacheColumns = RapidExtStorage.get<ICacheRapidTableColumn[]>(columnCacheKey);
@@ -107,7 +109,7 @@ export default {
                 return;
               }
 
-              context.scope.loadStoreData("list", {});
+              context.scope.loadStoreData(dataSourceCode, {});
             }}
           >
             <ReloadOutlined />
