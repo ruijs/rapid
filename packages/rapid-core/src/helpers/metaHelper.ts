@@ -38,11 +38,15 @@ export function getEntityPropertiesIncludingBase(server: IRpdServer, model: RpdD
   return [...baseProperties, ...model.properties];
 }
 
-export function getEntityPropertyByCode(server: IRpdServer, model: RpdDataModel, propertyCode: string) {
+export function getEntityPropertyByCode(server: IRpdServer, model: RpdDataModel, propertyCode: string): RpdDataModelProperty | undefined {
   return getEntityProperty(server, model, (e) => e.code === propertyCode);
 }
 
-export function getEntityProperty(server: IRpdServer, model: RpdDataModel, predicate: (item: RpdDataModelProperty) => boolean) {
+export function getEntityProperty(
+  server: IRpdServer,
+  model: RpdDataModel,
+  predicate: (item: RpdDataModelProperty) => boolean,
+): RpdDataModelProperty | undefined {
   let property = model.properties.find(predicate);
   if (!property) {
     const baseModelSingularCode = model.base;
@@ -62,7 +66,7 @@ export function getEntityProperty(server: IRpdServer, model: RpdDataModel, predi
   return property;
 }
 
-export function getEntityPropertyByFieldName(server: IRpdServer, model: RpdDataModel, fieldName: string) {
+export function getEntityPropertyByFieldName(server: IRpdServer, model: RpdDataModel, fieldName: string): RpdDataModelProperty | undefined {
   let property = getEntityPropertyByCode(server, model, fieldName);
   if (!property) {
     property = getEntityProperty(server, model, (item) => item.relation === "one" && item.targetIdColumnName === fieldName);

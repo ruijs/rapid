@@ -6,6 +6,7 @@ import {
   IQueryBuilder,
   QuoteTableOptions,
   RpdApplicationConfig,
+  RpdDataDictionary,
   RpdDataModel,
   RpdDataModelIndex,
   RpdDataModelProperty,
@@ -67,8 +68,9 @@ class MetaManager implements RapidPlugin {
     const logger = server.getLogger();
     try {
       logger.info("Loading meta of models...");
-      const models: RpdDataModel[] = await listCollections(server, applicationConfig);
-      server.appendApplicationConfig({ models });
+      const models: RpdDataModel[] = await listDataModels(server);
+      const dataDictionaries: RpdDataDictionary[] = await listDataDictionaries(server);
+      server.appendApplicationConfig({ models, dataDictionaries });
     } catch (error) {
       logger.crit("Failed to load meta of models.", { error });
     }
@@ -154,12 +156,22 @@ async function handleEntityDeleteEvent(server: IRpdServer, sender: RapidPlugin, 
   }
 }
 
-function listCollections(server: IRpdServer, applicationConfig: RpdApplicationConfig) {
+function listDataModels(server: IRpdServer) {
   const entityManager = server.getEntityManager("model");
   const model = entityManager.getModel();
 
   const properties = getEntityPropertiesIncludingBase(server, model);
   return entityManager.findEntities({
+    properties: properties.map((item) => item.code),
+  });
+}
+
+function listDataDictionaries(server: IRpdServer) {
+  const dataDictionaryManager = server.getEntityManager("data_dictionary");
+  const model = dataDictionaryManager.getModel();
+
+  const properties = getEntityPropertiesIncludingBase(server, model);
+  return dataDictionaryManager.findEntities({
     properties: properties.map((item) => item.code),
   });
 }

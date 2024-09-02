@@ -70,5 +70,6 @@ export default {
       ],
     },
   ],
+  dataDictionaries: [],
   routes: [],
 } satisfies RpdApplicationConfig;
