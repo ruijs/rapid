@@ -137,14 +137,9 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
   let relationOptions = options.relations || {};
   let relationPropertyCodes = Object.keys(relationOptions) || [];
   if (!options.properties || !options.properties.length) {
-    propertiesToSelect = getEntityPropertiesIncludingBase(server, model).filter(
-      (property) => {
-        if (!property) {
-          throw new Error(`Property '${property}' was not found in ${model.namespace}.${model.singularCode}`);
-        }
-        return !options.keepNonPropertyFields || isRelationProperty(property) || relationPropertyCodes.includes(property.code);
-      },
-    );
+    propertiesToSelect = getEntityPropertiesIncludingBase(server, model).filter((property) => {
+      return !isRelationProperty(property) || relationPropertyCodes.includes(property.code);
+    });
   } else {
     propertiesToSelect = getEntityPropertiesIncludingBase(server, model).filter(
       (property) => options.properties.includes(property.code) || relationPropertyCodes.includes(property.code),
@@ -155,9 +150,6 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
 
   const relationPropertiesToSelect: RpdDataModelProperty[] = [];
   forEach(propertiesToSelect, (property) => {
-    if (!property) {
-      throw new Error(`Property '${property}' was not found in ${model.namespace}.${model.singularCode}`);
-    }
     if (isRelationProperty(property)) {
       relationPropertiesToSelect.push(property);
 
@@ -747,7 +739,8 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
   keys(entity).forEach((propertyCode) => {
     const property = getEntityPropertyByCode(server, model, propertyCode);
     if (!property) {
-      throw new Error(`Property '${property}' was not found in ${model.namespace}.${model.singularCode}`);
+      // Unknown property
+      return;
     }
 
     if (isRelationProperty(property)) {
@@ -1002,7 +995,8 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
   keys(changes).forEach((propertyCode) => {
     const property = getEntityPropertyByCode(server, model, propertyCode);
     if (!property) {
-      throw new Error(`Property '${property}' was not found in ${model.namespace}.${model.singularCode}`);
+      // Unknown property
+      return;
     }
 
     if (isRelationProperty(property)) {
