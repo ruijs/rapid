@@ -219,4 +219,4 @@ export default {
   },
 
   ...RapidFormMeta,
-} as Rock;
+} as Rock<RapidFormRockConfig>;

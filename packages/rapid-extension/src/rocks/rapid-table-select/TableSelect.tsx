@@ -207,9 +207,10 @@ export default {
 
       eventHandlers.onChange?.(isMultiple ? keys : keys[0]);
 
+      const selectedRecords = keys.map((k) => s.selectedRecordMap[k]);
       const validRecords = filter(records, (record) => s.selectedRecordMap[get(record, listValueFieldName)] != null);
 
-      eventHandlers.onSelectedRecord?.(isMultiple ? validRecords : validRecords[0], s);
+      eventHandlers.onSelectedRecord?.(isMultiple ? validRecords : validRecords[0], selectedRecords, s);
     };
 
     return (
@@ -223,8 +224,9 @@ export default {
         open={currentState.visible}
         onChange={(v) => {
           const arrs = isArray(v) ? v : v != null ? [v] : [];
+          const selectedRecords = arrs?.map((k) => currentState.selectedRecordMap[k]);
           eventHandlers.onChange?.(v);
-          eventHandlers.onSelectedRecord?.(v, pick(currentState.selectedRecordMap, arrs));
+          eventHandlers.onSelectedRecord?.(null, selectedRecords, pick(currentState.selectedRecordMap, arrs));
         }}
         onDropdownVisibleChange={(v) => {
           setCurrentState({ visible: v });
