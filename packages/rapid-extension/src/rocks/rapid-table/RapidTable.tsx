@@ -2,7 +2,7 @@ import { MoveStyleUtils, Rock, handleComponentEvent } from "@ruiapp/move-style";
 import { toRenderRockSlot, convertToEventHandlers, convertToSlotProps, renderRock } from "@ruiapp/react-renderer";
 import { Table, TableProps } from "antd";
 import { ColumnType } from "antd/lib/table/interface";
-import { filter, map, merge, omit, reduce, trim } from "lodash";
+import { filter, get, map, merge, omit, reduce, trim } from "lodash";
 import RapidTableMeta from "./RapidTableMeta";
 import { RapidTableRockConfig } from "./rapid-table-types";
 import { parseRockExpressionFunc } from "../../utils/parse-utility";
@@ -20,7 +20,10 @@ const ExpandedRowComponent = memo<Record<string, any>>((props) => {
 
   return renderRock({
     context,
-    rockConfig: expandedRow,
+    rockConfig: {
+      $id: `${record.id}_expandedRow`,
+      ...expandedRow,
+    },
     expVars: {
       $slot: slotProps,
     },
@@ -75,7 +78,16 @@ export default {
         expandedRowRender: (record, index) => {
           const expandedRow = { ...props.expandedRow };
 
-          return <ExpandedRowComponent expandedRow={expandedRow} record={record} index={index} context={context} />;
+          let recordKey: string;
+
+          let rowKey: any = props.rowKey || "id";
+          if (typeof rowKey === "function") {
+            recordKey = rowKey(record, index);
+          } else {
+            recordKey = get(record, rowKey);
+          }
+
+          return <ExpandedRowComponent key={recordKey} expandedRow={expandedRow} record={record} index={index} context={context} />;
         },
       };
     }
