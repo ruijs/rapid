@@ -179,6 +179,7 @@ export interface RpdApplicationConfig {
   code?: string;
   name?: string;
   models: RpdDataModel[];
+  dataDictionaries: RpdDataDictionary[];
   routes: RpdRoute[];
 }
 
@@ -186,6 +187,7 @@ export interface RpdDataModel {
   maintainedBy?: string;
   name: string;
   namespace: string;
+  code?: string;
   singularCode: string;
   pluralCode: string;
   schema?: string;
@@ -335,12 +337,22 @@ export type RpdDataDictionary = {
   /**
    * 字典名称
    */
+  name?: string;
+
+  /**
+   * 描述
+   */
   description?: string;
 
   /**
    * 字典项值类型
    */
-  type: "string" | "integer";
+  valueType: "string" | "integer";
+
+  /**
+   * 字典级别
+   */
+  level: "sys" | "app" | "user";
 
   /**
    * 字典项
@@ -361,6 +373,16 @@ export type RpdDataDictionaryEntry = {
    * 值
    */
   value: string;
+
+  /**
+   * 颜色
+   */
+  color?: string;
+
+  /**
+   * 图标
+   */
+  icon?: string;
 
   /**
    * 描述

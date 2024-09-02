@@ -68,6 +68,16 @@ export type RapidDataDictionaryEntry = {
    * 描述
    */
   description?: string;
+
+  /**
+   * 排序号
+   */
+  orderNum?: number;
+
+  /**
+   * 是否禁用
+   */
+  disabled?: boolean;
 };
 
 export type RapidFieldType =

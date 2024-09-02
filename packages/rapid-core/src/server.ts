@@ -140,7 +140,7 @@ export class RapidServer implements IRpdServer {
   }
 
   appendApplicationConfig(config: Partial<RpdApplicationConfig>) {
-    const { models, routes } = config;
+    const { models, dataDictionaries, routes } = config;
     if (models) {
       for (const model of models) {
         const originalModel = find(this.#applicationConfig.models, (item) => item.singularCode == model.singularCode);
@@ -165,6 +165,18 @@ export class RapidServer implements IRpdServer {
       }
     }
 
+    if (dataDictionaries) {
+      for (const dataDictionary of dataDictionaries) {
+        const originalDataDictionary = find(this.#applicationConfig.dataDictionaries, (item) => item.code == dataDictionary.code);
+        if (originalDataDictionary) {
+          originalDataDictionary.name = dataDictionary.name;
+          originalDataDictionary.description = dataDictionary.description;
+          originalDataDictionary.entries = dataDictionary.entries;
+        } else {
+          this.#applicationConfig.dataDictionaries.push(dataDictionary);
+        }
+      }
+    }
     if (routes) {
       for (const route of routes) {
         const originalRoute = find(this.#applicationConfig.routes, (item) => item.code == route.code);

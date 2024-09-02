@@ -35,6 +35,7 @@ export function newModelUpdater(rapidConfigApi: AxiosInstance) {
         "name",
         "description",
         "namespace",
+        "code",
         "singularCode",
         "pluralCode",
         "base",
@@ -52,7 +53,7 @@ export function newModelUpdater(rapidConfigApi: AxiosInstance) {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async createEntity(input, mainEntity, inputIndex) {
-      const createEntityInput: CreateRapidModelInput = omit(input, ["code", "fields"]);
+      const createEntityInput: CreateRapidModelInput = omit(input, ["fields"]);
       const res = await rapidConfigApi.post(`meta/models`, createEntityInput);
       const { data } = res;
       if (!data.id) {
@@ -66,7 +67,7 @@ export function newModelUpdater(rapidConfigApi: AxiosInstance) {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async updateEntity(input, remoteEntity, mainEntity, inputIndex) {
-      const updateEntityInput: UpdateRapidModelInput = omit(input, ["code", "fields"]);
+      const updateEntityInput: UpdateRapidModelInput = omit(input, ["fields"]);
       const res = await rapidConfigApi.patch(`meta/models/${remoteEntity.id}`, updateEntityInput);
       const { data } = res;
       if (!data.id) {
