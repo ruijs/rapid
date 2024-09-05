@@ -24,7 +24,7 @@ import { mapDbRowToEntity, mapEntityToDbRow } from "./entityMapper";
 import { mapPropertyNameToColumnName } from "./propertyMapper";
 import { IRpdServer, RapidPlugin } from "~/core/server";
 import { getEntityPartChanges } from "~/helpers/entityHelpers";
-import { cloneDeep, filter, find, first, forEach, isArray, isNumber, isObject, isString, keys, map, reject, uniq } from "lodash";
+import { cloneDeep, filter, find, first, forEach, isArray, isNumber, isObject, isPlainObject, isString, keys, map, reject, uniq } from "lodash";
 import {
   getEntityPropertiesIncludingBase,
   getEntityProperty,
@@ -526,10 +526,15 @@ async function convertEntityFiltersToRowFilters(
       const filterField = (filter as EntityNonRelationPropertyFilterOptions).field;
       let property: RpdDataModelProperty = getEntityPropertyByCode(server, model, filterField);
 
+      let filterValue = (filter as any).value;
+
       let columnName = "";
       if (property) {
         if (isOneRelationProperty(property)) {
           columnName = property.targetIdColumnName;
+          if (isPlainObject(filterValue)) {
+            filterValue = filterValue.id;
+          }
         } else if (isManyRelationProperty(property)) {
           throw new Error(`Operator "${operator}" is not supported on many-relation property "${property.code}"`);
         } else {
@@ -549,6 +554,9 @@ async function convertEntityFiltersToRowFilters(
 
           if (property) {
             columnName = property.targetIdColumnName;
+            if (isPlainObject(filterValue)) {
+              filterValue = filterValue.id;
+            }
           } else {
             columnName = filterField;
           }
@@ -562,7 +570,7 @@ async function convertEntityFiltersToRowFilters(
           name: columnName,
           tableName: property && property.isBaseProperty ? baseModel.tableName : model.tableName,
         },
-        value: (filter as any).value,
+        value: filterValue,
         itemType: (filter as any).itemType,
       } as any);
     }
