@@ -1,14 +1,72 @@
-import { handleComponentEvent, type Rock, type RockChildrenConfig, type RockConfig, type RockEvent } from "@ruiapp/move-style";
+import { handleComponentEvent, type Rock, type RockChildrenConfig, type RockConfig, type RockEvent, Scope, MoveStyleUtils } from "@ruiapp/move-style";
 import { renderRock, renderRockChildren } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./RapidEntityListMeta";
 import type { RapidEntityListRockConfig, RapidEntityListState } from "./rapid-entity-list-types";
-import { filter, findIndex, forEach, map, merge, reject, set, trim, uniq } from "lodash";
+import { findIndex, forEach, merge, reject, set, trim, uniq, map, filter } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import type { RapidEntity, RapidField } from "../../types/rapid-entity-types";
 import type { EntityStore, EntityStoreConfig } from "../../stores/entity-store";
 import RapidExtensionSetting from "../../RapidExtensionSetting";
 import { parseRockExpressionFunc } from "../../mod";
+import { useEffect } from "react";
+
+
+function initStore(scope: Scope, props: RapidEntityListRockConfig) {
+  const entityCode = props.entityCode;
+  if (!entityCode) {
+    return;
+  }
+
+  const mainEntity = rapidAppDefinition.getEntityByCode(entityCode);
+  if (!mainEntity) {
+    return;
+  }
+
+  const dataSourceCode = props.dataSourceCode || "list";
+  const store = scope.stores[dataSourceCode] as EntityStore;
+
+  if (store && store.name == dataSourceCode && store.entityCode == mainEntity.code) {
+    return;
+  }
+
+  const { columns, pageSize } = props;
+  const properties: string[] = uniq(
+    props.queryProperties || [
+      "id",
+      ...map(
+        filter(columns, (column) => !!column.code),
+        (column) => column.code,
+      ),
+      ...(props.extraProperties || []),
+    ],
+  );
+  const listDataStoreConfig: EntityStoreConfig = {
+    type: "entityStore",
+    name: dataSourceCode,
+    entityModel: mainEntity,
+    fixedFilters: props.fixedFilters,
+    keepNonPropertyFields: props.keepNonPropertyFields,
+    properties,
+    relations: props.relations,
+    orderBy: props.orderBy || [
+      {
+        field: "id",
+      },
+    ],
+    pagination:
+      pageSize > 0
+        ? {
+          limit: pageSize,
+          offset: ((props.pageNum || 1) - 1) * pageSize,
+        }
+        : undefined,
+  };
+  scope.addStore(listDataStoreConfig);
+  if (MoveStyleUtils.canUseDOM()) {
+    scope.loadStoreData(dataSourceCode, null);
+  }
+}
 
 export default {
   onResolveState(props, state) {
@@ -18,56 +76,7 @@ export default {
   },
 
   onInit(context, props) {
-    if (props.dataSourceType === "dataSource") {
-      return;
-    }
-
-    const entityCode = props.entityCode;
-    if (!entityCode) {
-      return;
-    }
-
-    const mainEntity = rapidAppDefinition.getEntityByCode(entityCode);
-    if (!mainEntity) {
-      return;
-    }
-
-    const dataSourceCode = props.dataSourceCode || "list";
-    if (!context.scope.stores[dataSourceCode]) {
-      const { columns, pageSize } = props;
-      const properties: string[] = uniq(
-        props.queryProperties || [
-          "id",
-          ...map(
-            filter(columns, (column) => !!column.code),
-            (column) => column.code,
-          ),
-          ...(props.extraProperties || []),
-        ],
-      );
-      const listDataStoreConfig: EntityStoreConfig = {
-        type: "entityStore",
-        name: dataSourceCode,
-        entityModel: mainEntity,
-        fixedFilters: props.fixedFilters,
-        keepNonPropertyFields: props.keepNonPropertyFields,
-        properties,
-        relations: props.relations,
-        orderBy: props.orderBy || [
-          {
-            field: "id",
-          },
-        ],
-        pagination:
-          pageSize > 0
-            ? {
-              limit: pageSize,
-              offset: ((props.pageNum || 1) - 1) * pageSize,
-            }
-            : undefined,
-      };
-      context.scope.addStore(listDataStoreConfig);
-    }
+    initStore(context.scope as Scope, props);
   },
 
   onReceiveMessage(message, state, props, rockInstance) {
@@ -95,6 +104,10 @@ export default {
 
     const dataSourceCode = props.dataSourceCode || "list";
     const tableColumnRocks: RockConfig[] = [];
+
+    useEffect(() => {
+      initStore(context.scope, props);
+    }, [dataSourceCode, entityCode]);
 
     props.columns.forEach((column) => {
       let cell: RockConfig | RockConfig[] | null = null;

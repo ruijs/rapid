@@ -181,6 +181,13 @@ export class EntityStore implements IStore<EntityStoreConfig> {
   get data() {
     return this.#data;
   }
+
+  get entityCode(): string {
+    if (this.#config.entityModel) {
+      return this.#config.entityModel.code;
+    }
+    return this.#config.entityCode;
+  }
 }
 
 export default {
