@@ -509,7 +509,7 @@ export interface FindEntityOptions {
   orderBy?: FindEntityOrderByOptions[];
   pagination?: FindEntityPaginationOptions;
   properties?: string[];
-  relations?: Record<string, FindEntitySelectRelationOptions>;
+  relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
   extraColumnsToSelect?: ColumnSelectOptions[];
   keepNonPropertyFields?: boolean;
 }
@@ -518,7 +518,7 @@ export interface FindEntityByIdOptions {
   routeContext?: RouteContext;
   id: any;
   properties?: string[];
-  relations?: Record<string, FindEntitySelectRelationOptions>;
+  relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
   keepNonPropertyFields?: boolean;
 }
 
@@ -564,11 +564,25 @@ export interface FindEntityPaginationOptions {
   withoutTotal?: boolean;
 }
 
-export type FindEntitySelectRelationOptions =
+export type FindEntityFindRelationEntitiesOptions = FindEntityFindOneRelationEntitiesOptions | FindEntityFindManyRelationEntitiesOptions;
+
+export type FindEntityFindOneRelationEntitiesOptions =
   | true
   | {
       properties?: string[];
-      relations?: Record<string, FindEntitySelectRelationOptions>;
+      relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
+      keepNonPropertyFields?: boolean;
+    };
+
+export type FindEntityFindManyRelationEntitiesOptions =
+  | true
+  | {
+      properties?: string[];
+      relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
+      filters?: EntityFilterOptions[];
+      orderBy?: FindEntityOrderByOptions[];
+      pagination?: FindEntityPaginationOptions;
+      keepNonPropertyFields?: boolean;
     };
 
 export interface FindEntityOrderByOptions {

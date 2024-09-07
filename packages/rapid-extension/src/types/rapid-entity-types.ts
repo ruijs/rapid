@@ -337,17 +337,30 @@ export interface FindEntityOptions {
   orderBy?: FindEntityOrderByOptions[] | null;
   pagination?: FindEntityPaginationOptions | null;
   properties?: string[] | Record<string, any> | null;
-  relations?: Record<string, FindEntitySelectRelationOptions>;
+  relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
   keepNonPropertyFields?: boolean | null;
 }
 
-export type FindEntitySelectRelationOptions =
+export type FindEntityFindRelationEntitiesOptions = FindEntityFindOneRelationEntitiesOptions | FindEntityFindManyRelationEntitiesOptions;
+
+export type FindEntityFindOneRelationEntitiesOptions =
   | true
   | {
       properties?: string[];
-      relations?: Record<string, FindEntitySelectRelationOptions>;
+      relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
+      keepNonPropertyFields?: boolean;
     };
 
+export type FindEntityFindManyRelationEntitiesOptions =
+  | true
+  | {
+      properties?: string[];
+      relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
+      filters?: EntityFilterOptions[];
+      orderBy?: FindEntityOrderByOptions[];
+      pagination?: FindEntityPaginationOptions;
+      keepNonPropertyFields?: boolean;
+    };
 export interface FindEntityRelationalFilterOptions {
   field: string;
   operator: EntityFilterRelationalOperators;
