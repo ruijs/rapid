@@ -10,7 +10,6 @@ import {
   FindEntityByIdOptions,
   FindEntityOptions,
   FindEntityOrderByOptions,
-  FindEntitySelectRelationOptions,
   IRpdDataAccessor,
   RemoveEntityRelationsOptions,
   RpdDataModel,
@@ -18,13 +17,15 @@ import {
   RpdDataModelIndexOptions,
   RpdDataModelProperty,
   UpdateEntityByIdOptions,
+  FindEntityFindOneRelationEntitiesOptions,
+  FindEntityFindManyRelationEntitiesOptions,
 } from "~/types";
 import { isNullOrUndefined } from "~/utilities/typeUtility";
 import { mapDbRowToEntity, mapEntityToDbRow } from "./entityMapper";
 import { mapPropertyNameToColumnName } from "./propertyMapper";
 import { IRpdServer, RapidPlugin } from "~/core/server";
 import { getEntityPartChanges } from "~/helpers/entityHelpers";
-import { cloneDeep, filter, find, first, forEach, isArray, isNumber, isObject, isPlainObject, isString, keys, map, reject, uniq } from "lodash";
+import { cloneDeep, filter, find, first, forEach, isArray, isNumber, isObject, isPlainObject, isString, isUndefined, keys, map, reject, uniq } from "lodash";
 import {
   getEntityPropertiesIncludingBase,
   getEntityProperty,
@@ -37,7 +38,6 @@ import {
 import { ColumnSelectOptions, CountRowOptions, FindRowOptions, FindRowOrderByOptions, RowFilterOptions } from "./dataAccessTypes";
 import { newEntityOperationError } from "~/utilities/errorUtility";
 import { getNowStringWithTimezone } from "~/utilities/timeUtility";
-import { or } from "xstate";
 import { RouteContext } from "~/core/routeContext";
 
 export type FindOneRelationEntitiesOptions = {
@@ -45,7 +45,7 @@ export type FindOneRelationEntitiesOptions = {
   mainModel: RpdDataModel;
   relationProperty: RpdDataModelProperty;
   relationEntityIds: any[];
-  selectRelationOptions?: FindEntitySelectRelationOptions;
+  selectRelationOptions?: FindEntityFindOneRelationEntitiesOptions;
 };
 
 export type FindManyRelationEntitiesOptions = {
@@ -53,7 +53,7 @@ export type FindManyRelationEntitiesOptions = {
   mainModel: RpdDataModel;
   relationProperty: RpdDataModelProperty;
   mainEntityIds: any[];
-  selectRelationOptions?: FindEntitySelectRelationOptions;
+  selectRelationOptions?: FindEntityFindManyRelationEntitiesOptions;
 };
 
 function convertEntityOrderByToRowOrderBy(server: IRpdServer, model: RpdDataModel, baseModel?: RpdDataModel, orderByList?: FindEntityOrderByOptions[]) {
@@ -583,7 +583,9 @@ async function findManyRelationLinksViaLinkTable(options: FindManyRelationEntiti
   const command = `SELECT * FROM ${server.queryBuilder.quoteTable({
     schema: relationProperty.linkSchema,
     tableName: relationProperty.linkTableName!,
-  })} WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = ANY($1::int[])`;
+  })} WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = ANY($1::int[])
+    ORDER BY id
+  `;
   const params = [mainEntityIds];
   const links = await server.queryDatabaseObject(command, params);
   const targetEntityIds = links.map((link) => link[relationProperty.targetIdColumnName!]);
@@ -612,6 +614,18 @@ async function findManyRelationLinksViaLinkTable(options: FindManyRelationEntiti
       if (selectRelationOptions.relations) {
         findEntityOptions.relations = selectRelationOptions.relations;
       }
+      if (selectRelationOptions.orderBy) {
+        findEntityOptions.orderBy = selectRelationOptions.orderBy;
+      }
+      if (selectRelationOptions.pagination) {
+        findEntityOptions.pagination = selectRelationOptions.pagination;
+      }
+      if (selectRelationOptions.filters) {
+        findEntityOptions.filters = [...findEntityOptions.filters, ...selectRelationOptions.filters];
+      }
+      if (!isUndefined(selectRelationOptions.keepNonPropertyFields)) {
+        findEntityOptions.keepNonPropertyFields = selectRelationOptions.keepNonPropertyFields;
+      }
     }
   }
 
@@ -638,6 +652,11 @@ async function findManyRelatedEntitiesViaIdPropertyCode(options: FindManyRelatio
         value: mainEntityIds,
       },
     ],
+    orderBy: [
+      {
+        field: "id",
+      },
+    ],
     extraColumnsToSelect: [relationProperty.selfIdColumnName],
     keepNonPropertyFields: true,
   };
@@ -649,6 +668,18 @@ async function findManyRelatedEntitiesViaIdPropertyCode(options: FindManyRelatio
       }
       if (selectRelationOptions.relations) {
         findEntityOptions.relations = selectRelationOptions.relations;
+      }
+      if (selectRelationOptions.orderBy) {
+        findEntityOptions.orderBy = selectRelationOptions.orderBy;
+      }
+      if (selectRelationOptions.pagination) {
+        findEntityOptions.pagination = selectRelationOptions.pagination;
+      }
+      if (selectRelationOptions.filters) {
+        findEntityOptions.filters = [...findEntityOptions.filters, ...selectRelationOptions.filters];
+      }
+      if (!isUndefined(selectRelationOptions.keepNonPropertyFields)) {
+        findEntityOptions.keepNonPropertyFields = selectRelationOptions.keepNonPropertyFields;
       }
     }
   }

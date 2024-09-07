@@ -1,6 +1,6 @@
 import type { ContainerRockConfig, RockEventHandlerConfig } from "@ruiapp/move-style";
 import { RapidFormConfig } from "../rapid-form/rapid-form-types";
-import { FindEntitySelectRelationOptions } from "../../types/rapid-entity-types";
+import { FindEntityFindRelationEntitiesOptions } from "../../types/rapid-entity-types";
 
 export interface RapidEntityFormConfig extends RapidFormConfig {
   mode?: "view" | "edit" | "new";
@@ -22,7 +22,7 @@ export interface RapidEntityFormConfig extends RapidFormConfig {
   /**
    * 查询关联对象的设置
    */
-  relations?: Record<string, FindEntitySelectRelationOptions>;
+  relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
 
   /**
    * 表单固定字段，用于数据提交

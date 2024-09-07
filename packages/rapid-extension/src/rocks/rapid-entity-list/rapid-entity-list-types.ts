@@ -1,5 +1,5 @@
 import type { RockConfig, RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
-import { EntityFilterOptions, FindEntityOrderByOptions, FindEntitySelectRelationOptions } from "../../types/rapid-entity-types";
+import { EntityFilterOptions, FindEntityOrderByOptions, FindEntityFindRelationEntitiesOptions } from "../../types/rapid-entity-types";
 import { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
 import { RapidRecordAction } from "../../types/rapid-action-types";
 
@@ -75,7 +75,7 @@ export interface RapidEntityListConfig {
   /**
    * 查询关联对象的设置
    */
-  relations?: Record<string, FindEntitySelectRelationOptions>;
+  relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
 
   /**
    * 针对记录的操作
