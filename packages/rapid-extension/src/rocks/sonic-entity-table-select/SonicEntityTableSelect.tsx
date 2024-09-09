@@ -10,7 +10,7 @@ import rapidApi from "../../rapidApi";
 import { FindEntityOptions } from "../../rapid-types";
 import { parseConfigToFilters } from "../../functions/searchParamsToFilters";
 
-import "../rapid-table-select/table-select-style.css";
+import "../rapid-table-select/rapid-table-select-style.css";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { EntityStore, EntityStoreConfig } from "../../stores/entity-store";
 import { autoConfigureRapidEntity } from "../../RapidEntityAutoConfigure";

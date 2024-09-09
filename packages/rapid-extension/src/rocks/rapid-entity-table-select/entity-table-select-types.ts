@@ -1,6 +1,6 @@
-import { TableSelectRockConfig } from "../rapid-table-select/table-select-types";
+import { RapidTableSelectRockConfig } from "../rapid-table-select/rapid-table-select-types";
 
-export interface EntityTableSelectRockConfig extends Omit<TableSelectRockConfig, "requestConfig"> {
+export interface EntityTableSelectRockConfig extends Omit<RapidTableSelectRockConfig, "requestConfig"> {
   entityCode: string;
-  requestParams?: TableSelectRockConfig["requestConfig"]["params"];
+  requestParams?: RapidTableSelectRockConfig["requestConfig"]["params"];
 }

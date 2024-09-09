@@ -1,6 +1,6 @@
 import { EventEmitter, type Rock, type RockInstanceContext } from "@ruiapp/move-style";
-import TableSelectorMeta from "./TableSelectMeta";
-import type { TableSelectRockConfig } from "./table-select-types";
+import TableSelectorMeta from "./RapidTableSelectMeta";
+import type { RapidTableSelectRockConfig } from "./rapid-table-select-types";
 import { convertToEventHandlers } from "@ruiapp/react-renderer";
 import { Table, Select, Input, TableProps, Empty, Spin } from "antd";
 import { debounce, filter, forEach, get, isArray, isFunction, isObject, isPlainObject, isString, last, omit, pick, set, slice, split, trim } from "lodash";
@@ -10,11 +10,11 @@ import rapidApi from "../../rapidApi";
 import { FindEntityOptions } from "../../rapid-types";
 import { parseConfigToFilters } from "../../functions/searchParamsToFilters";
 
-import "./table-select-style.css";
+import "./rapid-table-select-style.css";
 
 const bus = new EventEmitter();
 
-const DEFAULT_COLUMNS: TableSelectRockConfig["columns"] = [{ title: "名称", code: "name", width: 120 }];
+const DEFAULT_COLUMNS: RapidTableSelectRockConfig["columns"] = [{ title: "名称", code: "name", width: 120 }];
 
 interface ICurrentState {
   offset: number;
@@ -29,7 +29,7 @@ export default {
       bus.emit(`${props.$id}-refresh`, message.payload);
     }
   },
-  Renderer(context, props: TableSelectRockConfig) {
+  Renderer(context, props: RapidTableSelectRockConfig) {
     const {
       listValueFieldName = "id",
       listTextFieldName = "name",
@@ -311,7 +311,7 @@ interface IRequestState {
   total?: number;
 }
 
-function useRequest(config: TableSelectRockConfig["requestConfig"], context: RockInstanceContext) {
+function useRequest(config: RapidTableSelectRockConfig["requestConfig"], context: RockInstanceContext) {
   const [state, setState] = useMergeState<IRequestState>({});
 
   const request = async (params: any) => {
@@ -359,7 +359,7 @@ function useRequest(config: TableSelectRockConfig["requestConfig"], context: Roc
   return { request, ...state };
 }
 
-function useSelectedRecords(props: TableSelectRockConfig, onSuccess: (records: any[]) => void) {
+function useSelectedRecords(props: RapidTableSelectRockConfig, onSuccess: (records: any[]) => void) {
   const { requestConfig: config, listValueFieldName = "id" } = props;
 
   const [loading, setLoading] = useState<boolean>(false);

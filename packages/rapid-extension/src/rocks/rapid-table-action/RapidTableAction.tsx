@@ -10,7 +10,7 @@ export default {
   $type: "rapidTableAction",
 
   Renderer(context, props) {
-    const { record, recordId, actionText, confirmText, onAction, disabled, disabledTooltipText } = props;
+    const { record, recordId, actionText, actionType, confirmText, onAction, disabled, disabledTooltipText, url } = props;
     let rockConfig: RockConfig = {
       $id: `${props.$id}-anchor`,
       $type: "anchor",
@@ -21,6 +21,10 @@ export default {
         text: actionText,
       },
     };
+
+    if (url) {
+      rockConfig.href = url;
+    }
 
     if (disabled) {
       rockConfig = {
