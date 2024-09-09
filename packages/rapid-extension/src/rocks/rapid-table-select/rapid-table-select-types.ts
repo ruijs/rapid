@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import { FindEntityOptions } from "../../rapid-types";
 import { FilterFieldConfig } from "../rapid-form-item/rapid-form-item-types";
 
-export interface TableSelectColumn {
+export interface RapidTableSelectColumn {
   code: string;
   title?: string;
   width?: number;
@@ -12,7 +12,7 @@ export interface TableSelectColumn {
   render?: string | ((record: any) => ReactNode);
 }
 
-export interface TableSelectRockConfig extends SimpleRockConfig {
+export interface RapidTableSelectRockConfig extends SimpleRockConfig {
   searchPlaceholder?: string;
   placeholder?: string;
   allowClear?: boolean;
@@ -23,7 +23,7 @@ export interface TableSelectRockConfig extends SimpleRockConfig {
   listTextFormat?: string;
   listTextFieldName?: string; // 默认 name
   listValueFieldName?: string; // 默认 id
-  columns?: TableSelectColumn[];
+  columns?: RapidTableSelectColumn[];
   dropdownMatchSelectWidth?: number;
   requestConfig: {
     baseUrl?: string;
