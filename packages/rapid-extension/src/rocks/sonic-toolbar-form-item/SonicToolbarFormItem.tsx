@@ -6,6 +6,7 @@ import { RapidFormItemRockConfig } from "../rapid-form-item/rapid-form-item-type
 import { SearchFormFilterConfiguration } from "../../types/rapid-entity-types";
 import { EntityStore } from "../../mod";
 import { searchParamsToFilters } from "../../functions/searchParamsToFilters";
+import { RapidEntityListFilterCache } from "../rapid-entity-search-form/RapidEntitySearchForm";
 
 export default {
   Renderer(context, props) {
@@ -47,13 +48,19 @@ export default {
               store.updateConfig({
                 filters: filters.length
                   ? [
-                    {
-                      operator: "or",
-                      filters,
-                    },
-                  ]
+                      {
+                        operator: "or",
+                        filters,
+                      },
+                    ]
                   : filters,
               });
+
+              // 启用高级查询参数缓存 & 设置参数缓存
+              if (props.enabledFilterCache && props.filterCacheName) {
+                RapidEntityListFilterCache.remove(props.filterCacheName);
+              }
+
               store.clearPaginationOffset();
               // 重新加载数据
               store.loadData();
