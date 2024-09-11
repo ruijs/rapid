@@ -2,13 +2,14 @@ import { handleComponentEvent, type Rock, type RockChildrenConfig, type RockConf
 import { renderRock, renderRockChildren } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./RapidEntityListMeta";
 import type { RapidEntityListRockConfig, RapidEntityListState } from "./rapid-entity-list-types";
-import { filter, findIndex, forEach, map, merge, reject, set, trim, uniq } from "lodash";
+import { filter, findIndex, forEach, isArray, isEmpty, map, merge, reject, set, trim, uniq } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import type { RapidEntity, RapidField } from "../../types/rapid-entity-types";
 import type { EntityStore, EntityStoreConfig } from "../../stores/entity-store";
 import RapidExtensionSetting from "../../RapidExtensionSetting";
 import { parseRockExpressionFunc } from "../../mod";
+import { RapidEntityListFilterCache } from "../rapid-entity-search-form/RapidEntitySearchForm";
 
 export default {
   onResolveState(props, state) {
@@ -61,11 +62,19 @@ export default {
         pagination:
           pageSize > 0
             ? {
-              limit: pageSize,
-              offset: ((props.pageNum || 1) - 1) * pageSize,
-            }
+                limit: pageSize,
+                offset: ((props.pageNum || 1) - 1) * pageSize,
+              }
             : undefined,
       };
+
+      // 启用高级查询参数缓存 & 获取并使用参数缓存
+      if (props.enabledFilterCache && props.filterCacheName) {
+        if (isArray(props.cacheFilters) && !isEmpty(props.cacheFilters)) {
+          set(listDataStoreConfig, "filters", props.cacheFilters);
+        }
+      }
+
       context.scope.addStore(listDataStoreConfig);
     }
   },
@@ -258,8 +267,8 @@ export default {
         pagination:
           props.pageSize > 0
             ? `{pageSize: ${
-              props.pageSize
-            }, current: $scope.vars["${`stores-${dataSourceCode}-pageNum`}"], total: $scope.stores.${dataSourceCode}?.data?.total}`
+                props.pageSize
+              }, current: $scope.vars["${`stores-${dataSourceCode}-pageNum`}"], total: $scope.stores.${dataSourceCode}?.data?.total}`
             : "false",
       };
     }
@@ -280,8 +289,8 @@ export default {
         ...tableExps,
         ...(selectionMode !== "none"
           ? {
-            "rowSelection.selectedRowKeys": `$scope.vars['${props.$id}-selectedIds']`,
-          }
+              "rowSelection.selectedRowKeys": `$scope.vars['${props.$id}-selectedIds']`,
+            }
           : {}),
       },
       size: "small",
@@ -299,41 +308,41 @@ export default {
       treeChildrenField: props.treeChildrenField,
       onRowClick: props.selectOnClickRow
         ? [
-          {
-            $action: "script",
-            script: async (event: RockEvent) => {
-              const { framework, page, scope } = event;
-              let nextSelectedIds = [];
-              let nextSelectedRecords = [];
-              const { record } = event.args[0];
-              const recordId = record.id;
-              if (selectionMode === "single") {
-                nextSelectedIds.push(recordId);
-                nextSelectedRecords.push(record);
-              } else if (selectionMode === "multiple") {
-                const currentSelectedIds = scope.vars[`${props.$id}-selectedIds`] || [];
-                const currentSelectedRecords = scope.vars[`${props.$id}-selectedRecords`] || [];
-                if (findIndex(currentSelectedIds, (item) => item === recordId) === -1) {
-                  nextSelectedIds = [...currentSelectedIds, recordId];
-                  nextSelectedRecords = [...currentSelectedRecords, record];
-                } else {
-                  nextSelectedIds = reject(currentSelectedIds, (item) => item === recordId);
-                  nextSelectedRecords = reject(currentSelectedRecords, (item) => item.id === recordId);
+            {
+              $action: "script",
+              script: async (event: RockEvent) => {
+                const { framework, page, scope } = event;
+                let nextSelectedIds = [];
+                let nextSelectedRecords = [];
+                const { record } = event.args[0];
+                const recordId = record.id;
+                if (selectionMode === "single") {
+                  nextSelectedIds.push(recordId);
+                  nextSelectedRecords.push(record);
+                } else if (selectionMode === "multiple") {
+                  const currentSelectedIds = scope.vars[`${props.$id}-selectedIds`] || [];
+                  const currentSelectedRecords = scope.vars[`${props.$id}-selectedRecords`] || [];
+                  if (findIndex(currentSelectedIds, (item) => item === recordId) === -1) {
+                    nextSelectedIds = [...currentSelectedIds, recordId];
+                    nextSelectedRecords = [...currentSelectedRecords, record];
+                  } else {
+                    nextSelectedIds = reject(currentSelectedIds, (item) => item === recordId);
+                    nextSelectedRecords = reject(currentSelectedRecords, (item) => item.id === recordId);
+                  }
                 }
-              }
-              scope.setVars({
-                [`${props.$id}-selectedIds`]: nextSelectedIds,
-                [`${props.$id}-selectedRecords`]: nextSelectedRecords,
-              });
-              handleComponentEvent("onSelectedIdsChange", framework, page as any, scope, props, props.onSelectedIdsChange, [
-                {
-                  selectedIds: nextSelectedIds,
-                  selectedRecords: nextSelectedRecords,
-                },
-              ]);
+                scope.setVars({
+                  [`${props.$id}-selectedIds`]: nextSelectedIds,
+                  [`${props.$id}-selectedRecords`]: nextSelectedRecords,
+                });
+                handleComponentEvent("onSelectedIdsChange", framework, page as any, scope, props, props.onSelectedIdsChange, [
+                  {
+                    selectedIds: nextSelectedIds,
+                    selectedRecords: nextSelectedRecords,
+                  },
+                ]);
+              },
             },
-          },
-        ]
+          ]
         : null,
       onChange: [
         {
@@ -348,10 +357,15 @@ export default {
               return;
             }
 
+            // 启用高级查询参数缓存 & 设置参数缓存
+            if (props.enabledFilterCache && props.filterCacheName) {
+              RapidEntityListFilterCache.set(props.filterCacheName, { pageNum: pagination.current || 1 });
+            }
+
             const store: EntityStore = event.scope.stores[dataSourceCode] as any;
             store.setPagination({
               limit: props.pageSize,
-              offset: ((pagination.current || 1) - 1) * props.pageSize
+              offset: ((pagination.current || 1) - 1) * props.pageSize,
             });
             await store.loadData();
           },

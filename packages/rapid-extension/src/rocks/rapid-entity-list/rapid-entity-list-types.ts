@@ -113,6 +113,9 @@ export interface RapidEntityListConfig {
    * dataSource 适配器， 遵循 rui expression 规范（解析）
    */
   dataSourceAdapter?: string;
+
+  enabledFilterCache?: boolean;
+  filterCacheName?: string;
 }
 
 export interface RapidEntityListRockConfig extends SimpleRockConfig, RapidEntityListConfig {}

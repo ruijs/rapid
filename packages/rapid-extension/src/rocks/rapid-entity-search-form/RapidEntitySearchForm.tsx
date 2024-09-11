@@ -2,8 +2,8 @@ import type { RockEvent, Rock, RockEventHandler, RuiRockLogger, RockConfig } fro
 import { handleComponentEvent } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntitySearchFormMeta from "./RapidEntitySearchFormMeta";
-import type { RapidEntitySearchFormRockConfig } from "./rapid-entity-search-form-types";
-import { assign, each, filter, isUndefined, map, merge, uniq } from "lodash";
+import type { RapidEntitySearchFormConfig, RapidEntitySearchFormRockConfig } from "./rapid-entity-search-form-types";
+import { assign, each, filter, get, isUndefined, map, merge, omit, set, uniq } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import type {
   RapidDataDictionary,
@@ -20,6 +20,8 @@ import type { RapidSelectConfig } from "../rapid-select/rapid-select-types";
 import { RapidOptionFieldRendererConfig } from "../rapid-option-field-renderer/rapid-option-field-renderer-types";
 import { searchParamsToFilters } from "../../functions/searchParamsToFilters";
 import { EntityTableSelectRockConfig } from "../rapid-entity-table-select/entity-table-select-types";
+import { RapidExtStorage } from "../../mod";
+import { useEffect } from "react";
 
 type SearchableFieldType = Exclude<RapidFieldType, "file" | "file[]" | "image" | "image[]">;
 
@@ -372,7 +374,7 @@ export default {
             [`stores-${dataSourceCode}-pageNum`]: 1,
           });
 
-          await handleComponentEvent("onSearch", event.framework, event.page as any, event.scope, props, props.onSearch, [{ filters }]);
+          await handleComponentEvent("onSearch", event.framework, event.page as any, event.scope, props, props.onSearch, [{ filters, formData: searchParams }]);
         },
       },
     ];
@@ -387,6 +389,7 @@ export default {
       actions: formConfig.actions || formActions,
       actionsAlign: formConfig.actionsAlign,
       defaultFormFields: formConfig.defaultFormFields,
+      formDataAdapter: formConfig.formDataAdapter,
       onFormSubmit: formConfig.onFormSubmit,
       onFormRefresh: formConfig.onFormRefresh,
       onValuesChange: formConfig.onValuesChange,
@@ -398,3 +401,48 @@ export default {
 
   ...RapidEntitySearchFormMeta,
 } as Rock<RapidEntitySearchFormRockConfig>;
+
+interface IFilterCacheData {
+  filters?: any[];
+  formData?: any;
+  pageNum?: number;
+}
+
+const FILTER_CACHE_KEY = "rapid_entity_list_filter_cache";
+
+export function getRapidEntityListFilters(formItems: RapidEntitySearchFormConfig["items"], formData: Record<string, any>) {
+  const filterConfigurations: SearchFormFilterConfiguration[] = [];
+  for (const formItem of formItems) {
+    filterConfigurations.push({
+      code: formItem.code,
+      filterMode: formItem.filterMode,
+      filterFields: formItem.filterFields,
+      itemType: formItem.itemType,
+      filterExtra: formItem.filterExtra,
+    });
+  }
+
+  const filters = searchParamsToFilters(filterConfigurations, formData);
+
+  return filters;
+}
+
+export class RapidEntityListFilterCache {
+  static set(listName: string, data: IFilterCacheData) {
+    const existedData = RapidExtStorage.get(FILTER_CACHE_KEY) || {};
+
+    set(existedData, listName, { ...get(existedData, listName), ...data });
+
+    RapidExtStorage.set(FILTER_CACHE_KEY, existedData);
+  }
+
+  static get(listName: string) {
+    const cacheData = RapidExtStorage.get(FILTER_CACHE_KEY);
+    return get(cacheData, listName);
+  }
+
+  static remove(listName: string) {
+    const existedData = RapidExtStorage.get(FILTER_CACHE_KEY) || {};
+    RapidExtStorage.set(FILTER_CACHE_KEY, omit(existedData, [listName]));
+  }
+}
