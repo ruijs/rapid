@@ -152,6 +152,7 @@ export type RapidFormItemType =
   | "box"
   | "text"
   | "textarea"
+  | "richText"
   | "password"
   | "number"
   | "switch"
