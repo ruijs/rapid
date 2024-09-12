@@ -80,6 +80,16 @@ const RapidEditor = memo<IProps>((props) => {
     };
   }, [editor]);
 
+  useEffect(() => {
+    if (editor) {
+      if (props.editorConfig?.readOnly) {
+        editor.disable();
+      } else {
+        editor.enable();
+      }
+    }
+  }, [props.editorConfig?.readOnly]);
+
   return (
     <div className="rui-rich-text-editor" style={{ height, zIndex: 100 }}>
       <Toolbar editor={editor} defaultConfig={toolbarConfig} mode="default" className="rui-rich-text-editor--toolbar" />

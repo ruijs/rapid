@@ -401,6 +401,7 @@ export default {
       column: formConfig.column,
       colon: formConfig.colon,
       actions: formConfig.actions,
+      actionsLayout: formConfig.actionsLayout,
       defaultFormFields: formConfig.defaultFormFields,
       formDataAdapter: formConfig.formDataAdapter,
       onFormSubmit: formConfig.onFormSubmit,
