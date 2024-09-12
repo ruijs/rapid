@@ -29,6 +29,7 @@ const formItemTypeToControlRockTypeMap: Record<Exclude<RapidFormItemType, "auto"
   image: "rapidUploaderFormInput",
   imageList: "rapidUploaderFormInput",
   json: "rapidJsonFormInput",
+  richText: "rapidRichTextEditor",
 };
 
 const defaultUploadProps = {
