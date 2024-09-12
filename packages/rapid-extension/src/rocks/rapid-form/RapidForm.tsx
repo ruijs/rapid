@@ -115,6 +115,7 @@ export default {
                 textAlign: props.actionsAlign || "left",
               },
               wrapperCol: isHorizonLayout ? { offset: 8 } : null,
+              ...props.actionsLayout,
               children:
                 formActionRocks.length == 1
                   ? formActionRocks

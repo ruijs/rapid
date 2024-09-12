@@ -40,6 +40,14 @@ export type RapidFormConfig = {
   actions?: RapidFormAction[];
 
   /**
+   * 表单操作布局
+   */
+  actionsLayout?: {
+    labelCol?: { span?: number; offset?: number };
+    wrapperCol?: { span?: number; offset?: number };
+  };
+
+  /**
    * 操作按钮对齐方式
    */
   actionsAlign?: "left" | "right" | "center";
