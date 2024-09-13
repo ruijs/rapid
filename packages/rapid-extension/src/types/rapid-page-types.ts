@@ -11,6 +11,11 @@ export type RapidPage = {
   code: string;
 
   /**
+   * 父页面编码，用于导航展开和高亮
+   */
+  parentCode?: string;
+
+  /**
    * 页面名称
    */
   name: string;
