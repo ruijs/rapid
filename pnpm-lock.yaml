@@ -397,6 +397,9 @@ importers:
 
   packages/rapid-extension:
     dependencies:
+      '@remix-run/node':
+        specifier: ~1.19.3
+        version: 1.19.3
       '@ruiapp/move-style':
         specifier: ^0.3.4
         version: 0.3.4(lodash@4.17.21)
