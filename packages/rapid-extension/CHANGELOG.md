@@ -1,5 +1,11 @@
 # @ruiapp/rapid-extension
 
+## 0.3.7
+
+### Patch Changes
+
+- 0aa89dd: add RapidPageLoader type
+
 ## 0.2.3
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # rapid-example-remix
 
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies [0aa89dd]
+  - @ruiapp/rapid-extension@0.3.7
+
 ## 0.1.4
 
 ### Patch Changes
