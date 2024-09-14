@@ -66,11 +66,13 @@ export default {
             $id: `${props.$id}-item-${formItemConfig.code}-col`,
             $type: "antdCol",
             span: (24 / (props.column || 1)) * (formItemConfig.column || 1),
+            form: state.form,
             children: {
               $id: `${props.$id}-item-${formItemConfig.code}`,
               $type: "rapidFormItem",
               ...formItemConfig,
             },
+            $exps: formItemConfig.$exps,
           };
         }
 
