@@ -1,5 +1,12 @@
 # @ruiapp/rapid-configure-tools
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [0aa89dd]
+  - @ruiapp/rapid-extension@0.3.7
+
 ## 0.1.7
 
 ### Patch Changes
