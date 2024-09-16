@@ -1,6 +1,7 @@
 import type {
   BugLevel,
   EnabledDisabledState,
+  PmProjectState,
   TaskState,
 } from "./data-dictionary-types";
 /**
@@ -356,7 +357,7 @@ export interface PmProject {
   /**
    * 项目状态
    */
-  state?: undefined;
+  state?: PmProjectState;
   /**
    * 任务类型
    */

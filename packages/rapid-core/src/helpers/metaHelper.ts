@@ -66,6 +66,15 @@ export function getEntityProperty(
   return property;
 }
 
+export function getEntityOwnPropertyByCode(model: RpdDataModel, propertyCode: string): RpdDataModelProperty | undefined {
+  return getEntityOwnProperty(model, (e) => e.code === propertyCode);
+}
+
+export function getEntityOwnProperty(model: RpdDataModel, predicate: (item: RpdDataModelProperty) => boolean): RpdDataModelProperty | undefined {
+  let property = model.properties.find(predicate);
+  return property;
+}
+
 export function getEntityPropertyByFieldName(server: IRpdServer, model: RpdDataModel, fieldName: string): RpdDataModelProperty | undefined {
   let property = getEntityPropertyByCode(server, model, fieldName);
   if (!property) {
