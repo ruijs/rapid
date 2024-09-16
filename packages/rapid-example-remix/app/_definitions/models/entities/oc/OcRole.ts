@@ -50,6 +50,17 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       selfIdColumnName: "role_id",
     },
   ],
+  indexes: [
+    {
+      properties: ["name"],
+      conditions: [
+        {
+          field: "deletedAt",
+          operator: "notNull",
+        },
+      ],
+    },
+  ],
 };
 
 export default entity;

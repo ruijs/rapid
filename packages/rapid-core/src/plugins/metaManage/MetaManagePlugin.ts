@@ -30,6 +30,7 @@ import { find, isString, map } from "lodash";
 import { getEntityPropertiesIncludingBase, getEntityPropertyByCode, isOneRelationProperty, isRelationProperty } from "~/helpers/metaHelper";
 import { DataAccessPgColumnTypes } from "~/dataAccess/dataAccessTypes";
 import { pgPropertyTypeColumnMap } from "~/dataAccess/columnTypeMapper";
+import { convertModelIndexConditionsToRowFilterOptions } from "~/helpers/filterHelper";
 
 class MetaManager implements RapidPlugin {
   get code(): string {
@@ -388,6 +389,7 @@ async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdAppl
       continue;
     }
 
+    logger.debug(`Creating indexes of table ${queryBuilder.quoteTable(model)}`);
     for (const index of model.indexes) {
       const sqlCreateIndex = generateTableIndexDDL(queryBuilder, server, model, index);
       await server.tryQueryDatabaseObject(sqlCreateIndex, []);
@@ -493,7 +495,8 @@ function generateTableIndexDDL(queryBuilder: IQueryBuilder, server: IRpdServer, 
   })} (${indexColumns.join(", ")})`;
 
   if (index.conditions) {
-    ddl += ` WHERE ${queryBuilder.buildFiltersExpression(model, index.conditions)}`;
+    const rowFilterOptions = convertModelIndexConditionsToRowFilterOptions(model, index.conditions);
+    ddl += ` WHERE ${queryBuilder.buildFiltersExpression(model, rowFilterOptions)}`;
   }
 
   return ddl;
