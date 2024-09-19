@@ -50,26 +50,19 @@ export function parseConfigToFilters(filterConfigs: FilterFieldConfig[], value: 
       return;
     }
 
-    if (c.operator === "range") {
+    if (c.operator === "range" || c.operator === "between") {
       const { rangeUnit } = c.extra || {};
 
-      if (!isArray(value)) {
-        return;
+      if (!isArray(value) && value.length != 2) {
+        throw new Error(`Filter config operator '${c.operator}' need two values.`);
       }
 
-      filters.push({
-        field: c.field,
-        operator: "gte",
-        value: value[0] && rangeUnit ? moment(value[0]).startOf(rangeUnit) : value[0],
-        itemType: c.itemType,
-      });
-      filters.push({
-        field: c.field,
-        operator: "lt",
-        value: value[1] && rangeUnit ? moment(value[1]).add(1, rangeUnit).startOf(rangeUnit) : value[1],
-        itemType: c.itemType,
-      });
-      return;
+      c.operator = "between";
+
+      value = [
+        value[0] && rangeUnit ? moment(value[0]).startOf(rangeUnit) : value[0],
+        value[1] && rangeUnit ? moment(value[1]).startOf(rangeUnit) : value[1],
+      ];
     }
 
     filters.push({

@@ -15,11 +15,12 @@ import {
   ColumnNameWithTableName,
   DataAccessPgColumnTypes,
   FindRowArrayFilterOptions,
+  FindRowRangeFilterOptions,
 } from "~/dataAccess/dataAccessTypes";
 import { pgPropertyTypeColumnMap } from "~/dataAccess/columnTypeMapper";
 
-const objLeftQuoteChar = '"';
-const objRightQuoteChar = '"';
+const objLeftQuoteChar = "\"";
+const objRightQuoteChar = "\"";
 
 const relationalOperatorsMap = new Map<RowFilterRelationalOperators, string>([
   ["eq", "="],
@@ -222,7 +223,7 @@ export default class QueryBuilder {
       paramToLiteral: false,
     };
     let { filters } = options;
-    let command = 'SELECT COUNT(*)::int as "count" FROM ';
+    let command = "SELECT COUNT(*)::int as \"count\" FROM ";
 
     command += this.quoteTable(model);
 
@@ -246,7 +247,7 @@ export default class QueryBuilder {
       paramToLiteral: false,
     };
     let { filters } = options;
-    let command = 'SELECT COUNT(*)::int as "count" FROM ';
+    let command = "SELECT COUNT(*)::int as \"count\" FROM ";
 
     command += `${this.quoteTable(derivedModel)} LEFT JOIN ${this.quoteTable(baseModel)} ON ${this.quoteObject(derivedModel.tableName)}.id = ${this.quoteObject(
       baseModel.tableName,
@@ -413,6 +414,8 @@ function buildFilterQuery(level: number, ctx: BuildQueryContext, filter: RowFilt
     return buildUnaryFilterQuery(ctx, filter);
   } else if (operator === "in" || operator === "notIn") {
     return buildInFilterQuery(ctx, filter);
+  } else if (operator === "between") {
+    return buildRangeFilterQuery(ctx, filter);
   } else if (operator === "contains") {
     return buildContainsFilterQuery(ctx, filter);
   } else if (operator === "notContains") {
@@ -477,6 +480,31 @@ function buildInFilterQuery(ctx: BuildQueryContext, filter: FindRowSetFilterOpti
     } else {
       command += `ALL($${ctx.params.length}::${filter.itemType || "int"}[])`;
     }
+  }
+
+  return command;
+}
+
+function buildRangeFilterQuery(ctx: BuildQueryContext, filter: FindRowRangeFilterOptions) {
+  let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
+
+  if (filter.operator === "between") {
+    if (filter.value.length != 2) {
+      throw new Error(`Filter operator '${filter.operator}' need two values.`);
+    }
+
+    command += " BETWEEN ";
+
+    ctx.params.push(filter.value[0]);
+    command += `$${ctx.params.length}`;
+
+    command += " AND "
+
+    ctx.params.push(filter.value[1]);
+    command += `$${ctx.params.length}`;
+
+  } else {
+    throw new Error(`Filter operator '${filter.operator}' is not supported.`);
   }
 
   return command;
