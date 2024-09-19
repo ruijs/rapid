@@ -300,9 +300,9 @@ export interface RapidEntityIndex {
 export type RapidEntityIndexPropertyConfig =
   | string
   | {
-      code: string;
-      order?: "asc" | "desc";
-    };
+  code: string;
+  order?: "asc" | "desc";
+};
 
 export type RapidEntityIndexOptions =
   | FindEntityRelationalFilterOptions
@@ -310,7 +310,13 @@ export type RapidEntityIndexOptions =
   | FindEntityLogicalFilterOptions<RapidEntityIndexOptions>
   | FindEntityUnaryFilterOptions;
 
-export type RapidSearchFormItemFilterMode = EntityFilterRelationalOperators | EntityFilterArrayOperators | EntityFilterSetOperators | "range" | "overlap";
+export type RapidSearchFormItemFilterMode =
+  EntityFilterRelationalOperators
+  | EntityFilterArrayOperators
+  | EntityFilterSetOperators
+  | EntityFilterRangeOperators
+  | "range" // deprecated, use between
+  | "overlap";
 
 export interface SearchFormFilterConfiguration extends RapidSearchFormItemConfig {
   /**
@@ -346,21 +352,22 @@ export type FindEntityFindRelationEntitiesOptions = FindEntityFindOneRelationEnt
 export type FindEntityFindOneRelationEntitiesOptions =
   | true
   | {
-      properties?: string[];
-      relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
-      keepNonPropertyFields?: boolean;
-    };
+  properties?: string[];
+  relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
+  keepNonPropertyFields?: boolean;
+};
 
 export type FindEntityFindManyRelationEntitiesOptions =
   | true
   | {
-      properties?: string[];
-      relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
-      filters?: EntityFilterOptions[];
-      orderBy?: FindEntityOrderByOptions[];
-      pagination?: FindEntityPaginationOptions;
-      keepNonPropertyFields?: boolean;
-    };
+  properties?: string[];
+  relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
+  filters?: EntityFilterOptions[];
+  orderBy?: FindEntityOrderByOptions[];
+  pagination?: FindEntityPaginationOptions;
+  keepNonPropertyFields?: boolean;
+};
+
 export interface FindEntityRelationalFilterOptions {
   field: string;
   operator: EntityFilterRelationalOperators;
@@ -441,3 +448,5 @@ export type EntityFilterLogicalOperators = "or" | "and";
 export type EntityFilterUnaryOperators = "null" | "notNull";
 
 export type EntityFilterExistenceOperators = "exists" | "notExists";
+
+export type EntityFilterRangeOperators = "between"

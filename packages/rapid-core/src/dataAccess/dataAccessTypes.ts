@@ -32,6 +32,8 @@ export type RowFilterArrayOperators = "arrayContains" | "arrayOverlap";
 
 export type RowFilterSetOperators = "in" | "notIn";
 
+export type RowFilterRangeOperators = "between";
+
 export type RowFilterLogicalOperators = "or" | "and";
 
 export type RowFilterUnaryOperators = "null" | "notNull";
@@ -42,6 +44,7 @@ export type RowFilterOperators =
   | RowFilterRelationalOperators
   | RowFilterArrayOperators
   | RowFilterSetOperators
+  | RowFilterRangeOperators
   | RowFilterLogicalOperators
   | RowFilterUnaryOperators
   | RowFilterExistenceOperators;
@@ -50,6 +53,7 @@ export type RowFilterOptions =
   | FindRowRelationalFilterOptions
   | FindRowArrayFilterOptions
   | FindRowSetFilterOptions
+  | FindRowRangeFilterOptions
   | FindRowLogicalFilterOptions
   | FindRowUnaryFilterOptions
   | FindRowExistenceFilterOptions;
@@ -58,6 +62,7 @@ export type RowNonRelationPropertyFilterOptions =
   | FindRowRelationalFilterOptions
   | FindRowArrayFilterOptions
   | FindRowSetFilterOptions
+  | FindRowRangeFilterOptions
   | FindRowUnaryFilterOptions;
 
 export type ColumnSelectOptions = string | ColumnNameWithTableName;
@@ -94,6 +99,13 @@ export interface FindRowArrayFilterOptions {
 export interface FindRowSetFilterOptions {
   field: ColumnSelectOptions;
   operator: RowFilterSetOperators;
+  value: any[];
+  itemType?: string;
+}
+
+export interface FindRowRangeFilterOptions {
+  field: ColumnSelectOptions;
+  operator: RowFilterRangeOperators;
   value: any[];
   itemType?: string;
 }
