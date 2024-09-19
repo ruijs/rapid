@@ -1,5 +1,11 @@
 # @ruiapp/rapid-extension
 
+## 0.3.8
+
+### Patch Changes
+
+- 146a99d: add between filterMode, range is deprecated
+
 ## 0.3.7
 
 ### Patch Changes
