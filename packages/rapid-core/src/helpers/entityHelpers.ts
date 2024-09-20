@@ -16,7 +16,7 @@ export function getEntityPartChanges(server: IRpdServer, model: RpdDataModel, be
   let changes = {};
   for (const key in after) {
     const property = getEntityPropertyByCode(server, model, key);
-    if (isOneRelationProperty(property)) {
+    if (property && isOneRelationProperty(property)) {
       const afterValue: number | { id: number } | null = after[key];
       const beforeValue: number | { id: number } | null = before[key] || before[property.targetIdColumnName];
       if (afterValue) {
