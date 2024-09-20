@@ -288,6 +288,11 @@ export type RapidField<TEntitySingularCodes extends string = string, TDictionary
    * 最大长度
    */
   maxLength?: number;
+
+  /**
+   * 当设置为`true`时，仅允许在创建时设置此属性的值，不允许更新。
+   */
+  readonly?: boolean;
 };
 
 export interface RapidEntityIndex {
@@ -300,9 +305,9 @@ export interface RapidEntityIndex {
 export type RapidEntityIndexPropertyConfig =
   | string
   | {
-  code: string;
-  order?: "asc" | "desc";
-};
+      code: string;
+      order?: "asc" | "desc";
+    };
 
 export type RapidEntityIndexOptions =
   | FindEntityRelationalFilterOptions
@@ -311,7 +316,7 @@ export type RapidEntityIndexOptions =
   | FindEntityUnaryFilterOptions;
 
 export type RapidSearchFormItemFilterMode =
-  EntityFilterRelationalOperators
+  | EntityFilterRelationalOperators
   | EntityFilterArrayOperators
   | EntityFilterSetOperators
   | EntityFilterRangeOperators
@@ -352,21 +357,21 @@ export type FindEntityFindRelationEntitiesOptions = FindEntityFindOneRelationEnt
 export type FindEntityFindOneRelationEntitiesOptions =
   | true
   | {
-  properties?: string[];
-  relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
-  keepNonPropertyFields?: boolean;
-};
+      properties?: string[];
+      relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
+      keepNonPropertyFields?: boolean;
+    };
 
 export type FindEntityFindManyRelationEntitiesOptions =
   | true
   | {
-  properties?: string[];
-  relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
-  filters?: EntityFilterOptions[];
-  orderBy?: FindEntityOrderByOptions[];
-  pagination?: FindEntityPaginationOptions;
-  keepNonPropertyFields?: boolean;
-};
+      properties?: string[];
+      relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
+      filters?: EntityFilterOptions[];
+      orderBy?: FindEntityOrderByOptions[];
+      pagination?: FindEntityPaginationOptions;
+      keepNonPropertyFields?: boolean;
+    };
 
 export interface FindEntityRelationalFilterOptions {
   field: string;
@@ -449,4 +454,4 @@ export type EntityFilterUnaryOperators = "null" | "notNull";
 
 export type EntityFilterExistenceOperators = "exists" | "notExists";
 
-export type EntityFilterRangeOperators = "between"
+export type EntityFilterRangeOperators = "between";

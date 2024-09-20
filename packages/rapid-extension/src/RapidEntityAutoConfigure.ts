@@ -46,6 +46,8 @@ export function autoConfigureRapidField(sourceField: RapidField): RapidField {
 
     minLength: sourceField.minLength,
     maxLength: sourceField.maxLength,
+
+    readonly: sourceField.readonly,
   };
   return field;
 }
@@ -125,6 +127,7 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: 
           type: "datetime",
           required: false,
           defaultValue: "now()",
+          readonly: true,
         },
         {
           name: "创建人",
