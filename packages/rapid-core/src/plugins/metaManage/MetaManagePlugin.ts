@@ -495,7 +495,8 @@ function generateTableIndexDDL(queryBuilder: IQueryBuilder, server: IRpdServer, 
   })} (${indexColumns.join(", ")})`;
 
   if (index.conditions) {
-    const rowFilterOptions = convertModelIndexConditionsToRowFilterOptions(model, index.conditions);
+    const logger = server.getLogger();
+    const rowFilterOptions = convertModelIndexConditionsToRowFilterOptions(logger, model, index.conditions);
     ddl += ` WHERE ${queryBuilder.buildFiltersExpression(model, rowFilterOptions)}`;
   }
 

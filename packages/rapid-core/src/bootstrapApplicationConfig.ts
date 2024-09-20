@@ -230,6 +230,14 @@ export default {
           required: false,
         },
         {
+          name: "readonly",
+          code: "readonly",
+          columnName: "readonly",
+          type: "boolean",
+          required: true,
+          defaultValue: "false",
+        },
+        {
           name: "config",
           code: "config",
           columnName: "config",

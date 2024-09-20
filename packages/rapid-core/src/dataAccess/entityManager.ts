@@ -1008,6 +1008,23 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
 
   changes = getEntityPartChanges(server, model, entity, entityToSave);
 
+  // check readonly properties
+  Object.keys(changes).forEach((propertyName) => {
+    let isReadonlyProperty = false;
+    const property = getEntityPropertyByCode(server, model, propertyName);
+    if (property && property.readonly) {
+      isReadonlyProperty = true;
+    } else {
+      const oneRelationProperty = getEntityProperty(server, model, (item) => item.relation === "one" && item.targetIdColumnName === propertyName);
+      if (oneRelationProperty && oneRelationProperty.readonly) {
+        isReadonlyProperty = true;
+      }
+    }
+    if (isReadonlyProperty) {
+      throw new Error(`Updating "${property.name}" property is not allowed because it's readonly.`);
+    }
+  });
+
   // check unique constraints
   if (!options.postponeUniquenessCheck) {
     if (model.indexes && model.indexes.length) {

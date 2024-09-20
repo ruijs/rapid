@@ -302,6 +302,11 @@ export interface RpdDataModelProperty {
    * 当设置了 linkTableName 时，可以设置关联关系表所在的 Schema。
    */
   linkSchema?: string;
+
+  /**
+   * 当设置为`true`时，仅允许在创建时设置此属性的值，不允许更新。
+   */
+  readonly?: boolean;
 }
 
 export type RpdDataPropertyTypes =

@@ -12,6 +12,7 @@ import { getEntityOwnProperty, getEntityOwnPropertyByCode, isManyRelationPropert
 import { IRpdServer } from "~/core/server";
 import { isPlainObject } from "lodash";
 import { RowFilterOptions } from "~/dataAccess/dataAccessTypes";
+import { Logger } from "~/facilities/log/LogFacility";
 
 export function removeFiltersWithNullValue(filters?: EntityFilterOptions[]) {
   const result: EntityFilterOptions[] = [];
@@ -58,7 +59,7 @@ function transformFilterWithSubFilters(
   return filter;
 }
 
-export function convertModelIndexConditionsToRowFilterOptions(model: RpdDataModel, filters: RpdDataModelIndexOptions[]) {
+export function convertModelIndexConditionsToRowFilterOptions(logger: Logger, model: RpdDataModel, filters: RpdDataModelIndexOptions[]) {
   if (!filters || !filters.length) {
     return [];
   }
@@ -69,15 +70,23 @@ export function convertModelIndexConditionsToRowFilterOptions(model: RpdDataMode
     if (operator === "and" || operator === "or") {
       replacedFilters.push({
         operator: operator,
-        filters: convertModelIndexConditionsToRowFilterOptions(model, filter.filters),
+        filters: convertModelIndexConditionsToRowFilterOptions(logger, model, filter.filters),
       });
     } else {
-      replacedFilters.push(replaceModelIndexConditionEntityPropertyWithTableColumn(model, filter));
+      const replacedFilter = replaceModelIndexConditionEntityPropertyWithTableColumn(logger, model, filter);
+      if (replacedFilter) {
+        replacedFilters.push(replacedFilter);
+      }
     }
   }
   return replacedFilters;
 }
-export function replaceModelIndexConditionEntityPropertyWithTableColumn(model: RpdDataModel, filter: RpdDataModelIndexOptions): RowFilterOptions {
+
+export function replaceModelIndexConditionEntityPropertyWithTableColumn(
+  logger: Logger,
+  model: RpdDataModel,
+  filter: RpdDataModelIndexOptions,
+): RowFilterOptions {
   const { operator } = filter;
   const filterField = (filter as EntityNonRelationPropertyFilterOptions).field;
   let property: RpdDataModelProperty = getEntityOwnPropertyByCode(model, filterField);
@@ -92,12 +101,14 @@ export function replaceModelIndexConditionEntityPropertyWithTableColumn(model: R
         filterValue = filterValue.id;
       }
     } else if (isManyRelationProperty(property)) {
-      throw new Error(`Condition on many-relation property "${property.code}" is not supported.`);
+      logger.warn(`Index condition on many-relation property "${property.code}" is not supported.`);
+      return null;
     } else {
       columnName = property.columnName || property.code;
     }
   } else if ((operator as any) === "exists" || (operator as any) === "notExists") {
-    throw new Error(`"exists" and "notExists" operators are not supported in index conditions.`);
+    logger.warn(`"exists" and "notExists" operators are not supported in index conditions.`);
+    return null;
   } else {
     property = getEntityOwnProperty(model, (property) => {
       return property.columnName === filterField;
@@ -113,14 +124,16 @@ export function replaceModelIndexConditionEntityPropertyWithTableColumn(model: R
 
       if (property) {
         if (isManyRelationProperty(property)) {
-          throw new Error(`Condition on many-relation property "${property.code}" is not supported.`);
+          logger.warn(`Index condition on many-relation property "${property.code}" is not supported.`);
+          return null;
         }
         columnName = property.targetIdColumnName;
         if (isPlainObject(filterValue)) {
           filterValue = filterValue.id;
         }
       } else {
-        throw new Error(`Unknown field "${filterField}" in index conditions.`);
+        logger.warn(`Unknown field "${filterField}" in index conditions.`);
+        return null;
       }
     }
   }

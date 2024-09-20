@@ -53,6 +53,7 @@ export function newPropertyUpdater(rapidConfigApi: AxiosInstance) {
         "selfIdColumnName",
         "linkTableName",
         "linkDbSchema",
+        "readonly",
       ]);
       if (changedFieldNames.length) {
         console.log(`${this.modelType} ${this.inputTitlePrinter(inputEntity)} changed with these fields:`, changedFieldNames);
