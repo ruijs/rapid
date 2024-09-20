@@ -1,6 +1,6 @@
 {
   "name": "@ruiapp/rapid-extension",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "description": "",
   "main": "dist/mod.js",
   "types": "dist/mod.d.ts",
@@ -49,6 +49,7 @@
     "react-dom": "^18.2.0"
   },
   "dependencies": {
-    "pluralize": "^8.0.0"
+    "pluralize": "^8.0.0",
+    "snabbdom": "^3.6.2"
   }
 }
