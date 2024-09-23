@@ -1,5 +1,11 @@
 # @ruiapp/rapid-configure-tools
 
+## 0.2.5
+
+### Patch Changes
+
+- 661cf18: fix build order
+
 ## 0.2.4
 
 ### Patch Changes
