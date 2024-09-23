@@ -1,4 +1,4 @@
-import type { RockConfig, SimpleRockConfig, StoreConfig } from "@ruiapp/move-style";
+import type { RockConfig, RockEventHandlerConfig, SimpleRockConfig, StoreConfig } from "@ruiapp/move-style";
 
 export interface SonicMainSecondaryLayoutConfig {
   stores?: StoreConfig[];
@@ -11,6 +11,7 @@ export interface SonicMainSecondaryLayoutConfig {
   secondaryTitle?: string;
   secondaryColSpan: number;
   secondaryClassName?: string;
+  onSelectedIdsChange?: RockEventHandlerConfig;
 }
 
 export interface SonicMainSecondaryLayoutRockConfig extends SimpleRockConfig, SonicMainSecondaryLayoutConfig {}
