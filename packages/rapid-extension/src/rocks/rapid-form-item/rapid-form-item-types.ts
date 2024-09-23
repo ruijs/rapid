@@ -101,6 +101,10 @@ export type RapidFormItemConfig = {
    */
   rendererProps?: Record<string, any>;
 
+  /**
+   * 表单项唯一性字段
+   */
+  uniqueKey?: string;
   labelCol?: { span?: number; offset?: number };
   wrapperCol?: { span?: number; offset?: number };
 

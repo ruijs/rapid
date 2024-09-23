@@ -1,6 +1,6 @@
 {
   "name": "@ruiapp/rapid-extension",
-  "version": "0.3.11",
+  "version": "0.3.12",
   "description": "",
   "main": "dist/mod.js",
   "types": "dist/mod.d.ts",

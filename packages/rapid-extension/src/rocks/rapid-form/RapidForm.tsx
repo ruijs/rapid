@@ -57,18 +57,18 @@ export default {
         let formItemRockConfig: RockConfig;
         if (formItemConfig.hidden) {
           formItemRockConfig = {
-            $id: `${props.$id}-item-${formItemConfig.code}`,
+            $id: `${props.$id}-item-${formItemConfig.uniqueKey || formItemConfig.code}`,
             $type: "rapidFormItem",
             ...formItemConfig,
           };
         } else {
           formItemRockConfig = {
-            $id: `${props.$id}-item-${formItemConfig.code}-col`,
+            $id: `${props.$id}-item-${formItemConfig.uniqueKey || formItemConfig.code}-col`,
             $type: "antdCol",
             span: (24 / (props.column || 1)) * (formItemConfig.column || 1),
             form: state.form,
             children: {
-              $id: `${props.$id}-item-${formItemConfig.code}`,
+              $id: `${props.$id}-item-${formItemConfig.uniqueKey || formItemConfig.code}`,
               $type: "rapidFormItem",
               ...formItemConfig,
             },
