@@ -16,12 +16,12 @@ export default class MetaFileGenerator {
     }
 
     console.log("Generating meta files...");
+    console.log("generateDictionaryCodes");
+    generateDictionaryCodes(declarationsDirectory);
     console.log("generateModelIndexFiles");
     generateModelIndexFiles(declarationsDirectory);
     console.log("generateModelCodes");
     generateModelCodes(declarationsDirectory);
-    console.log("generateDictionaryCodes");
-    generateDictionaryCodes(declarationsDirectory);
     console.log("generateSdRpdModelTypes");
     generateSdRpdModelTypes(declarationsDirectory);
     console.log("Done.");
