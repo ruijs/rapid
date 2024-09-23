@@ -92,6 +92,7 @@ function generateDataFormItemForOptionProperty(option: GenerateEntityFormItemOpt
     type: formItemConfig.type,
     valueFieldType: valueFieldType,
     multipleValues: valueFieldType === "option[]",
+    uniqueKey: formItemConfig.uniqueKey,
     code: formItemConfig.code,
     required: formItemConfig.required,
     label: formItemConfig.label,
@@ -140,6 +141,7 @@ export function generateDataFormItemForRelationProperty(option: GenerateEntityFo
     type: formItemConfig.type,
     valueFieldType: "relation",
     multipleValues: field.relation === "many",
+    uniqueKey: formItemConfig.uniqueKey,
     code: formItemConfig.code,
     required: formItemConfig.required,
     label: formItemConfig.label,
@@ -174,6 +176,7 @@ function generateDataFormItem(logger: RuiRockLogger, entityFormProps: any, optio
   let formItem: Omit<RapidFormItemConfig, "$type"> = {
     type: formItemConfig.type,
     code: formItemConfig.code,
+    uniqueKey: formItemConfig.uniqueKey,
     required: formItemConfig.required,
     label: formItemConfig.label,
     hidden: formItemConfig.hidden,
