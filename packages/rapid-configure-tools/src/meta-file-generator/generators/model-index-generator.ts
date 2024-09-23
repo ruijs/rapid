@@ -204,7 +204,7 @@ export function generateModelIndexFiles(declarationsDirectory: string) {
     outputDir,
     typeDefFilePath,
     categoryDirName: "pages",
-    modelTypeName: "RapidPage",
+    modelTypeName: "RapidPageLoader",
     modelsFileName: "page-models",
   });
 
