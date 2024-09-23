@@ -3,6 +3,7 @@ import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./SonicMainSecondaryLayoutMeta";
 import type { SonicMainSecondaryLayoutRockConfig } from "./sonic-main-secondary-layout-types";
 import { each, map } from "lodash";
+import { strictToRockEventHandlers } from "../../utils/rock-utility";
 
 export default {
   onReceiveMessage(message, state, props, rockInstance) {
@@ -16,6 +17,8 @@ export default {
   },
 
   Renderer(context, props) {
+    const onSelectedIdsChange = strictToRockEventHandlers(props.onSelectedIdsChange);
+
     props.main.onSelectedIdsChange = [
       {
         $action: "setVars",
@@ -29,15 +32,18 @@ export default {
         $action: "loadScopeData",
         scopeId: `${props.$id}-scope`,
       },
-      ...map(props.secondary, (childRock) => {
-        return {
-          $action: "sendComponentMessage",
-          componentId: childRock.$id,
-          message: {
-            name: "refreshView",
-          },
-        };
-      }),
+
+      ...(onSelectedIdsChange.length
+        ? onSelectedIdsChange
+        : map(props.secondary, (childRock) => {
+            return {
+              $action: "sendComponentMessage",
+              componentId: childRock.$id,
+              message: {
+                name: "refreshView",
+              },
+            };
+          })),
     ];
 
     each(props.secondary, (childRock) => {
