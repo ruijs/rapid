@@ -101,6 +101,9 @@ export type RapidFormItemConfig = {
    */
   rendererProps?: Record<string, any>;
 
+  labelCol?: { span?: number; offset?: number };
+  wrapperCol?: { span?: number; offset?: number };
+
   $exps?: RockPropExpressions;
 };
 
