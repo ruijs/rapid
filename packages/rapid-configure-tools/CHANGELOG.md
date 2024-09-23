@@ -1,5 +1,11 @@
 # @ruiapp/rapid-configure-tools
 
+## 0.2.4
+
+### Patch Changes
+
+- 7ea5699: use RapidPageLoader instead of RapidPage when gen page-models
+
 ## 0.2.2
 
 ### Patch Changes
