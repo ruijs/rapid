@@ -45,7 +45,9 @@ export default class RapidModelsUpdater {
       axios.create({
         jar,
         baseURL: rapidApiUrl,
-        validateStatus: null,
+        validateStatus: (status) => {
+          return Math.floor(status / 100) == 2;
+        },
       }),
     );
   }
