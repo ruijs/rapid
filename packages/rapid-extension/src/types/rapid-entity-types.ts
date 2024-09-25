@@ -87,6 +87,7 @@ export type RapidFieldType =
   | "double"
   | "decimal"
   | "text"
+  | "richText"
   | "boolean"
   | "date"
   | "time"

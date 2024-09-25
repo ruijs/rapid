@@ -23,7 +23,7 @@ import { EntityTableSelectRockConfig } from "../rapid-entity-table-select/entity
 import { RapidExtStorage } from "../../mod";
 import { useEffect } from "react";
 
-type SearchableFieldType = Exclude<RapidFieldType, "file" | "file[]" | "image" | "image[]">;
+type SearchableFieldType = Exclude<RapidFieldType, "file" | "file[]" | "image" | "image[]" | "richText">;
 
 const fieldTypeToFormItemTypeMap: Record<SearchableFieldType, RapidFormItemType | null> = {
   text: "text",
