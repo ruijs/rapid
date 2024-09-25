@@ -35,6 +35,7 @@ const fieldTypeToFormItemTypeMap: Record<RapidFieldType, RapidFormItemType | nul
   "file[]": "fileList",
   image: "image",
   "image[]": "imageList",
+  richText: "richText",
 };
 
 const validationMessagesByFieldType: Partial<Record<RapidFieldType, any>> = {
@@ -166,6 +167,9 @@ function generateDataFormItem(logger: RuiRockLogger, entityFormProps: any, optio
   }
 
   let valueFieldType = formItemConfig.valueFieldType || rpdField?.type || "text";
+  if (formItemConfig.type === "richText") {
+    valueFieldType = "richText";
+  }
 
   if (valueFieldType === "option" || valueFieldType === "option[]") {
     return generateDataFormItemForOptionProperty(option, valueFieldType);
@@ -418,7 +422,7 @@ export default {
       onValuesChange: formConfig.onValuesChange,
       items: formItems,
       dataSourceCode: formConfig.mode === "new" ? null : props.dataSourceCode || "detail",
-      onFinish: formConfig.mode === "view" ? null : formOnFinish,
+      onFinish: formConfig.mode === "view" ? null : props.onFinish || formOnFinish,
     };
     return renderRock({ context, rockConfig });
   },
