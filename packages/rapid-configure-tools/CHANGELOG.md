@@ -1,5 +1,11 @@
 # @ruiapp/rapid-configure-tools
 
+## 0.2.6
+
+### Patch Changes
+
+- 15c31f3: fix axio validateStatus
+
 ## 0.2.5
 
 ### Patch Changes
