@@ -61,11 +61,11 @@ export default {
               Modal.confirm({
                 title: confirmText,
                 onOk: async () => {
-                  handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, [record]);
+                  handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, [{ record, recordId }]);
                 },
               });
             } else {
-              handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, [record]);
+              handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, [{ record, recordId }]);
             }
           },
         },

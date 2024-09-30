@@ -480,7 +480,7 @@ export default {
                 "modal-editEntity-open": true,
               },
               $exps: {
-                "vars.activeEntityId": "$event.sender['data-record-id']",
+                "vars.activeEntityId": "$event.args[0].recordId",
               },
             },
             {

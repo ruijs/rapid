@@ -152,7 +152,7 @@ const rapidPage: RapidPage = {
               method: "PATCH",
               data: { $operation: { type: "finish" } },
               $exps: {
-                url: `"/api/app/pm_tasks/" + $event.sender['data-record-id']`,
+                url: `"/api/app/pm_tasks/" + $event.args[0].recordId`,
               },
             },
             {

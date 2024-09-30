@@ -194,7 +194,7 @@ const page: RapidPage = {
                       },
                       $exps: {
                         "data.id": "$rui.parseQuery().id",
-                        "data.relations": "[{id: $event.sender['data-record-id']}]",
+                        "data.relations": "[{id: $event.args[0].recordId}]",
                       },
                     },
                     {
