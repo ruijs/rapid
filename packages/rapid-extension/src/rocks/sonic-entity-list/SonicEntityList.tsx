@@ -251,7 +251,7 @@ export default {
       ? {
           $type: "antdModal",
           $id: `${props.$id}-newModal`,
-          title: `新建${entityName}`,
+          title: props.newModalTitle || `新建${entityName}`,
           okText: "确定",
           cancelText: "取消",
           maskClosable: false,
@@ -326,7 +326,7 @@ export default {
       ? {
           $type: "antdModal",
           $id: `${props.$id}-editModal`,
-          title: `修改${entityName}`,
+          title: props.editModalTitle || `修改${entityName}`,
           okText: "确定",
           cancelText: "取消",
           maskClosable: false,
@@ -480,7 +480,7 @@ export default {
                 "modal-editEntity-open": true,
               },
               $exps: {
-                "vars.activeEntityId": "$event.sender['data-record-id']",
+                "vars.activeEntityId": "$event.args[0].recordId",
               },
             },
             {

@@ -5,7 +5,9 @@ import { RapidEntitySearchFormConfig } from "../rapid-entity-search-form/rapid-e
 import { IRapidEntityListToolboxConfig } from "../rapid-entity-list-toolbox/RapidEntityListToolbox";
 
 export interface SonicEntityListConfig extends RapidEntityListConfig {
+  newModalTitle?: string;
   newForm?: Partial<RapidEntityFormConfig>;
+  editModalTitle?: string;
   editForm?: Partial<RapidEntityFormConfig>;
   searchForm?: Partial<RapidEntitySearchFormConfig>;
   footer?: RockChildrenConfig;

@@ -1,4 +1,4 @@
-import { MoveStyleUtils, type Rock } from "@ruiapp/move-style";
+import { MoveStyleUtils, RockEventHandlerNotifyEvent, type Rock } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./SonicRecordActionEditEntityMeta";
 import type { SonicRecordActionEditEntityConfig, SonicRecordActionEditEntityRockConfig } from "./sonic-record-action-edit-entity-types";
@@ -17,7 +17,10 @@ export default {
         {
           $action: "notifyEvent",
           eventName: "onEditEntityButtonClick",
-        },
+          $exps: {
+            args: "$event.args",
+          },
+        } satisfies RockEventHandlerNotifyEvent,
       ],
     };
 

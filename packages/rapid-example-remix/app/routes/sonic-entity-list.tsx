@@ -173,7 +173,7 @@ const rapidPage: RapidPage = {
               method: "PATCH",
               data: { state: "disabled" },
               $exps: {
-                url: `"/api/app/oc_roles/" + $event.sender['data-record-id']`,
+                url: `"/api/app/oc_roles/" + $event.args[0].recordId`,
               },
             },
             {
@@ -195,7 +195,7 @@ const rapidPage: RapidPage = {
               method: "PATCH",
               data: { state: "enabled" },
               $exps: {
-                url: `"/api/app/oc_roles/" + $event.sender['data-record-id']`,
+                url: `"/api/app/oc_roles/" + $event.args[0].recordId`,
               },
             },
             {
