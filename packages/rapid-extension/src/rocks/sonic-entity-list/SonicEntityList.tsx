@@ -1,4 +1,12 @@
-import { MoveStyleUtils, RockChildrenConfig, RockEvent, RockEventHandler, type Rock, type RockConfig } from "@ruiapp/move-style";
+import {
+  MoveStyleUtils,
+  RockChildrenConfig,
+  RockEvent,
+  RockEventHandler,
+  RockPageEventSubscriptionConfig,
+  type Rock,
+  type RockConfig,
+} from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./SonicEntityListMeta";
 import type { SonicEntityListRockConfig } from "./sonic-entity-list-types";
@@ -492,7 +500,29 @@ export default {
             },
           ],
         },
-      ],
+        {
+          eventName: "onRecordAction",
+          handlers: [
+            {
+              $action: "script",
+              script: async (event) => {
+                const recordAction = event.args[0];
+                const { actionName, recordId, record } = recordAction;
+                const actionSubscription = find(props.actionSubscriptions, { actionName });
+                if (actionSubscription) {
+                  await event.page.handleEvent({
+                    context,
+                    parentEvent: event,
+                    handlers: actionSubscription.handlers,
+                    args: [{ recordId, record }],
+                    sender: event.sender,
+                  });
+                }
+              },
+            },
+          ],
+        },
+      ] satisfies RockPageEventSubscriptionConfig[],
     };
 
     return renderRock({ context, rockConfig });

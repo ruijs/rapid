@@ -796,7 +796,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
   const newEntityOneRelationProps = {};
   // save one-relation properties
   for (const property of oneRelationPropertiesToCreate) {
-    const targetRow = property.isBaseProperty ? baseRow : row;
+    const rowToBeSaved = property.isBaseProperty ? baseRow : row;
     const fieldValue = entity[property.code];
     const targetDataAccessor = server.getDataAccessor({
       singularCode: property.targetSingularCode!,
@@ -804,13 +804,15 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     if (isObject(fieldValue)) {
       const targetEntityId = fieldValue["id"];
       if (!targetEntityId) {
-        const targetEntity = fieldValue;
-        const newTargetEntity = await createEntity(server, targetDataAccessor, {
-          routeContext,
-          entity: targetEntity,
-        });
-        newEntityOneRelationProps[property.code] = newTargetEntity;
-        targetRow[property.targetIdColumnName!] = newTargetEntity["id"];
+        if (!property.selfIdColumnName) {
+          const targetEntity = fieldValue;
+          const newTargetEntity = await createEntity(server, targetDataAccessor, {
+            routeContext,
+            entity: targetEntity,
+          });
+          newEntityOneRelationProps[property.code] = newTargetEntity;
+          rowToBeSaved[property.targetIdColumnName!] = newTargetEntity["id"];
+        }
       } else {
         const targetEntity = await findById(server, targetDataAccessor, {
           id: targetEntityId,
@@ -822,7 +824,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
           );
         }
         newEntityOneRelationProps[property.code] = targetEntity;
-        targetRow[property.targetIdColumnName!] = targetEntityId;
+        rowToBeSaved[property.targetIdColumnName!] = targetEntityId;
       }
     } else if (isNumber(fieldValue) || isString(fieldValue)) {
       // fieldValue is id;
@@ -837,16 +839,17 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
         );
       }
       newEntityOneRelationProps[property.code] = targetEntity;
-      targetRow[property.targetIdColumnName!] = targetEntityId;
+      rowToBeSaved[property.targetIdColumnName!] = targetEntityId;
     } else {
       newEntityOneRelationProps[property.code] = null;
-      targetRow[property.targetIdColumnName!] = null;
+      rowToBeSaved[property.targetIdColumnName!] = null;
     }
   }
 
   let newBaseRow: any;
+  let baseDataAccessor: any;
   if (model.base) {
-    const baseDataAccessor = server.getDataAccessor({
+    baseDataAccessor = server.getDataAccessor({
       singularCode: model.base,
     });
     newBaseRow = await baseDataAccessor.create(baseRow);
@@ -855,6 +858,38 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
   }
   const newRow = await dataAccessor.create(row);
   const newEntity = mapDbRowToEntity(server, model, Object.assign({}, newBaseRow, newRow, newEntityOneRelationProps), true);
+
+  // save one-relation properties that has selfIdColumnName
+  for (const property of oneRelationPropertiesToCreate) {
+    const fieldValue = entity[property.code];
+    const targetDataAccessor = server.getDataAccessor({
+      singularCode: property.targetSingularCode!,
+    });
+    if (isObject(fieldValue)) {
+      const targetEntityId = fieldValue["id"];
+      if (!targetEntityId) {
+        if (property.selfIdColumnName) {
+          const targetEntity = fieldValue;
+          targetEntity[property.selfIdColumnName] = newEntity.id;
+          const newTargetEntity = await createEntity(server, targetDataAccessor, {
+            routeContext,
+            entity: targetEntity,
+          });
+
+          let dataAccessorOfMainEntity = dataAccessor;
+          if (property.isBaseProperty) {
+            dataAccessorOfMainEntity = baseDataAccessor;
+          }
+
+          const relationFieldChanges = {
+            [property.targetIdColumnName]: newTargetEntity.id,
+          };
+          await dataAccessorOfMainEntity.updateById(newEntity.id, relationFieldChanges);
+          newEntity[property.code] = newTargetEntity;
+        }
+      }
+    }
+  }
 
   // save many-relation properties
   for (const property of manyRelationPropertiesToCreate) {
@@ -1068,7 +1103,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
 
   const updatedEntityOneRelationProps = {};
   for (const property of oneRelationPropertiesToUpdate) {
-    const targetRow = property.isBaseProperty ? baseRow : row;
+    const rowToBeSaved = property.isBaseProperty ? baseRow : row;
     const fieldValue = changes[property.code];
     const targetDataAccessor = server.getDataAccessor({
       singularCode: property.targetSingularCode!,
@@ -1077,13 +1112,15 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     if (isObject(fieldValue)) {
       const targetEntityId = fieldValue["id"];
       if (!targetEntityId) {
-        const targetEntity = fieldValue;
-        const newTargetEntity = await createEntity(server, targetDataAccessor, {
-          routeContext,
-          entity: targetEntity,
-        });
-        updatedEntityOneRelationProps[property.code] = newTargetEntity;
-        targetRow[property.targetIdColumnName!] = newTargetEntity["id"];
+        if (!property.selfIdColumnName) {
+          const targetEntity = fieldValue;
+          const newTargetEntity = await createEntity(server, targetDataAccessor, {
+            routeContext,
+            entity: targetEntity,
+          });
+          updatedEntityOneRelationProps[property.code] = newTargetEntity;
+          rowToBeSaved[property.targetIdColumnName!] = newTargetEntity["id"];
+        }
       } else {
         const targetEntity = await findById(server, targetDataAccessor, {
           id: targetEntityId,
@@ -1095,7 +1132,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
           );
         }
         updatedEntityOneRelationProps[property.code] = targetEntity;
-        targetRow[property.targetIdColumnName!] = targetEntityId;
+        rowToBeSaved[property.targetIdColumnName!] = targetEntityId;
       }
     } else if (isNumber(fieldValue) || isString(fieldValue)) {
       // fieldValue is id;
@@ -1110,10 +1147,10 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
         );
       }
       updatedEntityOneRelationProps[property.code] = targetEntity;
-      targetRow[property.targetIdColumnName!] = targetEntityId;
+      rowToBeSaved[property.targetIdColumnName!] = targetEntityId;
     } else {
       updatedEntityOneRelationProps[property.code] = null;
-      targetRow[property.targetIdColumnName!] = null;
+      rowToBeSaved[property.targetIdColumnName!] = null;
     }
   }
 
@@ -1122,15 +1159,51 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     updatedRow = await dataAccessor.updateById(id, row);
   }
   let updatedBaseRow = baseRow;
-  if (model.base && Object.keys(baseRow).length) {
-    const baseDataAccessor = server.getDataAccessor({
+  let baseDataAccessor: any;
+  if (model.base) {
+    baseDataAccessor = server.getDataAccessor({
       singularCode: model.base,
     });
-    updatedBaseRow = await baseDataAccessor.updateById(id, updatedBaseRow);
+    if (Object.keys(baseRow).length) {
+      updatedBaseRow = await baseDataAccessor.updateById(id, updatedBaseRow);
+    }
   }
 
   let updatedEntity = mapDbRowToEntity(server, model, { ...updatedRow, ...updatedBaseRow, ...updatedEntityOneRelationProps }, true);
   updatedEntity = Object.assign({}, entity, updatedEntity);
+
+  // save one-relation properties that has selfIdColumnName
+  for (const property of oneRelationPropertiesToUpdate) {
+    const fieldValue = changes[property.code];
+    const targetDataAccessor = server.getDataAccessor({
+      singularCode: property.targetSingularCode!,
+    });
+    if (isObject(fieldValue)) {
+      const targetEntityId = fieldValue["id"];
+      if (!targetEntityId) {
+        if (property.selfIdColumnName) {
+          const targetEntity = fieldValue;
+          targetEntity[property.selfIdColumnName] = updatedEntity.id;
+          const newTargetEntity = await createEntity(server, targetDataAccessor, {
+            routeContext,
+            entity: targetEntity,
+          });
+
+          let dataAccessorOfMainEntity = dataAccessor;
+          if (property.isBaseProperty) {
+            dataAccessorOfMainEntity = baseDataAccessor;
+          }
+
+          const relationFieldChanges = {
+            [property.targetIdColumnName]: newTargetEntity.id,
+          };
+          await dataAccessorOfMainEntity.updateById(updatedEntity.id, relationFieldChanges);
+          updatedEntity[property.code] = newTargetEntity;
+          changes[property.code] = newTargetEntity;
+        }
+      }
+    }
+  }
 
   // save many-relation properties
   for (const property of manyRelationPropertiesToUpdate) {
