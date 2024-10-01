@@ -1,7 +1,6 @@
 import {
   AddEntityRelationsOptions,
   CountEntityOptions,
-  CountEntityResult,
   CreateEntityOptions,
   DeleteEntityByIdOptions,
   EntityFilterOperators,
@@ -1459,7 +1458,7 @@ export default class EntityManager<TEntity = any> {
     return await updateEntityById(this.#server, this.#dataAccessor, options, plugin);
   }
 
-  async count(options: CountEntityOptions): Promise<CountEntityResult> {
+  async count(options: CountEntityOptions): Promise<number> {
     const model = this.#dataAccessor.getModel();
     let baseModel: RpdDataModel;
     if (model.base) {
