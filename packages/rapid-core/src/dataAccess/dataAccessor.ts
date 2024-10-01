@@ -98,7 +98,7 @@ export default class DataAccessor<T = any> implements IRpdDataAccessor<T> {
     return result;
   }
 
-  async count(options: CountRowOptions): Promise<any> {
+  async count(options: CountRowOptions): Promise<number> {
     let query: DatabaseQuery;
     if (this.#model.base) {
       const baseModel = this.#server.getModel({
@@ -112,11 +112,9 @@ export default class DataAccessor<T = any> implements IRpdDataAccessor<T> {
 
     const row = first(result);
     if (row) {
-      return row;
+      return row.count;
     }
-    return {
-      count: 0,
-    };
+    return 0;
   }
 
   async deleteById(id: any) {

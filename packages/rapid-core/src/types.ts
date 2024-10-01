@@ -456,7 +456,7 @@ export interface IRpdDataAccessor<T = any> {
   find(options: FindRowOptions): Promise<T[]>;
   findOne(options: FindRowOptions): Promise<T | null>;
   findById(id: any): Promise<T | null>;
-  count(options: CountRowOptions): Promise<any>;
+  count(options: CountRowOptions): Promise<number>;
   deleteById(id: any): Promise<void>;
 }
 
