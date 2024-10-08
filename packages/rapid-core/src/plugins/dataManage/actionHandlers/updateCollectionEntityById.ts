@@ -22,11 +22,17 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
     delete mergedInput.$stateProperties;
   }
 
+  const relationPropertiesToUpdate = mergedInput.$relationPropertiesToUpdate;
+  if (relationPropertiesToUpdate) {
+    delete mergedInput.$relationPropertiesToUpdate;
+  }
+
   const updateEntityByIdOptions: UpdateEntityByIdOptions = {
     id: mergedInput.id,
     entityToSave: mergedInput,
     operation,
     stateProperties,
+    relationPropertiesToUpdate,
     routeContext: ctx.routerContext,
   };
   const entityManager = server.getEntityManager(options.singularCode);

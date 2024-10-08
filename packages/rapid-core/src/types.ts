@@ -628,9 +628,23 @@ export interface UpdateEntityByIdOptions {
   operation?: {
     type: string;
   };
+  /**
+   * 指定需要更新那几个状态属性（配置了`config.stateMachine`的属性）。当不指定时默认更新全部状态属性。
+   */
   stateProperties?: string[];
   postponeUniquenessCheck?: boolean;
+  /**
+   * 指定需要更新关联对象的哪些属性。更新实体时，会创建关联对象，但是默认不更新关联对象的属性。
+   */
+  relationPropertiesToUpdate?: Record<string, UpdateRelationPropertiesOptions>;
 }
+
+export type UpdateRelationPropertiesOptions =
+  | true
+  | {
+      propertiesToUpdate?: string[];
+      relationPropertiesToUpdate?: Record<string, UpdateRelationPropertiesOptions>;
+    };
 
 export interface DeleteEntityOptions {
   routeContext?: RouteContext;
