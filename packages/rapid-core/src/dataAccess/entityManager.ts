@@ -24,7 +24,26 @@ import { mapDbRowToEntity, mapEntityToDbRow } from "./entityMapper";
 import { mapPropertyNameToColumnName } from "./propertyMapper";
 import { IRpdServer, RapidPlugin } from "~/core/server";
 import { getEntityPartChanges } from "~/helpers/entityHelpers";
-import { cloneDeep, filter, find, first, forEach, isArray, isNumber, isObject, isPlainObject, isString, isUndefined, keys, map, reject, uniq } from "lodash";
+import {
+  cloneDeep,
+  concat,
+  filter,
+  find,
+  first,
+  forEach,
+  get,
+  isArray,
+  isNumber,
+  isObject,
+  isPlainObject,
+  isString,
+  isUndefined,
+  keys,
+  map,
+  pick,
+  reject,
+  uniq,
+} from "lodash";
 import {
   getEntityPropertiesIncludingBase,
   getEntityProperty,
@@ -1103,16 +1122,16 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
   const updatedEntityOneRelationProps = {};
   for (const property of oneRelationPropertiesToUpdate) {
     const rowToBeSaved = property.isBaseProperty ? baseRow : row;
-    const fieldValue = changes[property.code];
+    const relatedEntityToBeSaved = changes[property.code];
     const targetDataAccessor = server.getDataAccessor({
       singularCode: property.targetSingularCode!,
     });
 
-    if (isObject(fieldValue)) {
-      const targetEntityId = fieldValue["id"];
-      if (!targetEntityId) {
+    if (isObject(relatedEntityToBeSaved)) {
+      const relatedEntityId = relatedEntityToBeSaved["id"];
+      if (!relatedEntityId) {
         if (!property.selfIdColumnName) {
-          const targetEntity = fieldValue;
+          const targetEntity = relatedEntityToBeSaved;
           const newTargetEntity = await createEntity(server, targetDataAccessor, {
             routeContext,
             entity: targetEntity,
@@ -1121,21 +1140,46 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
           rowToBeSaved[property.targetIdColumnName!] = newTargetEntity["id"];
         }
       } else {
-        const targetEntity = await findById(server, targetDataAccessor, {
-          id: targetEntityId,
+        let targetEntity = await findById(server, targetDataAccessor, {
+          id: relatedEntityId,
           routeContext,
         });
         if (!targetEntity) {
           throw newEntityOperationError(
-            `Create ${model.singularCode} entity failed. Property '${property.code}' was invalid. Related ${property.targetSingularCode} entity with id '${targetEntityId}' was not found.`,
+            `Update ${model.singularCode} entity failed. Property '${property.code}' was invalid. Related ${property.targetSingularCode} entity with id '${relatedEntityId}' was not found.`,
           );
         }
+
+        // update relation entity if options.relationPropertiesToUpdate is specified.
+        const updateRelationPropertiesOptions = get(options.relationPropertiesToUpdate, property.code);
+        let subRelationPropertiesToUpdate = undefined;
+        let relationEntityToUpdate = null;
+        if (updateRelationPropertiesOptions === true) {
+          relationEntityToUpdate = targetEntity;
+        } else if (updateRelationPropertiesOptions) {
+          let propertiesToUpdate = uniq([
+            "id",
+            ...(updateRelationPropertiesOptions.propertiesToUpdate || []),
+            ...Object.keys(updateRelationPropertiesOptions.relationPropertiesToUpdate || []),
+          ]);
+          relationEntityToUpdate = pick(relatedEntityToBeSaved, propertiesToUpdate);
+          subRelationPropertiesToUpdate = updateRelationPropertiesOptions.relationPropertiesToUpdate;
+        }
+        if (relationEntityToUpdate) {
+          targetEntity = await updateEntityById(server, targetDataAccessor, {
+            routeContext: routeContext,
+            id: relatedEntityId,
+            entityToSave: relationEntityToUpdate,
+            relationPropertiesToUpdate: subRelationPropertiesToUpdate,
+          });
+        }
+
         updatedEntityOneRelationProps[property.code] = targetEntity;
-        rowToBeSaved[property.targetIdColumnName!] = targetEntityId;
+        rowToBeSaved[property.targetIdColumnName!] = relatedEntityId;
       }
-    } else if (isNumber(fieldValue) || isString(fieldValue)) {
+    } else if (isNumber(relatedEntityToBeSaved) || isString(relatedEntityToBeSaved)) {
       // fieldValue is id;
-      const targetEntityId = fieldValue;
+      const targetEntityId = relatedEntityToBeSaved;
       const targetEntity = await findById(server, targetDataAccessor, {
         id: targetEntityId,
         routeContext,
@@ -1289,9 +1333,33 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
           relatedEntities.push(newTargetEntity);
         } else {
           // related entity is existed
-          const targetEntity = await targetDataAccessor.findById(relatedEntityId);
+          let targetEntity = await targetDataAccessor.findById(relatedEntityId);
           if (!targetEntity) {
-            throw new Error(`Entity with id '${relatedEntityId}' in field '${property.code}' is not exists.`);
+            throw new Error(`Entity with id '${relatedEntityId}' in field '${property.code}' does not exist.`);
+          }
+
+          // update relation entity if options.relationPropertiesToUpdate is specified.
+          const updateRelationPropertiesOptions = get(options.relationPropertiesToUpdate, property.code);
+          let subRelationPropertiesToUpdate = undefined;
+          let relationEntityToUpdate = null;
+          if (updateRelationPropertiesOptions === true) {
+            relationEntityToUpdate = targetEntity;
+          } else if (updateRelationPropertiesOptions) {
+            let propertiesToUpdate = uniq([
+              "id",
+              ...(updateRelationPropertiesOptions.propertiesToUpdate || []),
+              ...Object.keys(updateRelationPropertiesOptions.relationPropertiesToUpdate || []),
+            ]);
+            relationEntityToUpdate = pick(relatedEntityToBeSaved, propertiesToUpdate);
+            subRelationPropertiesToUpdate = updateRelationPropertiesOptions.relationPropertiesToUpdate;
+          }
+          if (relationEntityToUpdate) {
+            targetEntity = await updateEntityById(server, targetDataAccessor, {
+              routeContext: routeContext,
+              id: relatedEntityId,
+              entityToSave: relationEntityToUpdate,
+              relationPropertiesToUpdate: subRelationPropertiesToUpdate,
+            });
           }
 
           if (!currentTargetIds.includes(relatedEntityId)) {
