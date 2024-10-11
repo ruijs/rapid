@@ -107,6 +107,7 @@ function generateSearchFormItemForOptionProperty(option: GenerateEntityFormItemO
     hidden: formItemConfig.hidden,
     formControlProps,
     rendererProps,
+    storeDependencies: formItemConfig.storeDependencies,
     $exps: formItemConfig.$exps,
   };
   return formItem;
@@ -158,6 +159,7 @@ export function generateSearchFormItemForRelationProperty(option: GenerateEntity
     formControlProps,
     rendererType: formItemConfig.rendererType,
     rendererProps,
+    storeDependencies: formItemConfig.storeDependencies,
     $exps: formItemConfig.$exps,
   };
   return formItem;
@@ -200,6 +202,7 @@ function generateSearchFormItem(logger: RuiRockLogger, entityFormProps: any, opt
     formControlProps,
     rendererType: formItemConfig.rendererType,
     rendererProps: formItemConfig.rendererProps,
+    storeDependencies: formItemConfig.storeDependencies,
     $exps: formItemConfig.$exps,
   };
 
@@ -396,6 +399,7 @@ export default {
       items: formItems,
       onFinish: formOnFinish,
     };
+
     return renderRock({ context, rockConfig });
   },
 

@@ -3,6 +3,7 @@ import { renderRock } from "@ruiapp/react-renderer";
 import RapidFormItemMeta from "./RapidFormItemMeta";
 import { RapidFormItemRockConfig, RapidFormItemType } from "./rapid-form-item-types";
 import RapidExtensionSetting from "../../RapidExtensionSetting";
+import { useEffect, useMemo, useRef } from "react";
 
 const formItemTypeToControlRockTypeMap: Record<Exclude<RapidFormItemType, "auto" | "custom">, string> = {
   box: "box",
@@ -80,6 +81,8 @@ export default {
   $type: "rapidFormItem",
 
   Renderer(context, props: RapidFormItemRockConfig) {
+    const isMountedRef = useRef<boolean>(false);
+
     const mode = props.mode || "input";
     let inputRockType = null;
     let childRock: RockConfig = null;
@@ -119,6 +122,17 @@ export default {
       };
     }
 
+    const dependencies = (props.storeDependencies || []).map((key) => props.form.getFieldValue(key));
+    useEffect(() => {
+      if (isMountedRef.current) {
+        context.page.sendComponentMessage(`${props.$id}-input`, {
+          name: "reload",
+        });
+      }
+
+      isMountedRef.current = true;
+    }, dependencies);
+
     const rockConfig: RockConfig = {
       $id: props.$id,
       $type: "antdFormItem",
@@ -136,6 +150,7 @@ export default {
       wrapperCol: props.wrapperCol,
       $exps: props.$exps,
     };
+
     return renderRock({ context, rockConfig });
   },
 

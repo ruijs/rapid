@@ -107,7 +107,10 @@ export type RapidFormItemConfig = {
   uniqueKey?: string;
   labelCol?: { span?: number; offset?: number };
   wrapperCol?: { span?: number; offset?: number };
-
+  /**
+   * 依赖form字段, 依赖字段变更触发表单项reload store
+   */
+  storeDependencies?: string[];
   $exps?: RockPropExpressions;
 };
 
