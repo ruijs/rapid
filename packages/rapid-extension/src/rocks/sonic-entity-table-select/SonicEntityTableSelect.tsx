@@ -9,11 +9,12 @@ import { useMergeState } from "../../hooks/use-merge-state";
 import rapidApi from "../../rapidApi";
 import { FindEntityOptions } from "../../rapid-types";
 import { parseConfigToFilters } from "../../functions/searchParamsToFilters";
-
-import "../rapid-table-select/rapid-table-select-style.css";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { EntityStore, EntityStoreConfig } from "../../stores/entity-store";
 import { autoConfigureRapidEntity } from "../../RapidEntityAutoConfigure";
+import dayjs from "dayjs";
+
+import "../rapid-table-select/rapid-table-select-style.css";
 
 const bus = new EventEmitter();
 
@@ -24,12 +25,15 @@ interface ICurrentState {
   keyword?: string;
   selectedRecordMap: Record<string, any>;
   visible?: boolean;
+  reloadKey?: string | number;
 }
 
 export default {
   onReceiveMessage(message, state, props) {
     if (message.name === "refreshData") {
       bus.emit(`${props.$id}-refresh`, message.payload);
+    } else if (message.name === "reload") {
+      bus.emit(`${props.$id}-reload`);
     }
   },
   Renderer(context, props: SonicEntityTableSelectRockConfig) {
@@ -97,20 +101,32 @@ export default {
 
     refreshDataRef.current = loadData;
     useEffect(() => {
-      const handler = () => {
+      const refreshHandler = () => {
         refreshDataRef.current?.();
       };
 
-      bus.on(`${props.$id}-refresh`, handler);
+      bus.on(`${props.$id}-refresh`, refreshHandler);
 
       return () => {
-        (bus as any).off?.(`${props.$id}-refresh`, handler);
+        (bus as any).off?.(`${props.$id}-refresh`, refreshHandler);
       };
     }, [props.$id]);
 
     useEffect(() => {
+      const reloadHandler = () => {
+        setCurrentState({ offset: 0, reloadKey: dayjs().unix() });
+      };
+
+      bus.on(`${props.$id}-reload`, reloadHandler);
+
+      return () => {
+        (bus as any).off?.(`${props.$id}-reload`, reloadHandler);
+      };
+    }, [props.$id, setCurrentState]);
+
+    useEffect(() => {
       loadData();
-    }, [props.entityCode, currentState.offset, debouncedKeyword]);
+    }, [props.entityCode, currentState.offset, currentState.reloadKey, debouncedKeyword]);
 
     const getLabel = (record: Record<string, any>) => {
       if (!listTextFormat) {

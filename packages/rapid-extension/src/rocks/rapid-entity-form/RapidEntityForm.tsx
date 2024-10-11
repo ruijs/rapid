@@ -102,6 +102,7 @@ function generateDataFormItemForOptionProperty(option: GenerateEntityFormItemOpt
     labelCol: formItemConfig.labelCol,
     formControlProps,
     rendererProps,
+    storeDependencies: formItemConfig.storeDependencies,
     $exps: formItemConfig.$exps,
   };
   return formItem;
@@ -153,6 +154,7 @@ export function generateDataFormItemForRelationProperty(option: GenerateEntityFo
     formControlProps,
     rendererType: formItemConfig.rendererType,
     rendererProps,
+    storeDependencies: formItemConfig.storeDependencies,
     $exps: formItemConfig.$exps,
   };
   return formItem;
@@ -193,6 +195,7 @@ function generateDataFormItem(logger: RuiRockLogger, entityFormProps: any, optio
     formControlProps: formItemConfig.formControlProps,
     rendererType: formItemConfig.rendererType,
     rendererProps: formItemConfig.rendererProps,
+    storeDependencies: formItemConfig.storeDependencies,
     $exps: formItemConfig.$exps,
   };
 
