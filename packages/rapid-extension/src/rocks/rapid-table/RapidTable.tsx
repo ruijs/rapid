@@ -6,7 +6,10 @@ import { filter, get, map, merge, omit, reduce, trim } from "lodash";
 import RapidTableMeta from "./RapidTableMeta";
 import { RapidTableRockConfig } from "./rapid-table-types";
 import { parseRockExpressionFunc } from "../../utils/parse-utility";
-import { memo } from "react";
+import { lazy, memo } from "react";
+import { ClientOnlySuspense } from "../../components";
+
+const VirtualTable = lazy(() => import("../../components/virtual-table/index"));
 
 const ExpandedRowComponent = memo<Record<string, any>>((props) => {
   const { expandedRow, record, index, context } = props;
@@ -120,6 +123,14 @@ export default {
         },
       };
     };
+
+    if (props.virtual) {
+      return (
+        <ClientOnlySuspense>
+          <VirtualTable {...antdProps} onRow={onRow} />
+        </ClientOnlySuspense>
+      );
+    }
 
     return <Table {...antdProps} onRow={onRow}></Table>;
   },

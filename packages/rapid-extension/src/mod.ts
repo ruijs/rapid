@@ -22,6 +22,8 @@ export { default as RapidExtensionSetting } from "./RapidExtensionSetting";
 
 export { EntityStoreConfig, EntityStore } from "./stores/entity-store";
 
+export * from "./components";
+
 export * from "./rock-generators/generateRockConfigOfError";
 export * from "./rock-generators/generateRuiPageConfigOfError";
 export * from "./rock-generators/generateAntdIcon";

@@ -1,6 +1,6 @@
 {
   "name": "@ruiapp/rapid-extension",
-  "version": "0.3.16",
+  "version": "0.3.17",
   "description": "",
   "main": "dist/mod.js",
   "types": "dist/mod.d.ts",
@@ -25,6 +25,7 @@
     "antd": "^4.23.6",
     "dayjs": "^1.11.7",
     "lodash": "^4.17.21",
+    "postcss-import": "^16.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rimraf": "^3.0.2",
@@ -51,6 +52,7 @@
     "react-dom": "^18.2.0"
   },
   "dependencies": {
+    "@glideapps/glide-data-grid": "^6.0.3",
     "pluralize": "^8.0.0",
     "snabbdom": "^3.6.2"
   }

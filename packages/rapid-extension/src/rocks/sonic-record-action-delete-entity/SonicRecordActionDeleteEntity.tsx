@@ -6,7 +6,7 @@ import { Modal, message } from "antd";
 import rapidApi from "../../rapidApi";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import rapidAppDefinition from "../../rapidAppDefinition";
-import { find } from "lodash";
+import { find, omit } from "lodash";
 
 export default {
   onInit(context, props) {},
@@ -29,7 +29,7 @@ export default {
     }
 
     const rockConfig: RockConfig = {
-      ...(MoveStyleUtils.omitSystemRockConfigFields(props) as SonicRecordActionDeleteEntityConfig),
+      ...(MoveStyleUtils.omitSystemRockConfigFields(omit(props, ["confirmText"]) as any) as SonicRecordActionDeleteEntityConfig),
       $type: "rapidTableAction",
       recordId: props.recordId,
       onAction: [
@@ -38,14 +38,16 @@ export default {
           script: (event: RockEvent) => {
             Modal.confirm({
               title: confirmText,
-              onOk: async () => {
-                try {
-                  await rapidApi.delete(`${mainEntity.namespace}/${mainEntity.pluralCode}/${event.sender["data-record-id"]}`);
-                  message.info("删除成功。");
-                  event.scope.loadStoreData(dataSourceCode, null);
-                } catch (err: any) {
-                  message.error(`删除失败：${err.message}`);
-                }
+              onOk: () => {
+                (async () => {
+                  try {
+                    await rapidApi.delete(`${mainEntity.namespace}/${mainEntity.pluralCode}/${event.sender["data-record-id"]}`);
+                    message.info("删除成功。");
+                    event.scope.loadStoreData(dataSourceCode, null);
+                  } catch (err: any) {
+                    message.error(`删除失败：${err.message}`);
+                  }
+                })();
               },
             });
           },

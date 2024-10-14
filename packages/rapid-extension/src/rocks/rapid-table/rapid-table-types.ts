@@ -29,6 +29,11 @@ export type RapidTableConfig = {
 
   listIdField?: string;
   treeChildrenField?: string;
+
+  /**
+   * 是否开启虚拟表格模式
+   */
+  virtual?: boolean;
 };
 
 export interface RapidTableRockConfig extends SimpleRockConfig, RapidTableConfig {}

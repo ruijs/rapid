@@ -1,4 +1,4 @@
-import { useState, useEffect, memo, useMemo } from "react";
+import { useState, useEffect, memo, useMemo, CSSProperties } from "react";
 import { Editor, Toolbar } from "@wangeditor/editor-for-react";
 import { IDomEditor, IEditorConfig, IToolbarConfig, DomEditor, Boot } from "@wangeditor/editor";
 import { merge } from "lodash";
@@ -11,7 +11,10 @@ import "./rich-text-editor-style.css";
 Boot.registerModule(attachmentMenu);
 
 interface IProps {
+  hideToolbar?: boolean;
+  style?: CSSProperties;
   height?: number | string;
+  className?: string;
   toolbarConfig?: Partial<IToolbarConfig>;
   editorConfig?: Partial<IEditorConfig>;
   value?: string;
@@ -128,8 +131,8 @@ const RapidEditor = memo<IProps>((props) => {
   }, [props.editorConfig?.readOnly]);
 
   return (
-    <div className="rui-rich-text-editor" style={{ height, zIndex: 100 }}>
-      <Toolbar editor={editor} defaultConfig={toolbarConfig} mode="default" className="rui-rich-text-editor--toolbar" />
+    <div className={`rui-rich-text-editor ${props.className || ""}`} style={{ height, zIndex: 100, ...props.style }}>
+      {!props.hideToolbar && <Toolbar editor={editor} defaultConfig={toolbarConfig} mode="default" className="rui-rich-text-editor--toolbar" />}
       <Editor
         defaultConfig={editorConfig}
         className="rui-rich-text-editor--body"

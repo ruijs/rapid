@@ -116,6 +116,11 @@ export interface RapidEntityListConfig {
 
   enabledFilterCache?: boolean;
   filterCacheName?: string;
+
+  /**
+   * 是否开启虚拟表格模式
+   */
+  virtual?: boolean;
 }
 
 export interface RapidEntityListRockConfig extends SimpleRockConfig, RapidEntityListConfig {}

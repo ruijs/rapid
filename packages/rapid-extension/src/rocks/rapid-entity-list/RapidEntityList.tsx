@@ -297,6 +297,7 @@ export default {
       rowKey: "id",
       rowSelection,
       columns: tableColumnRocks,
+      virtual: props.virtual,
       dataSource: props.dataSource,
       expandedRow: props.expandedRow,
       showHeader: props.showHeader,
