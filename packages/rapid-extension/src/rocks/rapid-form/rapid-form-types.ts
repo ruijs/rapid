@@ -3,9 +3,14 @@ import { RapidFormItemConfig } from "../rapid-form-item/rapid-form-item-types";
 
 export type RapidFormConfig = {
   /**
-   * 数据源编号
+   * 数据源编号：当disabledLoadStore为true时，忽略当前字段配置
    */
   dataSourceCode?: string | null;
+
+  /**
+   * 禁用store后，dataSourceCode不起作用
+   */
+  disabledLoadStore?: boolean;
 
   /**
    * 大小，默认为`middle`

@@ -135,7 +135,7 @@ export default {
     const dataSource = props.dataSourceCode && get(scope.stores[props.dataSourceCode], "data.list[0]");
     const initialValues = useMemo(() => {
       let values;
-      if (props.dataSourceCode) {
+      if (props.dataSourceCode && !props.disabledLoadStore) {
         values = {
           ...props.defaultFormFields,
           ...get(scope.stores[props.dataSourceCode], "data.list[0]"),
@@ -150,7 +150,7 @@ export default {
       }
 
       return values || {};
-    }, [props.defaultFormFields, dataSource]);
+    }, [props.defaultFormFields, props.disabledLoadStore, dataSource]);
 
     useEffect(() => {
       state.form.setFieldsValue(initialValues);

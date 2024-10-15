@@ -100,6 +100,7 @@ function generateDataFormItemForOptionProperty(option: GenerateEntityFormItemOpt
     hidden: formItemConfig.hidden,
     wrapperCol: formItemConfig.wrapperCol,
     labelCol: formItemConfig.labelCol,
+    rules: formItemConfig.rules,
     formControlProps,
     rendererProps,
     storeDependencies: formItemConfig.storeDependencies,
@@ -150,6 +151,7 @@ export function generateDataFormItemForRelationProperty(option: GenerateEntityFo
     hidden: formItemConfig.hidden,
     wrapperCol: formItemConfig.wrapperCol,
     labelCol: formItemConfig.labelCol,
+    rules: formItemConfig.rules,
     formControlType: formItemConfig.formControlType,
     formControlProps,
     rendererType: formItemConfig.rendererType,
@@ -188,6 +190,7 @@ function generateDataFormItem(logger: RuiRockLogger, entityFormProps: any, optio
     hidden: formItemConfig.hidden,
     wrapperCol: formItemConfig.wrapperCol,
     labelCol: formItemConfig.labelCol,
+    rules: formItemConfig.rules,
     valueFieldType,
     valueFieldName: formItemConfig.valueFieldName,
     multipleValues: formItemConfig.multipleValues,
@@ -231,7 +234,7 @@ export default {
       }
     }
 
-    if (props.mode != "new") {
+    if (props.mode != "new" && !props.disabledLoadStore) {
       const properties: string[] = uniq(
         props.queryProperties || [
           "id",
@@ -424,7 +427,8 @@ export default {
       onFormRefresh: formConfig.onFormRefresh,
       onValuesChange: formConfig.onValuesChange,
       items: formItems,
-      dataSourceCode: formConfig.mode === "new" ? null : props.dataSourceCode || "detail",
+      disabledLoadStore: formConfig.disabledLoadStore,
+      dataSourceCode: formConfig.mode === "new" ? null : !props.disabledLoadStore ? props.dataSourceCode || "detail" : null,
       onFinish: formConfig.mode === "view" ? null : props.onFinish || formOnFinish,
     };
     return renderRock({ context, rockConfig });
