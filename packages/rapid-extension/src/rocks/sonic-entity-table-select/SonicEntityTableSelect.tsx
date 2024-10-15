@@ -108,7 +108,7 @@ export default {
       bus.on(`${props.$id}-refresh`, refreshHandler);
 
       return () => {
-        (bus as any).off?.(`${props.$id}-refresh`, refreshHandler);
+        bus.off(`${props.$id}-refresh`, refreshHandler);
       };
     }, [props.$id]);
 
@@ -120,7 +120,7 @@ export default {
       bus.on(`${props.$id}-reload`, reloadHandler);
 
       return () => {
-        (bus as any).off?.(`${props.$id}-reload`, reloadHandler);
+        bus.off(`${props.$id}-reload`, reloadHandler);
       };
     }, [props.$id, setCurrentState]);
 

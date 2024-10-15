@@ -9,6 +9,7 @@ import { useMergeState } from "../../hooks/use-merge-state";
 import rapidApi from "../../rapidApi";
 import { FindEntityOptions } from "../../rapid-types";
 import { parseConfigToFilters } from "../../functions/searchParamsToFilters";
+import dayjs from "dayjs";
 
 import "./rapid-table-select-style.css";
 
@@ -21,12 +22,15 @@ interface ICurrentState {
   keyword?: string;
   selectedRecordMap: Record<string, any>;
   visible?: boolean;
+  reloadKey?: string | number;
 }
 
 export default {
   onReceiveMessage(message, state, props) {
     if (message.name === "refreshData") {
       bus.emit(`${props.$id}-refresh`, message.payload);
+    } else if (message.name === "reload") {
+      bus.emit(`${props.$id}-reload`);
     }
   },
   Renderer(context, props: RapidTableSelectRockConfig) {
@@ -100,13 +104,25 @@ export default {
       bus.on(`${props.$id}-refresh`, handler);
 
       return () => {
-        (bus as any).off?.(`${props.$id}-refresh`, handler);
+        bus.off(`${props.$id}-refresh`, handler);
       };
     }, [props.$id]);
 
     useEffect(() => {
+      const reloadHandler = () => {
+        setCurrentState({ offset: 0, reloadKey: dayjs().unix() });
+      };
+
+      bus.on(`${props.$id}-reload`, reloadHandler);
+
+      return () => {
+        bus.off(`${props.$id}-reload`, reloadHandler);
+      };
+    }, [props.$id, setCurrentState]);
+
+    useEffect(() => {
       loadData();
-    }, [props.requestConfig?.url, currentState.offset, debouncedKeyword]);
+    }, [props.requestConfig?.url, currentState.offset, currentState.reloadKey, debouncedKeyword]);
 
     const getLabel = (record: Record<string, any>) => {
       if (!listTextFormat) {
