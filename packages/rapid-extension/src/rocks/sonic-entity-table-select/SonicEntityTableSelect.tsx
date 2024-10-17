@@ -11,7 +11,6 @@ import { FindEntityOptions } from "../../rapid-types";
 import { parseConfigToFilters } from "../../functions/searchParamsToFilters";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { EntityStore, EntityStoreConfig } from "../../stores/entity-store";
-import { autoConfigureRapidEntity } from "../../RapidEntityAutoConfigure";
 import dayjs from "dayjs";
 
 import "../rapid-table-select/rapid-table-select-style.css";
@@ -414,14 +413,13 @@ function useSelectedRecords(props: SonicEntityTableSelectRockConfig, onSuccess: 
     }
 
     const entity = rapidAppDefinition.getEntityByCode(props.entityCode);
-    const entityConfig = autoConfigureRapidEntity(entity, rapidAppDefinition.getEntities());
 
     setLoading(true);
 
     const filterCodes = split(listValueFieldName, ".");
 
     rapidApi
-      .post(`/${entityConfig.namespace}/${entityConfig.pluralCode}/operations/find`, {
+      .post(`/${entity.namespace}/${entity.pluralCode}/operations/find`, {
         ...pick(requestParams || {}, "properties"),
         pagination: {
           limit: 100,

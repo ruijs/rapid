@@ -3,7 +3,6 @@ import { EntityTableSelectRockConfig } from "./entity-table-select-types";
 import { renderRock } from "@ruiapp/react-renderer";
 import ModelTableSelectorMeta from "./EntityTableSelectMeta";
 import rapidAppDefinition from "../../rapidAppDefinition";
-import { autoConfigureRapidEntity } from "../../RapidEntityAutoConfigure";
 import { useEffect } from "react";
 
 const bus = new EventEmitter();
@@ -21,8 +20,7 @@ export default {
 
     let entityConfig = null;
     if (entityCode) {
-      const entity = rapidAppDefinition.getEntityByCode(entityCode);
-      entityConfig = autoConfigureRapidEntity(entity, rapidAppDefinition.getEntities());
+      entityConfig = rapidAppDefinition.getEntityByCode(entityCode);
     }
 
     useEffect(() => {
