@@ -14,10 +14,9 @@ import { EntityStore, EntityStoreConfig } from "../../stores/entity-store";
 import dayjs from "dayjs";
 
 import "../rapid-table-select/rapid-table-select-style.css";
+import { getEntityPropertyByCode } from "../../helpers/metaHelper";
 
 const bus = new EventEmitter();
-
-const DEFAULT_COLUMNS: SonicEntityTableSelectRockConfig["columns"] = [{ title: "名称", code: "name", width: 120 }];
 
 interface ICurrentState {
   offset: number;
@@ -35,16 +34,28 @@ export default {
       bus.emit(`${props.$id}-reload`);
     }
   },
+
   Renderer(context, props: SonicEntityTableSelectRockConfig) {
+    const entity = rapidAppDefinition.getEntityByCode(props.entityCode);
+    const displayPropertyCode = entity.displayPropertyCode || "name";
+    const displayProperty = getEntityPropertyByCode(rapidAppDefinition.getAppDefinition(), entity, displayPropertyCode);
+
+    let defaultDisplayField = "name";
+    let defaultDisplayTitle = "名称";
+    if (displayProperty) {
+      defaultDisplayField = displayProperty.code;
+      defaultDisplayTitle = displayProperty.name;
+    }
+
     const {
       listValueFieldName = "id",
-      listTextFieldName = "name",
+      listTextFieldName = defaultDisplayField,
       dropdownMatchSelectWidth = 360,
       listTextFormat,
       pageSize = 20,
-      columns = DEFAULT_COLUMNS,
+      columns = [{ title: defaultDisplayTitle, code: defaultDisplayField, width: 120 }],
       listDataSourceCode,
-      listFilterFields = ["name"],
+      listFilterFields = [defaultDisplayField],
       allowClear,
       disabled,
       placeholder,
