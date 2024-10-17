@@ -415,6 +415,11 @@ export interface RpdDataModelIndex {
   unique?: boolean;
   properties: RpdDataModelIndexPropertyConfig[];
   conditions?: RpdDataModelIndexOptions[];
+
+  /**
+   * 重复时的错误信息。
+   */
+  duplicateErrorMessage?: string;
 }
 
 export type RpdDataModelIndexPropertyConfig =

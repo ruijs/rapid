@@ -1473,6 +1473,10 @@ async function willEntityDuplicate(server: IRpdServer, dataAccessor: IRpdDataAcc
 }
 
 function getEntityDuplicatedErrorMessage(server: IRpdServer, model: RpdDataModel, indexConfig: RpdDataModelIndex) {
+  if (indexConfig.duplicateErrorMessage) {
+    return indexConfig.duplicateErrorMessage;
+  }
+
   const propertyNames = indexConfig.properties.map((propConfig) => {
     let propCode: string;
     if (isString(propConfig)) {
