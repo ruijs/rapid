@@ -46,7 +46,7 @@ export function newDictionaryUpdater(rapidConfigApi: AxiosInstance) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async updateEntity(input, remoteEntity, mainEntity, inputIndex) {
       const updateEntityInput: UpdateDataDictionaryInput = pick(input, ["code", "name", "valueType", "level", "description"]);
-      const res = await rapidConfigApi.patch(`meta/dictionaries/${remoteEntity.id}`, updateEntityInput);
+      const res = await rapidConfigApi.patch(`meta/data_dictionaries/${remoteEntity.id}`, updateEntityInput);
       return res.data;
     },
   };
