@@ -1466,13 +1466,17 @@ async function willEntityDuplicate(server: IRpdServer, dataAccessor: IRpdDataAcc
   });
 
   if (entityId) {
-    return entityInDb && entityInDb.Id !== entityId;
+    return entityInDb && entityInDb.id !== entityId;
   } else {
     return !!entityInDb;
   }
 }
 
 function getEntityDuplicatedErrorMessage(server: IRpdServer, model: RpdDataModel, indexConfig: RpdDataModelIndex) {
+  if (indexConfig.duplicateErrorMessage) {
+    return indexConfig.duplicateErrorMessage;
+  }
+
   const propertyNames = indexConfig.properties.map((propConfig) => {
     let propCode: string;
     if (isString(propConfig)) {

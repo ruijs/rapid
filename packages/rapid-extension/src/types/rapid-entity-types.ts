@@ -301,6 +301,11 @@ export interface RapidEntityIndex {
   unique?: boolean;
   properties: RapidEntityIndexPropertyConfig[];
   conditions?: RapidEntityIndexOptions[];
+
+  /**
+   * 重复时的错误信息。
+   */
+  duplicateErrorMessage?: string;
 }
 
 export type RapidEntityIndexPropertyConfig =
