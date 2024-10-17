@@ -1466,7 +1466,7 @@ async function willEntityDuplicate(server: IRpdServer, dataAccessor: IRpdDataAcc
   });
 
   if (entityId) {
-    return entityInDb && entityInDb.Id !== entityId;
+    return entityInDb && entityInDb.id !== entityId;
   } else {
     return !!entityInDb;
   }
