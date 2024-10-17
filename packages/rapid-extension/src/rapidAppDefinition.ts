@@ -12,6 +12,10 @@ export default {
     appDef = def;
   },
 
+  getAppDefinition() {
+    return appDef;
+  },
+
   getEntities() {
     return appDef.entities;
   },
