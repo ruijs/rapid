@@ -91,7 +91,7 @@ export function autoConfigureRapidEntity(sourceEntity: RapidEntity, entityDefini
   };
 
   if (!entity.displayPropertyCode) {
-    const candidateCodes = ["name", "title", "label", "text"];
+    const candidateCodes = ["name", "title", "label", "text", "code"];
     for (const candidateCode of candidateCodes) {
       if (find(entity.fields, { code: candidateCode })) {
         entity.displayPropertyCode = candidateCode;
