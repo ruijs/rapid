@@ -44,3 +44,5 @@ export { default as StateMachinePlugin } from "./plugins/stateMachine/StateMachi
 export * from "./plugins/stateMachine/StateMachinePluginTypes";
 
 export { default as EntityAccessControlPlugin } from "./plugins/entityAccessControl/EntityAccessControlPlugin";
+
+export * from "./facilities/log/LogFacility";
