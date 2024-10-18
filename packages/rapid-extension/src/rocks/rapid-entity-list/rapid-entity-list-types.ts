@@ -98,6 +98,11 @@ export interface RapidEntityListConfig {
   hideActionsColumn?: boolean;
 
   /**
+   * 是否显示行号。默认为`false`。
+   */
+  showRowNumColumn?: boolean;
+
+  /**
    * 表格的属性
    */
   tableProps?: Record<string, any>;

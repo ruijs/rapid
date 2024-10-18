@@ -105,6 +105,24 @@ export default {
     const dataSourceCode = props.dataSourceCode || "list";
     const tableColumnRocks: RockConfig[] = [];
 
+    if (props.showRowNumColumn) {
+      const tableRowNumColumnRock: RockConfig = {
+        $type: "rapidTableColumn",
+        title: "#",
+        code: "id",
+        key: "_rowNum",
+        width: "50px",
+        align: "right",
+        cell: {
+          $type: "text",
+          $exps: {
+            text: "($slot.index + 1).toString()",
+          },
+        },
+      };
+      tableColumnRocks.push(tableRowNumColumnRock);
+    }
+
     props.columns.forEach((column) => {
       let cell: RockConfig | RockConfig[] | null = null;
 
