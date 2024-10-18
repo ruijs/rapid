@@ -88,6 +88,12 @@ const page: RapidPage = {
           filterFields: ["login", "name"],
         },
       ],
+      fixedFilters: [
+        {
+          operator: "null",
+          field: "deletedAt",
+        },
+      ],
       pageSize: 20,
       columns: [
         {

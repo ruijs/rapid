@@ -212,6 +212,10 @@ export interface RpdDataModel {
   indexes?: RpdDataModelIndex[];
   extensions?: RpdDataModelExtension[];
   permissionPolicies?: RpdDataModelPermissionPolicies;
+  /**
+   * 是否使用软删除
+   */
+  softDelete?: boolean;
 }
 
 export interface RpdDataModelPermissionPolicies {

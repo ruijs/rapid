@@ -179,6 +179,11 @@ export type RapidEntity<TEntitySingularCodes extends string = string, TDictionar
    * 权限控制策略
    */
   permissionPolicies?: RapidEntityPermissionPolicies;
+
+  /**
+   * 是否使用软删除
+   */
+  softDelete?: boolean;
 };
 
 export interface RapidEntityPermissionPolicies {

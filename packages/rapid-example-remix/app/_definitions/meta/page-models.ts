@@ -1,4 +1,4 @@
-import type { RapidPage as TRapidPage } from '@ruiapp/rapid-extension';
+import type { RapidPageLoader as TRapidPageLoader } from '@ruiapp/rapid-extension';
 import BaseShiftListPage from '../models/pages/BaseShiftListPage';
 import OcDepartmentListPage from '../models/pages/OcDepartmentListPage';
 import OcRoleDetailsPage from '../models/pages/OcRoleDetailsPage';
@@ -23,4 +23,4 @@ export default [
   PmProjectDetailsPage,
   PmProjectListPage,
   PmTaskListPage,
-] as TRapidPage[];
+] as TRapidPageLoader[];
