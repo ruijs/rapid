@@ -62,6 +62,7 @@ const page: RapidPage = {
           field: "orderNum",
         },
       ],
+      showRowNumColumn: true,
       pageSize: 20,
       columns: [
         {
