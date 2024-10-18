@@ -121,6 +121,14 @@ export default {
           type: "json",
           required: false,
         },
+        {
+          name: "softDelete",
+          code: "softDelete",
+          columnName: "soft_delete",
+          type: "boolean",
+          required: true,
+          defaultValue: "false",
+        },
       ],
       indexes: [
         {

@@ -79,6 +79,7 @@ export function autoConfigureRapidEntity(sourceEntity: RapidEntity, entityDefini
       "displayPropertyName",
       "indexes",
       "permissionPolicies",
+      "softDelete",
     ]) as any),
 
     namespace: sourceEntity.namespace,

@@ -11,6 +11,7 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       all: ["user.view"],
     },
   },
+  softDelete: true,
   fields: [
     {
       code: "name",

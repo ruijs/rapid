@@ -1580,12 +1580,25 @@ export default class EntityManager<TEntity = any> {
       routeContext,
     });
 
-    await this.#dataAccessor.deleteById(id);
-    if (model.base) {
-      const baseDataAccessor = this.#server.getDataAccessor({
-        singularCode: model.base,
+    if (model.softDelete) {
+      let dataAccessor = model.base
+        ? this.#server.getDataAccessor({
+            singularCode: model.base,
+          })
+        : this.#dataAccessor;
+      const currentUserId = routeContext?.state?.userId;
+      await dataAccessor.updateById(id, {
+        deleted_at: getNowStringWithTimezone(),
+        deleter_id: currentUserId,
       });
-      await baseDataAccessor.deleteById(id);
+    } else {
+      await this.#dataAccessor.deleteById(id);
+      if (model.base) {
+        const baseDataAccessor = this.#server.getDataAccessor({
+          singularCode: model.base,
+        });
+        await baseDataAccessor.deleteById(id);
+      }
     }
 
     await this.#server.emitEvent({

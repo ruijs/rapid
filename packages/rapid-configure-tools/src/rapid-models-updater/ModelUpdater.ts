@@ -44,6 +44,7 @@ export function newModelUpdater(rapidConfigApi: AxiosInstance) {
         "displayPropertyCode",
         "indexes",
         "permissionPolicies",
+        "softDelete",
       ]);
       if (changedFieldNames.length) {
         console.log(`${this.modelType} ${this.inputTitlePrinter(inputEntity)} changed with these fields:`, changedFieldNames);
