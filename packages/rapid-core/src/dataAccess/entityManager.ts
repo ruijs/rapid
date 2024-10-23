@@ -347,12 +347,17 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
 }
 
 async function findEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, options: FindEntityOptions) {
-  const entities = await findEntities(server, dataAccessor, options);
+  const entities = await findEntities(server, dataAccessor, {
+    ...options,
+    ...{
+      limit: 1,
+    },
+  });
   return first(entities);
 }
 
 async function findById(server: IRpdServer, dataAccessor: IRpdDataAccessor, options: FindEntityByIdOptions): Promise<any> {
-  const { id, properties, keepNonPropertyFields, routeContext } = options;
+  const { id, properties, relations, keepNonPropertyFields, routeContext } = options;
   return await findEntity(server, dataAccessor, {
     filters: [
       {
@@ -362,6 +367,7 @@ async function findById(server: IRpdServer, dataAccessor: IRpdDataAccessor, opti
       },
     ],
     properties,
+    relations,
     keepNonPropertyFields,
     routeContext,
   });
