@@ -233,6 +233,7 @@ export default {
       <Select
         allowClear={allowClear}
         disabled={disabled}
+        bordered={props.bordered}
         loading={apiIns.loading || loading}
         placeholder={placeholder || "请选择"}
         value={current}

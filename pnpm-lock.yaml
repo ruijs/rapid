@@ -418,6 +418,9 @@ importers:
       pluralize:
         specifier: ^8.0.0
         version: 8.0.0
+      react-resizable-panels:
+        specifier: ^2.1.5
+        version: 2.1.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       snabbdom:
         specifier: ^3.6.2
         version: 3.6.2
@@ -7017,6 +7020,12 @@ packages:
   react-refresh@0.14.0:
     resolution: {integrity: sha512-wViHqhAd8OHeLS/IRMJjTSDHF3U9eWi62F/MledQGPdJGDhodXJ9PBLNGr6WWL7qlH12Mt3TyTpbS+hGXMjCzQ==}
     engines: {node: '>=0.10.0'}
+
+  react-resizable-panels@2.1.5:
+    resolution: {integrity: sha512-JMSe18rYupmx+dzYcdfWYZ93ZdxqQmLum3xWDVSUMI0UVwl9bB9gUaFmPbxYoO4G+m5sqgdXQCYQxnOysytfnw==}
+    peerDependencies:
+      react: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+      react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
 
   react-responsive-carousel@3.2.23:
     resolution: {integrity: sha512-pqJLsBaKHWJhw/ItODgbVoziR2z4lpcJg+YwmRlSk4rKH32VE633mAtZZ9kDXjy4wFO+pgUZmDKPsPe1fPmHCg==}
@@ -16380,6 +16389,11 @@ snapshots:
       react-dom: 18.2.0(react@18.2.0)
 
   react-refresh@0.14.0: {}
+
+  react-resizable-panels@2.1.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
 
   react-responsive-carousel@3.2.23:
     dependencies:

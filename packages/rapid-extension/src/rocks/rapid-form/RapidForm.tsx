@@ -2,7 +2,7 @@ import { Rock, RockConfig, RockEvent, RockEventHandlerScript, handleComponentEve
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidFormMeta from "./RapidFormMeta";
 import type { RapidFormRockConfig } from "./rapid-form-types";
-import { assign, each, get, trim } from "lodash";
+import { assign, each, get, mapValues, trim } from "lodash";
 import { Form, message as antdMessage } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { parseRockExpressionFunc } from "../../utils/parse-utility";
@@ -185,7 +185,7 @@ export default {
           $action: "script",
           script: async (event: RockEvent) => {
             if (props.onFinish) {
-              const formValues = Object.assign({}, event.args[0], props.fixedFields);
+              const formValues = mapValues(Object.assign({}, event.args[0], props.fixedFields), (v) => (v === undefined ? null : v));
               await handleComponentEvent("onFinish", event.framework, event.page as any, event.scope, event.sender, props.onFinish, [formValues]);
             }
           },
