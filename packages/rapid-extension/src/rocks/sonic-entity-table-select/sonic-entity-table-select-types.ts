@@ -18,6 +18,7 @@ export interface SonicEntityTableSelectRockConfig extends SimpleRockConfig {
   entityCode: string;
   requestParams?: RapidTableSelectRockConfig["requestConfig"]["params"];
   value?: string | string[];
+  bordered?: boolean;
   onChange?(value: string): void;
   onSelectedRecord?(record: Record<string, any>, selectedRecords: Record<string, any>[]): void;
 }

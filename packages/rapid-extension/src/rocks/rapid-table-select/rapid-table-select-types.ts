@@ -17,6 +17,7 @@ export interface RapidTableSelectRockConfig extends SimpleRockConfig {
   placeholder?: string;
   allowClear?: boolean;
   disabled?: boolean;
+  bordered?: boolean;
   pageSize?: number;
   mode?: "multiple" | "single";
   listFilterFields?: (string | FilterFieldConfig)[]; // 默认 name、code
