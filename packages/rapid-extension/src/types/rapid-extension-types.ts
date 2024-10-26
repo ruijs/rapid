@@ -1,0 +1,16 @@
+export type RapidPropertyDisplayType =
+  | "text"
+  | "richText"
+  | "number"
+  | "switch"
+  | "date"
+  | "time"
+  | "datetime"
+  | "tag"
+  | "json"
+  | "relation"
+  | "relationList"
+  | "file"
+  | "fileList"
+  | "image"
+  | "imageList";

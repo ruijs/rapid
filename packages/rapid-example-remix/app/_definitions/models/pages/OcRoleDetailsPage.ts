@@ -1,4 +1,4 @@
-import type { RapidCheckboxListFormInputConfig, RapidPage } from "@ruiapp/rapid-extension";
+import type { RapidCheckboxListFormInputConfig, RapidPage, SonicEntityDetailsRockConfig } from "@ruiapp/rapid-extension";
 
 const page: RapidPage = {
   code: "oc_role_details",
@@ -7,33 +7,26 @@ const page: RapidPage = {
   permissionCheck: { any: [] },
   view: [
     {
-      $type: "rapidEntityForm",
+      $type: "sonicEntityDetails",
       entityCode: "OcRole",
-      mode: "view",
-      column: 2,
+      column: 3,
       extraProperties: ["actions"],
-      items: [
+      statePropertyCode: "state",
+      descriptionItems: [
         {
-          type: "auto",
-          code: "name",
-        },
-        {
-          type: "auto",
-          code: "state",
-        },
-        {
-          type: "auto",
           code: "createdBy",
         },
         {
-          type: "auto",
+          code: "createdAt",
+        },
+        {
           code: "description",
         },
       ],
       $exps: {
         entityId: "$rui.parseQuery().id",
       },
-    },
+    } satisfies SonicEntityDetailsRockConfig,
     {
       $type: "antdTabs",
       items: [

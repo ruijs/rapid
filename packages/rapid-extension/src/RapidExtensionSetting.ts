@@ -1,5 +1,24 @@
 import { merge } from "lodash";
 import { RapidFieldType } from "./types/rapid-entity-types";
+import { RapidPropertyDisplayType } from "./rapid-types";
+
+const displayTypeToDisplayRockTypeMap: Record<Exclude<RapidPropertyDisplayType, "custom">, string> = {
+  text: "rapidTextRenderer",
+  richText: "rapidRichTextRenderer",
+  number: "rapidNumberRenderer",
+  switch: "rapidBoolRenderer",
+  date: "rapidDateTimeRenderer",
+  time: "rapidTextRenderer",
+  datetime: "rapidDateTimeRenderer",
+  tag: "rapidOptionFieldRenderer",
+  json: "rapidJsonRenderer",
+  relation: "rapidObjectRenderer",
+  relationList: "rapidArrayRenderer",
+  file: "rapidFileInfoRenderer",
+  fileList: "rapidFileInfoRenderer",
+  image: "rapidImageRenderer",
+  imageList: "rapidImageRenderer",
+};
 
 const fieldTypeToDisplayRockTypeMap: Record<RapidFieldType, string> = {
   text: "rapidTextRenderer",
@@ -15,7 +34,7 @@ const fieldTypeToDisplayRockTypeMap: Record<RapidFieldType, string> = {
   option: "rapidOptionFieldRenderer",
   "option[]": "rapidOptionFieldRenderer",
   relation: "rapidObjectRenderer",
-  "relation[]": "rapidObjectRenderer",
+  "relation[]": "rapidArrayRenderer",
   json: "rapidJsonRenderer",
   file: "rapidFileInfoRenderer",
   "file[]": "rapidFileInfoRenderer",
@@ -43,6 +62,10 @@ const defaultDisplayPropsOfFieldType: Record<string, Record<string, any>> = {
 const defaultRendererPropsOfRendererTypes: Record<string, Record<string, any>> = {};
 
 export default {
+  getDefaultRendererTypeOfDisplayType(displayType: RapidPropertyDisplayType) {
+    return displayTypeToDisplayRockTypeMap[displayType] || "rapidTextRenderer";
+  },
+
   getDefaultRendererTypeOfFieldType(fieldType: RapidFieldType) {
     return fieldTypeToDisplayRockTypeMap[fieldType] || "rapidTextRenderer";
   },

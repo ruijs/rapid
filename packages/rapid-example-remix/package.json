@@ -23,7 +23,7 @@
     "@remix-run/express": "^1.19.3",
     "@remix-run/node": "^1.19.3",
     "@remix-run/react": "^1.19.3",
-    "@ruiapp/antd-extension": "^0.3.2",
+    "@ruiapp/antd-extension": "^0.3.3",
     "@ruiapp/designer-extension": "^0.3.0",
     "@ruiapp/designer-hud": "^0.1.2",
     "@ruiapp/echarts-extension": "^0.3.0",

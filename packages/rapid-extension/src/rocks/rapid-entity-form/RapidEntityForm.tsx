@@ -3,7 +3,7 @@ import { handleComponentEvent } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityFormMeta from "./RapidEntityFormMeta";
 import type { RapidEntityFormRockConfig } from "./rapid-entity-form-types";
-import { filter, isUndefined, map, merge, uniq } from "lodash";
+import { filter, get, isUndefined, map, merge, uniq } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import type { RapidDataDictionary, RapidDataDictionaryEntry, RapidEntity, RapidField, RapidFieldType } from "../../types/rapid-entity-types";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
@@ -14,6 +14,7 @@ import type { RapidSelectConfig } from "../rapid-select/rapid-select-types";
 import { RapidOptionFieldRendererConfig } from "../rapid-option-field-renderer/rapid-option-field-renderer-types";
 import { message } from "antd";
 import { EntityTableSelectRockConfig } from "../rapid-entity-table-select/entity-table-select-types";
+import { generateEntityDetailStoreConfig } from "../../helpers/entityStoreHelper";
 
 const fieldTypeToFormItemTypeMap: Record<RapidFieldType, RapidFormItemType | null> = {
   text: "text",
@@ -235,36 +236,17 @@ export default {
     }
 
     if (props.mode != "new" && !props.disabledLoadStore) {
-      const properties: string[] = uniq(
-        props.queryProperties || [
-          "id",
-          ...map(
-            filter(props.items, (item) => !!item.code),
-            (item) => item.code,
-          ),
-          ...(props.extraProperties || []),
-        ],
-      );
-      const detailDataStoreConfig: EntityStoreConfig = {
-        type: "entityStore",
-        name: props.dataSourceCode || "detail",
+      const detailDataStoreConfig = generateEntityDetailStoreConfig({
         entityModel: mainEntity,
+        entityId: props.entityId,
+        entityIdExpression: props.$exps?.entityId,
+        dataSourceCode: props.dataSourceCode,
+        items: props.items,
+        extraProperties: props.extraProperties,
         keepNonPropertyFields: props.keepNonPropertyFields,
-        properties,
-        filters: [
-          {
-            field: "id",
-            operator: "eq",
-            value: "",
-          },
-        ],
+        queryProperties: props.queryProperties,
         relations: props.relations,
-        // TODO: Expression should be a static string, so that we can configure it at design time.
-        $exps: {
-          frozon: `!(${props.$exps?.entityId || `${props.entityId}`})`,
-          "filters[0].value": props.$exps?.entityId || `${props.entityId}`,
-        },
-      };
+      });
       context.scope.addStore(detailDataStoreConfig);
     }
 

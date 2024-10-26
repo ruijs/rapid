@@ -7,6 +7,7 @@ import RapidDateTimeRenderer from "./rapid-date-time-renderer/RapidDateTimeRende
 import RapidDescriptionsRenderer from "./rapid-descriptions-renderer/RapidDescriptionsRenderer";
 import RapidDictionaryEntryRenderer from "./rapid-dictionary-entry-renderer/RapidDictionaryEntryRenderer";
 import RapidDocumentFormControl from "./rapid-document-form-control/RapidDocumentFormControl";
+import RapidEntityDescriptions from "./rapid-entity-descriptions/RapidEntityDescriptions";
 import RapidEntityForm from "./rapid-entity-form/RapidEntityForm";
 import RapidEntityList from "./rapid-entity-list/RapidEntityList";
 import RapidEntityListToolbox from "./rapid-entity-list-toolbox/RapidEntityListToolbox";
@@ -40,6 +41,7 @@ import RapidToolbarPageLink from "./rapid-toolbar-page-link/RapidToolbarPageLink
 import RapidToolbar from "./rapid-toolbar/RapidToolbar";
 import RapidTreeSelect from "./rapid-tree-select/RapidTreeSelect";
 import RapidUploaderFormInput from "./rapid-uploader-form-input/RapidUploaderFormInput";
+import SonicEntityDetails from "./sonic-entity-details/SonicEntityDetails";
 import SonicEntityList from "./sonic-entity-list/SonicEntityList";
 import SonicMainSecondaryLayout from "./sonic-main-secondary-layout/SonicMainSecondaryLayout";
 import SonicRecordActionDeleteEntity from "./sonic-record-action-delete-entity/SonicRecordActionDeleteEntity";
@@ -71,6 +73,7 @@ export default [
   RapidDescriptionsRenderer,
   RapidDictionaryEntryRenderer,
   RapidDocumentFormControl,
+  RapidEntityDescriptions,
   RapidEntityForm,
   RapidEntityList,
   RapidEntityListToolbox,
@@ -105,6 +108,7 @@ export default [
   RapidToolbarPageLink,
   RapidTreeSelect,
   RapidUploaderFormInput,
+  SonicEntityDetails,
   SonicEntityList,
   SonicMainSecondaryLayout,
   SonicRecordActionDeleteEntity,
