@@ -41,6 +41,7 @@ import RapidToolbarPageLink from "./rapid-toolbar-page-link/RapidToolbarPageLink
 import RapidToolbar from "./rapid-toolbar/RapidToolbar";
 import RapidTreeSelect from "./rapid-tree-select/RapidTreeSelect";
 import RapidUploaderFormInput from "./rapid-uploader-form-input/RapidUploaderFormInput";
+import SonicEntityDetails from "./sonic-entity-details/SonicEntityDetails";
 import SonicEntityList from "./sonic-entity-list/SonicEntityList";
 import SonicMainSecondaryLayout from "./sonic-main-secondary-layout/SonicMainSecondaryLayout";
 import SonicRecordActionDeleteEntity from "./sonic-record-action-delete-entity/SonicRecordActionDeleteEntity";
@@ -107,6 +108,7 @@ export default [
   RapidToolbarPageLink,
   RapidTreeSelect,
   RapidUploaderFormInput,
+  SonicEntityDetails,
   SonicEntityList,
   SonicMainSecondaryLayout,
   SonicRecordActionDeleteEntity,

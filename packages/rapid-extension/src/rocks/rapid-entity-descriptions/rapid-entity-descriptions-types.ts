@@ -111,6 +111,11 @@ export type RapidDescriptionsItemConfig = {
   labelStyle?: CSSProperties;
 
   /**
+   * 自定义内容样式
+   */
+  contentStyle?: CSSProperties;
+
+  /**
    * 栏数，默认为1
    */
   column?: number;

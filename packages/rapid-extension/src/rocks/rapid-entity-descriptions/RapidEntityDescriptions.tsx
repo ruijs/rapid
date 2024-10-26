@@ -19,14 +19,8 @@ export interface GenerateEntityDescriptionItemOption {
 function generateDescriptionItemForOptionProperty(option: GenerateEntityDescriptionItemOption, valueFieldType: "option" | "option[]", value: any) {
   const { descriptionItemConfig, mainEntity } = option;
 
-  let entries: RapidDataDictionaryEntry[] = [];
-
   const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, descriptionItemConfig.code);
   const dataDictionaryCode = rpdField?.dataDictionary;
-  if (dataDictionaryCode) {
-    let dataDictionary = rapidAppDefinition.getDataDictionaryByCode(dataDictionaryCode);
-    entries = dataDictionary?.entries || [];
-  }
 
   let rendererProps: RapidOptionFieldRendererConfig = {
     dictionaryCode: dataDictionaryCode,
@@ -84,9 +78,16 @@ function generateDataDescriptionItem(logger: RuiRockLogger, entityDescriptionsPr
     return generateDataDescriptionItemForRelationProperty(option, rpdField, value);
   }
 
+  const defaultRendererProps = RapidExtensionSetting.getDefaultRendererProps(valueFieldType, descriptionItemConfig.rendererType);
+  const rendererProps = {
+    ...defaultRendererProps,
+    ...descriptionItemConfig.rendererProps,
+  };
+
   let descriptionItem: Omit<RapidDescriptionsItemConfig, "$type"> = {
     ...descriptionItemConfig,
     valueFieldType,
+    rendererProps,
     value,
   };
 
@@ -181,7 +182,10 @@ export default {
         descriptionItems.push({
           $id: itemRockId,
           $type: "antdDescriptionsItem",
-          ...descriptionItem,
+          label: descriptionItem.label,
+          labelStyle: descriptionItem.labelStyle,
+          contentStyle: descriptionItem.contentStyle,
+          span: descriptionItem.column,
           children: {
             $id: `${itemRockId}-display`,
             $type: descriptionItem.rendererType,
@@ -195,13 +199,14 @@ export default {
     const rockConfig: RockConfig = {
       $id: `${props.$id}-internal`,
       $type: "antdDescriptions",
+      bordered: descriptionsConfig.bordered,
       size: descriptionsConfig.size,
       layout: descriptionsConfig.layout,
-      column: descriptionsConfig.column,
       colon: descriptionsConfig.colon,
+      column: descriptionsConfig.column,
+      labelStyle: descriptionsConfig.labelStyle,
       children: descriptionItems,
     };
-    console.log(rockConfig);
     return renderRock({ context, rockConfig });
   },
 

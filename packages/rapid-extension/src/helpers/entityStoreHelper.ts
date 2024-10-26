@@ -33,15 +33,19 @@ export interface GetEntityDetailStoreConfigOptions {
 
 export function generateEntityDetailStoreConfig(props: GetEntityDetailStoreConfigOptions) {
   const properties: string[] = uniq(
-    props.queryProperties || [
-      "id",
-      ...map(
-        filter(props.items, (item) => !!item.code),
-        (item) => item.code,
-      ),
-      ...(props.extraProperties || []),
-    ],
+    filter(
+      props.queryProperties || [
+        "id",
+        ...map(
+          filter(props.items, (item) => !!item.code),
+          (item) => item.code,
+        ),
+        ...(props.extraProperties || []),
+      ],
+      (item) => !!item,
+    ),
   );
+
   const detailDataStoreConfig: EntityStoreConfig = {
     type: "entityStore",
     name: props.dataSourceCode || "detail",
