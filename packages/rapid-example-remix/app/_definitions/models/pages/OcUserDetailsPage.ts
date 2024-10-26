@@ -7,7 +7,7 @@ const page: RapidPage = {
   permissionCheck: { any: [] },
   view: [
     {
-      $type: "rapidEntityForm",
+      $type: "rapidEntityDescriptions",
       entityCode: "OcUser",
       mode: "view",
       column: 2,
@@ -27,7 +27,18 @@ const page: RapidPage = {
         },
         {
           type: "auto",
+          code: "createdAt",
+        },
+        {
+          type: "auto",
           code: "roles",
+          rendererProps: {
+            item: {
+              $type: "rapidLinkRenderer",
+              url: "/pages/oc_role_details?id={{id}}",
+              text: "{{name}}",
+            },
+          },
         },
         {
           type: "auto",

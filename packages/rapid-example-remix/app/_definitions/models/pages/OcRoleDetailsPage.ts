@@ -7,7 +7,7 @@ const page: RapidPage = {
   permissionCheck: { any: [] },
   view: [
     {
-      $type: "rapidEntityForm",
+      $type: "rapidEntityDescriptions",
       entityCode: "OcRole",
       mode: "view",
       column: 2,
@@ -24,6 +24,10 @@ const page: RapidPage = {
         {
           type: "auto",
           code: "createdBy",
+        },
+        {
+          type: "auto",
+          code: "createdAt",
         },
         {
           type: "auto",

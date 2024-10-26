@@ -7,6 +7,7 @@ import RapidDateTimeRenderer from "./rapid-date-time-renderer/RapidDateTimeRende
 import RapidDescriptionsRenderer from "./rapid-descriptions-renderer/RapidDescriptionsRenderer";
 import RapidDictionaryEntryRenderer from "./rapid-dictionary-entry-renderer/RapidDictionaryEntryRenderer";
 import RapidDocumentFormControl from "./rapid-document-form-control/RapidDocumentFormControl";
+import RapidEntityDescriptions from "./rapid-entity-descriptions/RapidEntityDescriptions";
 import RapidEntityForm from "./rapid-entity-form/RapidEntityForm";
 import RapidEntityList from "./rapid-entity-list/RapidEntityList";
 import RapidEntityListToolbox from "./rapid-entity-list-toolbox/RapidEntityListToolbox";
@@ -71,6 +72,7 @@ export default [
   RapidDescriptionsRenderer,
   RapidDictionaryEntryRenderer,
   RapidDocumentFormControl,
+  RapidEntityDescriptions,
   RapidEntityForm,
   RapidEntityList,
   RapidEntityListToolbox,
