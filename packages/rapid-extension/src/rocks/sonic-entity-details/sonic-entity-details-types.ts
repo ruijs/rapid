@@ -43,6 +43,11 @@ export interface SonicEntityDetailsConfig {
   subTitlePropertyCode?: string;
 
   /**
+   * 状态属性的Code。
+   */
+  statePropertyCode?: string;
+
+  /**
    * 是否展示边框
    */
   descriptionBordered?: boolean;
