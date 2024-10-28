@@ -23,6 +23,8 @@ import {
   CronJobPlugin,
   EntityAccessControlPlugin,
   SettingPlugin,
+  MailPlugin,
+  NotificationPlugin,
 } from "@ruiapp/rapid-core";
 import { createRapidRequestHandler } from "@ruiapp/rapid-express";
 
@@ -88,6 +90,11 @@ export async function startServer() {
     sessionCookieName: env.get("SESSION_COOKIE_NAME", "RAPID_SESSION"),
     jwtKey: env.get("JWT_KEY", defaultJWTKey),
     localFileStoragePath: env.get("LOCAL_FILE_STORAGE_PATH", "/data/rapid-data/local-storage"),
+    smtpHost: env.get("MAIL_SMTP_HOST"),
+    smtpPort: parseInt(env.get("MAIL_SMTP_PORT"), 10) || 587,
+    smtpSecure: env.get("MAIL_SMTP_SECURE") === "true",
+    smtpUsername: env.get("MAIL_SMTP_USERNAME"),
+    smtpPassword: env.get("MAIL_SMTP_PASSWORD"),
   };
   logger.info("Staring rapid with config: ", rapidConfig);
 
@@ -133,6 +140,16 @@ export async function startServer() {
       new CronJobPlugin({
         jobs: cronJobs,
       }),
+      new MailPlugin({
+        smtpServer: {
+          host: rapidConfig.smtpHost,
+          port: rapidConfig.smtpPort,
+          secure: rapidConfig.smtpSecure,
+          username: rapidConfig.smtpUsername,
+          password: rapidConfig.smtpPassword,
+        },
+      }),
+      new NotificationPlugin(),
     ],
     entityWatchers,
   });
