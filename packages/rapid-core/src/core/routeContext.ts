@@ -8,7 +8,6 @@ import { Logger } from "~/facilities/log/LogFacility";
 export type Next = () => Promise<void>;
 
 export class RouteContext {
-  #logger: Logger;
   readonly request: RapidRequest;
   readonly response: RapidResponse;
   readonly state: Record<string, any>;
@@ -17,15 +16,20 @@ export class RouteContext {
   params: Record<string, string>;
   routeConfig: any;
 
-  constructor(server: IRpdServer, request: RapidRequest) {
-    this.#logger = server.getLogger();
+  static newSystemOperationContext(server: IRpdServer) {
+    return new RouteContext(server);
+  }
+
+  constructor(server: IRpdServer, request?: RapidRequest) {
     this.request = request;
     this.state = {};
     this.response = new RapidResponse();
 
     // `method` and `path` are used by `koa-tree-router` to match route
-    this.method = request.method;
-    this.path = request.url.pathname;
+    if (this.request) {
+      this.method = request.method;
+      this.path = request.url.pathname;
+    }
   }
 
   // `koa-tree-router` uses this method to set headers

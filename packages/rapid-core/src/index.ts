@@ -31,6 +31,12 @@ export { default as AuthPlugin } from "./plugins/auth/AuthPlugin";
 
 export { default as FileManagePlugin } from "./plugins/fileManage/FileManagePlugin";
 
+export { default as MailPlugin } from "./plugins/mail/MailPlugin";
+export * from "./plugins/mail/MailPluginTypes";
+
+export { default as NotificationPlugin } from "./plugins/notification/NotificationPlugin";
+export * from "./plugins/notification/NotificationPluginTypes";
+
 export { default as ServerOperationPlugin } from "./plugins/serverOperation/ServerOperationPlugin";
 export * from "./plugins/serverOperation/ServerOperationPluginTypes";
 
