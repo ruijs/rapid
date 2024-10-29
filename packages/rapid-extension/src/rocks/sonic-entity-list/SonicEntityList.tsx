@@ -15,7 +15,7 @@ import type { RapidEntityListConfig, RapidEntityListRockConfig } from "../rapid-
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import { RapidEntity } from "../../types/rapid-entity-types";
-import { RapidDeleteRecordActionOptions } from "../../types/rapid-action-types";
+import { RapidDeleteRecordActionOptions, RapidUpdateRecordActionOptions } from "../../types/rapid-action-types";
 import { EntityStore, RapidTableColumnConfig, RapidToolbarRockConfig } from "../../mod";
 import { useState } from "react";
 import moment from "moment";
@@ -504,12 +504,45 @@ export default {
           ],
         },
         {
+          eventName: "onUpdateEntityButtonClick",
+          handlers: [
+            {
+              $action: "script",
+              script: async (event) => {
+                const recordAction: RapidUpdateRecordActionOptions = event.args[0];
+                let { confirmText, recordId, entity } = recordAction;
+                if (confirmText) {
+                  Modal.confirm({
+                    title: confirmText,
+                    onOk: () => {
+                      (async () => {
+                        try {
+                          await rapidApi.patch(`${mainEntity.namespace}/${mainEntity.pluralCode}/${recordId}`, entity);
+                          event.scope.loadStoreData(dataSourceCode, null);
+                        } catch (err: any) {
+                          message.error(`更新失败：${err.message}`);
+                        }
+                      })();
+                    },
+                  });
+                } else {
+                  try {
+                    await rapidApi.patch(`${mainEntity.namespace}/${mainEntity.pluralCode}/${recordId}`, entity);
+                    event.scope.loadStoreData(dataSourceCode, null);
+                  } catch (err: any) {
+                    message.error(`更新失败：${err.message}`);
+                  }
+                }
+              },
+            },
+          ],
+        },
+        {
           eventName: "onDeleteEntityButtonClick",
           handlers: [
             {
               $action: "script",
               script: async (event) => {
-                alert("h");
                 const recordAction: RapidDeleteRecordActionOptions = event.args[0];
                 let { confirmText, recordId } = recordAction;
                 if (!confirmText) {
