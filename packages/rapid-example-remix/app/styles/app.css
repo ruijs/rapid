@@ -1,3 +1,6 @@
+@import "@ruiapp/react-rocks/dist/mod.css";
+@import "@ruiapp/rapid-extension/dist/mod.css";
+
 .branch-title {
   color: #fff;
   line-height: 2em;
