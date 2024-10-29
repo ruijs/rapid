@@ -32,6 +32,11 @@ export type RapidActionBase = {
    */
   confirmText?: string;
 
+  /**
+   * 记录Id
+   */
+  recordId?: string;
+
   onAction?: RockEventHandlerConfig;
 };
 
@@ -136,4 +141,10 @@ export type RapidRecordActionRequest = RapidRecordActionBase & {
 export type RapidDeleteRecordActionOptions = {
   recordId: string;
   confirmText?: string;
+};
+
+export type RapidUpdateRecordActionOptions = {
+  recordId: string;
+  confirmText?: string;
+  entity?: Record<string, any>;
 };

@@ -113,48 +113,26 @@ const page: RapidPage = {
           actionText: "修改",
         },
         {
-          $type: "rapidTableAction",
+          $type: "sonicRecordActionUpdateEntity",
           code: "disable",
           actionText: "禁用",
+          entity: {
+            state: "disabled",
+          },
           $exps: {
             _hidden: "$slot.record.state !== 'enabled'",
           },
-          onAction: [
-            {
-              $action: "sendHttpRequest",
-              method: "PATCH",
-              data: { state: "disabled" },
-              $exps: {
-                url: `"/api/app/oc_roles/" + $event.args[0].recordId`,
-              },
-            },
-            {
-              $action: "loadStoreData",
-              storeName: "list",
-            },
-          ],
         },
         {
-          $type: "rapidTableAction",
+          $type: "sonicRecordActionUpdateEntity",
           code: "enable",
           actionText: "启用",
+          entity: {
+            state: "enabled",
+          },
           $exps: {
             _hidden: "$slot.record.state === 'enabled'",
           },
-          onAction: [
-            {
-              $action: "sendHttpRequest",
-              method: "PATCH",
-              data: { state: "enabled" },
-              $exps: {
-                url: `"/api/app/oc_roles/" + $event.args[0].recordId`,
-              },
-            },
-            {
-              $action: "loadStoreData",
-              storeName: "list",
-            },
-          ],
         },
         {
           $type: "sonicRecordActionDeleteEntity",

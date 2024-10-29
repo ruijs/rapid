@@ -46,6 +46,7 @@ import SonicEntityList from "./sonic-entity-list/SonicEntityList";
 import SonicMainSecondaryLayout from "./sonic-main-secondary-layout/SonicMainSecondaryLayout";
 import SonicRecordActionDeleteEntity from "./sonic-record-action-delete-entity/SonicRecordActionDeleteEntity";
 import SonicRecordActionEditEntity from "./sonic-record-action-edit-entity/SonicRecordActionEditEntity";
+import SonicRecordActionUpdateEntity from "./sonic-record-action-update-entity/SonicRecordActionUpdateEntity";
 import SonicToolbarFormItem from "./sonic-toolbar-form-item/SonicToolbarFormItem";
 import SonicToolbarNewEntityButton from "./sonic-toolbar-new-entity-button/SonicToolbarNewEntityButton";
 import SonicToolbarRefreshButton from "./sonic-toolbar-refresh-button/SonicToolbarRefreshButton";
@@ -113,6 +114,7 @@ export default [
   SonicMainSecondaryLayout,
   SonicRecordActionDeleteEntity,
   SonicRecordActionEditEntity,
+  SonicRecordActionUpdateEntity,
   SonicToolbarFormItem,
   SonicToolbarNewEntityButton,
   SonicToolbarRefreshButton,
