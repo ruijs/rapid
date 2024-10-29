@@ -4,7 +4,10 @@ import { RapidCheckboxListFormInputRockConfig } from "./rapid-checkbox-list-form
 import RapidCheckboxListFormInputMeta from "./RapidCheckboxListFormInputMeta";
 import { filter, get, isObject, map } from "lodash";
 import type { CheckboxGroupProps, CheckboxOptionType } from "antd/lib/checkbox";
-import { useMemo } from "react";
+import { CSSProperties, useMemo } from "react";
+
+import "./RapidCheckboxListFormInput.css";
+import { cx } from "../../utils/classname-utility";
 
 export default {
   $type: "rapidCheckboxListFormInput",
@@ -19,7 +22,7 @@ export default {
       groupList = scope.stores[groupsDataSourceCode]?.data?.list;
     }
 
-    let itemList = listDataSource?.data?.list || [];
+    let itemList: any[] = listDataSource?.data?.list || [];
     if (listDataSourceCode) {
       itemList = scope.stores[listDataSourceCode]?.data?.list || [];
     }
@@ -29,21 +32,6 @@ export default {
 
     const groupTextFieldName = props.groupTextFieldName || "name";
     const groupValueFieldName = props.groupValueFieldName || "id";
-
-    function getCheckboxOption(item: any): CheckboxOptionType {
-      let label: string;
-      if (listTextFormat) {
-        label = MoveStyleUtils.fulfillVariablesInString(listTextFormat, item);
-      } else {
-        label = get(item, listTextFieldName);
-      }
-      const value = get(item, listValueFieldName);
-
-      return {
-        label,
-        value,
-      };
-    }
 
     let selectedValue: string[];
     if (props.valueFieldName) {
@@ -75,35 +63,29 @@ export default {
               <h4 style={{ fontWeight: "bold", ...props.groupTitleStyle }} className={props.groupTitleClassName}>
                 {get(group, groupTextFieldName, "")}
               </h4>
-              <div style={props.itemListStyle} className={props.itemListClassName}>
-                <Space direction={props.direction || "horizontal"}>
-                  {itemsInGroup.map((item, index) => {
-                    const option = getCheckboxOption(item);
-                    return (
-                      <Checkbox key={index} value={option.value}>
-                        {option.label}
-                      </Checkbox>
-                    );
-                  })}
-                </Space>
-              </div>
+              <CheckboxList
+                itemList={itemsInGroup}
+                itemListStyle={props.itemListStyle}
+                itemListClassName={props.itemListClassName}
+                direction={props.direction}
+                listTextFormat={listTextFormat}
+                listTextFieldName={listTextFieldName}
+                listValueFieldName={listValueFieldName}
+              />
             </div>
           );
         });
       } else {
         return (
-          <div style={props.itemListStyle} className={props.itemListClassName}>
-            <Space direction={props.direction || "horizontal"}>
-              {itemList.map((item, index) => {
-                const option = getCheckboxOption(item);
-                return (
-                  <Checkbox key={index} value={option.value}>
-                    {option.label}
-                  </Checkbox>
-                );
-              })}
-            </Space>
-          </div>
+          <CheckboxList
+            itemList={itemList}
+            itemListStyle={props.itemListStyle}
+            itemListClassName={props.itemListClassName}
+            direction={props.direction}
+            listTextFormat={listTextFormat}
+            listTextFieldName={listTextFieldName}
+            listValueFieldName={listValueFieldName}
+          />
         );
       }
     }, [groupList, itemList, groupByFieldName]);
@@ -113,3 +95,60 @@ export default {
 
   ...RapidCheckboxListFormInputMeta,
 } as Rock;
+
+interface CheckboxListProps {
+  itemList: any[];
+  itemListStyle: CSSProperties;
+  direction: RapidCheckboxListFormInputRockConfig["direction"];
+  itemListClassName?: string;
+  listTextFormat?: string;
+  listTextFieldName?: string;
+  listValueFieldName?: string;
+}
+
+function CheckboxList(props: CheckboxListProps) {
+  const { itemList } = props;
+  const direction = props.direction || "horizontal";
+  return (
+    <div style={props.itemListStyle} className={props.itemListClassName}>
+      {itemList.map((item, index) => {
+        const option = getCheckboxOption({
+          item,
+          listTextFormat: props.listTextFormat,
+          listTextFieldName: props.listTextFieldName,
+          listValueFieldName: props.listValueFieldName,
+        });
+        return (
+          <div className={direction === "horizontal" ? "rapid-checkbox-list-item-horizontal" : "rapid-checkbox-list-item-vertical"}>
+            <Checkbox key={index} value={option.value}>
+              {option.label}
+            </Checkbox>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+interface GetCheckboxOptionOptions {
+  item: any;
+  listTextFormat?: string;
+  listTextFieldName?: string;
+  listValueFieldName?: string;
+}
+
+function getCheckboxOption(options: GetCheckboxOptionOptions): CheckboxOptionType {
+  const { item, listTextFormat, listTextFieldName, listValueFieldName } = options;
+  let label: string;
+  if (listTextFormat) {
+    label = MoveStyleUtils.fulfillVariablesInString(listTextFormat, item);
+  } else {
+    label = get(item, listTextFieldName);
+  }
+  const value = get(item, listValueFieldName);
+
+  return {
+    label,
+    value,
+  };
+}

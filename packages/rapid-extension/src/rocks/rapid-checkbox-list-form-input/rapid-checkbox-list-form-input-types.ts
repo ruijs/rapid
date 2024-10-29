@@ -90,7 +90,7 @@ export interface RapidCheckboxListFormInputConfig {
   /**
    * 复选框的排列方向
    */
-  direction: "horizontal" | "vertical";
+  direction?: "horizontal" | "vertical";
 }
 
 export type RapidCheckboxListFormInputRockConfig = SimpleRockConfig & RapidCheckboxListFormInputConfig;
