@@ -159,10 +159,7 @@ const page: RapidPage = {
         {
           $type: "sonicRecordActionDeleteEntity",
           code: "delete",
-          actionType: "delete",
           actionText: "删除",
-          dataSourceCode: "list",
-          entityCode: "OcRole",
         },
       ],
       newForm: cloneDeep(formConfig),
