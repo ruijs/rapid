@@ -15,12 +15,15 @@ import type { RapidEntityListConfig, RapidEntityListRockConfig } from "../rapid-
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import { RapidEntity } from "../../types/rapid-entity-types";
+import { RapidDeleteRecordActionOptions } from "../../types/rapid-action-types";
 import { EntityStore, RapidTableColumnConfig, RapidToolbarRockConfig } from "../../mod";
 import { useState } from "react";
 import moment from "moment";
 import { RapidExtStorage } from "../../utils/storage-utility";
 import { getColumnUniqueKey, ICacheRapidTableColumn } from "../rapid-entity-list-toolbox/RapidEntityListToolbox";
 import { getRapidEntityListFilters, RapidEntityListFilterCache } from "../rapid-entity-search-form/RapidEntitySearchForm";
+import { message, Modal } from "antd";
+import rapidApi from "../../rapidApi";
 
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -496,6 +499,37 @@ export default {
               componentId: props.$id,
               message: {
                 name: "resetEditForm",
+              },
+            },
+          ],
+        },
+        {
+          eventName: "onDeleteEntityButtonClick",
+          handlers: [
+            {
+              $action: "script",
+              script: async (event) => {
+                alert("h");
+                const recordAction: RapidDeleteRecordActionOptions = event.args[0];
+                let { confirmText, recordId } = recordAction;
+                if (!confirmText) {
+                  confirmText = `您确定要删除此${mainEntity.name}吗？`;
+                }
+
+                Modal.confirm({
+                  title: confirmText,
+                  onOk: () => {
+                    (async () => {
+                      try {
+                        await rapidApi.delete(`${mainEntity.namespace}/${mainEntity.pluralCode}/${recordId}`);
+                        message.info("删除成功。");
+                        event.scope.loadStoreData(dataSourceCode, null);
+                      } catch (err: any) {
+                        message.error(`删除失败：${err.message}`);
+                      }
+                    })();
+                  },
+                });
               },
             },
           ],

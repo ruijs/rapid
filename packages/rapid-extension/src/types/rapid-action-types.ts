@@ -132,3 +132,8 @@ export type RapidRecordActionPageLink = RapidRecordActionBase & {
 export type RapidRecordActionRequest = RapidRecordActionBase & {
   actionType: "request";
 };
+
+export type RapidDeleteRecordActionOptions = {
+  recordId: string;
+  confirmText?: string;
+};
