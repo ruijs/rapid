@@ -1,6 +1,6 @@
 {
   "name": "@ruiapp/rapid-extension",
-  "version": "0.3.28",
+  "version": "0.3.29",
   "description": "",
   "main": "dist/mod.js",
   "types": "dist/mod.d.ts",
@@ -54,6 +54,7 @@
   "dependencies": {
     "@glideapps/glide-data-grid": "^6.0.3",
     "pluralize": "^8.0.0",
+    "react-resizable-layout": "^0.7.2",
     "react-resizable-panels": "^2.1.5",
     "snabbdom": "^3.6.2"
   }

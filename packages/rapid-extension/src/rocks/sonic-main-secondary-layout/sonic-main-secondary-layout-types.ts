@@ -1,4 +1,5 @@
 import type { RockConfig, RockEventHandlerConfig, SimpleRockConfig, StoreConfig } from "@ruiapp/move-style";
+import { CSSProperties } from "react";
 
 export interface SonicMainSecondaryLayoutConfig {
   stores?: StoreConfig[];
@@ -12,6 +13,14 @@ export interface SonicMainSecondaryLayoutConfig {
   secondaryColSpan: number;
   secondaryClassName?: string;
   onSelectedIdsChange?: RockEventHandlerConfig;
+
+  mode?: "layout" | "default";
+  layoutCacheId?: string;
+  layoutResizable?: boolean;
+  layoutFixedColumn?: "left" | "right";
+  layoutClassName?: string;
+  layoutStyle?: CSSProperties;
+  layoutDefaultFixedColumnWidth?: number;
 }
 
 export interface SonicMainSecondaryLayoutRockConfig extends SimpleRockConfig, SonicMainSecondaryLayoutConfig {}

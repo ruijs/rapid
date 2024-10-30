@@ -58,6 +58,7 @@ import RapidEntityTableSelect from "./rapid-entity-table-select/EntityTableSelec
 import RapidEditableTable from "./rapid-editable-table/EditableTable";
 import SonicEntityTableSelect from "./sonic-entity-table-select/SonicEntityTableSelect";
 import RapidResizableLayout from "./rapid-resizable-layout/RapidResizableLayout";
+import RapidDoubleColumnLayout from "./rapid-double-column-layout/RapidDoubleColumnLayout";
 
 // RichText
 import RapidRichTextRenderer from "./rapid-rich-text-renderer/RichTextRenderer";
@@ -125,6 +126,7 @@ export default [
   RapidEditableTable,
   SonicEntityTableSelect,
   RapidResizableLayout,
+  RapidDoubleColumnLayout,
 
   RapidRichTextRenderer,
   RapidRichTextEditor,
