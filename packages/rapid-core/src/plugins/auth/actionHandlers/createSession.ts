@@ -12,23 +12,26 @@ export interface UserAccessToken {
 export const code = "createSession";
 
 export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: any) {
-  const { server, input, routerContext } = ctx;
-  const { response } = routerContext;
+  const { server, input, routerContext: routeContext } = ctx;
+  const { response } = routeContext;
   const { account, password } = input;
 
   const userDataAccessor = server.getDataAccessor({
     singularCode: "oc_user",
   });
 
-  const user = await userDataAccessor.findOne({
-    filters: [
-      {
-        operator: "eq",
-        field: "login",
-        value: account,
-      },
-    ],
-  });
+  const user = await userDataAccessor.findOne(
+    {
+      filters: [
+        {
+          operator: "eq",
+          field: "login",
+          value: account,
+        },
+      ],
+    },
+    routeContext?.getDbTransactionClient(),
+  );
 
   if (!user) {
     throw new Error("用户名或密码错误。");

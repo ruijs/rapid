@@ -67,27 +67,37 @@ class StateMachinePlugin implements RapidPlugin {
           const stateMachineDataAccessor = server.getDataAccessor({
             singularCode: "state_machine",
           });
-          const stateMachine = await stateMachineDataAccessor.findOne({
-            filters: [
-              {
-                operator: "eq",
-                field: "code",
-                value: stateMachineCode,
-              },
-            ],
-          });
+          const stateMachine = await stateMachineDataAccessor.findOne(
+            {
+              filters: [
+                {
+                  operator: "eq",
+                  field: "code",
+                  value: stateMachineCode,
+                },
+              ],
+            },
+            null,
+          );
 
           if (stateMachine) {
             if (!isEqual(stateMachine.config, stateMachineConfig)) {
-              await stateMachineDataAccessor.updateById(stateMachine.id, {
-                config: stateMachineConfig,
-              });
+              await stateMachineDataAccessor.updateById(
+                stateMachine.id,
+                {
+                  config: stateMachineConfig,
+                },
+                null,
+              );
             }
           } else {
-            await stateMachineDataAccessor.create({
-              code: stateMachineCode,
-              config: stateMachineConfig,
-            });
+            await stateMachineDataAccessor.create(
+              {
+                code: stateMachineCode,
+                config: stateMachineConfig,
+              },
+              null,
+            );
           }
         }
       }

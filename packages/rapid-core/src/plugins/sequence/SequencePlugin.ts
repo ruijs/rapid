@@ -78,29 +78,39 @@ class SequencePlugin implements RapidPlugin {
           const sequenceRuleDataAccessor = server.getDataAccessor({
             singularCode: "sequence_rule",
           });
-          const sequenceRule = await sequenceRuleDataAccessor.findOne({
-            filters: [
-              {
-                operator: "eq",
-                field: {
-                  name: "code",
+          const sequenceRule = await sequenceRuleDataAccessor.findOne(
+            {
+              filters: [
+                {
+                  operator: "eq",
+                  field: {
+                    name: "code",
+                  },
+                  value: ruleCode,
                 },
-                value: ruleCode,
-              },
-            ],
-          });
+              ],
+            },
+            null,
+          );
 
           if (sequenceRule) {
             if (isEqual(sequenceRule.config, ruleConfig)) {
-              await sequenceRuleDataAccessor.updateById(sequenceRule.id, {
-                config: ruleConfig,
-              });
+              await sequenceRuleDataAccessor.updateById(
+                sequenceRule.id,
+                {
+                  config: ruleConfig,
+                },
+                null,
+              );
             }
           } else {
-            await sequenceRuleDataAccessor.create({
-              code: ruleCode,
-              config: ruleConfig,
-            });
+            await sequenceRuleDataAccessor.create(
+              {
+                code: ruleCode,
+                config: ruleConfig,
+              },
+              null,
+            );
           }
         }
       }
@@ -108,13 +118,13 @@ class SequencePlugin implements RapidPlugin {
   }
 
   async beforeCreateEntity(server: IRpdServer, model: RpdDataModel, options: CreateEntityOptions) {
-    const entity = options.entity;
+    const { routeContext, entity } = options;
     for (const property of getEntityPropertiesIncludingBase(server, model)) {
       const sequenceConfig: PropertySequenceConfig = property.config?.sequence;
       const propertyValue = entity[property.code];
       if (sequenceConfig && sequenceConfig.enabled && isNullOrUndefined(propertyValue)) {
         const ruleCode = getSequenceRuleCode(model, property);
-        const numbers = await this.#sequenceService.generateSn(server, {
+        const numbers = await this.#sequenceService.generateSn(routeContext, server, {
           ruleCode,
           amount: 1,
           parameters: entity,

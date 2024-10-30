@@ -6,8 +6,8 @@ import { getStateMachineNextSnapshot } from "../stateMachineHelper";
 export const code = "sendStateMachineEvent";
 
 export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: SendStateMachineEventOptions) {
-  const { server, routerContext } = ctx;
-  const { response } = routerContext;
+  const { server, routerContext: routeContext } = ctx;
+  const { response } = routeContext;
 
   const input: SendStateMachineEventInput = ctx.input;
   if (options?.code) {
@@ -22,15 +22,18 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
     singularCode: "state_machine",
   });
 
-  const stateMachine = await stateMachineDataAccessor.findOne({
-    filters: [
-      {
-        operator: "eq",
-        field: "code",
-        value: input.code,
-      },
-    ],
-  });
+  const stateMachine = await stateMachineDataAccessor.findOne(
+    {
+      filters: [
+        {
+          operator: "eq",
+          field: "code",
+          value: input.code,
+        },
+      ],
+    },
+    routeContext?.getDbTransactionClient(),
+  );
 
   if (!stateMachine) {
     throw new Error(`State machine with code '${input.code}' was not found.`);

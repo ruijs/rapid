@@ -13,8 +13,8 @@ export type DownloadFileInput = {
 export const code = "downloadFile";
 
 export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: any) {
-  const { server, applicationConfig, routerContext } = ctx;
-  const { request, response } = routerContext;
+  const { server, applicationConfig, routerContext: routeContext } = ctx;
+  const { request, response } = routeContext;
   //TODO: only public files can download by this handler
 
   const input: DownloadFileInput = ctx.input;
@@ -26,7 +26,7 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
       singularCode: "ecm_storage_object",
     });
 
-    const storageObject = await dataAccessor.findById(input.fileId);
+    const storageObject = await dataAccessor.findById(input.fileId, routeContext?.getDbTransactionClient());
     if (!storageObject) {
       ctx.output = { error: new Error("Storage object not found.") };
       return;

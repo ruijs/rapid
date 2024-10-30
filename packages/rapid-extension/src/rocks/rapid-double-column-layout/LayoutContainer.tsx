@@ -5,7 +5,7 @@ import { useResizable } from "react-resizable-layout";
 import { isArray, merge } from "lodash";
 import { renderRock, renderRockChildren } from "@ruiapp/react-renderer";
 import LayoutSeparator from "./LayoutSeparator";
-import { RapidExtStorage } from "../../mod";
+import { RapidExtStorage } from "../../utils/storage-utility";
 
 const LayoutContainer = memo<RapidDoubleColumnLayoutRockConfig & { context: RockInstanceContext }>((props) => {
   const {

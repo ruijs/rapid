@@ -7,8 +7,8 @@ import { getFileBaseName } from "~/utilities/pathUtility";
 export const code = "downloadDocument";
 
 export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: any) {
-  const { server, applicationConfig, routerContext, input } = ctx;
-  const { request, response } = routerContext;
+  const { server, applicationConfig, routerContext: routeContext, input } = ctx;
+  const { request, response } = routeContext;
 
   const documentDataAccessor = ctx.server.getDataAccessor({
     singularCode: "ecm_document",
@@ -24,7 +24,7 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
   let fileName: string;
   let { revisionId, documentId } = input;
   if (revisionId) {
-    const revision = await revisionDataAccessor.findById(revisionId);
+    const revision = await revisionDataAccessor.findById(revisionId, routeContext?.getDbTransactionClient());
     if (!revision) {
       ctx.output = { error: new Error(`Revision with id "${revisionId}" was not found.`) };
       return;
@@ -32,14 +32,14 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
     storageObjectId = revision.storage_object_id;
 
     documentId = revision.document_id;
-    const document = await documentDataAccessor.findById(documentId);
+    const document = await documentDataAccessor.findById(documentId, routeContext?.getDbTransactionClient());
     if (!document) {
       ctx.output = { error: new Error(`Document with id "${documentId}" was not found.`) };
       return;
     }
     fileName = `${getFileBaseName(document.name!)}${revision.ext_name}`;
   } else if (documentId) {
-    const document = await documentDataAccessor.findById(documentId);
+    const document = await documentDataAccessor.findById(documentId, routeContext?.getDbTransactionClient());
     if (!document) {
       ctx.output = { error: new Error(`Document with id "${documentId}" was not found.`) };
       return;
@@ -51,7 +51,7 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
     return;
   }
 
-  const storageObject = await storageDataAccessor.findById(storageObjectId);
+  const storageObject = await storageDataAccessor.findById(storageObjectId, routeContext?.getDbTransactionClient());
   if (!storageObject) {
     ctx.output = { error: new Error(`Storage object with id "${storageObjectId}" was not found.`) };
     return;

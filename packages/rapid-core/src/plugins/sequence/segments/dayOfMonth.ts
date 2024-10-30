@@ -1,3 +1,4 @@
+import { RouteContext } from "~/core/routeContext";
 import { SequenceDayOfMonthSegmentConfig } from "../SequencePluginTypes";
 import { GenerateSequenceNumbersInput } from "../SequenceService";
 import { padSegment } from "../segment-utility";
@@ -6,6 +7,7 @@ import { IRpdServer } from "~/core/server";
 export const segmentType = "dayOfMonth";
 
 export async function resolveSegmentValue(
+  routeContext: RouteContext,
   server: IRpdServer,
   ruleCode: string,
   config: SequenceDayOfMonthSegmentConfig,

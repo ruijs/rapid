@@ -143,6 +143,7 @@ function convertEntityOrderByToRowOrderBy(server: IRpdServer, model: RpdDataMode
 }
 
 async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, options: FindEntityOptions) {
+  const routeContext = options.routeContext;
   const model = dataAccessor.getModel();
   let baseModel: RpdDataModel | undefined;
   if (model.base) {
@@ -242,14 +243,14 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     });
   }
 
-  const rowFilters = await convertEntityFiltersToRowFilters(server, model, baseModel, options.filters);
+  const rowFilters = await convertEntityFiltersToRowFilters(routeContext, server, model, baseModel, options.filters);
   const findRowOptions: FindRowOptions = {
     filters: rowFilters,
     orderBy: convertEntityOrderByToRowOrderBy(server, model, baseModel, options.orderBy),
     pagination: options.pagination,
     fields: columnsToSelect,
   };
-  const rows = await dataAccessor.find(findRowOptions);
+  const rows = await dataAccessor.find(findRowOptions, routeContext?.getDbTransactionClient());
   if (!rows.length) {
     return [];
   }
@@ -374,6 +375,7 @@ async function findById(server: IRpdServer, dataAccessor: IRpdDataAccessor, opti
 }
 
 async function convertEntityFiltersToRowFilters(
+  routeContext: RouteContext,
   server: IRpdServer,
   model: RpdDataModel,
   baseModel: RpdDataModel,
@@ -389,7 +391,7 @@ async function convertEntityFiltersToRowFilters(
     if (operator === "and" || operator === "or") {
       replacedFilters.push({
         operator: operator,
-        filters: await convertEntityFiltersToRowFilters(server, model, baseModel, filter.filters),
+        filters: await convertEntityFiltersToRowFilters(routeContext, server, model, baseModel, filter.filters),
       });
     } else if (operator === "exists" || operator === "notExists") {
       const relationProperty: RpdDataModelProperty = getEntityPropertyByCode(server, model, filter.field);
@@ -444,15 +446,18 @@ async function convertEntityFiltersToRowFilters(
             singularCode: relatedModel.base,
           });
         }
-        const rows = await dataAccessor.find({
-          filters: await convertEntityFiltersToRowFilters(server, relatedModel, relatedBaseModel, filter.filters),
-          fields: [
-            {
-              name: "id",
-              tableName: relatedModel.tableName,
-            },
-          ],
-        });
+        const rows = await dataAccessor.find(
+          {
+            filters: await convertEntityFiltersToRowFilters(routeContext, server, relatedModel, relatedBaseModel, filter.filters),
+            fields: [
+              {
+                name: "id",
+                tableName: relatedModel.tableName,
+              },
+            ],
+          },
+          routeContext?.getDbTransactionClient(),
+        );
         const entityIds = map(rows, (entity: any) => entity["id"]);
         replacedFilters.push({
           field: {
@@ -478,15 +483,18 @@ async function convertEntityFiltersToRowFilters(
             singularCode: relatedModel.base,
           });
         }
-        const targetEntities = await targetEntityDataAccessor.find({
-          filters: await convertEntityFiltersToRowFilters(server, relatedModel, relatedBaseModel, filter.filters),
-          fields: [
-            {
-              name: relationProperty.selfIdColumnName,
-              tableName: relatedModel.tableName,
-            },
-          ],
-        });
+        const targetEntities = await targetEntityDataAccessor.find(
+          {
+            filters: await convertEntityFiltersToRowFilters(routeContext, server, relatedModel, relatedBaseModel, filter.filters),
+            fields: [
+              {
+                name: relationProperty.selfIdColumnName,
+                tableName: relatedModel.tableName,
+              },
+            ],
+          },
+          routeContext?.getDbTransactionClient(),
+        );
         const selfEntityIds = map(targetEntities, (entity: any) => entity[relationProperty.selfIdColumnName!]);
         replacedFilters.push({
           field: {
@@ -519,15 +527,18 @@ async function convertEntityFiltersToRowFilters(
             singularCode: relatedModel.base,
           });
         }
-        const targetEntities = await targetEntityDataAccessor.find({
-          filters: await convertEntityFiltersToRowFilters(server, relatedModel, relatedBaseModel, filter.filters),
-          fields: [
-            {
-              name: "id",
-              tableName: relatedModel.tableName,
-            },
-          ],
-        });
+        const targetEntities = await targetEntityDataAccessor.find(
+          {
+            filters: await convertEntityFiltersToRowFilters(routeContext, server, relatedModel, relatedBaseModel, filter.filters),
+            fields: [
+              {
+                name: "id",
+                tableName: relatedModel.tableName,
+              },
+            ],
+          },
+          routeContext?.getDbTransactionClient(),
+        );
         const targetEntityIds = map(targetEntities, (entity: any) => entity["id"]);
 
         const command = `SELECT * FROM ${server.queryBuilder.quoteTable({
@@ -880,7 +891,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
 
     row.id = newBaseRow.id;
   }
-  const newRow = await dataAccessor.create(row);
+  const newRow = await dataAccessor.create(row, routeContext?.getDbTransactionClient());
   const newEntity = mapDbRowToEntity(server, model, Object.assign({}, newBaseRow, newRow, newEntityOneRelationProps), true);
 
   // save one-relation properties that has selfIdColumnName
@@ -908,7 +919,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
           const relationFieldChanges = {
             [property.targetIdColumnName]: newTargetEntity.id,
           };
-          await dataAccessorOfMainEntity.updateById(newEntity.id, relationFieldChanges);
+          await dataAccessorOfMainEntity.updateById(newEntity.id, relationFieldChanges, routeContext?.getDbTransactionClient());
           newEntity[property.code] = newTargetEntity;
         }
       }
@@ -955,7 +966,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
           newEntity[property.code].push(newTargetEntity);
         } else {
           // related entity is existed
-          const targetEntity = await targetDataAccessor.findById(relatedEntityId);
+          const targetEntity = await targetDataAccessor.findById(relatedEntityId, routeContext?.getDbTransactionClient());
           if (!targetEntity) {
             throw new Error(`Entity with id '${relatedEntityId}' in field '${property.code}' is not exists.`);
           }
@@ -968,7 +979,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
             const params = [newEntity.id, relatedEntityId];
             await server.queryDatabaseObject(command, params);
           } else {
-            await targetDataAccessor.updateById(targetEntity.id, { [property.selfIdColumnName!]: newEntity.id });
+            await targetDataAccessor.updateById(targetEntity.id, { [property.selfIdColumnName!]: newEntity.id }, routeContext?.getDbTransactionClient());
             targetEntity[property.selfIdColumnName!] = newEntity.id;
           }
           newEntity[property.code].push(targetEntity);
@@ -976,7 +987,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
       } else {
         // fieldValue is id
         relatedEntityId = relatedEntityToBeSaved;
-        const targetEntity = await targetDataAccessor.findById(relatedEntityId);
+        const targetEntity = await targetDataAccessor.findById(relatedEntityId, routeContext?.getDbTransactionClient());
         if (!targetEntity) {
           throw new Error(`Entity with id '${relatedEntityId}' in field '${property.code}' is not exists.`);
         }
@@ -989,7 +1000,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
           const params = [newEntity.id, relatedEntityId];
           await server.queryDatabaseObject(command, params);
         } else {
-          await targetDataAccessor.updateById(targetEntity.id, { [property.selfIdColumnName!]: newEntity.id });
+          await targetDataAccessor.updateById(targetEntity.id, { [property.selfIdColumnName!]: newEntity.id }, routeContext?.getDbTransactionClient());
           targetEntity[property.selfIdColumnName!] = newEntity.id;
         }
 
@@ -1205,7 +1216,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
 
   let updatedRow = row;
   if (Object.keys(row).length) {
-    updatedRow = await dataAccessor.updateById(id, row);
+    updatedRow = await dataAccessor.updateById(id, row, routeContext?.getDbTransactionClient());
   }
   let updatedBaseRow = baseRow;
   let baseDataAccessor: any;
@@ -1246,7 +1257,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
           const relationFieldChanges = {
             [property.targetIdColumnName]: newTargetEntity.id,
           };
-          await dataAccessorOfMainEntity.updateById(updatedEntity.id, relationFieldChanges);
+          await dataAccessorOfMainEntity.updateById(updatedEntity.id, relationFieldChanges, routeContext?.getDbTransactionClient());
           updatedEntity[property.code] = newTargetEntity;
           changes[property.code] = newTargetEntity;
         }
@@ -1339,7 +1350,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
           relatedEntities.push(newTargetEntity);
         } else {
           // related entity is existed
-          let targetEntity = await targetDataAccessor.findById(relatedEntityId);
+          let targetEntity = await targetDataAccessor.findById(relatedEntityId, routeContext?.getDbTransactionClient());
           if (!targetEntity) {
             throw new Error(`Entity with id '${relatedEntityId}' in field '${property.code}' does not exist.`);
           }
@@ -1377,7 +1388,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
               const params = [id, relatedEntityId];
               await server.queryDatabaseObject(command, params);
             } else {
-              await targetDataAccessor.updateById(targetEntity.id, { [property.selfIdColumnName!]: id });
+              await targetDataAccessor.updateById(targetEntity.id, { [property.selfIdColumnName!]: id }, routeContext?.getDbTransactionClient());
               targetEntity[property.selfIdColumnName!] = id;
             }
           }
@@ -1386,7 +1397,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
       } else {
         // fieldValue is id
         relatedEntityId = relatedEntityToBeSaved;
-        const targetEntity = await targetDataAccessor.findById(relatedEntityId);
+        const targetEntity = await targetDataAccessor.findById(relatedEntityId, routeContext?.getDbTransactionClient());
         if (!targetEntity) {
           throw new Error(`Entity with id '${relatedEntityId}' in field '${property.code}' is not exists.`);
         }
@@ -1400,7 +1411,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
             const params = [id, relatedEntityId];
             await server.queryDatabaseObject(command, params);
           } else {
-            await targetDataAccessor.updateById(targetEntity.id, { [property.selfIdColumnName!]: id });
+            await targetDataAccessor.updateById(targetEntity.id, { [property.selfIdColumnName!]: id }, routeContext?.getDbTransactionClient());
             targetEntity[property.selfIdColumnName!] = id;
           }
         }
@@ -1537,6 +1548,7 @@ export default class EntityManager<TEntity = any> {
   }
 
   async count(options: CountEntityOptions): Promise<number> {
+    const routeContext = options.routeContext;
     const model = this.#dataAccessor.getModel();
     let baseModel: RpdDataModel;
     if (model.base) {
@@ -1545,9 +1557,9 @@ export default class EntityManager<TEntity = any> {
       });
     }
     const countRowOptions: CountRowOptions = {
-      filters: await convertEntityFiltersToRowFilters(this.#server, model, baseModel, options.filters),
+      filters: await convertEntityFiltersToRowFilters(routeContext, this.#server, model, baseModel, options.filters),
     };
-    return await this.#dataAccessor.count(countRowOptions);
+    return await this.#dataAccessor.count(countRowOptions, routeContext?.getDbTransactionClient());
   }
 
   async deleteById(options: DeleteEntityByIdOptions | string | number, plugin?: RapidPlugin): Promise<void> {
@@ -1593,17 +1605,21 @@ export default class EntityManager<TEntity = any> {
           })
         : this.#dataAccessor;
       const currentUserId = routeContext?.state?.userId;
-      await dataAccessor.updateById(id, {
-        deleted_at: getNowStringWithTimezone(),
-        deleter_id: currentUserId,
-      });
+      await dataAccessor.updateById(
+        id,
+        {
+          deleted_at: getNowStringWithTimezone(),
+          deleter_id: currentUserId,
+        },
+        routeContext?.getDbTransactionClient(),
+      );
     } else {
-      await this.#dataAccessor.deleteById(id);
+      await this.#dataAccessor.deleteById(id, routeContext?.getDbTransactionClient());
       if (model.base) {
         const baseDataAccessor = this.#server.getDataAccessor({
           singularCode: model.base,
         });
-        await baseDataAccessor.deleteById(id);
+        await baseDataAccessor.deleteById(id, routeContext?.getDbTransactionClient());
       }
     }
 

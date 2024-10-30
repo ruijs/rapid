@@ -1,4 +1,4 @@
-import { CreateEntityOptions, IRpdDataAccessor, RpdDataModel, IDatabaseAccessor, DatabaseQuery } from "~/types";
+import { CreateEntityOptions, IRpdDataAccessor, RpdDataModel, IDatabaseAccessor, DatabaseQuery, IDatabaseClient } from "~/types";
 import QueryBuilder from "~/queryBuilder/queryBuilder";
 import { first, set } from "lodash";
 import { IRpdServer } from "~/core/server";
@@ -30,16 +30,16 @@ export default class DataAccessor<T = any> implements IRpdDataAccessor<T> {
     return this.#model;
   }
 
-  async create(entity: Partial<T>): Promise<T> {
+  async create(entity: Partial<T>, databaseClient: IDatabaseClient | null): Promise<T> {
     const options: CreateEntityOptions = {
       entity,
     };
     const query = this.#queryBuilder.insert(this.#model, options);
-    const result = await this.#databaseAccessor.queryDatabaseObject(query.command, query.params);
+    const result = await this.#databaseAccessor.queryDatabaseObject(query.command, query.params, databaseClient);
     return first(result);
   }
 
-  async updateById(id: any, entity: Partial<T>): Promise<{ count: number }> {
+  async updateById(id: any, entity: Partial<T>, databaseClient: IDatabaseClient | null): Promise<{ count: number }> {
     const options: UpdateRowOptions = {
       entity,
       filters: [
@@ -53,11 +53,11 @@ export default class DataAccessor<T = any> implements IRpdDataAccessor<T> {
       ],
     };
     const query = this.#queryBuilder.update(this.#model, options);
-    const result = await this.#databaseAccessor.queryDatabaseObject(query.command, query.params);
+    const result = await this.#databaseAccessor.queryDatabaseObject(query.command, query.params, databaseClient);
     return first(result);
   }
 
-  async find(options: FindRowOptions): Promise<T[]> {
+  async find(options: FindRowOptions, databaseClient: IDatabaseClient | null): Promise<T[]> {
     this.#logger.debug(`Finding '${this.#model.singularCode}' entity.`, { options });
     let query: DatabaseQuery;
     if (this.#model.base) {
@@ -70,19 +70,19 @@ export default class DataAccessor<T = any> implements IRpdDataAccessor<T> {
     }
 
     try {
-      return await this.#databaseAccessor.queryDatabaseObject(query.command, query.params);
+      return await this.#databaseAccessor.queryDatabaseObject(query.command, query.params, databaseClient);
     } catch (err) {
       throw newDatabaseError(`Failed to find entities. ${err.message}`, err);
     }
   }
 
-  async findOne(options: FindRowOptions): Promise<T> {
+  async findOne(options: FindRowOptions, databaseClient: IDatabaseClient | null): Promise<T> {
     set(options, "pagination.limit", 1);
-    const list = await this.find(options);
+    const list = await this.find(options, databaseClient);
     return first(list);
   }
 
-  async findById(id: any): Promise<T | null> {
+  async findById(id: any, databaseClient: IDatabaseClient | null): Promise<T | null> {
     const options: FindRowOptions = {
       filters: [
         {
@@ -94,11 +94,11 @@ export default class DataAccessor<T = any> implements IRpdDataAccessor<T> {
         },
       ],
     };
-    const result = await this.findOne(options);
+    const result = await this.findOne(options, databaseClient);
     return result;
   }
 
-  async count(options: CountRowOptions): Promise<number> {
+  async count(options: CountRowOptions, databaseClient: IDatabaseClient | null): Promise<number> {
     let query: DatabaseQuery;
     if (this.#model.base) {
       const baseModel = this.#server.getModel({
@@ -108,7 +108,7 @@ export default class DataAccessor<T = any> implements IRpdDataAccessor<T> {
     } else {
       query = this.#queryBuilder.count(this.#model, options);
     }
-    const result = await this.#databaseAccessor.queryDatabaseObject(query.command, query.params);
+    const result = await this.#databaseAccessor.queryDatabaseObject(query.command, query.params, databaseClient);
 
     const row = first(result);
     if (row) {
@@ -117,7 +117,7 @@ export default class DataAccessor<T = any> implements IRpdDataAccessor<T> {
     return 0;
   }
 
-  async deleteById(id: any) {
+  async deleteById(id: any, databaseClient: IDatabaseClient | null) {
     const options: FindRowOptions = {
       filters: [
         {
@@ -130,6 +130,6 @@ export default class DataAccessor<T = any> implements IRpdDataAccessor<T> {
       ],
     };
     const query = this.#queryBuilder.delete(this.#model, options);
-    await this.#databaseAccessor.queryDatabaseObject(query.command, query.params);
+    await this.#databaseAccessor.queryDatabaseObject(query.command, query.params, databaseClient);
   }
 }

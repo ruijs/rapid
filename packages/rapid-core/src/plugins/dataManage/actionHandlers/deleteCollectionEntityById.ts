@@ -1,22 +1,20 @@
 import { RunEntityActionHandlerOptions } from "~/types";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
+import runCollectionEntityActionHandler from "~/helpers/runCollectionEntityActionHandler";
 
 export const code = "deleteCollectionEntityById";
 
 export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: RunEntityActionHandlerOptions) {
-  const { logger, server, input } = ctx;
-  logger.debug(`Running ${code} handler...`);
-
-  const entityManager = server.getEntityManager(options.singularCode);
-  await entityManager.deleteById(
-    {
-      id: input.id,
-      routeContext: ctx.routerContext,
-    },
-    plugin,
-  );
-
-  ctx.status = 200;
-  ctx.output = {};
+  await runCollectionEntityActionHandler(ctx, options, code, true, true, async (entityManager, input: any): Promise<any> => {
+    const { routerContext: routeContext } = ctx;
+    await entityManager.deleteById(
+      {
+        id: input.id,
+        routeContext,
+      },
+      plugin,
+    );
+    return {};
+  });
 }
