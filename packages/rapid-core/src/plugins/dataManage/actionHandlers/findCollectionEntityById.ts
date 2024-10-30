@@ -1,21 +1,21 @@
 import { RunEntityActionHandlerOptions } from "~/types";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
+import runCollectionEntityActionHandler from "~/helpers/runCollectionEntityActionHandler";
 
 export const code = "findCollectionEntityById";
 
 export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: RunEntityActionHandlerOptions) {
-  const { logger, server, input } = ctx;
-  logger.debug(`Running ${code} handler...`, { input });
-  const { id } = input;
-
-  const entityManager = server.getEntityManager(options.singularCode);
-  const entity = await entityManager.findById({
-    id,
-    routeContext: ctx.routerContext,
+  await runCollectionEntityActionHandler(ctx, options, code, true, true, async (entityManager, input: any): Promise<any> => {
+    const { routerContext: routeContext } = ctx;
+    const { id } = input;
+    const entity = await entityManager.findById({
+      id,
+      routeContext,
+    });
+    if (!entity) {
+      throw new Error(`${options.namespace}.${options.singularCode} with id "${id}" was not found.`);
+    }
+    return entity;
   });
-  if (!entity) {
-    throw new Error(`${options.namespace}.${options.singularCode} with id "${id}" was not found.`);
-  }
-  ctx.output = entity;
 }

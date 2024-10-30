@@ -1,10 +1,11 @@
-import { IDatabaseClient, RunEntityActionHandlerOptions } from "~/types";
+import { RunEntityActionHandlerOptions } from "~/types";
 import { mergeInput } from "~/helpers/inputHelper";
 import { isArray } from "lodash";
 import { ActionHandlerContext } from "~/core/actionHandler";
-import { IRpdServer, RapidPlugin } from "~/core/server";
+import { RapidPlugin } from "~/core/server";
 import { RouteContext } from "~/core/routeContext";
 import EntityManager from "~/dataAccess/entityManager";
+import runCollectionEntityActionHandler from "~/helpers/runCollectionEntityActionHandler";
 
 export const code = "createCollectionEntitiesBatch";
 
@@ -14,35 +15,24 @@ interface createCollectionEntitiesBatchInput {
 }
 
 export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: RunEntityActionHandlerOptions) {
-  const { logger, server, input, routerContext: routeContext } = ctx;
-
+  const { input } = ctx;
+  const { noTransaction } = input;
   const { defaultInput, fixedInput } = options;
-  logger.debug(`Running ${code} handler...`, { defaultInput, fixedInput, input });
+  await runCollectionEntityActionHandler(
+    ctx,
+    options,
+    code,
+    false,
+    !noTransaction,
+    async (entityManager, input: createCollectionEntitiesBatchInput): Promise<any> => {
+      const { routerContext: routeContext } = ctx;
 
-  const { entities, noTransaction } = input;
-  if (!isArray(entities)) {
-    throw new Error("input.entities should be an array.");
-  }
+      const { entities } = input;
+      if (!isArray(entities)) {
+        throw new Error("input.entities should be an array.");
+      }
 
-  let output: any[] = [];
-  const entityManager = server.getEntityManager(options.singularCode);
-
-  if (noTransaction) {
-    output = await createEntities({
-      routeContext,
-      plugin,
-      entityManager,
-      entities,
-      defaultInput,
-      fixedInput,
-    });
-    ctx.output = output;
-  } else {
-    let transactionDbClient: IDatabaseClient;
-
-    try {
-      transactionDbClient = await routeContext.beginDbTransaction();
-
+      let output: any[] = [];
       output = await createEntities({
         routeContext,
         plugin,
@@ -51,18 +41,9 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
         defaultInput,
         fixedInput,
       });
-      ctx.output = output;
-
-      await routeContext.commitDbTransaction();
-    } catch (ex) {
-      await routeContext.rollbackDbTransaction();
-      throw ex;
-    } finally {
-      if (transactionDbClient) {
-        transactionDbClient.release();
-      }
-    }
-  }
+      return output;
+    },
+  );
 }
 
 interface CreateEntitiesOptions {
