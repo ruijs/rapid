@@ -424,6 +424,9 @@ importers:
       pluralize:
         specifier: ^8.0.0
         version: 8.0.0
+      react-resizable-layout:
+        specifier: ^0.7.2
+        version: 0.7.2(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react-resizable-panels:
         specifier: ^2.1.5
         version: 2.1.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -7033,6 +7036,12 @@ packages:
   react-refresh@0.14.0:
     resolution: {integrity: sha512-wViHqhAd8OHeLS/IRMJjTSDHF3U9eWi62F/MledQGPdJGDhodXJ9PBLNGr6WWL7qlH12Mt3TyTpbS+hGXMjCzQ==}
     engines: {node: '>=0.10.0'}
+
+  react-resizable-layout@0.7.2:
+    resolution: {integrity: sha512-GrVzAecB6+osdAx5PPP3G8R9n7A2uDd3NL+PyrHWNRaVBivZmW/o0+yFjQdS5Bo016A2fIP11fAhefsknWN4aw==}
+    peerDependencies:
+      react: '>=17.0.0'
+      react-dom: '>=17.0.0'
 
   react-resizable-panels@2.1.5:
     resolution: {integrity: sha512-JMSe18rYupmx+dzYcdfWYZ93ZdxqQmLum3xWDVSUMI0UVwl9bB9gUaFmPbxYoO4G+m5sqgdXQCYQxnOysytfnw==}
@@ -16408,6 +16417,11 @@ snapshots:
       react-dom: 18.2.0(react@18.2.0)
 
   react-refresh@0.14.0: {}
+
+  react-resizable-layout@0.7.2(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
 
   react-resizable-panels@2.1.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:

@@ -79,25 +79,36 @@ export default {
       $id: `${props.$id}-scope`,
       stores: props.stores,
       children: [
-        {
-          $type: "antdRow",
-          $id: `${props.$id}-row`,
-          gutter: props.gutter || 24,
-          children: [
-            {
-              $type: "antdCol",
-              $id: `${props.$id}-col-main`,
-              span: props.mainColSpan,
-              children: mainRock,
+        props.mode === "layout"
+          ? {
+              $type: "rapidDoubleColumnLayout",
+              layoutCacheId: props.layoutCacheId,
+              resizable: props.layoutResizable,
+              fixedColumn: props.layoutFixedColumn,
+              className: props.layoutClassName,
+              style: props.layoutStyle,
+              fixedChildren: mainRock,
+              flexChildren: secondaryRock,
+            }
+          : {
+              $type: "antdRow",
+              $id: `${props.$id}-row`,
+              gutter: props.gutter || 24,
+              children: [
+                {
+                  $type: "antdCol",
+                  $id: `${props.$id}-col-main`,
+                  span: props.mainColSpan,
+                  children: mainRock,
+                },
+                {
+                  $type: "antdCol",
+                  $id: `${props.$id}-col-secondary`,
+                  span: props.secondaryColSpan,
+                  children: secondaryRock,
+                },
+              ],
             },
-            {
-              $type: "antdCol",
-              $id: `${props.$id}-col-secondary`,
-              span: props.secondaryColSpan,
-              children: secondaryRock,
-            },
-          ],
-        },
       ],
       eventSubscriptions: [
         // {
