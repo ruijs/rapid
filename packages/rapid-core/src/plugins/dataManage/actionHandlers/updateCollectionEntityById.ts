@@ -1,4 +1,4 @@
-import { RunEntityActionHandlerOptions, UpdateEntityByIdOptions } from "~/types";
+import { IDatabaseClient, RunEntityActionHandlerOptions, UpdateEntityByIdOptions } from "~/types";
 import { mergeInput } from "~/helpers/inputHelper";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
@@ -6,7 +6,7 @@ import { RapidPlugin } from "~/core/server";
 export const code = "updateCollectionEntityById";
 
 export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: RunEntityActionHandlerOptions) {
-  const { logger, server, input } = ctx;
+  const { logger, server, input, routerContext: routeContext } = ctx;
 
   const { defaultInput, fixedInput } = options;
   const mergedInput = mergeInput(defaultInput, input, fixedInput);
@@ -36,6 +36,22 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
     routeContext: ctx.routerContext,
   };
   const entityManager = server.getEntityManager(options.singularCode);
-  const output = await entityManager.updateEntityById(updateEntityByIdOptions, plugin);
-  ctx.output = output;
+
+  let transactionDbClient: IDatabaseClient;
+
+  try {
+    transactionDbClient = await routeContext.beginDbTransaction();
+
+    await entityManager.addRelations(mergedInput, plugin);
+
+    const output = await entityManager.updateEntityById(updateEntityByIdOptions, plugin);
+    ctx.output = output;
+  } catch (ex) {
+    await routeContext.rollbackDbTransaction();
+    throw ex;
+  } finally {
+    if (transactionDbClient) {
+      transactionDbClient.release();
+    }
+  }
 }

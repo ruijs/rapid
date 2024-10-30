@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Pool } from "pg";
+import { IDatabaseAccessor, IDatabaseClient } from "@ruiapp/rapid-core";
+import { Pool, PoolClient, QueryArrayResult } from "pg";
 import type { Logger } from "winston";
 
-export default class DatabaseAccessor {
+export default class DatabaseAccessor implements IDatabaseAccessor {
   #logger: Logger;
   #pool: Pool;
 
@@ -19,9 +20,18 @@ export default class DatabaseAccessor {
     });
   }
 
-  async queryDatabaseObject(sql: any, params: any) {
+  getClient(): Promise<IDatabaseClient> {
+    return this.#pool.connect();
+  }
+
+  async queryDatabaseObject(sql: any, params?: any, client?: IDatabaseClient) {
     this.#logger.debug("Query database object.", { sql, params });
-    const res = await this.#pool.query(sql, params);
+    let res: QueryArrayResult<any[]>;
+    if (client) {
+      res = await client.query(sql, params);
+    } else {
+      res = await this.#pool.query(sql, params);
+    }
     return res.rows;
   }
 }

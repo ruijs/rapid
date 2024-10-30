@@ -4,6 +4,7 @@ import {
   EntityWatcherType,
   GetDataAccessorOptions,
   GetModelOptions,
+  IDatabaseAccessor,
   IDatabaseConfig,
   IQueryBuilder,
   IRpdDataAccessor,
@@ -30,6 +31,7 @@ export interface IRpdServer {
 
   getFacility<TFacility = any>(name: string, options?: any): Promise<TFacility>;
 
+  getDatabaseAccessor(): IDatabaseAccessor;
   queryDatabaseObject: (sql: string, params?: unknown[] | Record<string, unknown>) => Promise<any[]>;
   tryQueryDatabaseObject: (sql: string, params?: unknown[] | Record<string, unknown>) => Promise<any[]>;
   registerMiddleware(middleware: any): void;

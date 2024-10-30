@@ -9,8 +9,8 @@ export interface GenerateSequenceNumbersOptions {
 export const code = "generateSn";
 
 export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: GenerateSequenceNumbersOptions) {
-  const { server, routerContext } = ctx;
-  const { response } = routerContext;
+  const { server, routerContext: routeContext } = ctx;
+  const { response } = routeContext;
 
   const input: GenerateSequenceNumbersInput = ctx.input;
 
@@ -24,7 +24,7 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
 
   const sequenceService = server.getService<SequenceService>("sequenceService");
 
-  const sequences = await sequenceService.generateSn(server, input);
+  const sequences = await sequenceService.generateSn(routeContext, server, input);
 
   ctx.output = {
     sequences,

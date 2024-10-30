@@ -24,8 +24,14 @@ export type DatabaseQuery = {
   params?: unknown[] | Record<string, unknown>;
 };
 
+export interface IDatabaseClient {
+  release();
+  query(sql: any, params?: any): Promise<any>;
+}
+
 export interface IDatabaseAccessor {
-  queryDatabaseObject: (sql: string, params?: unknown[] | Record<string, unknown>) => Promise<any[]>;
+  getClient(): Promise<IDatabaseClient>;
+  queryDatabaseObject: (sql: string, params?: unknown[] | Record<string, unknown>, client?: IDatabaseClient) => Promise<any[]>;
 }
 
 export interface RunEntityActionHandlerOptions {
@@ -460,13 +466,13 @@ export interface RpdRouteActionConfig {
 
 export interface IRpdDataAccessor<T = any> {
   getModel(): RpdDataModel;
-  create(entity: any): Promise<any>;
-  updateById(id: any, entity: any): Promise<any>;
-  find(options: FindRowOptions): Promise<T[]>;
-  findOne(options: FindRowOptions): Promise<T | null>;
-  findById(id: any): Promise<T | null>;
-  count(options: CountRowOptions): Promise<number>;
-  deleteById(id: any): Promise<void>;
+  create(entity: any, databaseClient: IDatabaseClient | null): Promise<any>;
+  updateById(id: any, entity: any, databaseClient: IDatabaseClient | null): Promise<any>;
+  find(options: FindRowOptions, databaseClient: IDatabaseClient | null): Promise<T[]>;
+  findOne(options: FindRowOptions, databaseClient: IDatabaseClient | null): Promise<T | null>;
+  findById(id: any, databaseClient: IDatabaseClient | null): Promise<T | null>;
+  count(options: CountRowOptions, databaseClient: IDatabaseClient | null): Promise<number>;
+  deleteById(id: any, databaseClient: IDatabaseClient | null): Promise<void>;
 }
 
 export type EntityFilterRelationalOperators =

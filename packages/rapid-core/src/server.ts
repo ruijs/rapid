@@ -139,6 +139,10 @@ export class RapidServer implements IRpdServer {
     return this.#applicationConfig;
   }
 
+  getDatabaseAccessor(): IDatabaseAccessor {
+    return this.#databaseAccessor;
+  }
+
   appendApplicationConfig(config: Partial<RpdApplicationConfig>) {
     const { models, dataDictionaries, routes } = config;
     if (models) {

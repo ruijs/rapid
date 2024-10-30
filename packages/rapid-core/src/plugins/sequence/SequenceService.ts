@@ -2,6 +2,7 @@ import { IRpdServer } from "~/core/server";
 import segmentResolvers from "./segments";
 import { find } from "lodash";
 import { SequenceRuleConfig, SequenceSegmentConfig } from "./SequencePluginTypes";
+import { RouteContext } from "~/core/routeContext";
 
 export interface GenerateSequenceNumbersInput {
   ruleCode: string;
@@ -15,7 +16,13 @@ export interface GenerateSequenceNumbersOutput {
 
 export interface SegmentResolver {
   segmentType: string;
-  resolveSegmentValue(server: IRpdServer, ruleCode: string, config: SequenceSegmentConfig, input: GenerateSequenceNumbersInput): Promise<string>;
+  resolveSegmentValue(
+    routeContext: RouteContext,
+    server: IRpdServer,
+    ruleCode: string,
+    config: SequenceSegmentConfig,
+    input: GenerateSequenceNumbersInput,
+  ): Promise<string>;
 }
 
 export default class SequenceService {
@@ -25,7 +32,7 @@ export default class SequenceService {
     this.#server = server;
   }
 
-  async generateSn(server: IRpdServer, input: GenerateSequenceNumbersInput): Promise<string[]> {
+  async generateSn(routeContext: RouteContext | null, server: IRpdServer, input: GenerateSequenceNumbersInput): Promise<string[]> {
     const sequenceNumbers = [];
     const { ruleCode, parameters } = input;
     let { amount } = input;
@@ -38,17 +45,20 @@ export default class SequenceService {
       singularCode: "sequence_rule",
     });
 
-    const sequenceRule = await sequenceRuleDataAccessor.findOne({
-      filters: [
-        {
-          operator: "eq",
-          field: {
-            name: "code",
+    const sequenceRule = await sequenceRuleDataAccessor.findOne(
+      {
+        filters: [
+          {
+            operator: "eq",
+            field: {
+              name: "code",
+            },
+            value: ruleCode,
           },
-          value: ruleCode,
-        },
-      ],
-    });
+        ],
+      },
+      routeContext?.getDbTransactionClient(),
+    );
 
     if (!sequenceRule) {
       throw new Error(`Failed to generate sequence number. Sequence with code '${sequenceRule.code}' not found.`);
@@ -65,11 +75,12 @@ export default class SequenceService {
       for (const segmentConfig of sequenceConfig.segments) {
         const segmentResolver: SegmentResolver = find(segmentResolvers, (item) => item.segmentType === segmentConfig.type);
         if (!segmentResolver) {
-          // TODO: deal with unkown segment type
+          // TODO: deal with unknown segment type
+          server.getLogger().warn(`Unknown segment type "${segmentConfig.type}"`);
           continue;
         }
 
-        const segment = await segmentResolver.resolveSegmentValue(server, ruleCode, segmentConfig, input);
+        const segment = await segmentResolver.resolveSegmentValue(routeContext, server, ruleCode, segmentConfig, input);
         sequenceNumber += segment;
       }
 

@@ -31,6 +31,7 @@ import { getEntityPropertiesIncludingBase, getEntityPropertyByCode, isOneRelatio
 import { DataAccessPgColumnTypes } from "~/dataAccess/dataAccessTypes";
 import { pgPropertyTypeColumnMap } from "~/dataAccess/columnTypeMapper";
 import { convertModelIndexConditionsToRowFilterOptions } from "~/helpers/filterHelper";
+import { RouteContext } from "~/core/routeContext";
 
 class MetaManager implements RapidPlugin {
   get code(): string {
@@ -119,7 +120,7 @@ async function handleEntityUpdateEvent(server: IRpdServer, sender: RapidPlugin, 
   }
 }
 
-async function handleEntityDeleteEvent(server: IRpdServer, sender: RapidPlugin, payload: RpdEntityDeleteEventPayload) {
+async function handleEntityDeleteEvent(server: IRpdServer, sender: RapidPlugin, payload: RpdEntityDeleteEventPayload, routeContext?: RouteContext) {
   if (sender === this) {
     return;
   }
@@ -150,7 +151,7 @@ async function handleEntityDeleteEvent(server: IRpdServer, sender: RapidPlugin, 
       namespace: "meta",
       singularCode: "model",
     });
-    const model = await dataAccessor.findById((deletedProperty as any).modelId);
+    const model = await dataAccessor.findById((deletedProperty as any).modelId, routeContext?.getDbTransactionClient());
     if (model) {
       await server.queryDatabaseObject(`ALTER TABLE ${queryBuilder.quoteTable(model)} DROP COLUMN ${queryBuilder.quoteObject(columnNameToDrop)}`, []);
     }
