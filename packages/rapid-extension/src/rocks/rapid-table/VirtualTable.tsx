@@ -8,9 +8,11 @@ import { isPlainObject, isString, reduce } from "lodash";
 
 import "./rapid-table-style.css";
 
-const VirtualTable = <RecordType extends object>(props: TableProps<RecordType>) => {
-  const { columns, scroll } = props;
+const VirtualTable = <RecordType extends object>(props: TableProps<RecordType> & { rowHeight?: number }) => {
+  const { columns, scroll, rowHeight = 54 } = props;
   const [tableWidth, setTableWidth] = useState(0);
+
+  const tableBodyHeight = scroll?.y;
 
   const widthColumnCount = columns!.filter(({ width }) => !width).length;
   const mergedColumns = columns!.map((column) => {
@@ -55,7 +57,7 @@ const VirtualTable = <RecordType extends object>(props: TableProps<RecordType>) 
 
   const renderVirtualList = (rawData: object[], { scrollbarSize, ref, onScroll }: any) => {
     ref.current = connectObject;
-    const totalHeight = rawData.length * 54;
+    const totalHeight = rawData.length * rowHeight;
 
     return (
       <Grid
@@ -64,28 +66,35 @@ const VirtualTable = <RecordType extends object>(props: TableProps<RecordType>) 
         columnCount={mergedColumns.length}
         columnWidth={(index: number) => {
           const { width } = mergedColumns[index];
-          return (totalHeight as number) > (scroll!.y as number)! && index === mergedColumns.length - 1
+          return (totalHeight as number) > (tableBodyHeight as number)! && index === mergedColumns.length - 1
             ? (width as number) - scrollbarSize - 1
             : (width as number);
         }}
-        height={scroll!.y as number}
+        height={tableBodyHeight}
         rowCount={rawData.length}
-        rowHeight={() => 54}
+        rowHeight={() => rowHeight}
         width={tableWidth}
         onScroll={({ scrollLeft }: { scrollLeft: number }) => {
           onScroll({ scrollLeft });
         }}
       >
-        {({ columnIndex, rowIndex, style }: { columnIndex: number; rowIndex: number; style: React.CSSProperties }) => (
-          <div
-            className={mergeClassNames("virtual-table-cell", {
-              "virtual-table-cell-last": columnIndex === mergedColumns.length - 1,
-            })}
-            style={style}
-          >
-            {(rawData[rowIndex] as any)[(mergedColumns as any)[columnIndex].dataIndex]}
-          </div>
-        )}
+        {({ columnIndex, rowIndex, style }: { columnIndex: number; rowIndex: number; style: React.CSSProperties }) => {
+          let content = (rawData[rowIndex] as any)[(mergedColumns as any)[columnIndex].dataIndex];
+          if (typeof (mergedColumns as any)[columnIndex].render === "function") {
+            content = (mergedColumns as any)[columnIndex].render(content, rawData[rowIndex], rowIndex);
+          }
+
+          return (
+            <div
+              className={mergeClassNames("virtual-table-cell", {
+                "virtual-table-cell-last": columnIndex === mergedColumns.length - 1,
+              })}
+              style={style}
+            >
+              {content}
+            </div>
+          );
+        }}
       </Grid>
     );
   };
@@ -100,7 +109,7 @@ const VirtualTable = <RecordType extends object>(props: TableProps<RecordType>) 
         {...props}
         className="virtual-table"
         columns={mergedColumns}
-        pagination={false}
+        // pagination={false}
         components={{
           body: renderVirtualList,
         }}
