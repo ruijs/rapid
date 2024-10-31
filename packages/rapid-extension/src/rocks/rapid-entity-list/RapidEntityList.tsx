@@ -322,9 +322,11 @@ export default {
       ...props.tableProps,
       convertListToTree: props.convertListToTree,
       dataSourceAdapter: props.dataSourceAdapter,
+      beforeSubmitFormDataAdapter: props.beforeSubmitFormDataAdapter,
       listIdField: props.listIdField,
       listParentField: props.listParentField,
       treeChildrenField: props.treeChildrenField,
+      treeTopParentValue: props.treeTopParentValue,
       onRowClick: props.selectOnClickRow
         ? [
             {

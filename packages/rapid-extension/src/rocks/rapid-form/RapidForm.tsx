@@ -185,7 +185,16 @@ export default {
           $action: "script",
           script: async (event: RockEvent) => {
             if (props.onFinish) {
-              const formValues = mapValues(Object.assign({}, event.args[0], props.fixedFields), (v) => (v === undefined ? null : v));
+              let formValues = omitUndefinedValues(Object.assign({}, event.args[0], props.fixedFields));
+              if (typeof props.beforeSubmitFormDataAdapter === "string" && trim(props.beforeSubmitFormDataAdapter)) {
+                const adapter = parseRockExpressionFunc(
+                  props.beforeSubmitFormDataAdapter,
+                  { formData: omitUndefinedValues(event.args[0]), fixedFields: omitUndefinedValues(props.fixedFields) },
+                  context,
+                );
+                formValues = adapter();
+              }
+
               await handleComponentEvent("onFinish", event.framework, event.page as any, event.scope, event.sender, props.onFinish, [formValues]);
             }
           },
@@ -223,3 +232,7 @@ export default {
 
   ...RapidFormMeta,
 } as Rock<RapidFormRockConfig>;
+
+function omitUndefinedValues(data: Record<string, any>) {
+  return mapValues(data, (v) => (v === undefined ? null : v));
+}

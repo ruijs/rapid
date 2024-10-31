@@ -411,10 +411,10 @@ importers:
         version: 1.19.3
       '@ruiapp/move-style':
         specifier: ^0.3.6
-        version: 0.3.6(lodash@4.17.21)
+        version: 0.3.9(lodash@4.17.21)
       '@ruiapp/react-renderer':
         specifier: ^0.3.4
-        version: 0.3.4(@ruiapp/move-style@0.3.6(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 0.3.4(@ruiapp/move-style@0.3.9(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       axios:
         specifier: ^1.1.2
         version: 1.6.7
@@ -424,12 +424,18 @@ importers:
       pluralize:
         specifier: ^8.0.0
         version: 8.0.0
+      rc-resize-observer:
+        specifier: ^1.4.0
+        version: 1.4.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react-resizable-layout:
         specifier: ^0.7.2
         version: 0.7.2(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react-resizable-panels:
         specifier: ^2.1.5
         version: 2.1.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      react-window:
+        specifier: ^1.8.10
+        version: 1.8.10(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       snabbdom:
         specifier: ^3.6.2
         version: 3.6.2
@@ -2483,11 +2489,6 @@ packages:
       '@ruiapp/react-renderer': ^0.3.4
       react: ^18.2.0
       react-dom: ^18.2.0
-
-  '@ruiapp/move-style@0.3.6':
-    resolution: {integrity: sha512-6YOCj8kHQHN+AXggQif/qDEvsmtbb8wEo+h9FaOfQoUDMkD9PguSoxTv4D5vBX4KWMTMuEn3YmfCa46SeFbqdg==}
-    peerDependencies:
-      lodash: ^4.17.21
 
   '@ruiapp/move-style@0.3.9':
     resolution: {integrity: sha512-jUd00aTNDee7UxBqddPWtRDfWYbbFkzXSbL/IfXNqYVdGnbmvuO07q8hfzWEqBS8vxtZFpQ+wJCoG6cQtDQFvw==}
@@ -5555,6 +5556,9 @@ packages:
     resolution: {integrity: sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==}
     engines: {node: '>= 0.6'}
 
+  memoize-one@5.2.1:
+    resolution: {integrity: sha512-zYiwtZUcYyXKo/np96AGZAckk+FWWsUdJ3cHGGmld7+AhvcWmQyGCYUh1hc4Q/pkOhb65dQR/pqCyK0cOaHz4Q==}
+
   memorystream@0.3.1:
     resolution: {integrity: sha512-S3UwM3yj5mtUSEfP41UZmt/0SCoVYUcU1rkXv+BQ5Ig8ndL4sPoJNBUJERafdPb5jjHJGuMgytgKvKIf58XNBw==}
     engines: {node: '>= 0.10.0'}
@@ -7064,6 +7068,13 @@ packages:
     engines: {node: '>=14'}
     peerDependencies:
       react: '>=16.8'
+
+  react-window@1.8.10:
+    resolution: {integrity: sha512-Y0Cx+dnU6NLa5/EvoHukUD0BklJ8qITCtVEPY1C/nL8wwoZ0b5aEw8Ff1dOVHw7fCzMt55XfJDd8S8W8LCaUCg==}
+    engines: {node: '>8.0.0'}
+    peerDependencies:
+      react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
 
   react@18.2.0:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
@@ -10778,15 +10789,6 @@ snapshots:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
-  '@ruiapp/move-style@0.3.6(lodash@4.17.21)':
-    dependencies:
-      axios: 1.6.8
-      events: 3.3.0
-      lodash: 4.17.21
-      qs: 6.12.1
-    transitivePeerDependencies:
-      - debug
-
   '@ruiapp/move-style@0.3.9(lodash@4.17.21)':
     dependencies:
       axios: 1.6.8
@@ -10795,12 +10797,6 @@ snapshots:
       qs: 6.12.1
     transitivePeerDependencies:
       - debug
-
-  '@ruiapp/react-renderer@0.3.4(@ruiapp/move-style@0.3.6(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
-    dependencies:
-      '@ruiapp/move-style': 0.3.6(lodash@4.17.21)
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
 
   '@ruiapp/react-renderer@0.3.4(@ruiapp/move-style@0.3.9(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
@@ -14644,6 +14640,8 @@ snapshots:
 
   media-typer@0.3.0: {}
 
+  memoize-one@5.2.1: {}
+
   memorystream@0.3.1: {}
 
   meow@8.1.2:
@@ -16445,6 +16443,13 @@ snapshots:
     dependencies:
       '@remix-run/router': 1.7.2
       react: 18.2.0
+
+  react-window@1.8.10(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
+    dependencies:
+      '@babel/runtime': 7.24.4
+      memoize-one: 5.2.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
 
   react@18.2.0:
     dependencies:

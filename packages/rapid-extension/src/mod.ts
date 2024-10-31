@@ -23,6 +23,7 @@ export { default as RapidExtensionSetting } from "./RapidExtensionSetting";
 export { EntityStoreConfig, EntityStore } from "./stores/entity-store";
 
 export * from "./components";
+export { default as AntdVirtualTable } from "./rocks/rapid-table/VirtualTable";
 
 export * from "./rock-generators/generateRockConfigOfError";
 export * from "./rock-generators/generateRuiPageConfigOfError";

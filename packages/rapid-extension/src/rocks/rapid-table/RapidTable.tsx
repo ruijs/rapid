@@ -9,7 +9,7 @@ import { parseRockExpressionFunc } from "../../utils/parse-utility";
 import { lazy, memo } from "react";
 import { ClientOnlySuspense } from "../../components";
 
-const VirtualTable = lazy(() => import("../../components/virtual-table/index"));
+const VirtualTable = lazy(() => import("./VirtualTable"));
 
 const ExpandedRowComponent = memo<Record<string, any>>((props) => {
   const { expandedRow, record, index, context } = props;
@@ -69,7 +69,8 @@ export default {
         listIdField: props.listIdField,
         listParentField: props.listParentField,
         treeChildrenField: props.treeChildrenField,
-      });
+        topParentValue: props.treeTopParentValue,
+      } as any);
     } else if (typeof props.dataSourceAdapter === "string" && trim(props.dataSourceAdapter)) {
       const adapter = parseRockExpressionFunc(props.dataSourceAdapter, { data: dataSource }, context);
       dataSource = adapter();

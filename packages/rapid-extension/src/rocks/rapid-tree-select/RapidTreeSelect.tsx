@@ -17,7 +17,8 @@ export default {
       listIdField: props.listIdField,
       listParentField: props.listParentField,
       treeChildrenField: props.treeChildrenField,
-    });
+      topParentValue: props.treeTopParentValue,
+    } as any);
 
     let selectedValue: string | string[];
     if (props.mode === "multiple") {

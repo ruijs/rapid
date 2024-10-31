@@ -73,6 +73,10 @@ export type RapidFormConfig = {
    * formData 适配器， 遵循 rui expression 规范（解析）
    */
   formDataAdapter?: string;
+  /**
+   * 表单提交前数据处理
+   */
+  beforeSubmitFormDataAdapter?: string;
 };
 
 /**

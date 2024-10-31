@@ -61,4 +61,5 @@ export interface RapidTreeSelectConfig extends SimpleRockConfig {
 
   listIdField?: string;
   treeChildrenField?: string;
+  treeTopParentValue?: string | number;
 }

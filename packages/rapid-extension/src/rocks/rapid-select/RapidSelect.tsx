@@ -2,7 +2,7 @@ import { MoveStyleUtils, Rock } from "@ruiapp/move-style";
 import { Select, SelectProps } from "antd";
 import { RapidSelectConfig } from "./rapid-select-types";
 import RapidSelectMeta from "./RapidSelectMeta";
-import { get, isObject, map } from "lodash";
+import { filter, get, isArray, isObject, map } from "lodash";
 import { objectMatch } from "../../utils/object-utility";
 
 export default {
@@ -30,6 +30,10 @@ export default {
         value,
       };
     });
+
+    if (isArray(props.filterOptionValues) && props.filterOptionValues.length) {
+      options = filter(options, (item) => !props.filterOptionValues.includes(item.value));
+    }
 
     let selectedValue: string | string[];
     if (props.mode === "multiple") {
