@@ -29,6 +29,7 @@ export type RapidTableConfig = {
 
   listIdField?: string;
   treeChildrenField?: string;
+  treeTopParentValue?: string | number;
 
   /**
    * 是否开启虚拟表格模式

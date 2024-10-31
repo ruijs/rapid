@@ -58,4 +58,9 @@ export interface RapidSelectConfig extends SimpleRockConfig {
    * 搜索时匹配哪些字段
    */
   listFilterFields?: string[];
+
+  /**
+   * 过滤指定值
+   */
+  filterOptionValues?: (string | number)[];
 }
