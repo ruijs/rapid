@@ -181,12 +181,15 @@ function listDataDictionaries(server: IRpdServer) {
 type TableInformation = {
   table_schema: string;
   table_name: string;
+  table_description: string;
 };
 
 type ColumnInformation = {
   table_schema: string;
   table_name: string;
   column_name: string;
+  ordinal_position: number;
+  description?: string;
   data_type: string;
   udt_name: string;
   is_nullable: "YES" | "NO";
@@ -206,7 +209,7 @@ type ConstraintInformation = {
 async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdApplicationConfig) {
   const logger = server.getLogger();
   logger.info("Synchronizing database schema...");
-  const sqlQueryTableInformations = `SELECT table_schema, table_name FROM information_schema.tables`;
+  const sqlQueryTableInformations = `SELECT table_schema, table_name, obj_description((table_schema||'.'||quote_ident(table_name))::regclass) as table_description FROM information_schema.tables`;
   const tablesInDb: TableInformation[] = await server.queryDatabaseObject(sqlQueryTableInformations);
   const { queryBuilder } = server;
 
@@ -219,10 +222,15 @@ async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdAppl
     if (!tableInDb) {
       await server.queryDatabaseObject(`CREATE TABLE IF NOT EXISTS ${queryBuilder.quoteTable(model)} ()`, []);
     }
+    if (!tableInDb || tableInDb.table_description != model.name) {
+      await server.queryDatabaseObject(`COMMENT ON TABLE ${queryBuilder.quoteTable(model)} IS ${queryBuilder.formatValueToSqlLiteral(model.name)};`, []);
+    }
   }
 
-  const sqlQueryColumnInformations = `SELECT table_schema, table_name, column_name, data_type, udt_name, is_nullable, column_default, character_maximum_length, numeric_precision, numeric_scale
-  FROM information_schema.columns;`;
+  const sqlQueryColumnInformations = `SELECT c.table_schema, c.table_name, c.column_name, c.ordinal_position, d.description, c.data_type,  c.udt_name, c.is_nullable, c.column_default, c.character_maximum_length, c.numeric_precision, c.numeric_scale
+    FROM information_schema.columns c
+    INNER JOIN pg_catalog.pg_statio_all_tables st ON (st.schemaname = c.table_schema and st.relname = c.table_name)
+    LEFT JOIN pg_catalog.pg_description d ON (d.objoid = st.relid and d.objsubid = c.ordinal_position);`;
   const columnsInDb: ColumnInformation[] = await server.queryDatabaseObject(sqlQueryColumnInformations, []);
 
   for (const model of applicationConfig.models) {
@@ -252,6 +260,15 @@ async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdAppl
               autoIncrement: false,
               notNull: property.required,
             });
+          }
+
+          if (!columnInDb || columnInDb.description != property.name) {
+            await server.queryDatabaseObject(
+              `COMMENT ON COLUMN ${queryBuilder.quoteTable(model)}.${queryBuilder.quoteObject(
+                property.targetIdColumnName,
+              )} IS ${queryBuilder.formatValueToSqlLiteral(property.name)};`,
+              [],
+            );
           }
         } else if (property.relation === "many") {
           if (property.linkTableName) {
@@ -358,6 +375,15 @@ async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdAppl
               await server.tryQueryDatabaseObject(sqlDropColumnNotNull);
             }
           }
+        }
+
+        if (!columnInDb || columnInDb.description != property.name) {
+          await server.queryDatabaseObject(
+            `COMMENT ON COLUMN ${queryBuilder.quoteTable(model)}.${queryBuilder.quoteObject(
+              property.columnName || property.code,
+            )} IS ${queryBuilder.formatValueToSqlLiteral(property.name)};`,
+            [],
+          );
         }
       }
     }

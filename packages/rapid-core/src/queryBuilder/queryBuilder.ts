@@ -1,5 +1,5 @@
 import { find, isBoolean, isNull, isNumber, isString, isUndefined } from "lodash";
-import { RpdDataModel, RpdDataModelProperty, CreateEntityOptions, QuoteTableOptions, DatabaseQuery } from "../types";
+import { RpdDataModel, RpdDataModelProperty, CreateEntityOptions, QuoteTableOptions, DatabaseQuery, IQueryBuilder } from "../types";
 import {
   CountRowOptions,
   DeleteRowOptions,
@@ -19,8 +19,8 @@ import {
 } from "~/dataAccess/dataAccessTypes";
 import { pgPropertyTypeColumnMap } from "~/dataAccess/columnTypeMapper";
 
-const objLeftQuoteChar = "\"";
-const objRightQuoteChar = "\"";
+const objLeftQuoteChar = '"';
+const objRightQuoteChar = '"';
 
 const relationalOperatorsMap = new Map<RowFilterRelationalOperators, string>([
   ["eq", "="],
@@ -46,7 +46,7 @@ export interface InitQueryBuilderOptions {
   dbDefaultSchema: string;
 }
 
-export default class QueryBuilder {
+export default class QueryBuilder implements IQueryBuilder {
   #dbDefaultSchema: string;
 
   constructor(options: InitQueryBuilderOptions) {
@@ -82,6 +82,10 @@ export default class QueryBuilder {
         return `${objLeftQuoteChar}${column.name}${objRightQuoteChar}`;
       }
     }
+  }
+
+  formatValueToSqlLiteral(value: any) {
+    return formatValueToSqlLiteral(value);
   }
 
   select(model: RpdDataModel, options: FindRowOptions): DatabaseQuery {
@@ -223,7 +227,7 @@ export default class QueryBuilder {
       paramToLiteral: false,
     };
     let { filters } = options;
-    let command = "SELECT COUNT(*)::int as \"count\" FROM ";
+    let command = 'SELECT COUNT(*)::int as "count" FROM ';
 
     command += this.quoteTable(model);
 
@@ -247,7 +251,7 @@ export default class QueryBuilder {
       paramToLiteral: false,
     };
     let { filters } = options;
-    let command = "SELECT COUNT(*)::int as \"count\" FROM ";
+    let command = 'SELECT COUNT(*)::int as "count" FROM ';
 
     command += `${this.quoteTable(derivedModel)} LEFT JOIN ${this.quoteTable(baseModel)} ON ${this.quoteObject(derivedModel.tableName)}.id = ${this.quoteObject(
       baseModel.tableName,
@@ -498,11 +502,10 @@ function buildRangeFilterQuery(ctx: BuildQueryContext, filter: FindRowRangeFilte
     ctx.params.push(filter.value[0]);
     command += `$${ctx.params.length}`;
 
-    command += " AND "
+    command += " AND ";
 
     ctx.params.push(filter.value[1]);
     command += `$${ctx.params.length}`;
-
   } else {
     throw new Error(`Filter operator '${filter.operator}' is not supported.`);
   }
