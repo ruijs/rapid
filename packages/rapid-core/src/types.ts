@@ -179,6 +179,7 @@ export interface IQueryBuilder {
   quoteTable: (options: QuoteTableOptions) => string;
   quoteObject: (name: string) => string;
   buildFiltersExpression(model: RpdDataModel, filters: RowFilterOptions[]);
+  formatValueToSqlLiteral: (value: any) => string;
 }
 
 export interface RpdApplicationConfig {

@@ -181,6 +181,7 @@ function listDataDictionaries(server: IRpdServer) {
 type TableInformation = {
   table_schema: string;
   table_name: string;
+  table_description: string;
 };
 
 type ColumnInformation = {
@@ -206,7 +207,7 @@ type ConstraintInformation = {
 async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdApplicationConfig) {
   const logger = server.getLogger();
   logger.info("Synchronizing database schema...");
-  const sqlQueryTableInformations = `SELECT table_schema, table_name FROM information_schema.tables`;
+  const sqlQueryTableInformations = `SELECT table_schema, table_name, obj_description((table_schema||'.'||quote_ident(table_name))::regclass) as table_description FROM information_schema.tables`;
   const tablesInDb: TableInformation[] = await server.queryDatabaseObject(sqlQueryTableInformations);
   const { queryBuilder } = server;
 
@@ -218,6 +219,9 @@ async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdAppl
     const tableInDb = find(tablesInDb, { table_schema: expectedTableSchema, table_name: expectedTableName });
     if (!tableInDb) {
       await server.queryDatabaseObject(`CREATE TABLE IF NOT EXISTS ${queryBuilder.quoteTable(model)} ()`, []);
+    }
+    if (!tableInDb || tableInDb.table_description != model.name) {
+      await server.queryDatabaseObject(`COMMENT ON TABLE ${queryBuilder.quoteTable(model)} IS ${queryBuilder.formatValueToSqlLiteral(model.name)};`, []);
     }
   }
 
