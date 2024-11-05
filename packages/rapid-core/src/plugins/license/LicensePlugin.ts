@@ -28,7 +28,7 @@ class LicensePlugin implements RapidPlugin {
     this.#encryptionKey = options.encryptionKey;
   }
 
-  get settingService() {
+  get licenseService() {
     return this.#licenseService;
   }
 
