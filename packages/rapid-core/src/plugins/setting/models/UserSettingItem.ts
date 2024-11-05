@@ -46,4 +46,10 @@ export default {
       required: false,
     },
   ],
+  indexes: [
+    {
+      unique: true,
+      properties: ["ownerId", "groupCode", "itemCode"],
+    },
+  ],
 } as RpdDataModel;

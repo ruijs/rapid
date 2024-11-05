@@ -31,6 +31,9 @@ export { default as AuthPlugin } from "./plugins/auth/AuthPlugin";
 
 export { default as FileManagePlugin } from "./plugins/fileManage/FileManagePlugin";
 
+export { default as LicensePlugin } from "./plugins/license/LicensePlugin";
+export * from "./plugins/license/LicensePluginTypes";
+
 export { default as MailPlugin } from "./plugins/mail/MailPlugin";
 export * from "./plugins/mail/MailPluginTypes";
 

@@ -9,3 +9,7 @@ export function isNull(val: any) {
 export function isNullOrUndefined(val: any) {
   return isNull(val) || isUndefined(val);
 }
+
+export function isNullOrUndefinedOrEmpty(val: any) {
+  return isNull(val) || isUndefined(val) || val === "";
+}
