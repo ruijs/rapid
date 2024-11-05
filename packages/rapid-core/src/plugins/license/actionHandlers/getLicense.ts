@@ -12,7 +12,7 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
 
   const licenseService = server.getService<LicenseService>("licenseService");
 
-  const license = await licenseService.getLicense();
+  const license = licenseService.getLicense();
 
   ctx.output = license;
 }

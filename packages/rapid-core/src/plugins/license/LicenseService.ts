@@ -4,6 +4,9 @@ import { LicenseSettings, RpdCert, RpdLicense } from "./LicensePluginTypes";
 import { SystemSettingItem } from "../setting/SettingPluginTypes";
 import SettingService from "../setting/SettingService";
 import { extractCertLicense } from "./helpers/certHelper";
+import dayjs from "dayjs";
+import { get, isString } from "lodash";
+import { isNullOrUndefinedOrEmpty } from "~/utilities/typeUtility";
 
 export interface GetSystemSettingValuesInput {
   groupCode: string;
@@ -48,7 +51,62 @@ export default class LicenseService {
     }
   }
 
-  async getLicense() {
+  getLicense() {
     return this.#license;
+  }
+
+  isExpired() {
+    if (!this.#license) {
+      return true;
+    }
+
+    const { neverExpire, expireDate } = this.#license.authority;
+
+    if (neverExpire) {
+      return false;
+    }
+
+    if (!expireDate) {
+      return true;
+    }
+
+    const today = dayjs(dayjs().format("YYYY-MM-DD"));
+    return today.isAfter(dayjs(expireDate));
+  }
+
+  getQuota(name: string) {
+    if (!this.#license) {
+      return null;
+    }
+
+    return get(this.#license.authority, `quota.${name}`, null);
+  }
+
+  isOutOfQuota(name: string, currentAmount: number) {
+    const quotaLimit = this.getQuota(name);
+
+    if (isNullOrUndefinedOrEmpty(quotaLimit)) {
+      return true;
+    }
+
+    let quotaLimitAmount: string | number = quotaLimit;
+    if (isString(quotaLimitAmount)) {
+      quotaLimitAmount = parseInt(quotaLimit, 10);
+    }
+
+    if (quotaLimitAmount === -1) {
+      return true;
+    }
+
+    return currentAmount > quotaLimitAmount;
+  }
+
+  isFunctionAllowed(name: string) {
+    if (!this.#license) {
+      return false;
+    }
+
+    const functions = get(this.#license.authority, "functions", []);
+    return functions.includes(name);
   }
 }
