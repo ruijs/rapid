@@ -14,7 +14,16 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
       routeContext,
     });
     if (!entity) {
-      throw new Error(`${options.namespace}.${options.singularCode} with id "${id}" was not found.`);
+      ctx.routerContext.response.json(
+        {
+          error: {
+            message: `${options.namespace}.${options.singularCode} with id "${id}" was not found.`,
+          },
+        },
+        404,
+      );
+      // routerContext.json() function will not be called if the ctx.output is null or undefined.
+      return;
     }
     return entity;
   });

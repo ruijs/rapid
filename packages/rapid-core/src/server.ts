@@ -400,13 +400,14 @@ export class RapidServer implements IRpdServer {
     const rapidRequest = new RapidRequest(this, request);
     await rapidRequest.parseBody();
     const routeContext: RouteContext = new RouteContext(this, rapidRequest);
+    const { response } = routeContext;
 
     try {
       await this.#pluginManager.onPrepareRouteContext(routeContext);
       await this.#buildedRoutes(routeContext, next);
     } catch (ex) {
       this.#logger.error("handle request error:", ex);
-      routeContext.response.json(
+      response.json(
         {
           error: {
             message: ex.message || ex,
@@ -415,7 +416,18 @@ export class RapidServer implements IRpdServer {
         500,
       );
     }
-    return routeContext.response.getResponse();
+
+    if (!response.status && !response.body) {
+      response.json(
+        {
+          error: {
+            message: "No route handler was found to handle this request.",
+          },
+        },
+        404,
+      );
+    }
+    return response.getResponse();
   }
 
   async beforeRunRouteActions(handlerContext: ActionHandlerContext) {
