@@ -8,7 +8,7 @@ export function createRapidRequestHandler(server: IRpdServer): RequestHandler {
   return async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
       let request = createStandardRequest(req, res);
-      let response: Response = await server.handleRequest(request, next as any);
+      let response: Response = await server.handleRequest(request, function () {} as any);
       await sendStandardResponse(res, response);
     } catch (error: unknown) {
       // Express doesn't support async functions, so we have to pass along the

@@ -15,7 +15,6 @@ function mergeHeaders(target: Headers, source: HeadersInit) {
   } else if (isObject(source)) {
     Object.entries(source).forEach(([key, value]) => target.set(key, value));
   }
-  return target;
 }
 
 interface NewResponseOptions {
@@ -32,6 +31,7 @@ function newResponse(options: NewResponseOptions) {
 }
 
 export class RapidResponse {
+  // TODO: remove this field.
   #response: Response;
   status: number;
   body: BodyInit;
@@ -53,14 +53,17 @@ export class RapidResponse {
     if (headers) {
       mergeHeaders(responseHeaders, headers);
     }
-    this.#response = newResponse({ body, status: status || 200, headers: responseHeaders });
+    this.status = status || 200;
+    this.body = body;
+    this.#response = newResponse({ body, status: this.status, headers: responseHeaders });
   }
 
   redirect(location: string, status?: HttpStatus) {
     this.headers.set("Location", location);
+    this.status = status || 302;
     this.#response = newResponse({
       headers: this.headers,
-      status: status || 302,
+      status: this.status,
     });
   }
 
