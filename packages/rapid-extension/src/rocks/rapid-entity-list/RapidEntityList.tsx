@@ -8,8 +8,8 @@ import { generateRockConfigOfError } from "../../rock-generators/generateRockCon
 import type { RapidEntity, RapidField } from "../../types/rapid-entity-types";
 import type { EntityStore, EntityStoreConfig } from "../../stores/entity-store";
 import RapidExtensionSetting from "../../RapidExtensionSetting";
-import { parseRockExpressionFunc } from "../../mod";
 import { RapidEntityListFilterCache } from "../rapid-entity-search-form/RapidEntitySearchForm";
+import { parseRockExpressionFunc } from "../../utils/parse-utility";
 
 export default {
   onResolveState(props, state) {
