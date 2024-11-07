@@ -53,6 +53,7 @@ export function newPropertyUpdater(rapidConfigApi: AxiosInstance) {
         "selfIdColumnName",
         "linkTableName",
         "linkDbSchema",
+        "entityDeletingReaction",
         "readonly",
       ]);
       if (changedFieldNames.length) {

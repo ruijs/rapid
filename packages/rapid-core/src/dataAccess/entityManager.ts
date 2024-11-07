@@ -45,6 +45,7 @@ import {
   uniq,
 } from "lodash";
 import {
+  getEntityProperties,
   getEntityPropertiesIncludingBase,
   getEntityProperty,
   getEntityPropertyByCode,
@@ -1523,12 +1524,13 @@ async function deleteEntityById(
 
   const model = dataAccessor.getModel();
   if (model.derivedTypePropertyCode) {
+    // TODO: should be allowed.
     throw newEntityOperationError("Delete base entity directly is not allowed.");
   }
 
   const { id, routeContext } = options;
 
-  const entity = await this.findById({
+  const entity = await findById(server, dataAccessor, {
     id,
     keepNonPropertyFields: true,
     routeContext,
@@ -1536,6 +1538,12 @@ async function deleteEntityById(
 
   if (!entity) {
     return;
+  }
+
+  if (model.softDelete) {
+    if (entity.deletedAt) {
+      return;
+    }
   }
 
   await server.emitEvent({
@@ -1560,6 +1568,114 @@ async function deleteEntityById(
       routeContext?.getDbTransactionClient(),
     );
   } else {
+    const relationPropertiesWithDeletingReaction = getEntityPropertiesIncludingBase(server, model, (property) => {
+      return isRelationProperty(property) && property.entityDeletingReaction && property.entityDeletingReaction !== "doNothing";
+    });
+
+    for (const relationProperty of relationPropertiesWithDeletingReaction) {
+      const relationDataAccessor = server.getDataAccessor({
+        singularCode: relationProperty.targetSingularCode,
+      });
+      if (relationProperty.entityDeletingReaction === "cascadingDelete") {
+        if (relationProperty.relation === "one") {
+          const relatedEntityId = entity[relationProperty.targetIdColumnName];
+          if (relatedEntityId) {
+            await deleteEntityById(
+              server,
+              relationDataAccessor,
+              {
+                routeContext,
+                id: relatedEntityId,
+              },
+              plugin,
+            );
+          }
+        } else if (relationProperty.relation === "many") {
+          if (relationProperty.linkTableName) {
+            const targetLinks = await server.queryDatabaseObject(
+              `SELECT ${server.queryBuilder.quoteObject(relationProperty.targetIdColumnName)} FROM ${server.queryBuilder.quoteTable({
+                schema: relationProperty.linkSchema,
+                tableName: relationProperty.linkTableName,
+              })} WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = $1`,
+              [id],
+            );
+            const targetEntityIds = targetLinks.map((item) => item[relationProperty.targetIdColumnName]);
+
+            await server.queryDatabaseObject(
+              `DELETE FROM ${server.queryBuilder.quoteTable({
+                schema: relationProperty.linkSchema,
+                tableName: relationProperty.linkTableName,
+              })} WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = $1`,
+              [id],
+            );
+
+            for (const targetEntityId of targetEntityIds) {
+              await deleteEntityById(
+                server,
+                relationDataAccessor,
+                {
+                  routeContext,
+                  id: targetEntityId,
+                },
+                plugin,
+              );
+            }
+          } else {
+            const targetModel = server.getModel({
+              singularCode: relationProperty.targetSingularCode,
+            });
+            const targetRows = await server.queryDatabaseObject(
+              `SELECT id FROM ${server.queryBuilder.quoteTable({
+                schema: targetModel.schema,
+                tableName: targetModel.tableName,
+              })} WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = $1`,
+              [id],
+            );
+            const targetEntityIds = targetRows.map((item) => item.id);
+            for (const targetEntityId of targetEntityIds) {
+              await deleteEntityById(
+                server,
+                relationDataAccessor,
+                {
+                  routeContext,
+                  id: targetEntityId,
+                },
+                plugin,
+              );
+            }
+          }
+        }
+      } else if (relationProperty.entityDeletingReaction === "unlink") {
+        if (relationProperty.relation === "one") {
+          // do nothing, entity will be deleted later.
+        } else if (relationProperty.relation === "many") {
+          if (relationProperty.linkTableName) {
+            await server.queryDatabaseObject(
+              `DELETE FROM ${server.queryBuilder.quoteTable({
+                schema: relationProperty.linkSchema,
+                tableName: relationProperty.linkTableName,
+              })}
+              WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = $1`,
+              [id],
+            );
+          } else {
+            const relationModel = server.getModel({
+              singularCode: relationProperty.targetSingularCode,
+            });
+            await server.queryDatabaseObject(
+              `UPDATE ${server.queryBuilder.quoteTable({
+                schema: relationModel.schema,
+                tableName: relationModel.tableName,
+              })}
+              SET ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = null
+              WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = $1`,
+              [id],
+            );
+          }
+        }
+      }
+    }
+
     await dataAccessor.deleteById(id, routeContext?.getDbTransactionClient());
     if (model.base) {
       const baseDataAccessor = server.getDataAccessor({

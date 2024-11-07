@@ -36,6 +36,7 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       type: "relation[]",
       targetSingularCode: "oc_user",
       selfIdColumnName: "department_id",
+      entityDeletingReaction: "unlink",
     },
   ],
 };

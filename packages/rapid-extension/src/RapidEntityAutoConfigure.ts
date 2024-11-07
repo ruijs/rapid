@@ -47,6 +47,7 @@ export function autoConfigureRapidField(sourceField: RapidField): RapidField {
     minLength: sourceField.minLength,
     maxLength: sourceField.maxLength,
 
+    entityDeletingReaction: sourceField.entityDeletingReaction,
     readonly: sourceField.readonly,
   };
   return field;

@@ -102,6 +102,8 @@ export type RapidFieldType =
   | "image"
   | "image[]";
 
+export type RapidEntityDeleteRelationPropertyReaction = "doNothing" | "unlink" | "cascadingDelete";
+
 export type RapidEntity<TEntitySingularCodes extends string = string, TDictionaryCodes extends string = string> = {
   /**
    * 表示仅用于描述实体，不在 Rapid 服务中注册
@@ -295,6 +297,10 @@ export type RapidField<TEntitySingularCodes extends string = string, TDictionary
    */
   maxLength?: number;
 
+  /**
+   * 当删除实体时，针对关系属性的联动处理。
+   */
+  entityDeletingReaction?: RapidEntityDeleteRelationPropertyReaction;
   /**
    * 当设置为`true`时，仅允许在创建时设置此属性的值，不允许更新。
    */

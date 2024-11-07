@@ -315,6 +315,11 @@ export interface RpdDataModelProperty {
   linkSchema?: string;
 
   /**
+   * 当删除实体时，针对关系属性的联动处理。
+   */
+  entityDeletingReaction?: RpdEntityDeleteRelationPropertyReaction;
+
+  /**
    * 当设置为`true`时，仅允许在创建时设置此属性的值，不允许更新。
    */
   readonly?: boolean;
@@ -340,6 +345,8 @@ export type RpdDataPropertyTypes =
   | "file[]"
   | "image"
   | "image[]";
+
+export type RpdEntityDeleteRelationPropertyReaction = "doNothing" | "unlink" | "cascadingDelete";
 
 /**
  * 数据字典
