@@ -1508,6 +1508,79 @@ function getEntityDuplicatedErrorMessage(server: IRpdServer, model: RpdDataModel
   return `已存在 ${propertyNames.join(", ")} 相同的记录。`;
 }
 
+async function deleteEntityById(
+  server: IRpdServer,
+  dataAccessor: IRpdDataAccessor,
+  options: DeleteEntityByIdOptions | string | number,
+  plugin?: RapidPlugin,
+): Promise<void> {
+  // options is id
+  if (!isObject(options)) {
+    options = {
+      id: options,
+    };
+  }
+
+  const model = dataAccessor.getModel();
+  if (model.derivedTypePropertyCode) {
+    throw newEntityOperationError("Delete base entity directly is not allowed.");
+  }
+
+  const { id, routeContext } = options;
+
+  const entity = await this.findById({
+    id,
+    keepNonPropertyFields: true,
+    routeContext,
+  });
+
+  if (!entity) {
+    return;
+  }
+
+  await server.emitEvent({
+    eventName: "entity.beforeDelete",
+    payload: {
+      namespace: model.namespace,
+      modelSingularCode: model.singularCode,
+      before: entity,
+    },
+    sender: plugin,
+    routeContext,
+  });
+
+  if (model.softDelete) {
+    const currentUserId = routeContext?.state?.userId;
+    await dataAccessor.updateById(
+      id,
+      {
+        deleted_at: getNowStringWithTimezone(),
+        deleter_id: currentUserId,
+      },
+      routeContext?.getDbTransactionClient(),
+    );
+  } else {
+    await dataAccessor.deleteById(id, routeContext?.getDbTransactionClient());
+    if (model.base) {
+      const baseDataAccessor = server.getDataAccessor({
+        singularCode: model.base,
+      });
+      await baseDataAccessor.deleteById(id, routeContext?.getDbTransactionClient());
+    }
+  }
+
+  await server.emitEvent({
+    eventName: "entity.delete",
+    payload: {
+      namespace: model.namespace,
+      modelSingularCode: model.singularCode,
+      before: entity,
+    },
+    sender: plugin,
+    routeContext,
+  });
+}
+
 export default class EntityManager<TEntity = any> {
   #server: IRpdServer;
   #dataAccessor: IRpdDataAccessor;
@@ -1563,76 +1636,7 @@ export default class EntityManager<TEntity = any> {
   }
 
   async deleteById(options: DeleteEntityByIdOptions | string | number, plugin?: RapidPlugin): Promise<void> {
-    // options is id
-    if (!isObject(options)) {
-      options = {
-        id: options,
-      };
-    }
-
-    const model = this.getModel();
-    if (model.derivedTypePropertyCode) {
-      throw newEntityOperationError("Delete base entity directly is not allowed.");
-    }
-
-    const { id, routeContext } = options;
-
-    const entity = await this.findById({
-      id,
-      keepNonPropertyFields: true,
-      routeContext,
-    });
-
-    if (!entity) {
-      return;
-    }
-
-    await this.#server.emitEvent({
-      eventName: "entity.beforeDelete",
-      payload: {
-        namespace: model.namespace,
-        modelSingularCode: model.singularCode,
-        before: entity,
-      },
-      sender: plugin,
-      routeContext,
-    });
-
-    if (model.softDelete) {
-      let dataAccessor = model.base
-        ? this.#server.getDataAccessor({
-            singularCode: model.base,
-          })
-        : this.#dataAccessor;
-      const currentUserId = routeContext?.state?.userId;
-      await dataAccessor.updateById(
-        id,
-        {
-          deleted_at: getNowStringWithTimezone(),
-          deleter_id: currentUserId,
-        },
-        routeContext?.getDbTransactionClient(),
-      );
-    } else {
-      await this.#dataAccessor.deleteById(id, routeContext?.getDbTransactionClient());
-      if (model.base) {
-        const baseDataAccessor = this.#server.getDataAccessor({
-          singularCode: model.base,
-        });
-        await baseDataAccessor.deleteById(id, routeContext?.getDbTransactionClient());
-      }
-    }
-
-    await this.#server.emitEvent({
-      eventName: "entity.delete",
-      payload: {
-        namespace: model.namespace,
-        modelSingularCode: model.singularCode,
-        before: entity,
-      },
-      sender: plugin,
-      routeContext,
-    });
+    return await deleteEntityById(this.#server, this.#dataAccessor, options, plugin);
   }
 
   async addRelations(options: AddEntityRelationsOptions, plugin?: RapidPlugin): Promise<void> {
