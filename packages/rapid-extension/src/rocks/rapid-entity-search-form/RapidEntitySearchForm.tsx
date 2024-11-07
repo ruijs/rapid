@@ -20,8 +20,7 @@ import type { RapidSelectConfig } from "../rapid-select/rapid-select-types";
 import { RapidOptionFieldRendererConfig } from "../rapid-option-field-renderer/rapid-option-field-renderer-types";
 import { searchParamsToFilters } from "../../functions/searchParamsToFilters";
 import { EntityTableSelectRockConfig } from "../rapid-entity-table-select/entity-table-select-types";
-import { RapidExtStorage } from "../../mod";
-import { useEffect } from "react";
+import { RapidExtStorage } from "../../utils/storage-utility";
 
 type SearchableFieldType = Exclude<RapidFieldType, "file" | "file[]" | "image" | "image[]" | "richText">;
 

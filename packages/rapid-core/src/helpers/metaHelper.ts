@@ -1,4 +1,4 @@
-import { cloneDeep } from "lodash";
+import { cloneDeep, filter, find } from "lodash";
 import { IRpdServer } from "~/core/server";
 import { RpdDataModel, RpdDataModelProperty } from "~/types";
 
@@ -14,13 +14,17 @@ export function isManyRelationProperty(property: RpdDataModelProperty) {
   return isRelationProperty(property) && property.relation === "many";
 }
 
-export function getEntityProperties(server: IRpdServer, model: RpdDataModel) {
-  return model.properties;
+export function getEntityProperties(server: IRpdServer, model: RpdDataModel, predicate?: (item: RpdDataModelProperty) => boolean) {
+  if (!predicate) {
+    return model.properties;
+  }
+
+  return filter(model.properties, predicate);
 }
 
-export function getEntityPropertiesIncludingBase(server: IRpdServer, model: RpdDataModel) {
+export function getEntityPropertiesIncludingBase(server: IRpdServer, model: RpdDataModel, predicate?: (item: RpdDataModelProperty) => boolean) {
   if (!model.base) {
-    return model.properties;
+    return getEntityProperties(server, model, predicate);
   }
 
   const baseModel = server.getModel({
@@ -28,14 +32,25 @@ export function getEntityPropertiesIncludingBase(server: IRpdServer, model: RpdD
   });
   let baseProperties: RpdDataModelProperty[] = [];
   if (baseModel) {
-    baseProperties = baseModel.properties.map((property) => {
+    if (predicate) {
+      baseProperties = filter(baseModel.properties, predicate);
+    } else {
+      baseProperties = baseModel.properties;
+    }
+    baseProperties = baseProperties.map((property) => {
       property = cloneDeep(property);
       property.isBaseProperty = true;
       return property;
     });
   }
 
-  return [...baseProperties, ...model.properties];
+  let properties: RpdDataModelProperty[];
+  if (predicate) {
+    properties = filter(model.properties, predicate);
+  } else {
+    properties = model.properties;
+  }
+  return [...baseProperties, ...properties];
 }
 
 export function getEntityPropertyByCode(server: IRpdServer, model: RpdDataModel, propertyCode: string): RpdDataModelProperty | undefined {

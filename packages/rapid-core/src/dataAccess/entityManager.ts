@@ -45,6 +45,7 @@ import {
   uniq,
 } from "lodash";
 import {
+  getEntityProperties,
   getEntityPropertiesIncludingBase,
   getEntityProperty,
   getEntityPropertyByCode,
@@ -1508,6 +1509,194 @@ function getEntityDuplicatedErrorMessage(server: IRpdServer, model: RpdDataModel
   return `已存在 ${propertyNames.join(", ")} 相同的记录。`;
 }
 
+async function deleteEntityById(
+  server: IRpdServer,
+  dataAccessor: IRpdDataAccessor,
+  options: DeleteEntityByIdOptions | string | number,
+  plugin?: RapidPlugin,
+): Promise<void> {
+  // options is id
+  if (!isObject(options)) {
+    options = {
+      id: options,
+    };
+  }
+
+  const model = dataAccessor.getModel();
+  if (model.derivedTypePropertyCode) {
+    // TODO: should be allowed.
+    throw newEntityOperationError("Delete base entity directly is not allowed.");
+  }
+
+  const { id, routeContext } = options;
+
+  const entity = await findById(server, dataAccessor, {
+    id,
+    keepNonPropertyFields: true,
+    routeContext,
+  });
+
+  if (!entity) {
+    return;
+  }
+
+  if (model.softDelete) {
+    if (entity.deletedAt) {
+      return;
+    }
+  }
+
+  await server.emitEvent({
+    eventName: "entity.beforeDelete",
+    payload: {
+      namespace: model.namespace,
+      modelSingularCode: model.singularCode,
+      before: entity,
+    },
+    sender: plugin,
+    routeContext,
+  });
+
+  if (model.softDelete) {
+    const currentUserId = routeContext?.state?.userId;
+    await dataAccessor.updateById(
+      id,
+      {
+        deleted_at: getNowStringWithTimezone(),
+        deleter_id: currentUserId,
+      },
+      routeContext?.getDbTransactionClient(),
+    );
+  } else {
+    const relationPropertiesWithDeletingReaction = getEntityPropertiesIncludingBase(server, model, (property) => {
+      return isRelationProperty(property) && property.entityDeletingReaction && property.entityDeletingReaction !== "doNothing";
+    });
+
+    for (const relationProperty of relationPropertiesWithDeletingReaction) {
+      const relationDataAccessor = server.getDataAccessor({
+        singularCode: relationProperty.targetSingularCode,
+      });
+      if (relationProperty.entityDeletingReaction === "cascadingDelete") {
+        if (relationProperty.relation === "one") {
+          const relatedEntityId = entity[relationProperty.targetIdColumnName];
+          if (relatedEntityId) {
+            await deleteEntityById(
+              server,
+              relationDataAccessor,
+              {
+                routeContext,
+                id: relatedEntityId,
+              },
+              plugin,
+            );
+          }
+        } else if (relationProperty.relation === "many") {
+          if (relationProperty.linkTableName) {
+            const targetLinks = await server.queryDatabaseObject(
+              `SELECT ${server.queryBuilder.quoteObject(relationProperty.targetIdColumnName)} FROM ${server.queryBuilder.quoteTable({
+                schema: relationProperty.linkSchema,
+                tableName: relationProperty.linkTableName,
+              })} WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = $1`,
+              [id],
+            );
+            const targetEntityIds = targetLinks.map((item) => item[relationProperty.targetIdColumnName]);
+
+            await server.queryDatabaseObject(
+              `DELETE FROM ${server.queryBuilder.quoteTable({
+                schema: relationProperty.linkSchema,
+                tableName: relationProperty.linkTableName,
+              })} WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = $1`,
+              [id],
+            );
+
+            for (const targetEntityId of targetEntityIds) {
+              await deleteEntityById(
+                server,
+                relationDataAccessor,
+                {
+                  routeContext,
+                  id: targetEntityId,
+                },
+                plugin,
+              );
+            }
+          } else {
+            const targetModel = server.getModel({
+              singularCode: relationProperty.targetSingularCode,
+            });
+            const targetRows = await server.queryDatabaseObject(
+              `SELECT id FROM ${server.queryBuilder.quoteTable({
+                schema: targetModel.schema,
+                tableName: targetModel.tableName,
+              })} WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = $1`,
+              [id],
+            );
+            const targetEntityIds = targetRows.map((item) => item.id);
+            for (const targetEntityId of targetEntityIds) {
+              await deleteEntityById(
+                server,
+                relationDataAccessor,
+                {
+                  routeContext,
+                  id: targetEntityId,
+                },
+                plugin,
+              );
+            }
+          }
+        }
+      } else if (relationProperty.entityDeletingReaction === "unlink") {
+        if (relationProperty.relation === "one") {
+          // do nothing, entity will be deleted later.
+        } else if (relationProperty.relation === "many") {
+          if (relationProperty.linkTableName) {
+            await server.queryDatabaseObject(
+              `DELETE FROM ${server.queryBuilder.quoteTable({
+                schema: relationProperty.linkSchema,
+                tableName: relationProperty.linkTableName,
+              })}
+              WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = $1`,
+              [id],
+            );
+          } else {
+            const relationModel = server.getModel({
+              singularCode: relationProperty.targetSingularCode,
+            });
+            await server.queryDatabaseObject(
+              `UPDATE ${server.queryBuilder.quoteTable({
+                schema: relationModel.schema,
+                tableName: relationModel.tableName,
+              })}
+              SET ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = null
+              WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = $1`,
+              [id],
+            );
+          }
+        }
+      }
+    }
+
+    await dataAccessor.deleteById(id, routeContext?.getDbTransactionClient());
+    if (model.base) {
+      const baseDataAccessor = server.getDataAccessor({
+        singularCode: model.base,
+      });
+      await baseDataAccessor.deleteById(id, routeContext?.getDbTransactionClient());
+    }
+  }
+
+  await server.emitEvent({
+    eventName: "entity.delete",
+    payload: {
+      namespace: model.namespace,
+      modelSingularCode: model.singularCode,
+      before: entity,
+    },
+    sender: plugin,
+    routeContext,
+  });
+}
+
 export default class EntityManager<TEntity = any> {
   #server: IRpdServer;
   #dataAccessor: IRpdDataAccessor;
@@ -1563,76 +1752,7 @@ export default class EntityManager<TEntity = any> {
   }
 
   async deleteById(options: DeleteEntityByIdOptions | string | number, plugin?: RapidPlugin): Promise<void> {
-    // options is id
-    if (!isObject(options)) {
-      options = {
-        id: options,
-      };
-    }
-
-    const model = this.getModel();
-    if (model.derivedTypePropertyCode) {
-      throw newEntityOperationError("Delete base entity directly is not allowed.");
-    }
-
-    const { id, routeContext } = options;
-
-    const entity = await this.findById({
-      id,
-      keepNonPropertyFields: true,
-      routeContext,
-    });
-
-    if (!entity) {
-      return;
-    }
-
-    await this.#server.emitEvent({
-      eventName: "entity.beforeDelete",
-      payload: {
-        namespace: model.namespace,
-        modelSingularCode: model.singularCode,
-        before: entity,
-      },
-      sender: plugin,
-      routeContext,
-    });
-
-    if (model.softDelete) {
-      let dataAccessor = model.base
-        ? this.#server.getDataAccessor({
-            singularCode: model.base,
-          })
-        : this.#dataAccessor;
-      const currentUserId = routeContext?.state?.userId;
-      await dataAccessor.updateById(
-        id,
-        {
-          deleted_at: getNowStringWithTimezone(),
-          deleter_id: currentUserId,
-        },
-        routeContext?.getDbTransactionClient(),
-      );
-    } else {
-      await this.#dataAccessor.deleteById(id, routeContext?.getDbTransactionClient());
-      if (model.base) {
-        const baseDataAccessor = this.#server.getDataAccessor({
-          singularCode: model.base,
-        });
-        await baseDataAccessor.deleteById(id, routeContext?.getDbTransactionClient());
-      }
-    }
-
-    await this.#server.emitEvent({
-      eventName: "entity.delete",
-      payload: {
-        namespace: model.namespace,
-        modelSingularCode: model.singularCode,
-        before: entity,
-      },
-      sender: plugin,
-      routeContext,
-    });
+    return await deleteEntityById(this.#server, this.#dataAccessor, options, plugin);
   }
 
   async addRelations(options: AddEntityRelationsOptions, plugin?: RapidPlugin): Promise<void> {

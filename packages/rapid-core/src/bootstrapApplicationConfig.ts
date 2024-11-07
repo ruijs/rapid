@@ -238,6 +238,13 @@ export default {
           required: false,
         },
         {
+          name: "entityDeletingReaction",
+          code: "entityDeletingReaction",
+          columnName: "entity_deleting_reaction",
+          type: "text",
+          required: false,
+        },
+        {
           name: "readonly",
           code: "readonly",
           columnName: "readonly",
