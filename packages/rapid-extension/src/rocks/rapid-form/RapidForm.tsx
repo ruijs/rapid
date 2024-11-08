@@ -85,6 +85,7 @@ export default {
       const formActionRock: RockConfig = {
         $id: `${props.$id}-actions-${index}`,
         $type: "antdButton",
+        form: state.form,
         children: {
           $type: "text",
           text: formAction.actionText,
