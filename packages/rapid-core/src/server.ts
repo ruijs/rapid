@@ -17,6 +17,7 @@ import {
   EntityWatcherType,
   RpdEntityCreateEventPayload,
   EmitServerEventOptions,
+  IDatabaseClient,
 } from "./types";
 
 import QueryBuilder from "./queryBuilder/queryBuilder";
@@ -373,18 +374,18 @@ export class RapidServer implements IRpdServer {
     return await factory.createFacility(this, options);
   }
 
-  async queryDatabaseObject(sql: string, params?: unknown[] | Record<string, unknown>): Promise<any[]> {
+  async queryDatabaseObject(sql: string, params?: unknown[] | Record<string, unknown>, client?: IDatabaseClient): Promise<any[]> {
     try {
-      return await this.#databaseAccessor.queryDatabaseObject(sql, params);
+      return await this.#databaseAccessor.queryDatabaseObject(sql, params, client);
     } catch (err) {
       this.#logger.error("Failed to query database object.", { errorMessage: err.message, sql, params });
       throw err;
     }
   }
 
-  async tryQueryDatabaseObject(sql: string, params?: unknown[] | Record<string, unknown>): Promise<any[]> {
+  async tryQueryDatabaseObject(sql: string, params?: unknown[] | Record<string, unknown>, client?: IDatabaseClient): Promise<any[]> {
     try {
-      return await this.queryDatabaseObject(sql, params);
+      return await this.queryDatabaseObject(sql, params, client);
     } catch (err) {
       this.#logger.error("Failed to query database object.", { errorMessage: err.message, sql, params });
     }

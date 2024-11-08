@@ -61,6 +61,7 @@ import { RouteContext } from "~/core/routeContext";
 
 export type FindOneRelationEntitiesOptions = {
   server: IRpdServer;
+  routeContext?: RouteContext;
   mainModel: RpdDataModel;
   relationProperty: RpdDataModelProperty;
   relationEntityIds: any[];
@@ -69,6 +70,7 @@ export type FindOneRelationEntitiesOptions = {
 
 export type FindManyRelationEntitiesOptions = {
   server: IRpdServer;
+  routeContext?: RouteContext;
   mainModel: RpdDataModel;
   relationProperty: RpdDataModelProperty;
   mainEntityIds: any[];
@@ -270,6 +272,7 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
         if (isManyRelation) {
           const relationLinks = await findManyRelationLinksViaLinkTable({
             server,
+            routeContext,
             mainModel: relationModel,
             relationProperty,
             mainEntityIds: entityIds,
@@ -287,6 +290,7 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
         if (isManyRelation) {
           relatedEntities = await findManyRelatedEntitiesViaIdPropertyCode({
             server,
+            routeContext,
             mainModel: model,
             relationProperty,
             mainEntityIds: entityIds,
@@ -301,6 +305,7 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
           );
           relatedEntities = await findOneRelatedEntitiesViaIdPropertyCode({
             server,
+            routeContext,
             mainModel: model,
             relationProperty,
             relationEntityIds: targetEntityIds,
@@ -547,7 +552,7 @@ async function convertEntityFiltersToRowFilters(
           tableName: relationProperty.linkTableName!,
         })} WHERE ${server.queryBuilder.quoteObject(relationProperty.targetIdColumnName!)} = ANY($1::int[])`;
         const params = [targetEntityIds];
-        const links = await server.queryDatabaseObject(command, params);
+        const links = await server.queryDatabaseObject(command, params, routeContext?.getDbTransactionClient());
         const selfEntityIds = links.map((link) => link[relationProperty.selfIdColumnName!]);
         replacedFilters.push({
           field: {
@@ -615,7 +620,7 @@ async function convertEntityFiltersToRowFilters(
 }
 
 async function findManyRelationLinksViaLinkTable(options: FindManyRelationEntitiesOptions) {
-  const { server, relationProperty, mainModel: relationModel, mainEntityIds, selectRelationOptions } = options;
+  const { server, routeContext, relationProperty, mainModel: relationModel, mainEntityIds, selectRelationOptions } = options;
   const command = `SELECT * FROM ${server.queryBuilder.quoteTable({
     schema: relationProperty.linkSchema,
     tableName: relationProperty.linkTableName!,
@@ -623,7 +628,7 @@ async function findManyRelationLinksViaLinkTable(options: FindManyRelationEntiti
     ORDER BY id
   `;
   const params = [mainEntityIds];
-  const links = await server.queryDatabaseObject(command, params);
+  const links = await server.queryDatabaseObject(command, params, routeContext?.getDbTransactionClient());
   const targetEntityIds = links.map((link) => link[relationProperty.targetIdColumnName!]);
 
   const dataAccessor = server.getDataAccessor({
@@ -961,7 +966,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
               tableName: property.linkTableName,
             })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
             const params = [newEntity.id, newTargetEntity.id];
-            await server.queryDatabaseObject(command, params);
+            await server.queryDatabaseObject(command, params, routeContext?.getDbTransactionClient());
           }
 
           newEntity[property.code].push(newTargetEntity);
@@ -978,7 +983,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
               tableName: property.linkTableName,
             })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
             const params = [newEntity.id, relatedEntityId];
-            await server.queryDatabaseObject(command, params);
+            await server.queryDatabaseObject(command, params, routeContext?.getDbTransactionClient());
           } else {
             await targetDataAccessor.updateById(targetEntity.id, { [property.selfIdColumnName!]: newEntity.id }, routeContext?.getDbTransactionClient());
             targetEntity[property.selfIdColumnName!] = newEntity.id;
@@ -999,7 +1004,7 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
             tableName: property.linkTableName,
           })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
           const params = [newEntity.id, relatedEntityId];
-          await server.queryDatabaseObject(command, params);
+          await server.queryDatabaseObject(command, params, routeContext?.getDbTransactionClient());
         } else {
           await targetDataAccessor.updateById(targetEntity.id, { [property.selfIdColumnName!]: newEntity.id }, routeContext?.getDbTransactionClient());
           targetEntity[property.selfIdColumnName!] = newEntity.id;
@@ -1299,6 +1304,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
           tableName: property.linkTableName,
         })} WHERE ${server.queryBuilder.quoteObject(property.selfIdColumnName!)} = $1`,
         [id],
+        routeContext?.getDbTransactionClient(),
       );
       currentTargetIds = targetLinks.map((item) => item[property.targetIdColumnName]);
 
@@ -1309,6 +1315,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
         })} WHERE ${server.queryBuilder.quoteObject(property.selfIdColumnName!)} = $1
               AND ${server.queryBuilder.quoteObject(property.targetIdColumnName!)} <> ALL($2::int[])`,
         [id, targetIdsToKeep],
+        routeContext?.getDbTransactionClient(),
       );
     } else {
       const targetModel = server.getModel({
@@ -1320,6 +1327,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
           tableName: targetModel.tableName,
         })} WHERE ${server.queryBuilder.quoteObject(property.selfIdColumnName!)} = $1`,
         [id],
+        routeContext?.getDbTransactionClient(),
       );
       currentTargetIds = targetRows.map((item) => item.id);
     }
@@ -1345,7 +1353,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
               tableName: property.linkTableName,
             })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
             const params = [id, newTargetEntity.id];
-            await server.queryDatabaseObject(command, params);
+            await server.queryDatabaseObject(command, params, routeContext?.getDbTransactionClient());
           }
 
           relatedEntities.push(newTargetEntity);
@@ -1387,7 +1395,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
                 tableName: property.linkTableName,
               })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
               const params = [id, relatedEntityId];
-              await server.queryDatabaseObject(command, params);
+              await server.queryDatabaseObject(command, params, routeContext?.getDbTransactionClient());
             } else {
               await targetDataAccessor.updateById(targetEntity.id, { [property.selfIdColumnName!]: id }, routeContext?.getDbTransactionClient());
               targetEntity[property.selfIdColumnName!] = id;
@@ -1410,7 +1418,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
               tableName: property.linkTableName,
             })} (${server.queryBuilder.quoteObject(property.selfIdColumnName!)}, ${property.targetIdColumnName}) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
             const params = [id, relatedEntityId];
-            await server.queryDatabaseObject(command, params);
+            await server.queryDatabaseObject(command, params, routeContext?.getDbTransactionClient());
           } else {
             await targetDataAccessor.updateById(targetEntity.id, { [property.selfIdColumnName!]: id }, routeContext?.getDbTransactionClient());
             targetEntity[property.selfIdColumnName!] = id;
@@ -1598,6 +1606,7 @@ async function deleteEntityById(
                 tableName: relationProperty.linkTableName,
               })} WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = $1`,
               [id],
+              routeContext?.getDbTransactionClient(),
             );
             const targetEntityIds = targetLinks.map((item) => item[relationProperty.targetIdColumnName]);
 
@@ -1607,6 +1616,7 @@ async function deleteEntityById(
                 tableName: relationProperty.linkTableName,
               })} WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = $1`,
               [id],
+              routeContext?.getDbTransactionClient(),
             );
 
             for (const targetEntityId of targetEntityIds) {
@@ -1630,6 +1640,7 @@ async function deleteEntityById(
                 tableName: targetModel.tableName,
               })} WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = $1`,
               [id],
+              routeContext?.getDbTransactionClient(),
             );
             const targetEntityIds = targetRows.map((item) => item.id);
             for (const targetEntityId of targetEntityIds) {
@@ -1657,6 +1668,7 @@ async function deleteEntityById(
               })}
               WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = $1`,
               [id],
+              routeContext?.getDbTransactionClient(),
             );
           } else {
             const relationModel = server.getModel({
@@ -1670,6 +1682,7 @@ async function deleteEntityById(
               SET ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = null
               WHERE ${server.queryBuilder.quoteObject(relationProperty.selfIdColumnName!)} = $1`,
               [id],
+              routeContext?.getDbTransactionClient(),
             );
           }
         }
@@ -1789,7 +1802,7 @@ export default class EntityManager<TEntity = any> {
         WHERE ${queryBuilder.quoteObject(relationProperty.selfIdColumnName!)}=$1 AND ${queryBuilder.quoteObject(relationProperty.targetIdColumnName!)}=$2
       )`;
         const params = [id, relation.id];
-        await server.queryDatabaseObject(command, params);
+        await server.queryDatabaseObject(command, params, routeContext?.getDbTransactionClient());
       }
     }
 
@@ -1834,7 +1847,7 @@ export default class EntityManager<TEntity = any> {
         const command = `DELETE FROM ${queryBuilder.quoteTable({ schema: relationProperty.linkSchema, tableName: relationProperty.linkTableName })}
     WHERE ${queryBuilder.quoteObject(relationProperty.selfIdColumnName!)}=$1 AND ${queryBuilder.quoteObject(relationProperty.targetIdColumnName!)}=$2;`;
         const params = [id, relation.id];
-        await server.queryDatabaseObject(command, params);
+        await server.queryDatabaseObject(command, params, routeContext?.getDbTransactionClient());
       }
     }
 

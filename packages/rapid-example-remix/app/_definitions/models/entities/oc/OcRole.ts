@@ -39,6 +39,7 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       linkTableName: "oc_role_user_links",
       targetIdColumnName: "user_id",
       selfIdColumnName: "role_id",
+      entityDeletingReaction: "unlink",
     },
     {
       code: "actions",
