@@ -5,6 +5,7 @@ import {
   GetDataAccessorOptions,
   GetModelOptions,
   IDatabaseAccessor,
+  IDatabaseClient,
   IDatabaseConfig,
   IQueryBuilder,
   IRpdDataAccessor,
@@ -32,8 +33,8 @@ export interface IRpdServer {
   getFacility<TFacility = any>(name: string, options?: any): Promise<TFacility>;
 
   getDatabaseAccessor(): IDatabaseAccessor;
-  queryDatabaseObject: (sql: string, params?: unknown[] | Record<string, unknown>) => Promise<any[]>;
-  tryQueryDatabaseObject: (sql: string, params?: unknown[] | Record<string, unknown>) => Promise<any[]>;
+  queryDatabaseObject: (sql: string, params?: unknown[] | Record<string, unknown>, client?: IDatabaseClient) => Promise<any[]>;
+  tryQueryDatabaseObject: (sql: string, params?: unknown[] | Record<string, unknown>, client?: IDatabaseClient) => Promise<any[]>;
   registerMiddleware(middleware: any): void;
   registerActionHandler(plugin: RapidPlugin, options: IPluginActionHandler): void;
   getActionHandlerByCode(code: string): ActionHandler | undefined;
