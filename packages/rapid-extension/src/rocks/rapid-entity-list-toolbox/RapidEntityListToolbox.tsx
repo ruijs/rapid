@@ -120,6 +120,20 @@ export default {
             placement="leftTop"
             content={
               <div className="rapid-entity-list-toolbox-settings">
+                <div style={{ paddingBottom: 8 }}>
+                  <span
+                    style={{ color: "#1890ff", cursor: "pointer" }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+
+                      RapidExtStorage.remove(columnCacheKey);
+                      setCheckedKeys((columns || []).map(getColumnUniqueKey));
+                      eventHandlers.onRerender?.();
+                    }}
+                  >
+                    重置
+                  </span>
+                </div>
                 <Tree draggable blockNode selectable={false} checkable checkedKeys={checkedKeys} onCheck={onTreeCheck} onDrop={onTreeDrop}>
                   {(columns || []).map((col) => (
                     <Tree.TreeNode key={getColumnUniqueKey(col)} title={col.title} />
