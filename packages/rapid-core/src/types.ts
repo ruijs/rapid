@@ -659,14 +659,21 @@ export interface UpdateEntityByIdOptions {
   /**
    * 指定需要更新关联对象的哪些属性。更新实体时，会创建关联对象，但是默认不更新关联对象的属性。
    */
-  relationPropertiesToUpdate?: Record<string, UpdateRelationPropertiesOptions>;
+  relationPropertiesToUpdate?: Record<string, UpdateRelationPropertyOptions>;
 }
 
-export type UpdateRelationPropertiesOptions =
+export type UpdateRelationPropertyOptions =
   | true
   | {
+      // TODO: impl savingMode 'patch'
+      // savingMode?: "overwrite" | "patch";
+
+      /**
+       * 当需移除关系时是删除关联实体，还是取消关联。默认为`delete`。此配置仅对没有配置`linkTableName`的属性有效。
+       */
+      relationRemoveMode?: "unlink" | "delete";
       propertiesToUpdate?: string[];
-      relationPropertiesToUpdate?: Record<string, UpdateRelationPropertiesOptions>;
+      relationPropertiesToUpdate?: Record<string, UpdateRelationPropertyOptions>;
     };
 
 export interface DeleteEntityOptions {

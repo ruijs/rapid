@@ -544,6 +544,10 @@ export interface SysActionGroup {
    */
   orderNum: number;
   /**
+   * 操作项
+   */
+  items: any;
+  /**
    * 创建时间
    */
   createdAt?: string;

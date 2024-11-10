@@ -25,6 +25,14 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       required: true,
       defaultValue: "0",
     },
+    {
+      code: "items",
+      name: "操作项",
+      type: "relation[]",
+      targetSingularCode: "sys_action",
+      selfIdColumnName: "group_id",
+      required: true,
+    },
   ],
 };
 

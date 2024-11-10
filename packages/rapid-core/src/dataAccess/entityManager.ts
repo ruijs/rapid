@@ -1271,9 +1271,12 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     }
   }
 
-  // save many-relation properties
+  // save many-relation properties (only 'overwrite' mode was supported right now)
   for (const property of manyRelationPropertiesToUpdate) {
     const relatedEntities: any[] = [];
+    const targetModel = server.getModel({
+      singularCode: property.targetSingularCode,
+    });
     const targetDataAccessor = server.getDataAccessor({
       singularCode: property.targetSingularCode!,
     });
@@ -1318,9 +1321,6 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
         routeContext?.getDbTransactionClient(),
       );
     } else {
-      const targetModel = server.getModel({
-        singularCode: property.targetSingularCode,
-      });
       const targetRows = await server.queryDatabaseObject(
         `SELECT id FROM ${server.queryBuilder.quoteTable({
           schema: targetModel.schema,
@@ -1330,6 +1330,49 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
         routeContext?.getDbTransactionClient(),
       );
       currentTargetIds = targetRows.map((item) => item.id);
+    }
+
+    const targetIdsToRemove = currentTargetIds.filter((currentId) => !targetIdsToKeep.includes(currentId));
+    if (targetIdsToRemove.length) {
+      if (property.linkTableName) {
+        // do nothing. we've remove the link rows before.
+      } else {
+        const updateRelationPropertiesOptions = get(options.relationPropertiesToUpdate, property.code);
+        let relationRemoveMode: "unlink" | "delete" = "unlink";
+        if (updateRelationPropertiesOptions === true) {
+          relationRemoveMode = "delete";
+        } else {
+          relationRemoveMode = updateRelationPropertiesOptions.relationRemoveMode;
+        }
+        const relationModel = server.getModel({
+          singularCode: property.targetSingularCode,
+        });
+        if (relationRemoveMode === "unlink") {
+          await server.queryDatabaseObject(
+            `UPDATE ${server.queryBuilder.quoteTable({
+              schema: relationModel.schema,
+              tableName: relationModel.tableName,
+            })}
+            SET ${server.queryBuilder.quoteObject(property.selfIdColumnName!)} = null
+            WHERE id = ANY($1::int[])`,
+            [targetIdsToRemove],
+            routeContext?.getDbTransactionClient(),
+          );
+        } else {
+          // relationRemoveMode === "delete"
+          for (const targetIdToRemove of targetIdsToRemove) {
+            await deleteEntityById(
+              server,
+              targetDataAccessor,
+              {
+                id: targetIdToRemove,
+                routeContext,
+              },
+              plugin,
+            );
+          }
+        }
+      }
     }
 
     for (const relatedEntityToBeSaved of relatedEntitiesToBeSaved) {
