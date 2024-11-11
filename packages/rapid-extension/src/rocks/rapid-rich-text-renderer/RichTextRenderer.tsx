@@ -15,6 +15,7 @@ export default {
         <Editor
           hideToolbar
           height={"auto"}
+          mode="display"
           className={`rui-rich-text-renderer ${props.className || ""}`}
           editorConfig={{ readOnly: true, placeholder: " " }}
           value={props.value}

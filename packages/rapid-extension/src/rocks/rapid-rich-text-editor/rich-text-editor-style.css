@@ -1,11 +1,11 @@
 .rui-rich-text-editor {
   display: flex;
   flex-direction: column;
-  border: 1px solid #ccc;
+  border: 1px solid #d9d9d9;
 }
 
 .rui-rich-text-editor--toolbar {
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #d9d9d9;
 }
 
 .rui-rich-text-editor--body {
@@ -15,4 +15,16 @@
 
 .rui-rich-text-editor--body .w-e-text-container div[data-slate-editor] p {
   margin: 6px 0;
+}
+
+.rui-rich-text-editor-disabled {
+  cursor: not-allowed;
+}
+
+.rui-rich-text-editor-disabled .w-e-toolbar {
+  background-color: #f5f5f5;
+}
+
+.rui-rich-text-editor-disabled .w-e-text-container {
+  background-color: #f5f5f5;
 }

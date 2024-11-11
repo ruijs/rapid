@@ -17,6 +17,7 @@ interface IProps {
   className?: string;
   toolbarConfig?: Partial<IToolbarConfig>;
   editorConfig?: Partial<IEditorConfig>;
+  mode?: "edit" | "display";
   value?: string;
   onChange?(value: string): void;
 }
@@ -130,8 +131,13 @@ const RapidEditor = memo<IProps>((props) => {
     }
   }, [props.editorConfig?.readOnly]);
 
+  let disabeldClassName = "";
+  if (props.editorConfig?.readOnly && props.mode !== "display") {
+    disabeldClassName = "rui-rich-text-editor-disabled";
+  }
+
   return (
-    <div className={`rui-rich-text-editor ${props.className || ""}`} style={{ height, zIndex: 100, ...props.style }}>
+    <div className={`rui-rich-text-editor ${disabeldClassName} ${props.className || ""}`} style={{ height, zIndex: 100, ...props.style }}>
       {!props.hideToolbar && <Toolbar editor={editor} defaultConfig={toolbarConfig} mode="default" className="rui-rich-text-editor--toolbar" />}
       <Editor
         defaultConfig={editorConfig}
@@ -139,7 +145,8 @@ const RapidEditor = memo<IProps>((props) => {
         value={props.value}
         onCreated={setEditor}
         onChange={(editor) => {
-          props.onChange?.(editor.getHtml());
+          const value = editor.getHtml();
+          props.onChange?.(value === "<p><br></p>" ? undefined : value);
         }}
         mode="default"
       />
