@@ -260,6 +260,7 @@ async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdAppl
               autoIncrement: false,
               notNull: property.required,
             });
+            await server.tryQueryDatabaseObject(columnDDL);
           }
 
           if (!columnInDb || columnInDb.description != property.name) {
@@ -290,6 +291,7 @@ async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdAppl
               schema: property.linkSchema,
               tableName: property.linkTableName,
             })} ADD CONSTRAINT ${queryBuilder.quoteObject(contraintName)} PRIMARY KEY (id);`;
+            await server.tryQueryDatabaseObject(columnDDL);
           } else {
             const targetModel = applicationConfig.models.find((item) => item.singularCode === property.targetSingularCode);
             if (!targetModel) {
@@ -312,14 +314,11 @@ async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdAppl
                 autoIncrement: false,
                 notNull: property.required,
               });
+              await server.tryQueryDatabaseObject(columnDDL);
             }
           }
         } else {
           continue;
-        }
-
-        if (columnDDL) {
-          await server.tryQueryDatabaseObject(columnDDL);
         }
       } else {
         const columnName = property.columnName || property.code;
