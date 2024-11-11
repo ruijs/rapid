@@ -94,6 +94,7 @@ export default {
       if (formAction.actionType === "submit") {
         formActionRock.type = "primary";
         formActionRock.htmlType = "submit";
+        formActionRock.form = undefined;
       }
       assign(formActionRock, formAction.actionProps);
       formActionRocks.push(formActionRock);
