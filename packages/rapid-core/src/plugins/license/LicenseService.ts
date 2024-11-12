@@ -39,6 +39,12 @@ export default class LicenseService {
     const licenseSettings = await settingService.getSystemSettingValues("license");
     const { deployId } = licenseSettings as LicenseSettings;
     const certText = licenseSettings.cert;
+
+    if (!deployId || !certText) {
+      this.#server.getLogger().warn("License was not loaded properly.");
+      return;
+    }
+
     const certJSON = Buffer.from(certText, "base64").toString();
     const cert: RpdCert = JSON.parse(certJSON);
 
