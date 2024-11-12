@@ -7,4 +7,9 @@ export interface RapidImageRendererRockConfig extends SimpleRockConfig {
   preview?: boolean;
 
   arrayRendererProps?: any;
+
+  height?: number | string;
+  width?: number | string;
+  fallback?: string;
+  alt?: string;
 }

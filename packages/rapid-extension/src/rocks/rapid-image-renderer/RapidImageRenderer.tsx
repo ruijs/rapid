@@ -10,7 +10,7 @@ export default {
   $type: "rapidImageRenderer",
 
   Renderer(context, props: RapidImageRendererRockConfig) {
-    const { value, preview } = props;
+    const { value, preview, height, width, fallback, alt } = props;
     if (!value) {
       return null;
     }
@@ -20,6 +20,10 @@ export default {
         item: {
           $type: "rapidImageRenderer",
           preview,
+          width,
+          height,
+          fallback,
+          alt,
         },
         itemContainer: {
           $type: "box",
@@ -39,6 +43,10 @@ export default {
       return renderImage({
         fileInfo: value,
         preview,
+        width,
+        height,
+        fallback,
+        alt,
       });
     }
   },
@@ -48,11 +56,10 @@ export default {
 
 export type RenderImageProps = {
   fileInfo: RapidFileInfo;
-  preview: RapidImageRendererRockConfig["preview"];
-};
+} & Pick<RapidImageRendererRockConfig, "preview" | "height" | "width" | "fallback" | "alt">;
 
 function renderImage(props: RenderImageProps) {
-  const { fileInfo, preview } = props;
+  const { fileInfo, preview, height, width, fallback, alt } = props;
   const downloadUrl = `/api/download/file?fileKey=${encodeURIComponent(fileInfo.key)}&fileName=${encodeURIComponent(fileInfo.name)}`;
-  return <Image src={downloadUrl} preview={preview} />;
+  return <Image src={downloadUrl} preview={preview} height={height} width={width} fallback={fallback} alt={alt} />;
 }
