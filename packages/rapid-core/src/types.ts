@@ -462,7 +462,7 @@ export interface RpdRoute {
   type: "RESTful";
   method: RpdHttpMethod;
   endpoint: string;
-  actions: RpdRouteActionConfig[];
+  actions?: RpdRouteActionConfig[];
 }
 
 export type RpdHttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
