@@ -588,7 +588,7 @@ export default {
           code: "actions",
           columnName: "actions",
           type: "json",
-          required: true,
+          required: false,
         },
       ],
     },
