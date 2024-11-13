@@ -36,28 +36,37 @@ export class RapidRequest {
     }
 
     const requestMethod = this.method;
-    if (requestMethod === "POST" || requestMethod === "PUT" || requestMethod === "PATCH") {
-      const req = this.#raw;
-      const contentType = this.#headers.get("Content-Type") || "application/json";
-      if (contentType.includes("json")) {
-        this.#body = {
-          type: "json",
-          value: await req.json(),
-        };
-      } else if (contentType.startsWith("application/x-www-form-urlencoded")) {
-        const bodyText = await req.text();
-        this.#body = {
-          type: "form",
-          value: qs.parse(bodyText),
-        };
-      } else if (contentType.startsWith("multipart/form-data")) {
-        this.#body = {
-          type: "form-data",
-          value: await parseFormDataBody(req),
-        };
-      }
-    } else {
+    if (requestMethod !== "POST" && requestMethod !== "PUT" && requestMethod !== "PATCH") {
       this.#body = null;
+      this.#bodyParsed = true;
+      return;
+    }
+
+    const contentLength = parseInt(this.#headers.get("Content-Length") || "0", 10);
+    if (!contentLength) {
+      this.#body = null;
+      this.#bodyParsed = true;
+      return;
+    }
+
+    const req = this.#raw;
+    const contentType = this.#headers.get("Content-Type") || "application/json";
+    if (contentType.includes("json")) {
+      this.#body = {
+        type: "json",
+        value: await req.json(),
+      };
+    } else if (contentType.startsWith("application/x-www-form-urlencoded")) {
+      const bodyText = await req.text();
+      this.#body = {
+        type: "form",
+        value: qs.parse(bodyText),
+      };
+    } else if (contentType.startsWith("multipart/form-data")) {
+      this.#body = {
+        type: "form-data",
+        value: await parseFormDataBody(req),
+      };
     }
     this.#bodyParsed = true;
   }
