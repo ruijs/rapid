@@ -1,15 +1,10 @@
 import bcrypt from "bcrypt";
 import { setCookie } from "~/deno-std/http/cookie";
-import { createJwt } from "~/utilities/jwtUtility";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 import LicenseService from "~/plugins/license/LicenseService";
 import { get } from "lodash";
-
-export interface UserAccessToken {
-  sub: "userAccessToken";
-  aud: string;
-}
+import AuthService from "../services/AuthService";
 
 export const code = "createSession";
 
@@ -54,17 +49,12 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
     throw new Error("用户名或密码错误。");
   }
 
-  const secretKey = Buffer.from(server.config.jwtKey, "base64");
-  const token = createJwt(
-    {
-      iss: "authManager",
-      sub: "userAccessToken",
-      aud: "" + user.id,
-      iat: Math.floor(Date.now() / 1000),
-      act: user.login,
-    } as UserAccessToken,
-    secretKey,
-  );
+  const authService = server.getService<AuthService>("authService");
+  const token = authService.createUserAccessToken({
+    issuer: "authManager",
+    userId: user.id,
+    userLogin: user.login,
+  });
 
   setCookie(response.headers, {
     name: ctx.server.config.sessionCookieName,

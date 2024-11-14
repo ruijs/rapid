@@ -16,8 +16,11 @@ import pluginModels from "./models";
 import pluginRoutes from "./routes";
 import { RouteContext } from "~/core/routeContext";
 import { verifyJwt } from "~/utilities/jwtUtility";
+import AuthService from "./services/AuthService";
 
 class AuthPlugin implements RapidPlugin {
+  #authService!: AuthService;
+
   get code(): string {
     return "authManager";
   }
@@ -46,6 +49,11 @@ class AuthPlugin implements RapidPlugin {
 
   async configureModels(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
     server.appendApplicationConfig({ models: pluginModels });
+  }
+
+  async configureServices(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
+    this.#authService = new AuthService(server, server.config.jwtKey);
+    server.registerService("authService", this.#authService);
   }
 
   async configureRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
