@@ -12,6 +12,8 @@ export * from "./core/actionHandler";
 
 export * from "./utilities/jwtUtility";
 
+export * from "./deno-std/http/cookie";
+
 export { mapDbRowToEntity } from "./dataAccess/entityMapper";
 
 export * as bootstrapApplicationConfig from "./bootstrapApplicationConfig";
