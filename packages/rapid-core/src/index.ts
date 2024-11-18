@@ -18,6 +18,9 @@ export { mapDbRowToEntity } from "./dataAccess/entityMapper";
 
 export * as bootstrapApplicationConfig from "./bootstrapApplicationConfig";
 
+export { default as CacheFactory } from "./facilities/cache/CacheFactory";
+export * from "./facilities/cache/CacheFacilityTypes";
+
 export { default as MetaManagePlugin } from "./plugins/metaManage/MetaManagePlugin";
 
 export { default as DataManagePlugin } from "./plugins/dataManage/DataManagePlugin";
