@@ -26,6 +26,7 @@ import {
   MailPlugin,
   NotificationPlugin,
   LicensePlugin,
+  CacheFactory,
 } from "@ruiapp/rapid-core";
 import { createRapidRequestHandler } from "@ruiapp/rapid-express";
 
@@ -124,6 +125,7 @@ export async function startServer() {
       jwtKey: rapidConfig.jwtKey,
       localFileStoragePath: rapidConfig.localFileStoragePath,
     },
+    facilityFactories: [new CacheFactory()],
     plugins: [
       new MetaManagePlugin(),
       new DataManagePlugin(),
