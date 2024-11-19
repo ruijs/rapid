@@ -1,4 +1,4 @@
-import { CacheProvider, SetValueOptions } from "./CacheFacilityTypes";
+import { Cache, SetValueOptions } from "./CacheFacilityTypes";
 
 export type MemoryCacheItem<TValue = any> = {
   value: TValue;
@@ -7,7 +7,7 @@ export type MemoryCacheItem<TValue = any> = {
 
 const values: Map<string, MemoryCacheItem> = new Map();
 
-export default class MemoryCache implements CacheProvider {
+export default class MemoryCache implements Cache {
   async set(key: string, value: any, options?: SetValueOptions) {
     let expireAt = -1;
     if (options && options.ttl > 0) {

@@ -54,6 +54,7 @@
     "qs": "^6.11.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "redis": "^4.7.0",
     "tough-cookie": "^4.1.2",
     "triple-beam": "^1.4.1",
     "winston": "^3.11.0"

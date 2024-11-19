@@ -30,7 +30,7 @@ export interface IRpdServer {
 
   registerFacilityFactory(factory: FacilityFactory);
 
-  getFacility<TFacility = any>(name: string, options?: any): Promise<TFacility>;
+  getFacility<TFacility = any, TOptions = any>(name: string, options?: TOptions): Promise<TFacility>;
 
   getDatabaseAccessor(): IDatabaseAccessor;
   queryDatabaseObject: (sql: string, params?: unknown[] | Record<string, unknown>, client?: IDatabaseClient) => Promise<any[]>;

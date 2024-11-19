@@ -35,6 +35,8 @@ import entityWatchers from "./app/_definitions/meta/entity-watchers";
 import cronJobs from "./app/_definitions/meta/cron-jobs";
 
 import "dotenv/config";
+import RedisCacheProvider from "./rapid-facilities/redis/RedisCacheProvider";
+import RedisClientFactory from "./rapid-facilities/redis/RedisClientFactory";
 
 const isDevelopmentEnv = process.env.NODE_ENV === "development";
 
@@ -125,7 +127,14 @@ export async function startServer() {
       jwtKey: rapidConfig.jwtKey,
       localFileStoragePath: rapidConfig.localFileStoragePath,
     },
-    facilityFactories: [new CacheFactory()],
+    facilityFactories: [
+      new RedisClientFactory({
+        url: env.get("REDIS_URL", "redis://localhost:6379"),
+      }),
+      new CacheFactory({
+        providers: [new RedisCacheProvider()],
+      }),
+    ],
     plugins: [
       new MetaManagePlugin(),
       new DataManagePlugin(),

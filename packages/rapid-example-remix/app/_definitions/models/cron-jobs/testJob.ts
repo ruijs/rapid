@@ -1,4 +1,4 @@
-import { CacheProvider, type ActionHandlerContext, type CronJobConfiguration } from "@ruiapp/rapid-core";
+import { CreateCacheFacilityOptions, Cache, type ActionHandlerContext, type CronJobConfiguration } from "@ruiapp/rapid-core";
 import dayjs from "dayjs";
 
 export default {
@@ -11,16 +11,16 @@ export default {
 
     logger.info("Executing test job...");
 
-    const cacheProvider = await server.getFacility<CacheProvider>("cache");
-    let value = await cacheProvider.get("foo");
+    const cache = await server.getFacility<Cache, CreateCacheFacilityOptions>("cache", { providerName: "redis" });
+    let value = await cache.get("foo");
     if (value) {
-      logger.info("Cache item found, value: %s", value);
+      logger.info("Cache item found, value: ", value);
     } else {
-      value = dayjs().format("YYYY-MM-DD HH:mm:ss");
-      await cacheProvider.set("foo", value, {
+      value = { time: dayjs().format("YYYY-MM-DD HH:mm:ss") };
+      await cache.set("foo", value, {
         ttl: 120000,
       });
-      logger.info("Cache item created, value: %s", value);
+      logger.info("Cache item created, value: ", value);
     }
   },
 } satisfies CronJobConfiguration;
