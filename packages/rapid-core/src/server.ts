@@ -361,7 +361,7 @@ export class RapidServer implements IRpdServer {
     this.#facilityFactories.set(factory.name, factory);
   }
 
-  async getFacility<TFacility = any>(name: string, options?: any, nullIfUnknownFacility?: boolean): Promise<TFacility> {
+  async getFacility<TFacility = any, TOptions = any>(name: string, options?: TOptions, nullIfUnknownFacility?: boolean): Promise<TFacility> {
     const factory = this.#facilityFactories.get(name);
     if (!factory) {
       if (nullIfUnknownFacility) {
