@@ -10,8 +10,10 @@ export interface CacheProvider {
 }
 
 export interface Cache {
-  set: (key: string, value: any, options?: SetValueOptions) => Promise<void>;
-  get: (key: string) => Promise<any>;
+  set: (key: string, value: string, options?: SetValueOptions) => Promise<void>;
+  setObject: (key: string, value: Record<string, any>, options?: SetValueOptions) => Promise<void>;
+  get: (key: string) => Promise<string | null>;
+  getObject: (key: string) => Promise<Record<string, any> | null>;
   del: (key: string) => Promise<void>;
 }
 
