@@ -12,12 +12,12 @@ export default {
     logger.info("Executing test job...");
 
     const cache = await server.getFacility<Cache, CreateCacheFacilityOptions>("cache", { providerName: "redis" });
-    let value = await cache.get("foo");
+    let value = await cache.getObject("foo");
     if (value) {
       logger.info("Cache item found, value: ", value);
     } else {
       value = { time: dayjs().format("YYYY-MM-DD HH:mm:ss") };
-      await cache.set("foo", value, {
+      await cache.setObject("foo", value, {
         ttl: 120000,
       });
       logger.info("Cache item created, value: ", value);

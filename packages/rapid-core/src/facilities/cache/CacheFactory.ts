@@ -10,10 +10,10 @@ export default class CacheFactory implements FacilityFactory<Cache, CreateCacheF
   constructor(config: CacheFactoryConfig) {
     this.name = "cache";
 
-    const memoryCacheCreator = new MemoryCacheProvider();
+    const memoryCacheProvider = new MemoryCacheProvider();
 
     this.#providers = new Map();
-    this.#providers.set(memoryCacheCreator.providerName, memoryCacheCreator);
+    this.#providers.set(memoryCacheProvider.providerName, memoryCacheProvider);
 
     for (const provider of config.providers) {
       this.#providers.set(provider.providerName, provider);
