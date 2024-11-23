@@ -11,7 +11,10 @@ export * from "./core/server";
 export * from "./core/http-types";
 export * from "./core/actionHandler";
 
+export * from "./utilities/accessControlUtility";
+export * from "./utilities/entityUtility";
 export * from "./utilities/jwtUtility";
+export * from "./utilities/timeUtility";
 
 export * from "./deno-std/http/cookie";
 
