@@ -8,6 +8,7 @@ export default {
   $type: "rapidToolbarButton",
 
   Renderer(context, props: RapidToolbarButtonRockConfig) {
+    const { framework } = context;
     const { onAction, confirmText } = props;
     const actionEventName = props.actionEventName || "onClick";
 
@@ -43,6 +44,8 @@ export default {
             if (confirmText) {
               Modal.confirm({
                 title: confirmText,
+                okText: framework.getLocaleStringResource("rapid-extension", "ok"),
+                cancelText: framework.getLocaleStringResource("rapid-extension", "cancel"),
                 onOk: async () => {
                   handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, []);
                 },

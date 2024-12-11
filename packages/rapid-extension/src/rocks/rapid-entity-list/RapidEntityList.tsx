@@ -90,7 +90,7 @@ export default {
   },
 
   Renderer(context, props, state) {
-    const { logger, page } = context;
+    const { framework, logger, page } = context;
     const entityCode = props.entityCode;
     let mainEntity: RapidEntity | undefined;
 
@@ -234,7 +234,7 @@ export default {
       if (props.actions && props.actions.length) {
         const tableActionsColumnRock: RockConfig = {
           $type: "rapidTableColumn",
-          title: "操作",
+          title: framework.getLocaleStringResource("rapid-extension", "operations"),
           code: "id",
           key: "_actions",
           width: props.actionsColumnWidth || "150px",

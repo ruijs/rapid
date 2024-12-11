@@ -36,12 +36,13 @@ export default {
   },
 
   Renderer(context, props: SonicEntityTableSelectRockConfig) {
+    const { framework } = context;
     const entity = rapidAppDefinition.getEntityByCode(props.entityCode);
     const displayPropertyCode = entity.displayPropertyCode || "name";
     const displayProperty = getEntityPropertyByCode(rapidAppDefinition.getAppDefinition(), entity, displayPropertyCode);
 
     let defaultDisplayField = "name";
-    let defaultDisplayTitle = "名称";
+    let defaultDisplayTitle = framework.getLocaleStringResource("rapid-extension", "name");
     if (displayProperty) {
       defaultDisplayField = displayProperty.code;
       defaultDisplayTitle = displayProperty.name;
@@ -251,7 +252,7 @@ export default {
         disabled={disabled}
         bordered={props.bordered}
         loading={apiIns.loading || loading}
-        placeholder={placeholder || "请选择"}
+        placeholder={placeholder || framework.getLocaleStringResource("rapid-extension", "pleaseSelect")}
         value={current}
         mode={isMultiple ? "multiple" : undefined}
         open={currentState.visible}
@@ -275,7 +276,7 @@ export default {
                 <div className="pm-table-selector--toolbar">
                   <Input
                     allowClear
-                    placeholder={props.searchPlaceholder || "搜索"}
+                    placeholder={props.searchPlaceholder || framework.getLocaleStringResource("rapid-extension", "search")}
                     value={currentState.keyword}
                     onChange={(e) => {
                       const v = e.target.value;

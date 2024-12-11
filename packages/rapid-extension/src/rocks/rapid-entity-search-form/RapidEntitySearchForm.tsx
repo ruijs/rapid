@@ -303,7 +303,7 @@ export default {
   },
 
   Renderer(context, props, state) {
-    const { logger } = context;
+    const { framework, logger } = context;
     const dataDictionaries = rapidAppDefinition.getDataDictionaries();
     const formConfig = props;
     const mainEntityCode = formConfig.entityCode;
@@ -333,7 +333,7 @@ export default {
     const formActions: RapidFormAction[] = [
       {
         actionType: "reset",
-        actionText: "重置",
+        actionText: framework.getLocaleStringResource("rapid-extension", "reset"),
         actionProps: {
           onClick: [
             {
@@ -348,7 +348,7 @@ export default {
       },
       {
         actionType: "submit",
-        actionText: "搜索",
+        actionText: framework.getLocaleStringResource("rapid-extension", "search"),
       },
     ];
 

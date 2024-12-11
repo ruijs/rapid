@@ -10,9 +10,11 @@ export default {
   onReceiveMessage(message, state, props) {},
 
   Renderer(context, props) {
+    const { framework } = context;
     const rockConfig: RockConfig = {
       ...(MoveStyleUtils.omitSystemRockConfigFields(omit(props, ["confirmText"]) as any) as SonicRecordActionDeleteEntityConfig),
       $type: "rapidTableAction",
+      actionText: props.actionText || framework.getLocaleStringResource("rapid-extension", "delete"),
       recordId: props.recordId,
       onAction: [
         {

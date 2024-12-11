@@ -10,6 +10,7 @@ export default {
   $type: "rapidTableAction",
 
   Renderer(context, props) {
+    const { framework } = context;
     const { record, recordId, actionText, actionType, confirmText, onAction, disabled, disabledTooltipText, url } = props;
     let rockConfig: RockConfig = {
       $id: `${props.$id}-anchor`,
@@ -60,6 +61,8 @@ export default {
             if (confirmText) {
               Modal.confirm({
                 title: confirmText,
+                okText: framework.getLocaleStringResource("rapid-extension", "ok"),
+                cancelText: framework.getLocaleStringResource("rapid-extension", "cancel"),
                 onOk: async () => {
                   handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, [{ record, recordId }]);
                 },
