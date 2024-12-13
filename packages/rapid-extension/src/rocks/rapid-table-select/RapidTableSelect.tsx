@@ -15,7 +15,7 @@ import "./rapid-table-select-style.css";
 
 const bus = new EventEmitter();
 
-const DEFAULT_COLUMNS: RapidTableSelectRockConfig["columns"] = [{ title: "名称", code: "name", width: 120 }];
+const DEFAULT_COLUMNS: RapidTableSelectRockConfig["columns"] = [{ code: "name", width: 120 }];
 
 interface ICurrentState {
   offset: number;
@@ -34,6 +34,7 @@ export default {
     }
   },
   Renderer(context, props: RapidTableSelectRockConfig) {
+    const { framework } = context;
     const {
       listValueFieldName = "id",
       listTextFieldName = "name",
@@ -235,7 +236,7 @@ export default {
         disabled={disabled}
         bordered={props.bordered}
         loading={apiIns.loading || loading}
-        placeholder={placeholder || "请选择"}
+        placeholder={placeholder || framework.getLocaleStringResource("rapid-extension", "pleaseSelect")}
         value={current}
         mode={isMultiple ? "multiple" : undefined}
         open={currentState.visible}
@@ -258,7 +259,7 @@ export default {
                 <div className="pm-table-selector--toolbar">
                   <Input
                     allowClear
-                    placeholder={props.searchPlaceholder || "搜索"}
+                    placeholder={props.searchPlaceholder || framework.getLocaleStringResource("rapid-extension", "search")}
                     value={currentState.keyword}
                     onChange={(e) => {
                       const v = e.target.value;

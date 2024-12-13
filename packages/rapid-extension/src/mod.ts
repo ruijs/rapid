@@ -3,12 +3,15 @@ import rocks from "./rocks";
 import eventActions from "./event-actions";
 import functions from "./functions";
 import stores from "./stores";
+import locales from "./locales";
 
 export default {
+  name: "rapid-extension",
   rocks,
   eventActions,
   functions,
   stores,
+  locales,
 } as RuiExtension;
 
 export { default as rapidAppDefinition } from "./rapidAppDefinition";

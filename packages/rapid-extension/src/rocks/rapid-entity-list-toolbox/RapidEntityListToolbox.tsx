@@ -38,6 +38,7 @@ export default {
   propertyPanels: [],
 
   Renderer(context, props: IProps) {
+    const { framework } = context;
     const { columns } = props;
     const { columnCacheKey } = props.config;
     const dataSourceCode = props.dataSourceCode;
@@ -131,7 +132,7 @@ export default {
                       eventHandlers.onRerender?.();
                     }}
                   >
-                    重置
+                    {framework.getLocaleStringResource("rapid-extension", "reset")}
                   </span>
                 </div>
                 <Tree draggable blockNode selectable={false} checkable checkedKeys={checkedKeys} onCheck={onTreeCheck} onDrop={onTreeDrop}>

@@ -1,6 +1,6 @@
 import { Framework, Page, PageConfig } from "@ruiapp/move-style";
 import { Rui } from "@ruiapp/react-renderer";
-import { Rui as RuiRock, ErrorBoundary, Show, HtmlElement, Anchor, Box, Label, List, Scope, Text } from "@ruiapp/react-rocks";
+import ReactRocksExtension, { Rui as RuiRock, ErrorBoundary, Show, HtmlElement, Anchor, Box, Label, List, Scope, Text } from "@ruiapp/react-rocks";
 import AntdExtension from "@ruiapp/antd-extension";
 import MonacoExtension from "@ruiapp/monaco-extension";
 import RapidExtension, { rapidAppDefinition, RapidEntityFormConfig, RapidExtensionSetting, RapidPage } from "@ruiapp/rapid-extension";
@@ -11,6 +11,10 @@ import EntityModels from "../../_definitions/meta/entity-models";
 import DataDictionaryModels from "../../_definitions/meta/data-dictionary-models";
 import Pages from "../../_definitions/meta/page-models";
 import { useMemo } from "react";
+import { Select } from "antd";
+import { useState } from "react";
+
+import locales from "../../locales";
 
 import antdStyles from "antd/dist/antd.css";
 import appStyles from "~/styles/app.css";
@@ -28,21 +32,12 @@ framework.setLoggerProvider(new RuiLoggerProvider());
 framework.registerExpressionVar("_", _);
 framework.registerExpressionVar("qs", qs);
 
-framework.registerComponent(RuiRock);
-framework.registerComponent(ErrorBoundary);
-framework.registerComponent(Show);
-framework.registerComponent(HtmlElement);
-framework.registerComponent(Scope);
-framework.registerComponent(Text);
-
-framework.registerComponent(Anchor);
-framework.registerComponent(Box);
-framework.registerComponent(Label);
-framework.registerComponent(List);
-
+framework.loadExtension(ReactRocksExtension);
 framework.loadExtension(AntdExtension);
 framework.loadExtension(MonacoExtension);
 framework.loadExtension(RapidExtension);
+
+framework.loadLocaleResources("default", locales);
 
 RapidExtensionSetting.setDefaultRendererPropsOfRendererType("rapidCurrencyRenderer", {
   usingThousandSeparator: true,
@@ -340,9 +335,15 @@ const rapidPage: RapidPage = {
   ],
 };
 
-export default function SonicEntityList() {
+export default function PageContent() {
   const params = useParams();
   const pageCode = params.code || "";
+  const [currentLang, setCurrentLang] = useState("zh-CN");
+
+  const handleLanguageChange = (value: string) => {
+    framework.setLingual(value);
+    setCurrentLang(value);
+  };
 
   const page = useMemo(() => {
     const pageConfig = find(Pages, (page) => page.code === pageCode);
@@ -365,6 +366,18 @@ export default function SonicEntityList() {
 
   return (
     <div className="rui-play-main-container-body">
+      <div style={{ padding: "16px", borderBottom: "1px solid #f0f0f0" }}>
+        <Select
+          value={currentLang}
+          onChange={handleLanguageChange}
+          style={{ width: 120 }}
+          options={[
+            { value: "zh-CN", label: "中文" },
+            { value: "en-US", label: "English" },
+            { value: "th-TH", label: "ไทย" },
+          ]}
+        />
+      </div>
       <Rui framework={framework} page={page} />
     </div>
   );

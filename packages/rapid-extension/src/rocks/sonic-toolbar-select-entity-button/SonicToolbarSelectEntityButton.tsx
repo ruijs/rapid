@@ -12,6 +12,7 @@ export default {
   onReceiveMessage(message, state, props) {},
 
   Renderer(context, props) {
+    const { framework } = context;
     const entities = rapidAppDefinition.getEntities();
     const entityCode = props.entityCode;
     let entityName = props.entityName;
@@ -37,7 +38,9 @@ export default {
     const modalRockConfig: RockConfig = {
       $type: "antdModal",
       $id: `${props.$id}-modal`,
-      title: `选择${entityName}`,
+      title: framework.getLocaleStringResource("rapid-extension", "selectEntityModalTitle", {
+        entityName: framework.getLocaleStringResource("default", `entities-${entityCode}-name`),
+      }),
       ...props.modalProps,
       $exps: {
         open: "!!$scope.vars['modal-selectEntity-open']",

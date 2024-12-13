@@ -9,9 +9,11 @@ export default {
   onReceiveMessage(message, state, props) {},
 
   Renderer(context, props) {
+    const { framework } = context;
     const rockConfig: RockConfig = {
       ...MoveStyleUtils.omitSystemRockConfigFields(props),
       $type: "rapidToolbarButton",
+      text: props.text || framework.getLocaleStringResource("rapid-extension", "new"),
       onAction: [
         {
           $action: "notifyEvent",

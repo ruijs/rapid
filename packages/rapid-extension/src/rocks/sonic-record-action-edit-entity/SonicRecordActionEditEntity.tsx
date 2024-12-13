@@ -10,9 +10,11 @@ export default {
   onReceiveMessage(message, state, props) {},
 
   Renderer(context, props) {
+    const { framework } = context;
     const rockConfig: RapidTableActionRockConfig = {
       ...(MoveStyleUtils.omitSystemRockConfigFields(props) as SonicRecordActionEditEntityConfig),
       $type: "rapidTableAction",
+      actionText: props.actionText || framework.getLocaleStringResource("rapid-extension", "edit"),
       onAction: [
         {
           $action: "notifyEvent",

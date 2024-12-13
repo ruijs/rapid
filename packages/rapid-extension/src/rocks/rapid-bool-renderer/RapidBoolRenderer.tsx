@@ -13,20 +13,21 @@ export default {
   $type: "rapidBoolRenderer",
 
   Renderer(context, props: RapidReferenceRendererProps) {
+    const { framework } = context;
     const { value, strictEquals, trueText, falseText, defaultText } = props;
     if (strictEquals) {
       if (value === true) {
-        return trueText || "true";
+        return trueText || framework.getLocaleStringResource("rapid-extension", "boolTrue");
       } else if (value === false) {
-        return falseText || "false";
+        return falseText || framework.getLocaleStringResource("rapid-extension", "boolFalse");
       } else {
         return defaultText || "";
       }
     } else {
       if (value) {
-        return trueText || "true";
+        return trueText || framework.getLocaleStringResource("rapid-extension", "boolTrue");
       } else {
-        return falseText || "false";
+        return falseText || framework.getLocaleStringResource("rapid-extension", "boolFalse");
       }
     }
   },
