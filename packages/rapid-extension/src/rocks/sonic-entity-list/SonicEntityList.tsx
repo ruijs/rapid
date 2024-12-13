@@ -258,7 +258,7 @@ export default {
           title:
             props.newModalTitle ||
             framework.getLocaleStringResource("rapid-extension", "newModalTitle", {
-              entityName: framework.getLocaleStringResource("default", `entities-${entityCode}-name`),
+              entityName: framework.getLocaleStringResource("default", `entities.${entityCode}.name`),
             }),
           okText: framework.getLocaleStringResource("rapid-extension", "ok"),
           cancelText: framework.getLocaleStringResource("rapid-extension", "cancel"),
@@ -337,7 +337,7 @@ export default {
           title:
             props.editModalTitle ||
             framework.getLocaleStringResource("rapid-extension", "editModalTitle", {
-              entityName: framework.getLocaleStringResource("default", `entities-${entityCode}-name`),
+              entityName: framework.getLocaleStringResource("default", `entities.${entityCode}.name`),
             }),
           okText: framework.getLocaleStringResource("rapid-extension", "ok"),
           cancelText: framework.getLocaleStringResource("rapid-extension", "cancel"),
@@ -558,7 +558,7 @@ export default {
                 let { confirmText, recordId } = recordAction;
                 if (!confirmText) {
                   confirmText = framework.getLocaleStringResource("rapid-extension", "deleteConfirmText", {
-                    entityName: framework.getLocaleStringResource("default", `entities-${mainEntity.code}-name`),
+                    entityName: framework.getLocaleStringResource("default", `entities.${mainEntity.code}.name`),
                   });
                 }
 
