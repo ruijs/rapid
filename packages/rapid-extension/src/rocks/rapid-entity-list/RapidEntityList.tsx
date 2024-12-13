@@ -126,14 +126,20 @@ export default {
     props.columns.forEach((column) => {
       let cell: RockConfig | RockConfig[] | null = null;
 
+      let columnTitle = column.title;
       let rpdField: RapidField | undefined;
       if (mainEntity) {
         const fieldName = column.fieldName || column.code;
         const fieldNameParts = fieldName.split(".");
         rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, fieldNameParts[0]);
 
-        if (!column.title && rpdField) {
-          column.title = rpdField.name;
+        if (!columnTitle && rpdField) {
+          const stringResourceName = `entities.${mainEntity.code}.fields.${column.code}.name`;
+          if (framework.hasLocaleStringResource("meta", stringResourceName)) {
+            columnTitle = framework.getLocaleStringResource("meta", stringResourceName);
+          } else {
+            columnTitle = rpdField.name;
+          }
         }
 
         if (fieldNameParts.length > 1 && rpdField) {
@@ -219,6 +225,7 @@ export default {
 
       const tableColumnRock: RockConfig = {
         ...column,
+        title: columnTitle,
         $type: "rapidTableColumn",
         cell,
       };

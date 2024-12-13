@@ -23,11 +23,18 @@ interface IProps extends SimpleRockConfig {
   className?: string;
   dataSourceCode: string;
   config: IRapidEntityListToolboxConfig;
-  columns: any[];
+  columns: RapidEntityListToolboxColumnConfig[];
 
   onRerender?(): void;
 
   onReload?(): void;
+}
+
+export interface RapidEntityListToolboxColumnConfig {
+  code: string;
+  key?: string;
+  title: string;
+  hidden?: boolean;
 }
 
 export default {
@@ -153,6 +160,6 @@ export default {
   },
 } as Rock;
 
-export function getColumnUniqueKey(column: RapidTableColumnConfig): string {
+export function getColumnUniqueKey(column: RapidEntityListToolboxColumnConfig): string {
   return column?.key || column?.code;
 }

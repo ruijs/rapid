@@ -2,6 +2,7 @@ import path from "path";
 import { generateModelIndexFiles } from "./generators/model-index-generator";
 import { generateModelCodes, generateDictionaryCodes } from "./generators/model-codes-generator";
 import { generateSdRpdModelTypes } from "./generators/model-types-generator";
+import { generateSdRpdModelLocales } from "./generators/model-locales-generator";
 
 export interface FileGenerateOption {
   declarationsDirectory: string;
@@ -24,6 +25,8 @@ export default class MetaFileGenerator {
     generateModelCodes(declarationsDirectory);
     console.log("generateSdRpdModelTypes");
     generateSdRpdModelTypes(declarationsDirectory);
+    console.log("generateSdRpdModelLocales");
+    generateSdRpdModelLocales(declarationsDirectory);
     console.log("Done.");
   }
 }

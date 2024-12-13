@@ -39,13 +39,11 @@ const page: RapidPage = {
       listActions: [
         {
           $type: "sonicToolbarNewEntityButton",
-          text: "新建",
           icon: "PlusOutlined",
           actionStyle: "primary",
         },
         {
           $type: "sonicToolbarRefreshButton",
-          text: "刷新",
           icon: "ReloadOutlined",
         },
       ],
@@ -140,13 +138,11 @@ const page: RapidPage = {
           $type: "sonicRecordActionEditEntity",
           code: "edit",
           actionType: "edit",
-          actionText: "修改",
         },
         {
           $type: "sonicRecordActionDeleteEntity",
           code: "delete",
           actionType: "delete",
-          actionText: "删除",
           dataSourceCode: "list",
           entityCode: "PmBugIssue",
         },

@@ -11,6 +11,7 @@ export default {
   $type: "rapidUploaderFormInput",
 
   Renderer(context, props) {
+    const { framework } = context;
     const onUploadChange = useCallback<UploadProps["onChange"]>(
       (info) => {
         const file = info.file;
@@ -77,7 +78,7 @@ export default {
       return [convertRpdFileInfoToAntdFileInfo(value)];
     }, [props.value]);
 
-    const buttonText = props.buttonText || "选择文件";
+    const buttonText = props.buttonText || framework.getLocaleStringResource("rapid-extension", "uploadButtonText");
     if (!props.multiple) {
       set(props, "uploadProps.maxCount", 1);
     }

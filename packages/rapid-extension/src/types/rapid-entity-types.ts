@@ -38,6 +38,11 @@ export type RapidDataDictionary = {
    * 字典项
    */
   entries: RapidDataDictionaryEntry[];
+
+  /**
+   * 多语言配置
+   */
+  locales?: Record<string, RapidDataDictionaryLocale>;
 };
 
 /**
@@ -78,6 +83,22 @@ export type RapidDataDictionaryEntry = {
    * 是否禁用
    */
   disabled?: boolean;
+
+  /**
+   * 多语言配置
+   */
+  locales?: Record<string, RapidDataDictionaryEntryLocale>;
+};
+
+export type RapidDataDictionaryLocale = {
+  name?: string;
+  description?: string;
+  entries?: Record<string, RapidDataDictionaryEntryLocale>;
+};
+
+export type RapidDataDictionaryEntryLocale = {
+  name?: string;
+  description?: string;
 };
 
 export type RapidFieldType =
@@ -186,6 +207,17 @@ export type RapidEntity<TEntitySingularCodes extends string = string, TDictionar
    * 是否使用软删除
    */
   softDelete?: boolean;
+
+  /**
+   * 多语言配置
+   */
+  locales?: Record<string, RapidEntityLocale>;
+};
+
+export type RapidEntityLocale = {
+  name?: string;
+  description?: string;
+  fields?: Record<string, RapidFieldLocale>;
 };
 
 export interface RapidEntityPermissionPolicies {
@@ -305,6 +337,13 @@ export type RapidField<TEntitySingularCodes extends string = string, TDictionary
    * 当设置为`true`时，仅允许在创建时设置此属性的值，不允许更新。
    */
   readonly?: boolean;
+
+  locales?: Record<string, RapidFieldLocale>;
+};
+
+export type RapidFieldLocale = {
+  name: string;
+  description?: string;
 };
 
 export interface RapidEntityIndex {

@@ -39,7 +39,6 @@ const page: RapidPage = {
       listActions: [
         {
           $type: "sonicToolbarNewEntityButton",
-          text: "新建",
           icon: "PlusOutlined",
           actionStyle: "primary",
         },
@@ -83,12 +82,10 @@ const page: RapidPage = {
         {
           $type: "sonicRecordActionEditEntity",
           code: "edit",
-          actionText: "修改",
         },
         {
           $type: "sonicRecordActionDeleteEntity",
           code: "delete",
-          actionText: "删除",
         },
       ],
       newForm: cloneDeep(formConfig),

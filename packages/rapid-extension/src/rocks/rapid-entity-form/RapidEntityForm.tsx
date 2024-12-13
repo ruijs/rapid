@@ -1,5 +1,5 @@
 import type { RockEvent, Rock, RockEventHandler, RuiRockLogger } from "@ruiapp/move-style";
-import { handleComponentEvent } from "@ruiapp/move-style";
+import { Framework, handleComponentEvent } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityFormMeta from "./RapidEntityFormMeta";
 import type { RapidEntityFormRockConfig } from "./rapid-entity-form-types";
@@ -58,20 +58,28 @@ const defaultValidationMessages = {
 
 export interface GenerateEntityFormItemOption {
   formItemConfig: RapidFormItemConfig;
-  mainEntity: RapidEntity;
-  dataDictionaries: RapidDataDictionary[];
+  rpdField: RapidField;
 }
 
-function generateDataFormItemForOptionProperty(option: GenerateEntityFormItemOption, valueFieldType: "option" | "option[]") {
-  const { formItemConfig, mainEntity } = option;
+function generateDataFormItemForOptionProperty(framework: Framework, option: GenerateEntityFormItemOption, valueFieldType: "option" | "option[]") {
+  const { formItemConfig, rpdField } = option;
 
-  let entries: RapidDataDictionaryEntry[] = [];
+  let dictionaryEntries: RapidDataDictionaryEntry[] = [];
 
-  const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
   const dataDictionaryCode = rpdField?.dataDictionary;
   if (dataDictionaryCode) {
     let dataDictionary = rapidAppDefinition.getDataDictionaryByCode(dataDictionaryCode);
-    entries = dataDictionary?.entries || [];
+
+    dictionaryEntries = dataDictionary.entries.map((entry) => {
+      let entryName = entry.name;
+      if (framework.hasLocaleStringResource("meta", `dictionaries.${dataDictionaryCode}.entries.${entry.value}.name`)) {
+        entryName = framework.getLocaleStringResource("meta", `dictionaries.${dataDictionaryCode}.entries.${entry.value}.name`);
+      }
+      return {
+        ...entry,
+        name: entryName,
+      };
+    });
   }
 
   let formControlProps: Partial<RapidSelectConfig> = {
@@ -79,7 +87,7 @@ function generateDataFormItemForOptionProperty(option: GenerateEntityFormItemOpt
     placeholder: formItemConfig.placeholder,
     listDataSource: {
       data: {
-        list: entries,
+        list: dictionaryEntries,
       },
     },
     listTextFieldName: "name",
@@ -110,8 +118,8 @@ function generateDataFormItemForOptionProperty(option: GenerateEntityFormItemOpt
   return formItem;
 }
 
-export function generateDataFormItemForRelationProperty(option: GenerateEntityFormItemOption, field: RapidField) {
-  const { formItemConfig } = option;
+export function generateDataFormItemForRelationProperty(option: GenerateEntityFormItemOption) {
+  const { formItemConfig, rpdField } = option;
 
   let listDataSourceCode = formItemConfig.formControlProps?.listDataSourceCode;
   if (!listDataSourceCode) {
@@ -119,7 +127,7 @@ export function generateDataFormItemForRelationProperty(option: GenerateEntityFo
   }
 
   let fieldTypeRelatedRendererProps: any = {};
-  const relationEntity = rapidAppDefinition.getEntityBySingularCode(field.targetSingularCode);
+  const relationEntity = rapidAppDefinition.getEntityBySingularCode(rpdField.targetSingularCode);
   if (relationEntity?.displayPropertyCode) {
     fieldTypeRelatedRendererProps.format = `{{${relationEntity.displayPropertyCode}}}`;
   }
@@ -136,15 +144,15 @@ export function generateDataFormItemForRelationProperty(option: GenerateEntityFo
     ...formItemConfig.formControlProps,
     listDataSourceCode,
     entityCode: relationEntity.code,
-    mode: field.relation === "many" ? "multiple" : "single",
-    multiple: field.relation === "many",
+    mode: rpdField.relation === "many" ? "multiple" : "single",
+    multiple: rpdField.relation === "many",
     requestParams: merge({}, formItemConfig.listDataFindOptions, formItemConfig.formControlProps?.requestParams),
   };
 
   let formItem: RapidFormItemConfig = {
     type: formItemConfig.type,
     valueFieldType: "relation",
-    multipleValues: field.relation === "many",
+    multipleValues: rpdField.relation === "many",
     uniqueKey: formItemConfig.uniqueKey,
     code: formItemConfig.code,
     required: formItemConfig.required,
@@ -163,13 +171,8 @@ export function generateDataFormItemForRelationProperty(option: GenerateEntityFo
   return formItem;
 }
 
-function generateDataFormItem(logger: RuiRockLogger, entityFormProps: any, option: GenerateEntityFormItemOption) {
-  const { formItemConfig, mainEntity } = option;
-
-  const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
-  if (!rpdField) {
-    logger.warn(entityFormProps, `Field with code '${formItemConfig.code}' not found.`);
-  }
+function generateDataFormItem(framework: Framework, logger: RuiRockLogger, entityFormProps: any, option: GenerateEntityFormItemOption) {
+  const { formItemConfig, rpdField } = option;
 
   let valueFieldType = formItemConfig.valueFieldType || rpdField?.type || "text";
   if (formItemConfig.type === "richText") {
@@ -177,9 +180,9 @@ function generateDataFormItem(logger: RuiRockLogger, entityFormProps: any, optio
   }
 
   if (valueFieldType === "option" || valueFieldType === "option[]") {
-    return generateDataFormItemForOptionProperty(option, valueFieldType);
+    return generateDataFormItemForOptionProperty(framework, option, valueFieldType);
   } else if (valueFieldType === "relation" || valueFieldType === "relation[]") {
-    return generateDataFormItemForRelationProperty(option, rpdField);
+    return generateDataFormItemForRelationProperty(option);
   }
 
   let formItem: Omit<RapidFormItemConfig, "$type"> = {
@@ -187,7 +190,6 @@ function generateDataFormItem(logger: RuiRockLogger, entityFormProps: any, optio
     code: formItemConfig.code,
     uniqueKey: formItemConfig.uniqueKey,
     required: formItemConfig.required,
-    label: formItemConfig.label,
     hidden: formItemConfig.hidden,
     wrapperCol: formItemConfig.wrapperCol,
     labelCol: formItemConfig.labelCol,
@@ -217,11 +219,6 @@ export default {
     for (const formItem of props.items) {
       const field = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItem.code);
       if (field) {
-        // 使用字段名称作为表单项的标签
-        if (isUndefined(formItem.label)) {
-          formItem.label = field?.name;
-        }
-
         if (!formItem.hasOwnProperty("required")) {
           // 使用字段的必填设置作为表单项的必填设置
           formItem.required = field.required;
@@ -316,8 +313,7 @@ export default {
   },
 
   Renderer(context, props, state) {
-    const { logger } = context;
-    const dataDictionaries = rapidAppDefinition.getDataDictionaries();
+    const { logger, framework } = context;
     const formConfig = props;
     const mainEntityCode = formConfig.entityCode;
     const mainEntity = rapidAppDefinition.getEntityByCode(mainEntityCode);
@@ -330,11 +326,27 @@ export default {
 
     if (formConfig && formConfig.items) {
       formConfig.items.forEach((formItemConfig) => {
-        const formItem = generateDataFormItem(logger, props, {
+        const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
+        if (!rpdField) {
+          logger.warn(props, `Field with code '${formItemConfig.code}' not found.`);
+        }
+        const formItem = generateDataFormItem(framework, logger, props, {
+          rpdField,
           formItemConfig,
-          mainEntity,
-          dataDictionaries,
         });
+
+        let formItemLabel = formItemConfig.label;
+        // 使用字段名称作为表单项的标签
+        if (isUndefined(formItemLabel)) {
+          const stringResourceName = `entities.${mainEntity.code}.fields.${formItemConfig.code}.name`;
+          if (framework.hasLocaleStringResource("meta", stringResourceName)) {
+            formItemLabel = framework.getLocaleStringResource("meta", stringResourceName);
+          } else {
+            formItemLabel = rpdField?.name;
+          }
+        }
+
+        formItem.label = formItemLabel;
 
         if (formConfig.mode === "view") {
           formItem.required = false;

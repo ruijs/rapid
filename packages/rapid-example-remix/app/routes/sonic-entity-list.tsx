@@ -102,7 +102,6 @@ const rapidPage: RapidPage = {
       listActions: [
         {
           $type: "sonicToolbarNewEntityButton",
-          text: "新建",
           icon: "PlusOutlined",
           actionStyle: "primary",
         },
@@ -158,7 +157,6 @@ const rapidPage: RapidPage = {
           $type: "sonicRecordActionEditEntity",
           code: "edit",
           actionType: "edit",
-          actionText: "修改",
         },
         {
           $type: "rapidTableAction",
@@ -208,7 +206,6 @@ const rapidPage: RapidPage = {
           $type: "sonicRecordActionDeleteEntity",
           code: "delete",
           actionType: "delete",
-          actionText: "删除",
           dataSourceCode: "list",
           entityCode: "OcRole",
         },

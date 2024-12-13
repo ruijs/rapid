@@ -7,6 +7,7 @@ import rapidAppDefinition from "../../rapidAppDefinition";
 
 export default {
   Renderer(context, props: RapidOptionFieldRendererRockConfig) {
+    const { framework } = context;
     const { dictionaryCode, value } = props;
 
     if (!value) {
@@ -19,10 +20,21 @@ export default {
       return "" + value;
     }
 
+    const dictionaryEntries = dataDictionary.entries.map((entry) => {
+      let entryName = entry.name;
+      if (framework.hasLocaleStringResource("meta", `dictionaries.${dictionaryCode}.entries.${entry.value}.name`)) {
+        entryName = framework.getLocaleStringResource("meta", `dictionaries.${dictionaryCode}.entries.${entry.value}.name`);
+      }
+      return {
+        ...entry,
+        name: entryName,
+      };
+    });
+
     const itemRockConfig: RockConfig = {
       $id: `${props.$id}`,
       $type: "rapidReferenceRenderer",
-      list: dataDictionary.entries,
+      list: dictionaryEntries,
       itemRenderer: {
         $type: "rapidDictionaryEntryRenderer",
       },

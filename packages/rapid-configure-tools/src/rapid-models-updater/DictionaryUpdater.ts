@@ -30,7 +30,7 @@ export function newDictionaryUpdater(rapidConfigApi: AxiosInstance) {
     },
 
     isEntityChanged(inputEntity, remoteEntity) {
-      const changedFieldNames = detectChangedFields(inputEntity, remoteEntity, ["name", "valueType", "description"]);
+      const changedFieldNames = detectChangedFields(inputEntity, remoteEntity, ["name", "valueType", "description", "locales"]);
       if (changedFieldNames.length) {
         console.log(`${this.modelType} ${this.inputTitlePrinter(inputEntity)} changed with these fields:`, changedFieldNames);
       }
@@ -38,14 +38,14 @@ export function newDictionaryUpdater(rapidConfigApi: AxiosInstance) {
     },
 
     async createEntity(input) {
-      const createEntityInput: CreateDataDictionaryInput = pick(input, ["code", "name", "valueType", "level", "description"]);
+      const createEntityInput: CreateDataDictionaryInput = pick(input, ["code", "name", "valueType", "level", "description", "locales"]);
       const res = await rapidConfigApi.post(`meta/data_dictionaries`, createEntityInput);
       return res.data;
     },
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async updateEntity(input, remoteEntity, mainEntity, inputIndex) {
-      const updateEntityInput: UpdateDataDictionaryInput = pick(input, ["code", "name", "valueType", "level", "description"]);
+      const updateEntityInput: UpdateDataDictionaryInput = pick(input, ["code", "name", "valueType", "level", "description", "locales"]);
       const res = await rapidConfigApi.patch(`meta/data_dictionaries/${remoteEntity.id}`, updateEntityInput);
       return res.data;
     },
