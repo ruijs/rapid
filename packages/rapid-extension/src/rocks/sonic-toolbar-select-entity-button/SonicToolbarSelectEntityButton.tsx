@@ -39,7 +39,7 @@ export default {
       $type: "antdModal",
       $id: `${props.$id}-modal`,
       title: framework.getLocaleStringResource("rapid-extension", "selectEntityModalTitle", {
-        entityName: framework.getLocaleStringResource("default", `entities-${entityCode}-name`),
+        entityName: framework.getLocaleStringResource("default", `entities.${entityCode}.name`),
       }),
       ...props.modalProps,
       $exps: {
