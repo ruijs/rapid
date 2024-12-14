@@ -223,7 +223,7 @@ async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdAppl
       await server.queryDatabaseObject(`CREATE TABLE IF NOT EXISTS ${queryBuilder.quoteTable(model)} ()`, []);
     }
     if (!tableInDb || tableInDb.table_description != model.name) {
-      await server.queryDatabaseObject(`COMMENT ON TABLE ${queryBuilder.quoteTable(model)} IS ${queryBuilder.formatValueToSqlLiteral(model.name)};`, []);
+      await server.tryQueryDatabaseObject(`COMMENT ON TABLE ${queryBuilder.quoteTable(model)} IS ${queryBuilder.formatValueToSqlLiteral(model.name)};`, []);
     }
   }
 
@@ -264,7 +264,7 @@ async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdAppl
           }
 
           if (!columnInDb || columnInDb.description != property.name) {
-            await server.queryDatabaseObject(
+            await server.tryQueryDatabaseObject(
               `COMMENT ON COLUMN ${queryBuilder.quoteTable(model)}.${queryBuilder.quoteObject(
                 property.targetIdColumnName,
               )} IS ${queryBuilder.formatValueToSqlLiteral(property.name)};`,
@@ -377,7 +377,7 @@ async function syncDatabaseSchema(server: IRpdServer, applicationConfig: RpdAppl
         }
 
         if (!columnInDb || columnInDb.description != property.name) {
-          await server.queryDatabaseObject(
+          await server.tryQueryDatabaseObject(
             `COMMENT ON COLUMN ${queryBuilder.quoteTable(model)}.${queryBuilder.quoteObject(
               property.columnName || property.code,
             )} IS ${queryBuilder.formatValueToSqlLiteral(property.name)};`,
