@@ -15,8 +15,10 @@ function generateDictionaryLocales(metaDir: string) {
       }
     }
     for (const entry of dictionary.entries) {
-      for (const locale of Object.keys(entry.locales)) {
-        linguals.add(locale);
+      if (entry.locales) {
+        for (const locale of Object.keys(entry.locales)) {
+          linguals.add(locale);
+        }
       }
     }
   }
