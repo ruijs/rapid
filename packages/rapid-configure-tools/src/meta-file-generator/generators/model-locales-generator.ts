@@ -41,7 +41,7 @@ function generateDictionaryLocales(metaDir: string) {
         }
       }
 
-      codes.push(`        entries: {`);
+      codes.push(`          entries: {`);
       for (const entry of dictionary.entries) {
         let entryLocaleName;
         let entryLocaleDescription;
@@ -52,18 +52,18 @@ function generateDictionaryLocales(metaDir: string) {
         }
 
         if (entryLocaleName || entryLocaleDescription) {
-          codes.push(`          "${entry.value}": {`);
+          codes.push(`            "${entry.value}": {`);
           if (entryLocaleName) {
-            codes.push(`            name: "${entryLocaleName}",`);
+            codes.push(`              name: "${entryLocaleName}",`);
           }
           if (entryLocaleDescription) {
-            codes.push(`            description: "${entryLocaleDescription}",`);
+            codes.push(`              description: "${entryLocaleDescription}",`);
           }
-          codes.push(`          },`);
+          codes.push(`            },`);
         }
       }
+      codes.push(`          },`);
       codes.push(`        },`);
-      codes.push(`      },`);
     }
 
     codes.push(`      },`);
