@@ -4,7 +4,6 @@ const entityLocales: Record<string, {translation: Record<string, any>}> = {
       entities: {
       "BaseShift": {
         name: "Shift",
-        description: "undefined",
         fields: {
           "name": {
             name: "Name",
@@ -37,7 +36,6 @@ const entityLocales: Record<string, {translation: Record<string, any>}> = {
       },
       "OcDepartment": {
         name: "Department",
-        description: "undefined",
         fields: {
           "parent": {
             name: "Parent Department",
@@ -76,7 +74,6 @@ const entityLocales: Record<string, {translation: Record<string, any>}> = {
       },
       "OcRole": {
         name: "Role",
-        description: "undefined",
         fields: {
           "name": {
             name: "Name",
@@ -118,7 +115,6 @@ const entityLocales: Record<string, {translation: Record<string, any>}> = {
       },
       "OcUser": {
         name: "User",
-        description: "undefined",
         fields: {
           "name": {
             name: "Name",
@@ -292,7 +288,6 @@ const entityLocales: Record<string, {translation: Record<string, any>}> = {
       entities: {
       "BaseShift": {
         name: "班次",
-        description: "undefined",
         fields: {
           "name": {
             name: "名称",
@@ -325,7 +320,6 @@ const entityLocales: Record<string, {translation: Record<string, any>}> = {
       },
       "OcDepartment": {
         name: "部门",
-        description: "undefined",
         fields: {
           "parent": {
             name: "上级部门",
@@ -364,7 +358,6 @@ const entityLocales: Record<string, {translation: Record<string, any>}> = {
       },
       "OcRole": {
         name: "角色",
-        description: "undefined",
         fields: {
           "name": {
             name: "名称",
@@ -406,7 +399,6 @@ const entityLocales: Record<string, {translation: Record<string, any>}> = {
       },
       "OcUser": {
         name: "用户",
-        description: "undefined",
         fields: {
           "name": {
             name: "姓名",
@@ -623,7 +615,26 @@ const entityLocales: Record<string, {translation: Record<string, any>}> = {
         },
       },
       "OcRole": {
+        name: "บทบาท",
         fields: {
+          "name": {
+            name: "ชื่อ",
+          },
+          "description": {
+            name: "คำอธิบาย",
+          },
+          "orderNum": {
+            name: "ลำดับ",
+          },
+          "state": {
+            name: "สถานะ",
+          },
+          "users": {
+            name: "ผู้ใช้งาน",
+          },
+          "actions": {
+            name: "การดำเนินการ",
+          },
           "createdAt": {
             name: "สร้างเมื่อ",
           },
@@ -646,7 +657,6 @@ const entityLocales: Record<string, {translation: Record<string, any>}> = {
       },
       "OcUser": {
         name: "ผู้ใช้งาน",
-        description: "undefined",
         fields: {
           "name": {
             name: "ชื่อ",
