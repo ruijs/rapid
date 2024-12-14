@@ -3,8 +3,13 @@ import { LocaleResource } from "@ruiapp/move-style";
 const resource: LocaleResource = {
   translation: {
     advancedSearch: "Advanced search",
+    boolFalse: "No",
+    boolTrue: "Yes",
     cancel: "Cancel",
     delete: "Delete",
+    deleteConfirmText: "Are you sure to delete this {{entityName}}?",
+    deleteError: "Failed to delete: {{message}}",
+    deleteSuccess: "Successfully deleted.",
     edit: "Edit",
     editModalTitle: "Edit {{entityName}}",
     name: "Name",
@@ -13,16 +18,12 @@ const resource: LocaleResource = {
     ok: "OK",
     operations: "Operations",
     pleaseSelect: "Please select",
+    refresh: "Refresh",
     reset: "Reset",
     search: "Search",
     selectEntityModalTitle: "Select {{entityName}}",
-    deleteConfirmText: "Are you sure you want to delete this {{entityName}}?",
-    deleteSuccess: "Successfully deleted.",
-    deleteError: "Failed to delete: {{message}}",
     updateError: "Failed to update: {{message}}",
-    boolTrue: "Yes",
-    boolFalse: "No",
-    refresh: "Refresh",
+    uploadButtonText: "Select file",
   },
 };
 

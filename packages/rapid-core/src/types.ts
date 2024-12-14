@@ -223,7 +223,21 @@ export interface RpdDataModel {
    * 是否使用软删除
    */
   softDelete?: boolean;
+
+  /**
+   * 多语言配置
+   */
+  locales?: Record<string, RpdDataModelLocale>;
 }
+
+/**
+ * 实体多语言配置
+ */
+export type RpdDataModelLocale = {
+  name: string;
+  description?: string;
+  properties?: Record<string, RpdDataModelPropertyLocale>;
+};
 
 export interface RpdDataModelPermissionPolicies {
   find?: PermissionPolicy;
@@ -254,6 +268,10 @@ export interface RpdDataModelProperty {
    * 字段代码。会用于数据表列名和 API 的字段名。
    */
   code: string;
+  /**
+   * 字段描述。
+   */
+  description?: string;
   /**
    * 数据表列名。如果没有设置则使用 code。
    */
@@ -323,7 +341,17 @@ export interface RpdDataModelProperty {
    * 当设置为`true`时，仅允许在创建时设置此属性的值，不允许更新。
    */
   readonly?: boolean;
+
+  /**
+   * 多语言配置
+   */
+  locales?: Record<string, RpdDataModelPropertyLocale>;
 }
+
+export type RpdDataModelPropertyLocale = {
+  name: string;
+  description?: string;
+};
 
 export type RpdDataPropertyTypes =
   | "integer"
@@ -719,4 +747,11 @@ export type EntityWatchHandlerContext<TEventName extends keyof RpdServerEventTyp
 
 export interface EntityWatchPluginInitOptions {
   watchers: EntityWatcherType[];
+}
+
+export interface I18nString {
+  namespace: string;
+  name: string;
+  lingual: string;
+  text?: string;
 }

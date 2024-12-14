@@ -4,7 +4,7 @@ import ReactRocksExtension, { Rui as RuiRock, ErrorBoundary, Show, HtmlElement, 
 import AntdExtension from "@ruiapp/antd-extension";
 import MonacoExtension from "@ruiapp/monaco-extension";
 import RapidExtension, { rapidAppDefinition, RapidEntityFormConfig, RapidExtensionSetting, RapidPage } from "@ruiapp/rapid-extension";
-import _, { cloneDeep, find } from "lodash";
+import _, { cloneDeep, find, merge } from "lodash";
 import qs from "qs";
 import { RuiLoggerProvider } from "../../rui-logger";
 import EntityModels from "../../_definitions/meta/entity-models";
@@ -15,6 +15,9 @@ import { Select } from "antd";
 import { useState } from "react";
 
 import locales from "../../locales";
+
+import entityLocales from "../../_definitions/meta/entity-locales";
+import dataDictionaryLocales from "../../_definitions/meta/data-dictionary-locales";
 
 import antdStyles from "antd/dist/antd.css";
 import appStyles from "~/styles/app.css";
@@ -38,6 +41,9 @@ framework.loadExtension(MonacoExtension);
 framework.loadExtension(RapidExtension);
 
 framework.loadLocaleResources("default", locales);
+
+const metaLocales = merge({}, entityLocales, dataDictionaryLocales);
+framework.loadLocaleResources("meta", metaLocales as any);
 
 RapidExtensionSetting.setDefaultRendererPropsOfRendererType("rapidCurrencyRenderer", {
   usingThousandSeparator: true,
@@ -98,7 +104,6 @@ const rapidPage: RapidPage = {
       listActions: [
         {
           $type: "sonicToolbarNewEntityButton",
-          text: "新建",
           icon: "PlusOutlined",
           actionStyle: "primary",
         },
@@ -154,7 +159,6 @@ const rapidPage: RapidPage = {
           $type: "sonicRecordActionEditEntity",
           code: "edit",
           actionType: "edit",
-          actionText: "修改",
         },
         {
           $type: "rapidTableAction",
@@ -204,7 +208,6 @@ const rapidPage: RapidPage = {
           $type: "sonicRecordActionDeleteEntity",
           code: "delete",
           actionType: "delete",
-          actionText: "删除",
           dataSourceCode: "list",
           entityCode: "OcRole",
         },

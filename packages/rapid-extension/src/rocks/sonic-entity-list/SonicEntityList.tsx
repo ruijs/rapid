@@ -6,11 +6,12 @@ import {
   RockPageEventSubscriptionConfig,
   type Rock,
   type RockConfig,
+  type Framework,
 } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./SonicEntityListMeta";
 import type { SonicEntityListRockConfig } from "./sonic-entity-list-types";
-import { differenceBy, find, get, isArray, isEmpty, isNumber, keyBy, omit, set } from "lodash";
+import { differenceBy, find, get, isArray, isEmpty, isNumber, keyBy, omit, pick, set } from "lodash";
 import type { RapidEntityListConfig, RapidEntityListRockConfig } from "../rapid-entity-list/rapid-entity-list-types";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
@@ -24,8 +25,28 @@ import { getColumnUniqueKey, ICacheRapidTableColumn } from "../rapid-entity-list
 import { getRapidEntityListFilters, RapidEntityListFilterCache } from "../rapid-entity-search-form/RapidEntitySearchForm";
 import { message, Modal } from "antd";
 import rapidApi from "../../rapidApi";
+import { RapidEntityListToolboxColumnConfig } from "../rapid-entity-list-toolbox/RapidEntityListToolbox";
 
 const DEFAULT_PAGE_SIZE = 20;
+
+function getToolboxColumnConfig(framework: Framework, mainEntity: RapidEntity, column: RapidTableColumnConfig) {
+  let columnTitle = column.title;
+  const fieldName = column.fieldName || column.code;
+  const fieldNameParts = fieldName.split(".");
+  const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, fieldNameParts[0]);
+  if (!columnTitle && rpdField) {
+    const stringResourceName = `entities.${mainEntity.code}.fields.${column.code}.name`;
+    if (framework.hasLocaleStringResource("meta", stringResourceName)) {
+      columnTitle = framework.getLocaleStringResource("meta", stringResourceName);
+    } else {
+      columnTitle = rpdField.name;
+    }
+  }
+  return {
+    ...pick(column, ["key", "code", "hidden"]),
+    title: columnTitle,
+  };
+}
 
 export default {
   onResolveState(props, state) {
@@ -73,12 +94,16 @@ export default {
     let mainEntity: RapidEntity | undefined;
     if (entityCode) {
       mainEntity = find(entities, (item) => item.code === entityCode);
-      if (!entityName) {
-        entityName = mainEntity?.name;
-      }
-
       if (!mainEntity) {
         return renderRock({ context, rockConfig: generateRockConfigOfError(new Error(`Entity '${entityCode}' not found.`)) });
+      }
+
+      if (!entityName) {
+        if (framework.hasLocaleStringResource("meta", `entities.${entityCode}.name`)) {
+          entityName = framework.getLocaleStringResource("meta", `entities.${entityCode}.name`);
+        } else {
+          entityName = mainEntity?.name;
+        }
       }
     }
 
@@ -123,7 +148,7 @@ export default {
         $type: "rapidEntityListToolbox",
         $id: `${props.$id}_toolbox`,
         dataSourceCode,
-        columns: props.columns,
+        columns: props.columns.map((column) => getToolboxColumnConfig(framework, mainEntity, column)),
         config: props.toolbox || {
           columnCacheKey: props.entityCode || props.entityName,
         },
@@ -141,10 +166,10 @@ export default {
       const cacheColumns = RapidExtStorage.get<ICacheRapidTableColumn[]>(toolboxRockConfig.config.columnCacheKey);
       if (isArray(cacheColumns) && !isEmpty(cacheColumns)) {
         const diffOriginColumns = differenceBy(originColumns, cacheColumns, getColumnUniqueKey);
-        const originByCodeMap = keyBy<RapidTableColumnConfig>(originColumns, getColumnUniqueKey);
+        const originByCodeMap = keyBy(originColumns, getColumnUniqueKey) as Record<string, RapidEntityListToolboxColumnConfig>;
 
-        let sortedColumns: RapidEntityListRockConfig["columns"] = [];
-        let showColumns: RapidEntityListRockConfig["columns"] = [];
+        let sortedColumns: any[] = [];
+        let showColumns: any[] = [];
         let hideColumnCodes: string[] = [];
         cacheColumns.forEach((col) => {
           const uniqueKey = getColumnUniqueKey(col as any);
@@ -161,7 +186,9 @@ export default {
 
         entityListRockConfig.extraProperties = [...(entityListRockConfig.extraProperties || []), ...hideColumnCodes];
         entityListRockConfig.columns = [...showColumns, ...diffOriginColumns];
-        toolboxRockConfig.columns = [...sortedColumns, ...diffOriginColumns];
+
+        let toolboxColumns = [...sortedColumns, ...diffOriginColumns].map((column) => getToolboxColumnConfig(framework, mainEntity, column));
+        toolboxRockConfig.columns = toolboxColumns;
       }
     }
 
@@ -258,7 +285,7 @@ export default {
           title:
             props.newModalTitle ||
             framework.getLocaleStringResource("rapid-extension", "newModalTitle", {
-              entityName: framework.getLocaleStringResource("default", `entities.${entityCode}.name`),
+              entityName,
             }),
           okText: framework.getLocaleStringResource("rapid-extension", "ok"),
           cancelText: framework.getLocaleStringResource("rapid-extension", "cancel"),
@@ -337,7 +364,7 @@ export default {
           title:
             props.editModalTitle ||
             framework.getLocaleStringResource("rapid-extension", "editModalTitle", {
-              entityName: framework.getLocaleStringResource("default", `entities.${entityCode}.name`),
+              entityName,
             }),
           okText: framework.getLocaleStringResource("rapid-extension", "ok"),
           cancelText: framework.getLocaleStringResource("rapid-extension", "cancel"),
@@ -557,8 +584,16 @@ export default {
                 const recordAction: RapidDeleteRecordActionOptions = event.args[0];
                 let { confirmText, recordId } = recordAction;
                 if (!confirmText) {
+                  let entityName = props.entityName;
+                  if (!entityName) {
+                    if (framework.hasLocaleStringResource("meta", `entities.${entityCode}.name`)) {
+                      entityName = framework.getLocaleStringResource("meta", `entities.${entityCode}.name`);
+                    } else {
+                      entityName = mainEntity?.name;
+                    }
+                  }
                   confirmText = framework.getLocaleStringResource("rapid-extension", "deleteConfirmText", {
-                    entityName: framework.getLocaleStringResource("default", `entities.${mainEntity.code}.name`),
+                    entityName,
                   });
                 }
 

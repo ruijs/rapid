@@ -17,8 +17,12 @@ export default {
     const entityCode = props.entityCode;
     let entityName = props.entityName;
     if (!entityName) {
-      const mainEntity = find(entities, (item) => item.code === entityCode);
-      entityName = mainEntity?.name;
+      if (framework.hasLocaleStringResource("meta", `entities.${entityCode}.name`)) {
+        entityName = framework.getLocaleStringResource("meta", `entities.${entityCode}.name`);
+      } else {
+        const mainEntity = find(entities, (item) => item.code === entityCode);
+        entityName = mainEntity?.name;
+      }
     }
 
     const buttonRockConfig: RockConfig = {
@@ -39,7 +43,7 @@ export default {
       $type: "antdModal",
       $id: `${props.$id}-modal`,
       title: framework.getLocaleStringResource("rapid-extension", "selectEntityModalTitle", {
-        entityName: framework.getLocaleStringResource("default", `entities.${entityCode}.name`),
+        entityName,
       }),
       ...props.modalProps,
       $exps: {

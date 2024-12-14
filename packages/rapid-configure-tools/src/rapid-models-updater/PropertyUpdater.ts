@@ -55,6 +55,7 @@ export function newPropertyUpdater(rapidConfigApi: AxiosInstance) {
         "linkDbSchema",
         "entityDeletingReaction",
         "readonly",
+        "locales",
       ]);
       if (changedFieldNames.length) {
         console.log(`${this.modelType} ${this.inputTitlePrinter(inputEntity)} changed with these fields:`, changedFieldNames);

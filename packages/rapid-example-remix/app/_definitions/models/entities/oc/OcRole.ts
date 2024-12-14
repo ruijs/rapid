@@ -6,23 +6,67 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
   namespace: "app",
   code: "OcRole",
   name: "角色",
+  locales: {
+    "en-US": {
+      name: "Role",
+    },
+    "zh-CN": {
+      name: "角色",
+    },
+    "th-TH": {
+      name: "บทบาท",
+    },
+  },
   fields: [
     {
       code: "name",
       name: "名称",
       type: "text",
       required: true,
+      locales: {
+        "en-US": {
+          name: "Name",
+        },
+        "zh-CN": {
+          name: "名称",
+        },
+        "th-TH": {
+          name: "ชื่อ",
+        },
+      },
     },
     {
       code: "description",
       name: "描述",
       type: "text",
+      locales: {
+        "en-US": {
+          name: "Description",
+        },
+        "zh-CN": {
+          name: "描述",
+        },
+        "th-TH": {
+          name: "คำอธิบาย",
+        },
+      },
     },
     {
       code: "orderNum",
       name: "排序",
       type: "integer",
       required: true,
+      locales: {
+        "en-US": {
+          name: "Order",
+        },
+        "zh-CN": {
+          name: "排序",
+        },
+        "th-TH": {
+          name: "ลำดับ",
+        },
+      },
     },
     {
       code: "state",
@@ -30,6 +74,17 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       required: true,
       type: "option",
       dataDictionary: "EnabledDisabledState",
+      locales: {
+        "en-US": {
+          name: "State",
+        },
+        "zh-CN": {
+          name: "状态",
+        },
+        "th-TH": {
+          name: "สถานะ",
+        },
+      },
     },
     {
       code: "users",
@@ -40,6 +95,17 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       targetIdColumnName: "user_id",
       selfIdColumnName: "role_id",
       entityDeletingReaction: "unlink",
+      locales: {
+        "en-US": {
+          name: "Users",
+        },
+        "zh-CN": {
+          name: "用户",
+        },
+        "th-TH": {
+          name: "ผู้ใช้งาน",
+        },
+      },
     },
     {
       code: "actions",
@@ -49,6 +115,17 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       linkTableName: "oc_role_sys_action_links",
       targetIdColumnName: "action_id",
       selfIdColumnName: "role_id",
+      locales: {
+        "en-US": {
+          name: "Actions",
+        },
+        "zh-CN": {
+          name: "操作",
+        },
+        "th-TH": {
+          name: "การดำเนินการ",
+        },
+      },
     },
   ],
   indexes: [
