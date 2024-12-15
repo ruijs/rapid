@@ -33,11 +33,15 @@ function generateDictionaryLocales(metaDir: string) {
       const dictionaryLocale = dictionary.locales?.[lingual];
       codes.push(`        "${dictionary.code}": {`);
       if (dictionaryLocale) {
-        codes.push(`          name: "${dictionaryLocale.name}",`);
-        codes.push(`          description: "${dictionaryLocale.description}",`);
+        if (dictionaryLocale.name) {
+          codes.push(`          name: "${dictionaryLocale.name}",`);
+        }
+        if (dictionaryLocale.description) {
+          codes.push(`          description: "${dictionaryLocale.description}",`);
+        }
       }
 
-      codes.push(`        entries: {`);
+      codes.push(`          entries: {`);
       for (const entry of dictionary.entries) {
         let entryLocaleName;
         let entryLocaleDescription;
@@ -48,18 +52,18 @@ function generateDictionaryLocales(metaDir: string) {
         }
 
         if (entryLocaleName || entryLocaleDescription) {
-          codes.push(`          "${entry.value}": {`);
+          codes.push(`            "${entry.value}": {`);
           if (entryLocaleName) {
-            codes.push(`            name: "${entryLocaleName}",`);
+            codes.push(`              name: "${entryLocaleName}",`);
           }
           if (entryLocaleDescription) {
-            codes.push(`            description: "${entryLocaleDescription}",`);
+            codes.push(`              description: "${entryLocaleDescription}",`);
           }
-          codes.push(`          },`);
+          codes.push(`            },`);
         }
       }
+      codes.push(`          },`);
       codes.push(`        },`);
-      codes.push(`      },`);
     }
 
     codes.push(`      },`);
@@ -105,8 +109,12 @@ function generateEntityLocales(metaDir: string) {
       const entityLocale = entity.locales?.[lingual];
       codes.push(`      "${entity.code}": {`);
       if (entityLocale) {
-        codes.push(`        name: "${entityLocale.name}",`);
-        codes.push(`        description: "${entityLocale.description}",`);
+        if (entityLocale.name) {
+          codes.push(`        name: "${entityLocale.name}",`);
+        }
+        if (entityLocale.description) {
+          codes.push(`        description: "${entityLocale.description}",`);
+        }
       }
 
       codes.push(`        fields: {`);
