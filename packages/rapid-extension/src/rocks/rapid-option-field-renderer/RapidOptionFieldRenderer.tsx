@@ -4,6 +4,7 @@ import type { RapidOptionFieldRendererRockConfig } from "./rapid-option-field-re
 import { renderRock } from "@ruiapp/react-renderer";
 import { find, isArray, merge } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
+import { getMetaDictionaryEntryLocaleName } from "../../helpers/i18nHelper";
 
 export default {
   Renderer(context, props: RapidOptionFieldRendererRockConfig) {
@@ -21,10 +22,7 @@ export default {
     }
 
     const dictionaryEntries = dataDictionary.entries.map((entry) => {
-      let entryName = entry.name;
-      if (framework.hasLocaleStringResource("meta", `dictionaries.${dictionaryCode}.entries.${entry.value}.name`)) {
-        entryName = framework.getLocaleStringResource("meta", `dictionaries.${dictionaryCode}.entries.${entry.value}.name`);
-      }
+      const entryName = getMetaDictionaryEntryLocaleName(framework, dataDictionary, entry);
       return {
         ...entry,
         name: entryName,

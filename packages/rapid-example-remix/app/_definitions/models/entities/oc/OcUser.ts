@@ -6,16 +6,8 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
   namespace: "app",
   code: "OcUser",
   name: "用户",
-  locales: {
-    "zh-CN": {
-      name: "用户",
-    },
-    "en-US": {
-      name: "User",
-    },
-    "th-TH": {
-      name: "ผู้ใช้งาน",
-    },
+  i18n: {
+    name: "common.user",
   },
   permissionPolicies: {
     find: {
@@ -29,16 +21,8 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       name: "姓名",
       type: "text",
       required: true,
-      locales: {
-        "zh-CN": {
-          name: "姓名",
-        },
-        "en-US": {
-          name: "Name",
-        },
-        "th-TH": {
-          name: "ชื่อ",
-        },
+      i18n: {
+        name: "common.name",
       },
     },
     {
@@ -46,16 +30,8 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       name: "登录账号",
       type: "text",
       required: true,
-      locales: {
-        "zh-CN": {
-          name: "登录账号",
-        },
-        "en-US": {
-          name: "Login",
-        },
-        "th-TH": {
-          name: "ชื่อผู้ใช้งาน",
-        },
+      i18n: {
+        name: "common.loginAccount",
       },
     },
     {
@@ -67,16 +43,8 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
           hidden: true,
         },
       },
-      locales: {
-        "zh-CN": {
-          name: "密码",
-        },
-        "en-US": {
-          name: "Password",
-        },
-        "th-TH": {
-          name: "รหัสผ่าน",
-        },
+      i18n: {
+        name: "common.password",
       },
     },
     {
@@ -103,16 +71,8 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       type: "option",
       dataDictionary: "EnabledDisabledState",
       required: true,
-      locales: {
-        "zh-CN": {
-          name: "状态",
-        },
-        "en-US": {
-          name: "State",
-        },
-        "th-TH": {
-          name: "สถานะ",
-        },
+      i18n: {
+        name: "common.state",
       },
     },
     {
@@ -120,16 +80,8 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       name: "Email",
       type: "text",
       required: false,
-      locales: {
-        "zh-CN": {
-          name: "Email",
-        },
-        "en-US": {
-          name: "Email",
-        },
-        "th-TH": {
-          name: "อีเเมล",
-        },
+      i18n: {
+        name: "common.email",
       },
     },
     {

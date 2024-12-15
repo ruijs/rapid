@@ -26,6 +26,7 @@ import { getRapidEntityListFilters, RapidEntityListFilterCache } from "../rapid-
 import { message, Modal } from "antd";
 import rapidApi from "../../rapidApi";
 import { RapidEntityListToolboxColumnConfig } from "../rapid-entity-list-toolbox/RapidEntityListToolbox";
+import { getExtensionLocaleStringResource, getMetaEntityLocaleName, getMetaPropertyLocaleName } from "../../helpers/i18nHelper";
 
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -35,12 +36,7 @@ function getToolboxColumnConfig(framework: Framework, mainEntity: RapidEntity, c
   const fieldNameParts = fieldName.split(".");
   const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, fieldNameParts[0]);
   if (!columnTitle && rpdField) {
-    const stringResourceName = `entities.${mainEntity.code}.fields.${column.code}.name`;
-    if (framework.hasLocaleStringResource("meta", stringResourceName)) {
-      columnTitle = framework.getLocaleStringResource("meta", stringResourceName);
-    } else {
-      columnTitle = rpdField.name;
-    }
+    columnTitle = getMetaPropertyLocaleName(framework, mainEntity, rpdField);
   }
   return {
     ...pick(column, ["key", "code", "hidden"]),
@@ -99,11 +95,7 @@ export default {
       }
 
       if (!entityName) {
-        if (framework.hasLocaleStringResource("meta", `entities.${entityCode}.name`)) {
-          entityName = framework.getLocaleStringResource("meta", `entities.${entityCode}.name`);
-        } else {
-          entityName = mainEntity?.name;
-        }
+        entityName = getMetaEntityLocaleName(framework, mainEntity);
       }
     }
 
@@ -202,7 +194,7 @@ export default {
           children: [
             {
               $type: "text",
-              text: framework.getLocaleStringResource("rapid-extension", "advancedSearch"),
+              text: getExtensionLocaleStringResource(framework, "advancedSearch"),
             },
             {
               $type: "antdIcon",
@@ -284,11 +276,11 @@ export default {
           $id: `${props.$id}-newModal`,
           title:
             props.newModalTitle ||
-            framework.getLocaleStringResource("rapid-extension", "newModalTitle", {
+            getExtensionLocaleStringResource(framework, "newModalTitle", {
               entityName,
             }),
-          okText: framework.getLocaleStringResource("rapid-extension", "ok"),
-          cancelText: framework.getLocaleStringResource("rapid-extension", "cancel"),
+          okText: getExtensionLocaleStringResource(framework, "ok"),
+          cancelText: getExtensionLocaleStringResource(framework, "cancel"),
           maskClosable: false,
           $exps: {
             open: "!!$scope.vars['modal-newEntity-open']",
@@ -363,11 +355,11 @@ export default {
           $id: `${props.$id}-editModal`,
           title:
             props.editModalTitle ||
-            framework.getLocaleStringResource("rapid-extension", "editModalTitle", {
+            getExtensionLocaleStringResource(framework, "editModalTitle", {
               entityName,
             }),
-          okText: framework.getLocaleStringResource("rapid-extension", "ok"),
-          cancelText: framework.getLocaleStringResource("rapid-extension", "cancel"),
+          okText: getExtensionLocaleStringResource(framework, "ok"),
+          cancelText: getExtensionLocaleStringResource(framework, "cancel"),
           maskClosable: false,
           $exps: {
             open: "!!$scope.vars['modal-editEntity-open']",
@@ -550,15 +542,15 @@ export default {
                 if (confirmText) {
                   Modal.confirm({
                     title: confirmText,
-                    okText: framework.getLocaleStringResource("rapid-extension", "ok"),
-                    cancelText: framework.getLocaleStringResource("rapid-extension", "cancel"),
+                    okText: getExtensionLocaleStringResource(framework, "ok"),
+                    cancelText: getExtensionLocaleStringResource(framework, "cancel"),
                     onOk: () => {
                       (async () => {
                         try {
                           await rapidApi.patch(`${mainEntity.namespace}/${mainEntity.pluralCode}/${recordId}`, entity);
                           event.scope.loadStoreData(dataSourceCode, null);
                         } catch (err: any) {
-                          message.error(framework.getLocaleStringResource("rapid-extension", "updateError", { message: err.message }));
+                          message.error(getExtensionLocaleStringResource(framework, "updateError", { message: err.message }));
                         }
                       })();
                     },
@@ -568,7 +560,7 @@ export default {
                     await rapidApi.patch(`${mainEntity.namespace}/${mainEntity.pluralCode}/${recordId}`, entity);
                     event.scope.loadStoreData(dataSourceCode, null);
                   } catch (err: any) {
-                    message.error(framework.getLocaleStringResource("rapid-extension", "updateError", { message: err.message }));
+                    message.error(getExtensionLocaleStringResource(framework, "updateError", { message: err.message }));
                   }
                 }
               },
@@ -584,31 +576,24 @@ export default {
                 const recordAction: RapidDeleteRecordActionOptions = event.args[0];
                 let { confirmText, recordId } = recordAction;
                 if (!confirmText) {
-                  let entityName = props.entityName;
-                  if (!entityName) {
-                    if (framework.hasLocaleStringResource("meta", `entities.${entityCode}.name`)) {
-                      entityName = framework.getLocaleStringResource("meta", `entities.${entityCode}.name`);
-                    } else {
-                      entityName = mainEntity?.name;
-                    }
-                  }
-                  confirmText = framework.getLocaleStringResource("rapid-extension", "deleteConfirmText", {
+                  const entityName = props.entityName || getMetaEntityLocaleName(framework, mainEntity);
+                  confirmText = getExtensionLocaleStringResource(framework, "deleteConfirmText", {
                     entityName,
                   });
                 }
 
                 Modal.confirm({
                   title: confirmText,
-                  okText: framework.getLocaleStringResource("rapid-extension", "ok"),
-                  cancelText: framework.getLocaleStringResource("rapid-extension", "cancel"),
+                  okText: getExtensionLocaleStringResource(framework, "ok"),
+                  cancelText: getExtensionLocaleStringResource(framework, "cancel"),
                   onOk: () => {
                     (async () => {
                       try {
                         await rapidApi.delete(`${mainEntity.namespace}/${mainEntity.pluralCode}/${recordId}`);
-                        message.info(framework.getLocaleStringResource("rapid-extension", "deleteSuccess"));
+                        message.info(getExtensionLocaleStringResource(framework, "deleteSuccess"));
                         event.scope.loadStoreData(dataSourceCode, null);
                       } catch (err: any) {
-                        message.error(framework.getLocaleStringResource("rapid-extension", "deleteError", { message: err.message }));
+                        message.error(getExtensionLocaleStringResource(framework, "deleteError", { message: err.message }));
                       }
                     })();
                   },

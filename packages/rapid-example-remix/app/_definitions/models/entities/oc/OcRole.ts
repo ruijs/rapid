@@ -6,16 +6,8 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
   namespace: "app",
   code: "OcRole",
   name: "角色",
-  locales: {
-    "en-US": {
-      name: "Role",
-    },
-    "zh-CN": {
-      name: "角色",
-    },
-    "th-TH": {
-      name: "บทบาท",
-    },
+  i18n: {
+    name: "common.role",
   },
   fields: [
     {
@@ -23,32 +15,16 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       name: "名称",
       type: "text",
       required: true,
-      locales: {
-        "en-US": {
-          name: "Name",
-        },
-        "zh-CN": {
-          name: "名称",
-        },
-        "th-TH": {
-          name: "ชื่อ",
-        },
+      i18n: {
+        name: "common.name",
       },
     },
     {
       code: "description",
       name: "描述",
       type: "text",
-      locales: {
-        "en-US": {
-          name: "Description",
-        },
-        "zh-CN": {
-          name: "描述",
-        },
-        "th-TH": {
-          name: "คำอธิบาย",
-        },
+      i18n: {
+        name: "common.description",
       },
     },
     {
@@ -56,16 +32,8 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       name: "排序",
       type: "integer",
       required: true,
-      locales: {
-        "en-US": {
-          name: "Order",
-        },
-        "zh-CN": {
-          name: "排序",
-        },
-        "th-TH": {
-          name: "ลำดับ",
-        },
+      i18n: {
+        name: "common.orderNum",
       },
     },
     {
@@ -74,16 +42,8 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       required: true,
       type: "option",
       dataDictionary: "EnabledDisabledState",
-      locales: {
-        "en-US": {
-          name: "State",
-        },
-        "zh-CN": {
-          name: "状态",
-        },
-        "th-TH": {
-          name: "สถานะ",
-        },
+      i18n: {
+        name: "common.state",
       },
     },
     {
@@ -95,16 +55,8 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       targetIdColumnName: "user_id",
       selfIdColumnName: "role_id",
       entityDeletingReaction: "unlink",
-      locales: {
-        "en-US": {
-          name: "Users",
-        },
-        "zh-CN": {
-          name: "用户",
-        },
-        "th-TH": {
-          name: "ผู้ใช้งาน",
-        },
+      i18n: {
+        name: "common.users",
       },
     },
     {

@@ -15,6 +15,7 @@ import { RapidOptionFieldRendererConfig } from "../rapid-option-field-renderer/r
 import { message } from "antd";
 import { EntityTableSelectRockConfig } from "../rapid-entity-table-select/entity-table-select-types";
 import { generateEntityDetailStoreConfig } from "../../helpers/entityStoreHelper";
+import { getMetaDictionaryEntryLocaleName, getMetaPropertyLocaleName } from "../../helpers/i18nHelper";
 
 const fieldTypeToFormItemTypeMap: Record<RapidFieldType, RapidFormItemType | null> = {
   text: "text",
@@ -71,13 +72,9 @@ function generateDataFormItemForOptionProperty(framework: Framework, option: Gen
     let dataDictionary = rapidAppDefinition.getDataDictionaryByCode(dataDictionaryCode);
 
     dictionaryEntries = dataDictionary.entries.map((entry) => {
-      let entryName = entry.name;
-      if (framework.hasLocaleStringResource("meta", `dictionaries.${dataDictionaryCode}.entries.${entry.value}.name`)) {
-        entryName = framework.getLocaleStringResource("meta", `dictionaries.${dataDictionaryCode}.entries.${entry.value}.name`);
-      }
       return {
         ...entry,
-        name: entryName,
+        name: getMetaDictionaryEntryLocaleName(framework, dataDictionary, entry),
       };
     });
   }
@@ -338,12 +335,7 @@ export default {
         let formItemLabel = formItemConfig.label;
         // 使用字段名称作为表单项的标签
         if (isUndefined(formItemLabel)) {
-          const stringResourceName = `entities.${mainEntity.code}.fields.${formItemConfig.code}.name`;
-          if (framework.hasLocaleStringResource("meta", stringResourceName)) {
-            formItemLabel = framework.getLocaleStringResource("meta", stringResourceName);
-          } else {
-            formItemLabel = rpdField?.name;
-          }
+          formItemLabel = getMetaPropertyLocaleName(framework, mainEntity, rpdField);
         }
 
         formItem.label = formItemLabel;

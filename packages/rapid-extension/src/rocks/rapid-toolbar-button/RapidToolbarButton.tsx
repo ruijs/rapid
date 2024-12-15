@@ -3,6 +3,7 @@ import RapidToolbarMeta from "./RapidToolbarButtonMeta";
 import { renderRock } from "@ruiapp/react-renderer";
 import { RapidToolbarButtonRockConfig } from "./rapid-toolbar-button-types";
 import { Modal } from "antd";
+import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
 
 export default {
   $type: "rapidToolbarButton",
@@ -44,8 +45,8 @@ export default {
             if (confirmText) {
               Modal.confirm({
                 title: confirmText,
-                okText: framework.getLocaleStringResource("rapid-extension", "ok"),
-                cancelText: framework.getLocaleStringResource("rapid-extension", "cancel"),
+                okText: getExtensionLocaleStringResource(framework, "ok"),
+                cancelText: getExtensionLocaleStringResource(framework, "cancel"),
                 onOk: async () => {
                   handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, []);
                 },

@@ -49,6 +49,7 @@ export function autoConfigureRapidField(sourceField: RapidField): RapidField {
 
     entityDeletingReaction: sourceField.entityDeletingReaction,
     readonly: sourceField.readonly,
+    i18n: sourceField.i18n,
     locales: sourceField.locales,
   };
   return field;
@@ -82,6 +83,7 @@ export function autoConfigureRapidEntity(sourceEntity: RapidEntity, entityDefini
       "indexes",
       "permissionPolicies",
       "softDelete",
+      "i18n",
       "locales",
     ]) as any),
 
@@ -132,16 +134,8 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: 
           required: false,
           defaultValue: "now()",
           readonly: true,
-          locales: {
-            "en-US": {
-              name: "Created At",
-            },
-            "zh-CN": {
-              name: "创建时间",
-            },
-            "th-TH": {
-              name: "สร้างเมื่อ",
-            },
+          i18n: {
+            name: "common.createdAt",
           },
         },
         {
@@ -152,16 +146,8 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: 
           targetSingularCode: "oc_user",
           targetIdColumnName: "creator_id",
           required: false,
-          locales: {
-            "en-US": {
-              name: "Created By",
-            },
-            "zh-CN": {
-              name: "创建人",
-            },
-            "th-TH": {
-              name: "สร้างโดย",
-            },
+          i18n: {
+            name: "common.createdBy",
           },
         },
         {
@@ -170,16 +156,8 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: 
           columnName: "updated_at",
           type: "datetime",
           required: false,
-          locales: {
-            "en-US": {
-              name: "Updated At",
-            },
-            "zh-CN": {
-              name: "更新时间",
-            },
-            "th-TH": {
-              name: "อัปเดตเมื่อ",
-            },
+          i18n: {
+            name: "common.updatedAt",
           },
         },
         {
@@ -190,16 +168,8 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: 
           targetSingularCode: "oc_user",
           targetIdColumnName: "updater_id",
           required: false,
-          locales: {
-            "en-US": {
-              name: "Updated By",
-            },
-            "zh-CN": {
-              name: "更新人",
-            },
-            "th-TH": {
-              name: "อัปเดตโดย",
-            },
+          i18n: {
+            name: "common.updatedBy",
           },
         },
         {
@@ -208,16 +178,8 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: 
           columnName: "deleted_at",
           type: "datetime",
           required: false,
-          locales: {
-            "en-US": {
-              name: "Deleted At",
-            },
-            "zh-CN": {
-              name: "删除时间",
-            },
-            "th-TH": {
-              name: "ลบเมื่อ",
-            },
+          i18n: {
+            name: "common.deletedAt",
           },
         },
         {
@@ -228,16 +190,8 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: 
           targetSingularCode: "oc_user",
           targetIdColumnName: "deleter_id",
           required: false,
-          locales: {
-            "en-US": {
-              name: "Deleted By",
-            },
-            "zh-CN": {
-              name: "删除人",
-            },
-            "th-TH": {
-              name: "ลบโดย",
-            },
+          i18n: {
+            name: "common.deletedBy",
           },
         },
       ];

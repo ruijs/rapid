@@ -37,7 +37,16 @@ export default {
           required: false,
         },
         {
+          name: "i18n",
+          description: "The i18n text names of the model attributes.",
+          code: "i18n",
+          columnName: "i18n",
+          type: "json",
+          required: false,
+        },
+        {
           name: "locales",
+          description: "The locale translations of the model attributes.",
           code: "locales",
           columnName: "locales",
           type: "json",
@@ -216,7 +225,16 @@ export default {
           required: false,
         },
         {
+          name: "i18n",
+          description: "The i18n text names of the property attributes.",
+          code: "i18n",
+          columnName: "i18n",
+          type: "json",
+          required: false,
+        },
+        {
           name: "locales",
+          description: "The locale translations of the property attributes.",
           code: "locales",
           columnName: "locales",
           type: "json",
@@ -344,14 +362,6 @@ export default {
           type: "text",
           required: false,
         },
-        {
-          name: "i18n string storage",
-          code: "i18nStringStorage",
-          columnName: "i18n_string_storage",
-          description: "The storage type of i18n strings. `json` or `i18nStringsTable`.",
-          type: "text",
-          required: false,
-        },
       ],
       indexes: [
         {
@@ -459,7 +469,16 @@ export default {
           selfIdColumnName: "dictionary_id",
         },
         {
+          name: "i18n",
+          description: "The i18n text names of the data dictionary attributes.",
+          code: "i18n",
+          columnName: "i18n",
+          type: "json",
+          required: false,
+        },
+        {
           name: "locales",
+          description: "The locale translations of the data dictionary attributes.",
           code: "locales",
           columnName: "locales",
           type: "json",
@@ -544,7 +563,16 @@ export default {
           required: false,
         },
         {
+          name: "i18n",
+          description: "The i18n text names of the data dictionary entry attributes.",
+          code: "i18n",
+          columnName: "i18n",
+          type: "json",
+          required: false,
+        },
+        {
           name: "locales",
+          description: "The locale translations of the data dictionary entry attributes.",
           code: "locales",
           columnName: "locales",
           type: "json",
@@ -631,12 +659,12 @@ export default {
     {
       maintainedBy: "dataManager",
       namespace: "meta",
-      name: "i18n strings",
-      code: "I18nString",
-      singularCode: "i18n_string",
-      pluralCode: "i18n_strings",
+      name: "locale strings",
+      code: "LocaleString",
+      singularCode: "locale_string",
+      pluralCode: "locale_strings",
       schema: "public",
-      tableName: "meta_i18n_strings",
+      tableName: "meta_locale_strings",
       properties: [
         {
           name: "id",

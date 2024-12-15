@@ -42,6 +42,11 @@ export type RapidDataDictionary = {
   /**
    * 多语言配置
    */
+  i18n?: Record<string, string>;
+
+  /**
+   * 本地化资源
+   */
   locales?: Record<string, RapidDataDictionaryLocale>;
 };
 
@@ -86,6 +91,11 @@ export type RapidDataDictionaryEntry = {
 
   /**
    * 多语言配置
+   */
+  i18n?: Record<string, string>;
+
+  /**
+   * 本地化资源
    */
   locales?: Record<string, RapidDataDictionaryEntryLocale>;
 };
@@ -210,6 +220,11 @@ export type RapidEntity<TEntitySingularCodes extends string = string, TDictionar
 
   /**
    * 多语言配置
+   */
+  i18n?: Record<string, string>;
+
+  /**
+   * 本地化资源
    */
   locales?: Record<string, RapidEntityLocale>;
 };
@@ -338,6 +353,14 @@ export type RapidField<TEntitySingularCodes extends string = string, TDictionary
    */
   readonly?: boolean;
 
+  /**
+   * 多语言配置
+   */
+  i18n?: Record<string, string>;
+
+  /**
+   * 本地化资源
+   */
   locales?: Record<string, RapidFieldLocale>;
 };
 

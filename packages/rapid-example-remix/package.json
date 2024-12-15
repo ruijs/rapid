@@ -6,7 +6,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "remix build",
-    "dev": "remix build && run-p \"dev:*\"",
+    "dev": "pnpm gen-meta && remix build && run-p \"dev:*\"",
     "dev:node": "cross-env NODE_ENV=development nodemon ./index.ts --watch ./index.ts",
     "dev:remix": "remix watch",
     "start": "cross-env NODE_ENV=production ts-node-esm --project ./tsconfig-node.json ./index.ts",
