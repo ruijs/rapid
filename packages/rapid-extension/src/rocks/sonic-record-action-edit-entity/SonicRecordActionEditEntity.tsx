@@ -3,6 +3,7 @@ import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./SonicRecordActionEditEntityMeta";
 import type { SonicRecordActionEditEntityConfig, SonicRecordActionEditEntityRockConfig } from "./sonic-record-action-edit-entity-types";
 import { RapidTableActionRockConfig } from "../rapid-table-action/rapid-table-action-types";
+import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
 
 export default {
   onInit(context, props) {},
@@ -14,7 +15,7 @@ export default {
     const rockConfig: RapidTableActionRockConfig = {
       ...(MoveStyleUtils.omitSystemRockConfigFields(props) as SonicRecordActionEditEntityConfig),
       $type: "rapidTableAction",
-      actionText: props.actionText || framework.getLocaleStringResource("rapid-extension", "edit"),
+      actionText: props.actionText || getExtensionLocaleStringResource(framework, "edit"),
       onAction: [
         {
           $action: "notifyEvent",

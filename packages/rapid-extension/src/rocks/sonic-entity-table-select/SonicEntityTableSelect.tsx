@@ -15,6 +15,7 @@ import dayjs from "dayjs";
 
 import "../rapid-table-select/rapid-table-select-style.css";
 import { getEntityPropertyByCode } from "../../helpers/metaHelper";
+import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
 
 const bus = new EventEmitter();
 
@@ -42,7 +43,7 @@ export default {
     const displayProperty = getEntityPropertyByCode(rapidAppDefinition.getAppDefinition(), entity, displayPropertyCode);
 
     let defaultDisplayField = "name";
-    let defaultDisplayTitle = framework.getLocaleStringResource("rapid-extension", "name");
+    let defaultDisplayTitle = getExtensionLocaleStringResource(framework, "name");
     if (displayProperty) {
       defaultDisplayField = displayProperty.code;
       defaultDisplayTitle = displayProperty.name;
@@ -252,7 +253,7 @@ export default {
         disabled={disabled}
         bordered={props.bordered}
         loading={apiIns.loading || loading}
-        placeholder={placeholder || framework.getLocaleStringResource("rapid-extension", "pleaseSelect")}
+        placeholder={placeholder || getExtensionLocaleStringResource(framework, "pleaseSelect")}
         value={current}
         mode={isMultiple ? "multiple" : undefined}
         open={currentState.visible}
@@ -276,7 +277,7 @@ export default {
                 <div className="pm-table-selector--toolbar">
                   <Input
                     allowClear
-                    placeholder={props.searchPlaceholder || framework.getLocaleStringResource("rapid-extension", "search")}
+                    placeholder={props.searchPlaceholder || getExtensionLocaleStringResource(framework, "search")}
                     value={currentState.keyword}
                     onChange={(e) => {
                       const v = e.target.value;

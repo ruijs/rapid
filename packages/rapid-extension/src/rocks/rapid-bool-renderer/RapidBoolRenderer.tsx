@@ -1,5 +1,6 @@
 import { Rock, SimpleRockConfig } from "@ruiapp/move-style";
 import RapidBoolRendererMeta from "./RapidBoolRendererMeta";
+import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
 
 export interface RapidReferenceRendererProps extends SimpleRockConfig {
   value: boolean | null | undefined;
@@ -17,17 +18,17 @@ export default {
     const { value, strictEquals, trueText, falseText, defaultText } = props;
     if (strictEquals) {
       if (value === true) {
-        return trueText || framework.getLocaleStringResource("rapid-extension", "boolTrue");
+        return trueText || getExtensionLocaleStringResource(framework, "boolTrue");
       } else if (value === false) {
-        return falseText || framework.getLocaleStringResource("rapid-extension", "boolFalse");
+        return falseText || getExtensionLocaleStringResource(framework, "boolFalse");
       } else {
         return defaultText || "";
       }
     } else {
       if (value) {
-        return trueText || framework.getLocaleStringResource("rapid-extension", "boolTrue");
+        return trueText || getExtensionLocaleStringResource(framework, "boolTrue");
       } else {
-        return falseText || framework.getLocaleStringResource("rapid-extension", "boolFalse");
+        return falseText || getExtensionLocaleStringResource(framework, "boolFalse");
       }
     }
   },

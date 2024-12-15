@@ -1,4 +1,4 @@
-import type { RockEvent, Rock, RockEventHandler, RuiRockLogger, RockConfig } from "@ruiapp/move-style";
+import type { RockEvent, Rock, RockEventHandler, RuiRockLogger, RockConfig, Framework } from "@ruiapp/move-style";
 import { handleComponentEvent } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntitySearchFormMeta from "./RapidEntitySearchFormMeta";
@@ -21,6 +21,7 @@ import { RapidOptionFieldRendererConfig } from "../rapid-option-field-renderer/r
 import { searchParamsToFilters } from "../../functions/searchParamsToFilters";
 import { EntityTableSelectRockConfig } from "../rapid-entity-table-select/entity-table-select-types";
 import { RapidExtStorage } from "../../utils/storage-utility";
+import { getExtensionLocaleStringResource, getMetaDictionaryEntryLocaleName, getMetaPropertyLocaleName } from "../../helpers/i18nHelper";
 
 type SearchableFieldType = Exclude<RapidFieldType, "file" | "file[]" | "image" | "image[]" | "richText">;
 
@@ -65,16 +66,22 @@ export interface GenerateEntityFormItemOption {
   dataDictionaries: RapidDataDictionary[];
 }
 
-function generateSearchFormItemForOptionProperty(option: GenerateEntityFormItemOption, valueFieldType: RapidFieldType) {
+function generateSearchFormItemForOptionProperty(framework: Framework, option: GenerateEntityFormItemOption, valueFieldType: RapidFieldType) {
   const { formItemConfig, mainEntity } = option;
 
-  let entries: RapidDataDictionaryEntry[] = [];
+  let dictionaryEntries: RapidDataDictionaryEntry[] = [];
 
   const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
   const dataDictionaryCode = rpdField?.dataDictionary;
   if (dataDictionaryCode) {
     let dataDictionary = rapidAppDefinition.getDataDictionaryByCode(dataDictionaryCode);
-    entries = dataDictionary?.entries || [];
+
+    dictionaryEntries = dataDictionary.entries.map((entry) => {
+      return {
+        ...entry,
+        name: getMetaDictionaryEntryLocaleName(framework, dataDictionary, entry),
+      };
+    });
   }
 
   const { filterMode } = formItemConfig;
@@ -87,7 +94,7 @@ function generateSearchFormItemForOptionProperty(option: GenerateEntityFormItemO
     multiple: isMultiple,
     listDataSource: {
       data: {
-        list: entries,
+        list: dictionaryEntries,
       },
     },
     listTextFieldName: "name",
@@ -102,7 +109,7 @@ function generateSearchFormItemForOptionProperty(option: GenerateEntityFormItemO
     valueFieldType: "option",
     code: formItemConfig.code,
     required: formItemConfig.required,
-    label: formItemConfig.label,
+    label: formItemConfig.label || getMetaPropertyLocaleName(framework, mainEntity, rpdField),
     hidden: formItemConfig.hidden,
     formControlProps,
     rendererProps,
@@ -112,8 +119,8 @@ function generateSearchFormItemForOptionProperty(option: GenerateEntityFormItemO
   return formItem;
 }
 
-export function generateSearchFormItemForRelationProperty(option: GenerateEntityFormItemOption, field: RapidField) {
-  const { formItemConfig } = option;
+export function generateSearchFormItemForRelationProperty(framework: Framework, option: GenerateEntityFormItemOption, field: RapidField) {
+  const { formItemConfig, mainEntity } = option;
 
   let listDataSourceCode = formItemConfig.formControlProps?.listDataSourceCode;
   if (!listDataSourceCode) {
@@ -152,7 +159,7 @@ export function generateSearchFormItemForRelationProperty(option: GenerateEntity
     multipleValues: isMultiple,
     code: formItemConfig.code,
     required: formItemConfig.required,
-    label: formItemConfig.label,
+    label: formItemConfig.label || getMetaPropertyLocaleName(framework, mainEntity, field),
     hidden: formItemConfig.hidden,
     formControlType: formItemConfig.formControlType,
     formControlProps,
@@ -164,7 +171,7 @@ export function generateSearchFormItemForRelationProperty(option: GenerateEntity
   return formItem;
 }
 
-function generateSearchFormItem(logger: RuiRockLogger, entityFormProps: any, option: GenerateEntityFormItemOption) {
+function generateSearchFormItem(framework: Framework, logger: RuiRockLogger, entityFormProps: any, option: GenerateEntityFormItemOption) {
   const { formItemConfig, mainEntity } = option;
 
   const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
@@ -175,9 +182,9 @@ function generateSearchFormItem(logger: RuiRockLogger, entityFormProps: any, opt
   let valueFieldType = formItemConfig.valueFieldType || rpdField?.type || "text";
 
   if (valueFieldType === "option" || valueFieldType === "option[]") {
-    return generateSearchFormItemForOptionProperty(option, valueFieldType);
+    return generateSearchFormItemForOptionProperty(framework, option, valueFieldType);
   } else if (valueFieldType === "relation" || valueFieldType === "relation[]") {
-    return generateSearchFormItemForRelationProperty(option, rpdField);
+    return generateSearchFormItemForRelationProperty(framework, option, rpdField);
   }
 
   const isMultiple = formItemConfig.multipleValues || formItemConfig.filterMode === "in" || formItemConfig.filterMode === "overlap";
@@ -192,7 +199,7 @@ function generateSearchFormItem(logger: RuiRockLogger, entityFormProps: any, opt
     type: formItemConfig.type,
     code: formItemConfig.code,
     required: formItemConfig.required,
-    label: formItemConfig.label,
+    label: formItemConfig.label || getMetaPropertyLocaleName(framework, mainEntity, rpdField),
     hidden: formItemConfig.hidden,
     valueFieldType,
     valueFieldName: formItemConfig.valueFieldName,
@@ -219,11 +226,6 @@ export default {
     for (const formItem of props.items) {
       const field = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItem.code);
       if (field) {
-        // 使用字段名称作为表单项的标签
-        if (isUndefined(formItem.label)) {
-          formItem.label = field?.name;
-        }
-
         if (!formItem.hasOwnProperty("required")) {
           // 使用字段的必填设置作为表单项的必填设置
           formItem.required = field.required;
@@ -319,7 +321,7 @@ export default {
 
     if (formConfig && formConfig.items) {
       formConfig.items.forEach((formItemConfig) => {
-        const formItem = generateSearchFormItem(logger, props, {
+        const formItem = generateSearchFormItem(framework, logger, props, {
           formItemConfig,
           mainEntity,
           dataDictionaries,
@@ -333,7 +335,7 @@ export default {
     const formActions: RapidFormAction[] = [
       {
         actionType: "reset",
-        actionText: framework.getLocaleStringResource("rapid-extension", "reset"),
+        actionText: getExtensionLocaleStringResource(framework, "reset"),
         actionProps: {
           onClick: [
             {
@@ -348,7 +350,7 @@ export default {
       },
       {
         actionType: "submit",
-        actionText: framework.getLocaleStringResource("rapid-extension", "search"),
+        actionText: getExtensionLocaleStringResource(framework, "search"),
       },
     ];
 

@@ -3,6 +3,7 @@ import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./SonicRecordActionDeleteEntityMeta";
 import type { SonicRecordActionDeleteEntityConfig, SonicRecordActionDeleteEntityRockConfig } from "./sonic-record-action-delete-entity-types";
 import { omit } from "lodash";
+import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
 
 export default {
   onInit(context, props) {},
@@ -14,7 +15,7 @@ export default {
     const rockConfig: RockConfig = {
       ...(MoveStyleUtils.omitSystemRockConfigFields(omit(props, ["confirmText"]) as any) as SonicRecordActionDeleteEntityConfig),
       $type: "rapidTableAction",
-      actionText: props.actionText || framework.getLocaleStringResource("rapid-extension", "delete"),
+      actionText: props.actionText || getExtensionLocaleStringResource(framework, "delete"),
       recordId: props.recordId,
       onAction: [
         {

@@ -5,6 +5,7 @@ import type { SonicToolbarSelectEntityButtonRockConfig } from "./sonic-toolbar-s
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { find, get } from "lodash";
 import { SonicEntityListRockConfig } from "../sonic-entity-list/sonic-entity-list-types";
+import { getExtensionLocaleStringResource, getMetaEntityLocaleName } from "../../helpers/i18nHelper";
 
 export default {
   onInit(context, props) {},
@@ -14,16 +15,8 @@ export default {
   Renderer(context, props) {
     const { framework } = context;
     const entities = rapidAppDefinition.getEntities();
-    const entityCode = props.entityCode;
-    let entityName = props.entityName;
-    if (!entityName) {
-      if (framework.hasLocaleStringResource("meta", `entities.${entityCode}.name`)) {
-        entityName = framework.getLocaleStringResource("meta", `entities.${entityCode}.name`);
-      } else {
-        const mainEntity = find(entities, (item) => item.code === entityCode);
-        entityName = mainEntity?.name;
-      }
-    }
+    const mainEntity = find(entities, (item) => item.code === props.entityCode);
+    const entityName = props.entityName || getMetaEntityLocaleName(framework, mainEntity);
 
     const buttonRockConfig: RockConfig = {
       ...MoveStyleUtils.omitSystemRockConfigFields(props),
@@ -42,7 +35,7 @@ export default {
     const modalRockConfig: RockConfig = {
       $type: "antdModal",
       $id: `${props.$id}-modal`,
-      title: framework.getLocaleStringResource("rapid-extension", "selectEntityModalTitle", {
+      title: getExtensionLocaleStringResource(framework, "selectEntityModalTitle", {
         entityName,
       }),
       ...props.modalProps,
@@ -52,7 +45,7 @@ export default {
       children: [
         {
           $type: "sonicEntityList",
-          entityCode: entityCode,
+          entityCode: props.entityCode,
           viewMode: "table",
           selectionMode: "multiple",
           selectOnClickRow: get(props, "selectOnClickRow", true),

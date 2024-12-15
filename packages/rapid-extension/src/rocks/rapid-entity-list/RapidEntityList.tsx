@@ -10,6 +10,7 @@ import type { EntityStore, EntityStoreConfig } from "../../stores/entity-store";
 import RapidExtensionSetting from "../../RapidExtensionSetting";
 import { RapidEntityListFilterCache } from "../rapid-entity-search-form/RapidEntitySearchForm";
 import { parseRockExpressionFunc } from "../../utils/parse-utility";
+import { getExtensionLocaleStringResource, getMetaPropertyLocaleName } from "../../helpers/i18nHelper";
 
 export default {
   onResolveState(props, state) {
@@ -134,12 +135,7 @@ export default {
         rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, fieldNameParts[0]);
 
         if (!columnTitle && rpdField) {
-          const stringResourceName = `entities.${mainEntity.code}.fields.${column.code}.name`;
-          if (framework.hasLocaleStringResource("meta", stringResourceName)) {
-            columnTitle = framework.getLocaleStringResource("meta", stringResourceName);
-          } else {
-            columnTitle = rpdField.name;
-          }
+          columnTitle = getMetaPropertyLocaleName(framework, mainEntity, rpdField);
         }
 
         if (fieldNameParts.length > 1 && rpdField) {
@@ -241,7 +237,7 @@ export default {
       if (props.actions && props.actions.length) {
         const tableActionsColumnRock: RockConfig = {
           $type: "rapidTableColumn",
-          title: framework.getLocaleStringResource("rapid-extension", "operations"),
+          title: getExtensionLocaleStringResource(framework, "operations"),
           code: "id",
           key: "_actions",
           width: props.actionsColumnWidth || "150px",

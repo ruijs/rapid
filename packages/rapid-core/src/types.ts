@@ -227,11 +227,16 @@ export interface RpdDataModel {
   /**
    * 多语言配置
    */
+  i18n?: Record<string, string>;
+
+  /**
+   * 本地化资源
+   */
   locales?: Record<string, RpdDataModelLocale>;
 }
 
 /**
- * 实体多语言配置
+ * 实体本地化资源配置
  */
 export type RpdDataModelLocale = {
   name: string;
@@ -345,9 +350,17 @@ export interface RpdDataModelProperty {
   /**
    * 多语言配置
    */
+  i18n?: Record<string, string>;
+
+  /**
+   * 本地化资源
+   */
   locales?: Record<string, RpdDataModelPropertyLocale>;
 }
 
+/**
+ * 实体属性本地化资源配置
+ */
 export type RpdDataModelPropertyLocale = {
   name: string;
   description?: string;
@@ -409,6 +422,21 @@ export type RpdDataDictionary = {
    * 字典项
    */
   entries: RpdDataDictionaryEntry[];
+
+  /**
+   * 多语言配置
+   */
+  i18n?: Record<string, string>;
+
+  /**
+   * 本地化资源
+   */
+  locales?: Record<string, RpdDataDictionaryLocale>;
+};
+
+export type RpdDataDictionaryLocale = {
+  name: string;
+  description?: string;
 };
 
 /**
@@ -449,6 +477,24 @@ export type RpdDataDictionaryEntry = {
    * 是否禁用
    */
   disabled: boolean;
+
+  /**
+   * 多语言配置
+   */
+  i18n?: Record<string, string>;
+
+  /**
+   * 本地化资源
+   */
+  locales?: Record<string, RpdDataDictionaryEntryLocale>;
+};
+
+/**
+ * 数据字典项本地化资源配置
+ */
+export type RpdDataDictionaryEntryLocale = {
+  name: string;
+  description?: string;
 };
 
 export interface RpdDataModelExtension {
@@ -749,7 +795,7 @@ export interface EntityWatchPluginInitOptions {
   watchers: EntityWatcherType[];
 }
 
-export interface I18nString {
+export interface LocaleString {
   namespace: string;
   name: string;
   lingual: string;

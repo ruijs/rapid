@@ -2,6 +2,7 @@ import { MoveStyleUtils, type Rock, type RockConfig } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./SonicToolbarNewEntityButtonMeta";
 import type { SonicToolbarNewEntityButtonRockConfig } from "./sonic-toolbar-new-entity-button-types";
+import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
 
 export default {
   onInit(context, props) {},
@@ -13,7 +14,7 @@ export default {
     const rockConfig: RockConfig = {
       ...MoveStyleUtils.omitSystemRockConfigFields(props),
       $type: "rapidToolbarButton",
-      text: props.text || framework.getLocaleStringResource("rapid-extension", "new"),
+      text: props.text || getExtensionLocaleStringResource(framework, "new"),
       onAction: [
         {
           $action: "notifyEvent",

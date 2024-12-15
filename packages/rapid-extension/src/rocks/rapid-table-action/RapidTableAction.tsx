@@ -5,6 +5,7 @@ import { RapidTableActionRockConfig } from "./rapid-table-action-types";
 import { Modal } from "antd";
 
 import "./style.css";
+import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
 
 export default {
   $type: "rapidTableAction",
@@ -61,8 +62,8 @@ export default {
             if (confirmText) {
               Modal.confirm({
                 title: confirmText,
-                okText: framework.getLocaleStringResource("rapid-extension", "ok"),
-                cancelText: framework.getLocaleStringResource("rapid-extension", "cancel"),
+                okText: getExtensionLocaleStringResource(framework, "ok"),
+                cancelText: getExtensionLocaleStringResource(framework, "cancel"),
                 onOk: async () => {
                   handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, [{ record, recordId }]);
                 },

@@ -14,10 +14,9 @@ import { useMemo } from "react";
 import { Select } from "antd";
 import { useState } from "react";
 
-import locales from "../../locales";
-
 import entityLocales from "../../_definitions/meta/entity-locales";
 import dataDictionaryLocales from "../../_definitions/meta/data-dictionary-locales";
+import otherMetaLocales from "../../_definitions/models/locales";
 
 import antdStyles from "antd/dist/antd.css";
 import appStyles from "~/styles/app.css";
@@ -40,9 +39,7 @@ framework.loadExtension(AntdExtension);
 framework.loadExtension(MonacoExtension);
 framework.loadExtension(RapidExtension);
 
-framework.loadLocaleResources("default", locales);
-
-const metaLocales = merge({}, entityLocales, dataDictionaryLocales);
+const metaLocales = merge({}, entityLocales, dataDictionaryLocales, otherMetaLocales);
 framework.loadLocaleResources("meta", metaLocales as any);
 
 RapidExtensionSetting.setDefaultRendererPropsOfRendererType("rapidCurrencyRenderer", {

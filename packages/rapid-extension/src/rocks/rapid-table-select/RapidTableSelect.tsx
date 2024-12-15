@@ -12,6 +12,7 @@ import { parseConfigToFilters } from "../../functions/searchParamsToFilters";
 import dayjs from "dayjs";
 
 import "./rapid-table-select-style.css";
+import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
 
 const bus = new EventEmitter();
 
@@ -236,7 +237,7 @@ export default {
         disabled={disabled}
         bordered={props.bordered}
         loading={apiIns.loading || loading}
-        placeholder={placeholder || framework.getLocaleStringResource("rapid-extension", "pleaseSelect")}
+        placeholder={placeholder || getExtensionLocaleStringResource(framework, "pleaseSelect")}
         value={current}
         mode={isMultiple ? "multiple" : undefined}
         open={currentState.visible}
@@ -259,7 +260,7 @@ export default {
                 <div className="pm-table-selector--toolbar">
                   <Input
                     allowClear
-                    placeholder={props.searchPlaceholder || framework.getLocaleStringResource("rapid-extension", "search")}
+                    placeholder={props.searchPlaceholder || getExtensionLocaleStringResource(framework, "search")}
                     value={currentState.keyword}
                     onChange={(e) => {
                       const v = e.target.value;

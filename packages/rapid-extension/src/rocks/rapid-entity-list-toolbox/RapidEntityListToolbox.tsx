@@ -8,6 +8,7 @@ import { convertToEventHandlers } from "@ruiapp/react-renderer";
 import { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
 
 import "./style.css";
+import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
 
 export interface IRapidEntityListToolboxConfig {
   disabled?: boolean;
@@ -139,7 +140,7 @@ export default {
                       eventHandlers.onRerender?.();
                     }}
                   >
-                    {framework.getLocaleStringResource("rapid-extension", "reset")}
+                    {getExtensionLocaleStringResource(framework, "reset")}
                   </span>
                 </div>
                 <Tree draggable blockNode selectable={false} checkable checkedKeys={checkedKeys} onCheck={onTreeCheck} onDrop={onTreeDrop}>

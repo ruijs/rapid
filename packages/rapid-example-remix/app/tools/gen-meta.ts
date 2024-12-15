@@ -46,6 +46,7 @@ export function runGenerator(options: FileGenerateOption) {
     });
 }
 
-runGenerator({
+const fileGenerator = new MetaFileGenerator();
+fileGenerator.generateFiles({
   declarationsDirectory: path.join(process.cwd(), "app", "_definitions"),
 });

@@ -6,6 +6,7 @@ import { Button, Upload, UploadFile, UploadProps } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { isArray, isString, remove, set } from "lodash";
 import { useCallback, useMemo } from "react";
+import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
 
 export default {
   $type: "rapidUploaderFormInput",
@@ -78,7 +79,7 @@ export default {
       return [convertRpdFileInfoToAntdFileInfo(value)];
     }, [props.value]);
 
-    const buttonText = props.buttonText || framework.getLocaleStringResource("rapid-extension", "uploadButtonText");
+    const buttonText = props.buttonText || getExtensionLocaleStringResource(framework, "uploadButtonText");
     if (!props.multiple) {
       set(props, "uploadProps.maxCount", 1);
     }
