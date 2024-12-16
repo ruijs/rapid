@@ -71,6 +71,7 @@ class CronJobPlugin implements RapidPlugin {
   async onApplicationReady(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
     for (const job of this.#jobs) {
       const jobInstance = cron.CronJob.from({
+        ...(job.jobOptions || {}),
         cronTime: job.cronTime,
         onTick: async () => {
           server.getLogger().info(`Executing cron job '${job.code}'...`);
