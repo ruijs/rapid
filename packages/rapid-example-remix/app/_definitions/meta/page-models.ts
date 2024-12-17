@@ -1,5 +1,6 @@
 import type { RapidPageLoader as TRapidPageLoader } from '@ruiapp/rapid-extension';
 import BaseShiftListPage from '../models/pages/BaseShiftListPage';
+import I18nTestPage from '../models/pages/I18nTestPage';
 import OcDepartmentListPage from '../models/pages/OcDepartmentListPage';
 import OcRoleDetailsPage from '../models/pages/OcRoleDetailsPage';
 import OcRoleListPage from '../models/pages/OcRoleListPage';
@@ -14,6 +15,7 @@ import sys$SysActionListPage from '../models/pages/sys/SysActionListPage';
 
 export default [
   BaseShiftListPage,
+  I18nTestPage,
   OcDepartmentListPage,
   OcRoleDetailsPage,
   OcRoleListPage,
