@@ -36,10 +36,12 @@ const ExpandedRowComponent = memo<Record<string, any>>((props) => {
 
 export default {
   Renderer(context, props: RapidTableRockConfig) {
-    const { framework, page, scope } = context;
+    const { framework, logger, page, scope } = context;
     const tableColumns = map(
       filter(props.columns, (column) => !column._hidden),
       (column) => {
+        MoveStyleUtils.localizeConfigProps(framework, logger.getInternalLogger(), column);
+
         return {
           ...MoveStyleUtils.omitSystemRockConfigFields(column),
           dataIndex: (column.fieldName || column.code).split("."),

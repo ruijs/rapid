@@ -10,6 +10,12 @@ const formConfig: Partial<RapidEntityFormConfig> = {
     {
       type: "auto",
       code: "login",
+      $locales: {
+        label: {
+          "zh-CN": "账号",
+          "en-US": "Account",
+        },
+      },
     },
     {
       type: "auto",
@@ -107,6 +113,12 @@ const page: RapidPage = {
           type: "auto",
           code: "login",
           fixed: "left",
+          $locales: {
+            title: {
+              "zh-CN": "账号",
+              "en-US": "Account",
+            },
+          },
         },
         {
           type: "auto",
@@ -249,6 +261,12 @@ const page: RapidPage = {
             type: "auto",
             code: "login",
             filterMode: "contains",
+            $locales: {
+              label: {
+                "zh-CN": "账号",
+                "en-US": "Account",
+              },
+            },
           },
           {
             type: "auto",

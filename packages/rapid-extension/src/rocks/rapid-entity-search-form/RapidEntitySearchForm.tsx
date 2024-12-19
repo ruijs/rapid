@@ -115,6 +115,8 @@ function generateSearchFormItemForOptionProperty(framework: Framework, option: G
     rendererProps,
     storeDependencies: formItemConfig.storeDependencies,
     $exps: formItemConfig.$exps,
+    $i18n: formItemConfig.$i18n,
+    $locales: formItemConfig.$locales,
   };
   return formItem;
 }
@@ -167,6 +169,8 @@ export function generateSearchFormItemForRelationProperty(framework: Framework, 
     rendererProps,
     storeDependencies: formItemConfig.storeDependencies,
     $exps: formItemConfig.$exps,
+    $i18n: formItemConfig.$i18n,
+    $locales: formItemConfig.$locales,
   };
   return formItem;
 }
@@ -210,6 +214,8 @@ function generateSearchFormItem(framework: Framework, logger: RuiRockLogger, ent
     rendererProps: formItemConfig.rendererProps,
     storeDependencies: formItemConfig.storeDependencies,
     $exps: formItemConfig.$exps,
+    $i18n: formItemConfig.$i18n,
+    $locales: formItemConfig.$locales,
   };
 
   return formItem;
