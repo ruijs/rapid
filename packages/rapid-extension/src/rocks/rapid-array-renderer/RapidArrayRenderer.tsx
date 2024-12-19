@@ -1,7 +1,7 @@
 import { MoveStyleUtils, Rock, RockConfig } from "@ruiapp/move-style";
 import RapidArrayRendererMeta from "./RapidArrayRendererMeta";
 import { RapidArrayRendererRockConfig } from "./rapid-array-renderer-types";
-import { map } from "lodash";
+import { get, set, map } from "lodash";
 import { renderRock } from "@ruiapp/react-renderer";
 
 export default {
@@ -14,6 +14,9 @@ export default {
     }
 
     if (item) {
+      if (!get(item, "$exps.value")) {
+        set(item, "$exps.value", "$slot.item");
+      }
       const rockConfig: RockConfig = {
         $id: props.$id,
         $type: "list",
