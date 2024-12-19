@@ -1,4 +1,4 @@
-import { RockPropExpressions, SimpleRockConfig } from "@ruiapp/move-style";
+import { RockI18nConfig, RockLocalesConfig, RockPropExpressions, SimpleRockConfig } from "@ruiapp/move-style";
 import { FindEntityOptions, RapidFieldType, RapidSearchFormItemFilterMode } from "../../rapid-types";
 import { FormItemProps } from "antd";
 
@@ -112,6 +112,10 @@ export type RapidFormItemConfig = {
    */
   storeDependencies?: string[];
   $exps?: RockPropExpressions;
+
+  $i18n?: RockI18nConfig;
+
+  $locales?: RockLocalesConfig;
 };
 
 export interface FilterFieldConfig {

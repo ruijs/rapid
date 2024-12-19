@@ -1,5 +1,5 @@
 import type { RockEvent, Rock, RockEventHandler, RuiRockLogger } from "@ruiapp/move-style";
-import { Framework, handleComponentEvent } from "@ruiapp/move-style";
+import { Framework, handleComponentEvent, MoveStyleUtils } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityFormMeta from "./RapidEntityFormMeta";
 import type { RapidEntityFormRockConfig } from "./rapid-entity-form-types";
@@ -111,6 +111,8 @@ function generateDataFormItemForOptionProperty(framework: Framework, option: Gen
     rendererProps,
     storeDependencies: formItemConfig.storeDependencies,
     $exps: formItemConfig.$exps,
+    $i18n: formItemConfig.$i18n,
+    $locales: formItemConfig.$locales,
   };
   return formItem;
 }
@@ -164,6 +166,8 @@ export function generateDataFormItemForRelationProperty(option: GenerateEntityFo
     rendererProps,
     storeDependencies: formItemConfig.storeDependencies,
     $exps: formItemConfig.$exps,
+    $i18n: formItemConfig.$i18n,
+    $locales: formItemConfig.$locales,
   };
   return formItem;
 }
@@ -200,6 +204,8 @@ function generateDataFormItem(framework: Framework, logger: RuiRockLogger, entit
     rendererProps: formItemConfig.rendererProps,
     storeDependencies: formItemConfig.storeDependencies,
     $exps: formItemConfig.$exps,
+    $i18n: formItemConfig.$i18n,
+    $locales: formItemConfig.$locales,
   };
 
   return formItem;
@@ -337,8 +343,8 @@ export default {
         if (isUndefined(formItemLabel)) {
           formItemLabel = getMetaPropertyLocaleName(framework, mainEntity, rpdField);
         }
-
         formItem.label = formItemLabel;
+        // MoveStyleUtils.localizeConfigProps(framework, logger, formItemConfig);
 
         if (formConfig.mode === "view") {
           formItem.required = false;
