@@ -20,7 +20,7 @@ export class RouteContext {
   params: Record<string, string>;
   routeConfig: any;
   #server: IRpdServer;
-  #dbTransactionClient: IDatabaseClient | null;
+  #dbTransactionClient: IDatabaseClient | undefined;
 
   static newSystemOperationContext(server: IRpdServer) {
     return new RouteContext(server);
@@ -28,7 +28,6 @@ export class RouteContext {
 
   constructor(server: IRpdServer, request?: RapidRequest) {
     this.#server = server;
-    this.#dbTransactionClient = null;
     this.databaseAccessor = server.getDatabaseAccessor();
     this.request = request;
     this.state = {};
@@ -68,7 +67,7 @@ export class RouteContext {
     this.response.redirect(url, status);
   }
 
-  getDbTransactionClient(): IDatabaseClient | null {
+  getDbTransactionClient(): IDatabaseClient | undefined {
     return this.#dbTransactionClient;
   }
 
