@@ -788,7 +788,7 @@ export type EntityWatchHandler<TEventName extends keyof RpdServerEventTypes> = (
 export type EntityWatchHandlerContext<TEventName extends keyof RpdServerEventTypes> = {
   server: IRpdServer;
   payload: RpdServerEventTypes[TEventName][1];
-  routerContext?: RouteContext;
+  routerContext: RouteContext;
 };
 
 export interface EntityWatchPluginInitOptions {

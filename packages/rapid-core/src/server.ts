@@ -445,6 +445,9 @@ export class RapidServer implements IRpdServer {
 
   async #handleEntityEvent(eventName: keyof RpdServerEventTypes, sender: RapidPlugin, payload: RpdEntityCreateEventPayload, routerContext?: RouteContext) {
     const { modelSingularCode, baseModelSingularCode } = payload;
+    if (!routerContext) {
+      routerContext = new RouteContext(this);
+    }
     const entityWatchHandlerContext: EntityWatchHandlerContext<typeof eventName> = {
       server: this,
       payload,
