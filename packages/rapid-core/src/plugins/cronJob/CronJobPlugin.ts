@@ -2,7 +2,7 @@ import * as cron from "cron";
 import type { RpdApplicationConfig } from "~/types";
 import pluginActionHandlers from "./actionHandlers";
 import pluginRoutes from "./routes";
-import { CronJobConfiguration, CronJobPluginInitOptions } from "./CronJobPluginTypes";
+import { CronJobConfiguration } from "~/types/cron-job-types";
 import {
   IRpdServer,
   RapidPlugin,
@@ -14,11 +14,9 @@ import { ActionHandlerContext } from "~/core/actionHandler";
 import { find } from "lodash";
 
 class CronJobPlugin implements RapidPlugin {
-  #jobs: CronJobConfiguration[];
+  #server: IRpdServer;
 
-  constructor(options: CronJobPluginInitOptions) {
-    this.#jobs = options.jobs || [];
-  }
+  constructor() {}
 
   get code(): string {
     return "cronJob";
@@ -40,7 +38,9 @@ class CronJobPlugin implements RapidPlugin {
     return [];
   }
 
-  async initPlugin(server: IRpdServer): Promise<any> {}
+  async initPlugin(server: IRpdServer): Promise<any> {
+    this.#server = server;
+  }
 
   async registerMiddlewares(server: IRpdServer): Promise<any> {}
 
@@ -69,7 +69,8 @@ class CronJobPlugin implements RapidPlugin {
   async onApplicationLoaded(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {}
 
   async onApplicationReady(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-    for (const job of this.#jobs) {
+    const cronJobs = server.listCronJobs();
+    for (const job of cronJobs) {
       const jobInstance = cron.CronJob.from({
         ...(job.jobOptions || {}),
         cronTime: job.cronTime,
@@ -83,7 +84,7 @@ class CronJobPlugin implements RapidPlugin {
   }
 
   getJobConfigurationByCode(code: string) {
-    return find(this.#jobs, (job) => job.code === code);
+    return find(this.#server.listCronJobs(), (job) => job.code === code);
   }
 
   async executeJob(server: IRpdServer, job: CronJobConfiguration) {

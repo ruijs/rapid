@@ -152,9 +152,7 @@ export async function startServer() {
       }),
       new EntityAccessControlPlugin(),
       new StateMachinePlugin(),
-      new CronJobPlugin({
-        jobs: cronJobs,
-      }),
+      new CronJobPlugin(),
       new MailPlugin({
         smtpServer: {
           host: rapidConfig.smtpHost,
@@ -167,6 +165,7 @@ export async function startServer() {
       new NotificationPlugin(),
     ],
     entityWatchers,
+    cronJobs,
   });
   await rapidServer.start();
 

@@ -117,6 +117,15 @@ class PluginManager {
     }
   }
 
+  /** 配置定时任务 */
+  async registerCronJobs() {
+    for (const plugin of this.#plugins) {
+      if (plugin.registerCronJobs) {
+        await plugin.registerCronJobs(this.#server);
+      }
+    }
+  }
+
   /** 在应用配置加载完成后调用。此时插件可以进行一些数据的初始化工作。 */
   async onApplicationLoaded(applicationConfig: RpdApplicationConfig) {
     for (const plugin of this.#plugins) {
