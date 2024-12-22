@@ -18,6 +18,9 @@ export function getMetaEntityLocaleDescription(framework: Framework, entity: Rap
 }
 
 export function getMetaEntityLocaleStringResource(framework: Framework, entity: RapidEntity, attributeName: string) {
+  if (!entity) {
+    return null;
+  }
   const localeStringResourceName = entity.i18n?.[attributeName] || `entities.${entity.code}.${attributeName}`;
   if (hasMetaLocaleStringResource(framework, localeStringResourceName)) {
     return getMetaLocaleStringResource(framework, localeStringResourceName);
@@ -34,6 +37,9 @@ export function getMetaPropertyLocaleDescription(framework: Framework, entity: R
 }
 
 export function getMetaPropertyLocaleStringResource(framework: Framework, entity: RapidEntity, property: RapidField, attributeName: string) {
+  if (!property) {
+    return null;
+  }
   const localeStringResourceName = property.i18n?.[attributeName] || `entities.${entity.code}.fields.${property.code}.${attributeName}`;
   if (hasMetaLocaleStringResource(framework, localeStringResourceName)) {
     return getMetaLocaleStringResource(framework, localeStringResourceName);
