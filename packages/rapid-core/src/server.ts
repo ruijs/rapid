@@ -33,6 +33,7 @@ import EntityManager from "./dataAccess/entityManager";
 import { bind, cloneDeep, find, forEach, merge, omit } from "lodash";
 import { Logger } from "./facilities/log/LogFacility";
 import { FacilityFactory } from "./core/facility";
+import { CronJobConfiguration } from "./types/cron-job-types";
 
 export interface InitServerOptions {
   logger: Logger;
@@ -43,6 +44,16 @@ export interface InitServerOptions {
   facilityFactories?: FacilityFactory[];
   plugins?: RapidPlugin[];
   entityWatchers?: EntityWatcherType[];
+
+  /**
+   * Application level cron jobs.
+   */
+  cronJobs?: CronJobConfiguration[];
+
+  /**
+   * All cron jobs of the server will be disabled if set `true`.
+   */
+  disableCronJobs?: boolean;
 }
 
 export class RapidServer implements IRpdServer {
@@ -69,6 +80,10 @@ export class RapidServer implements IRpdServer {
   #entityBeforeResponseEventEmitters: EventManager<Record<string, [EntityWatchHandlerContext<any>]>>;
   #entityWatchers: EntityWatcherType[];
   #appEntityWatchers: EntityWatcherType[];
+
+  #cronJobs: CronJobConfiguration[];
+  #appCronJobs: CronJobConfiguration[];
+  #disableCronJobs: boolean;
 
   #cachedEntityManager: Map<string, EntityManager>;
   #services: Map<string, any>;
@@ -120,6 +135,10 @@ export class RapidServer implements IRpdServer {
 
     this.#entityWatchers = [];
     this.#appEntityWatchers = options.entityWatchers || [];
+
+    this.#cronJobs = [];
+    this.#appCronJobs = options.cronJobs || [];
+    this.#disableCronJobs = !!options.disableCronJobs;
 
     this.#services = new Map();
 
@@ -298,6 +317,19 @@ export class RapidServer implements IRpdServer {
     return this.#services.get(name);
   }
 
+  registerCronJob(job: CronJobConfiguration): void {
+    const jobDuplicate = find(this.#cronJobs, (item: CronJobConfiguration) => item.code === job.code);
+    if (jobDuplicate) {
+      this.#logger.warn(`Duplicated cron job with code "${job.code}"`);
+    }
+
+    this.#cronJobs.push(job);
+  }
+
+  listCronJobs() {
+    return [...this.#cronJobs, ...this.#appCronJobs];
+  }
+
   async start() {
     this.#logger.info("Starting rapid server...");
     const pluginManager = this.#pluginManager;
@@ -335,6 +367,10 @@ export class RapidServer implements IRpdServer {
     }
 
     await this.configureApplication();
+
+    if (!this.#disableCronJobs) {
+      await pluginManager.registerCronJobs();
+    }
 
     this.#logger.info(`Rapid server ready.`);
     await pluginManager.onApplicationReady(this.#applicationConfig);

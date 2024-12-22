@@ -2,6 +2,7 @@ import { fixBigIntJSONSerialize } from "./polyfill";
 fixBigIntJSONSerialize();
 
 export * from "./types";
+export * from "./types/cron-job-types";
 export * from "./server";
 
 export * from "./core/facility";

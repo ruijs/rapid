@@ -21,6 +21,7 @@ import { Next, RouteContext } from "./routeContext";
 import EntityManager from "~/dataAccess/entityManager";
 import { Logger } from "~/facilities/log/LogFacility";
 import { FacilityFactory } from "./facility";
+import { CronJobConfiguration } from "~/types/cron-job-types";
 
 export interface IRpdServer {
   config: RapidServerConfig;
@@ -53,6 +54,9 @@ export interface IRpdServer {
   beforeRunRouteActions(handlerContext: ActionHandlerContext): Promise<void>;
   beforeCreateEntity(model: RpdDataModel, options: CreateEntityOptions): Promise<void>;
   beforeUpdateEntity(model: RpdDataModel, options: UpdateEntityByIdOptions, currentEntity: any): Promise<void>;
+
+  registerCronJob(job: CronJobConfiguration): void;
+  listCronJobs(): CronJobConfiguration[];
 }
 
 export type RpdConfigurationItemTypes = "integer" | "text" | "boolean" | "date" | "datetime" | "json";
@@ -130,6 +134,8 @@ export interface RapidPlugin {
   configureServices?: (server: IRpdServer, applicationConfig: RpdApplicationConfig) => Promise<any>;
   /** 配置路由 */
   configureRoutes?: (server: IRpdServer, applicationConfig: RpdApplicationConfig) => Promise<any>;
+  /** 注册定时任务 */
+  registerCronJobs?: (server: IRpdServer) => Promise<any>;
   /** 在应用配置加载完成后调用。此时插件可以进行一些数据的初始化工作。 */
   onApplicationLoaded?: (server: IRpdServer, applicationConfig: RpdApplicationConfig) => Promise<any>;
   /** 在应用准备完成后调用。此时服务器已经可以处理网络请求，可以对外广播消息。 */
