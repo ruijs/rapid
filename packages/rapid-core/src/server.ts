@@ -30,7 +30,7 @@ import { Next, RouteContext } from "./core/routeContext";
 import { RapidRequest } from "./core/request";
 import bootstrapApplicationConfig from "./bootstrapApplicationConfig";
 import EntityManager from "./dataAccess/entityManager";
-import { bind, cloneDeep, find, forEach, merge, omit } from "lodash";
+import { bind, cloneDeep, find, forEach, isString, merge, omit } from "lodash";
 import { Logger } from "./facilities/log/LogFacility";
 import { FacilityFactory } from "./core/facility";
 import { CronJobConfiguration } from "./types/cron-job-types";
@@ -443,15 +443,16 @@ export class RapidServer implements IRpdServer {
       await this.#pluginManager.onPrepareRouteContext(routeContext);
       await this.#buildedRoutes(routeContext, next);
     } catch (ex) {
-      this.#logger.error("handle request error:", ex);
-      response.json(
-        {
-          error: {
-            message: ex.message || ex,
-          },
-        },
-        500,
-      );
+      let error: any;
+      if (isString(ex)) {
+        error = {
+          message: ex,
+        };
+      } else {
+        error = { name: ex.name, message: ex.message, stack: ex.stack };
+      }
+      this.#logger.error("handle request error.", { error });
+      response.json({ error }, 500);
     }
 
     if (!response.status && !response.body) {
