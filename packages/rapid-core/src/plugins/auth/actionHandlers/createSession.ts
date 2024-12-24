@@ -2,26 +2,17 @@ import bcrypt from "bcrypt";
 import { setCookie } from "~/deno-std/http/cookie";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
-import LicenseService from "~/plugins/license/LicenseService";
-import { get } from "lodash";
 import AuthService from "../services/AuthService";
+import { validateLicense } from "~/helpers/licenseHelper";
 
 export const code = "createSession";
 
 export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: any) {
-  const { server, input, routerContext: routeContext } = ctx;
+  const { server, input, routerContext: routeContext, logger } = ctx;
   const { response } = routeContext;
   const { account, password } = input;
 
-  const licenseService = server.getService<LicenseService>("licenseService");
-  const license = licenseService.getLicense();
-  if (!license) {
-    throw new Error(`登录失败，无法获取系统授权信息。`);
-  }
-  if (licenseService.isExpired()) {
-    const expireDate = get(license.authority, "expireDate");
-    throw new Error(`登录失败，系统授权已于${expireDate}过期。`);
-  }
+  validateLicense(logger, server);
 
   const userDataAccessor = server.getDataAccessor({
     singularCode: "oc_user",
