@@ -367,6 +367,7 @@ export default function PageContent() {
   return (
     <div className="rui-play-main-container-body">
       <div style={{ padding: "16px", borderBottom: "1px solid #f0f0f0" }}>
+        Select language:
         <Select
           value={currentLang}
           onChange={handleLanguageChange}
