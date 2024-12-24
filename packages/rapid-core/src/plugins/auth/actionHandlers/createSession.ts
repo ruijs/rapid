@@ -12,7 +12,7 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
   const { response } = routeContext;
   const { account, password } = input;
 
-  validateLicense(logger, server);
+  validateLicense(server);
 
   const userDataAccessor = server.getDataAccessor({
     singularCode: "oc_user",
