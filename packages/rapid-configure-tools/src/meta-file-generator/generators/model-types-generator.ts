@@ -8,6 +8,8 @@ function convertSdRpdFieldTypeToTypeScriptType(field: RapidField, entities: Rapi
   switch (type) {
     case "text":
       return "string";
+    case "richText":
+      return "string";
     case "boolean":
       return "boolean";
     case "integer":
@@ -18,6 +20,8 @@ function convertSdRpdFieldTypeToTypeScriptType(field: RapidField, entities: Rapi
       return "number";
     case "double":
       return "number";
+    case "decimal":
+      return "number";
     case "date":
     case "time":
     case "datetime":
@@ -26,9 +30,18 @@ function convertSdRpdFieldTypeToTypeScriptType(field: RapidField, entities: Rapi
       return "Record<string, any>";
     case "option":
       return dataDictionary;
+    case "option[]":
+      return `${dataDictionary}[]`;
     case "relation":
+    case "relation[]":
       const targetCode = find(entities, { singularCode: targetSingularCode })?.code;
       return relation === "one" ? `Partial<${targetCode}>` : `Partial<${targetCode}>[]`;
+    case "file":
+    case "image":
+      return "FileOrImageFieldType";
+    case "file[]":
+    case "image[]":
+      return "FileOrImageFieldType[]";
   }
   return "any";
 }
@@ -78,6 +91,10 @@ function generateEntityTypes(metaDir: string) {
     codes.push(`  ${dictionaryCode},`);
   }
   codes.push(`} from "./data-dictionary-types";`);
+
+  codes.push();
+  codes.push(`export type FileOrImageFieldType = { key: string; name: string; size: number; type: string };`);
+  codes.push();
 
   // types of entities.
   for (const entity of entities) {

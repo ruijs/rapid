@@ -4,6 +4,7 @@ import type {
   PmProjectState,
   TaskState,
 } from "./data-dictionary-types";
+export type FileOrImageFieldType = { key: string; name: string; size: number; type: string };
 /**
  * 班次
  */
@@ -82,7 +83,7 @@ export interface OcDepartment {
   /**
    * 用户
    */
-  users?: any;
+  users?: Partial<OcUser>[];
   /**
    * 创建时间
    */
@@ -141,11 +142,11 @@ export interface OcRole {
   /**
    * 用户
    */
-  users?: any;
+  users?: Partial<OcUser>[];
   /**
    * 操作
    */
-  actions?: any;
+  actions?: Partial<SysAction>[];
   /**
    * 创建时间
    */
@@ -216,7 +217,7 @@ export interface OcUser {
   /**
    * 头像
    */
-  avatar?: any;
+  avatar?: FileOrImageFieldType;
   /**
    * 部门
    */
@@ -224,7 +225,7 @@ export interface OcUser {
   /**
    * 角色
    */
-  roles?: any;
+  roles?: Partial<OcRole>[];
   /**
    * 创建时间
    */
@@ -298,11 +299,11 @@ export interface PmLog {
   /**
    * 照片
    */
-  pictures?: any;
+  pictures?: FileOrImageFieldType[];
   /**
    * 附件
    */
-  attachments?: any;
+  attachments?: FileOrImageFieldType[];
   /**
    * 创建时间
    */
@@ -361,11 +362,11 @@ export interface PmProject {
   /**
    * 任务类型
    */
-  allowedTaskTypes?: any;
+  allowedTaskTypes?: TaskType[];
   /**
    * 任务
    */
-  tasks?: any;
+  tasks?: Partial<PmTask>[];
   /**
    * 创建时间
    */
@@ -546,7 +547,7 @@ export interface SysActionGroup {
   /**
    * 操作项
    */
-  items: any;
+  items: Partial<SysAction>[];
   /**
    * 创建时间
    */
