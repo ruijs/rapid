@@ -12,6 +12,7 @@ import {
 } from "~/core/server";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { find } from "lodash";
+import { validateLicense } from "~/helpers/licenseHelper";
 
 class CronJobPlugin implements RapidPlugin {
   #jobs: CronJobConfiguration[];
@@ -89,6 +90,8 @@ class CronJobPlugin implements RapidPlugin {
   async executeJob(server: IRpdServer, job: CronJobConfiguration) {
     const logger = server.getLogger();
     try {
+      validateLicense(server);
+
       let handlerContext: ActionHandlerContext = {
         logger,
         routerContext: null,
