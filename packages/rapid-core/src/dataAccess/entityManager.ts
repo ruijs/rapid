@@ -270,19 +270,30 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
         }
 
         if (isManyRelation) {
-          const relationLinks = await findManyRelationLinksViaLinkTable({
+          const selectRelationOptions: FindEntityFindManyRelationEntitiesOptions | undefined = relationOptions[relationProperty.code];
+          const { relationLinks, targetEntities } = await findManyRelationLinksViaLinkTable({
             server,
             routeContext,
             mainModel: relationModel,
             relationProperty,
             mainEntityIds: entityIds,
-            selectRelationOptions: relationOptions[relationProperty.code],
+            selectRelationOptions,
           });
 
+          // 如果查询关联实体时指定了orderBy，则按照targetEntities的顺序，否则按照relationLinks的顺序。
+          const selectRelationOrderByOptionsSpecified = selectRelationOptions && isObject(selectRelationOptions) && selectRelationOptions.orderBy;
           forEach(rows, (row: any) => {
-            row[relationProperty.code] = filter(relationLinks, (link: any) => {
-              return link[relationProperty.selfIdColumnName!] == row["id"];
-            }).map((link) => mapDbRowToEntity(server, relationModel, link.targetEntity, options.keepNonPropertyFields));
+            if (selectRelationOrderByOptionsSpecified) {
+              row[relationProperty.code] = filter(targetEntities, (targetEntity: any) => {
+                return find(relationLinks, (link: any) => {
+                  return link[relationProperty.selfIdColumnName!] == row["id"] && link[relationProperty.targetIdColumnName!] == targetEntity["id"];
+                });
+              }).map((targetEntity) => mapDbRowToEntity(server, relationModel, targetEntity, options.keepNonPropertyFields));
+            } else {
+              row[relationProperty.code] = filter(relationLinks, (link: any) => {
+                return link[relationProperty.selfIdColumnName!] == row["id"];
+              }).map((link) => mapDbRowToEntity(server, relationModel, link.targetEntity, options.keepNonPropertyFields));
+            }
           });
         }
       } else {
@@ -628,8 +639,8 @@ async function findManyRelationLinksViaLinkTable(options: FindManyRelationEntiti
     ORDER BY id
   `;
   const params = [mainEntityIds];
-  const links = await server.queryDatabaseObject(command, params, routeContext?.getDbTransactionClient());
-  const targetEntityIds = links.map((link) => link[relationProperty.targetIdColumnName!]);
+  const relationLinks = await server.queryDatabaseObject(command, params, routeContext?.getDbTransactionClient());
+  const targetEntityIds = relationLinks.map((link) => link[relationProperty.targetIdColumnName!]);
 
   const dataAccessor = server.getDataAccessor({
     namespace: relationModel.namespace,
@@ -672,11 +683,11 @@ async function findManyRelationLinksViaLinkTable(options: FindManyRelationEntiti
 
   const targetEntities = await findEntities(server, dataAccessor, findEntityOptions);
 
-  forEach(links, (link: any) => {
+  forEach(relationLinks, (link: any) => {
     link.targetEntity = find(targetEntities, (e: any) => e["id"] == link[relationProperty.targetIdColumnName!]);
   });
 
-  return links;
+  return { relationLinks, targetEntities };
 }
 
 async function findManyRelatedEntitiesViaIdPropertyCode(options: FindManyRelationEntitiesOptions) {
