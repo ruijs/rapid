@@ -91,7 +91,7 @@ class CronJobPlugin implements RapidPlugin {
   async executeJob(server: IRpdServer, job: CronJobConfiguration) {
     const logger = server.getLogger();
     try {
-      validateLicense(logger, server);
+      validateLicense(server);
 
       let handlerContext: ActionHandlerContext = {
         logger,
