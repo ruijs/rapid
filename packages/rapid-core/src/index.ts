@@ -15,6 +15,8 @@ export * from "./utilities/entityUtility";
 export * from "./utilities/jwtUtility";
 export * from "./utilities/timeUtility";
 
+export * from "./helpers/licenseHelper";
+
 export { mapDbRowToEntity } from "./dataAccess/entityMapper";
 
 export * as bootstrapApplicationConfig from "./bootstrapApplicationConfig";
