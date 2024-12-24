@@ -43,8 +43,9 @@ const isDevelopmentEnv = process.env.NODE_ENV === "development";
 const BUILD_DIR = path.join(process.cwd(), "build");
 
 export async function startServer() {
+  const logLevel = process.env.RAPID_LOG_LEVEL || (isDevelopmentEnv ? "debug" : "info");
   const logger = createAppLogger({
-    level: isDevelopmentEnv ? "debug" : "info",
+    level: logLevel,
   });
   const app = express();
 
