@@ -11,6 +11,7 @@ import RapidExtensionSetting from "../../RapidExtensionSetting";
 import { RapidEntityListFilterCache } from "../rapid-entity-search-form/RapidEntitySearchForm";
 import { parseRockExpressionFunc } from "../../utils/parse-utility";
 import { getExtensionLocaleStringResource, getMetaPropertyLocaleName } from "../../helpers/i18nHelper";
+import { getEntityPropertyByFieldNames } from "../../helpers/metaHelper";
 
 export default {
   onResolveState(props, state) {
@@ -132,21 +133,14 @@ export default {
       if (mainEntity) {
         const fieldName = column.fieldName || column.code;
         const fieldNameParts = fieldName.split(".");
-        rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, fieldNameParts[0]);
+        rpdField = getEntityPropertyByFieldNames(rapidAppDefinition.getAppDefinition(), mainEntity, fieldNameParts);
 
         if (!columnTitle && rpdField) {
           columnTitle = getMetaPropertyLocaleName(framework, mainEntity, rpdField);
         }
 
-        if (fieldNameParts.length > 1 && rpdField) {
-          const rpdRelationEntity = rapidAppDefinition.getEntityBySingularCode(rpdField.targetSingularCode);
-          if (rpdRelationEntity) {
-            rpdField = rapidAppDefinition.getEntityFieldByCode(rpdRelationEntity, fieldNameParts[1]);
-          }
-        }
-
         if (!rpdField) {
-          logger.warn(props, `Unknown field code '${column.code}'`);
+          logger.warn(props, `Unknown field name '${fieldName}'`);
         }
       }
 
