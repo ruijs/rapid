@@ -69,6 +69,18 @@ export function getEntityOwnProperty(model: RapidEntity, predicate: (item: Rapid
   return property;
 }
 
+export function getDataDictionaryByCode(appDef: AppDefinition, dataDictionaryCode: string) {
+  return find(appDef.dataDictionaries, (item) => item.code === dataDictionaryCode);
+}
+
+export function getEntityByCode(appDef: AppDefinition, entityCode: string) {
+  return find(appDef.entities, (item) => item.code === entityCode);
+}
+
+export function getEntityBySingularCode(appDef: AppDefinition, singularCode: string) {
+  return find(appDef.entities, (item) => item.singularCode === singularCode);
+}
+
 export function getEntityPropertyByFieldName(appDef: AppDefinition, model: RapidEntity, fieldName: string): RapidField | undefined {
   let property = getEntityPropertyByCode(appDef, model, fieldName);
   if (!property) {
@@ -80,4 +92,23 @@ export function getEntityPropertyByFieldName(appDef: AppDefinition, model: Rapid
   }
 
   return property;
+}
+
+export function getEntityPropertyByFieldNames(appDef: AppDefinition, model: RapidEntity, fieldNames: string[]): RapidField | undefined {
+  let result: RapidField | undefined;
+  for (let i = 0; i < fieldNames.length; i++) {
+    result = getEntityPropertyByFieldName(appDef, model, fieldNames[i]);
+    if (!result) {
+      return result;
+    }
+
+    if (!isRelationProperty(result)) {
+      return result;
+    }
+
+    // field type is `relation`
+    model = getEntityBySingularCode(appDef, result.targetSingularCode);
+  }
+
+  return result;
 }
