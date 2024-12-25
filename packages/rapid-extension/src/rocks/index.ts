@@ -64,6 +64,7 @@ import RapidDoubleColumnLayout from "./rapid-double-column-layout/RapidDoubleCol
 import RapidRichTextRenderer from "./rapid-rich-text-renderer/RichTextRenderer";
 import RapidRichTextEditor from "./rapid-rich-text-editor/RichTextEditor";
 import RapidToolbarModalButton from "./rapid-toolbar-modal-button/RapidToolbarModalButton";
+import RapidSecretTextRenderer from "./rapid-secret-text-renderer/RapidSecretTextRenderer";
 
 export default [
   RapidArrayRenderer,
@@ -96,6 +97,7 @@ export default [
   RapidPercentRenderer,
   RapidRadioListFormInput,
   RapidReferenceRenderer,
+  RapidSecretTextRenderer,
   RapidSelect,
   RapidTable,
   RapidTableAction,
