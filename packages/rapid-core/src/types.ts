@@ -338,6 +338,11 @@ export interface RpdDataModelProperty {
   linkSchema?: string;
 
   /**
+   * 数据字典编码。当类型为option时设置
+   */
+  dataDictionary?: string;
+
+  /**
    * 当删除实体时，针对关系属性的联动处理。
    */
   entityDeletingReaction?: RpdEntityDeleteRelationPropertyReaction;
