@@ -5,6 +5,7 @@ import { CopyOutlined, EyeInvisibleOutlined, EyeOutlined } from "@ant-design/ico
 import { Space, Tooltip } from "antd";
 import { RapidSecretTextRendererProps } from "./rapid-secret-text-renderer-types";
 import { message } from "antd";
+import { copyToClipboard } from "../../utils/clipboard-utility";
 
 function obfuscateText(text: string): string {
   // 如果文本长度小于等于6，全部替换成星号
@@ -33,8 +34,8 @@ export default {
     const tooltipHideOrigin = props.tooltipHideOrigin || "Hide";
     const tooltipCopy = props.tooltipCopy || "Copy";
 
-    const handleTextCopy = () => {
-      navigator.clipboard.writeText(value);
+    const handleTextCopy = async () => {
+      await copyToClipboard(value);
       message.success(messageCopySuccess || "Text copied.");
     };
 
