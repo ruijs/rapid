@@ -109,7 +109,7 @@ class CronJobPlugin implements RapidPlugin {
         await job.handler(handlerContext, job.handleOptions);
       }
     } catch (ex) {
-      logger.error("Cron job execution error: " + ex.message);
+      logger.error('Cron job "%s" execution error: %s', job.code, ex.message, { cronJobCode: job.code });
     }
   }
 }
