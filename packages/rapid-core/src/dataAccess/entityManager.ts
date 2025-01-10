@@ -1353,7 +1353,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
         if (updateRelationPropertiesOptions === true) {
           relationRemoveMode = "delete";
         } else {
-          relationRemoveMode = updateRelationPropertiesOptions.relationRemoveMode;
+          relationRemoveMode = updateRelationPropertiesOptions?.relationRemoveMode || "delete";
         }
         const relationModel = server.getModel({
           singularCode: property.targetSingularCode,
