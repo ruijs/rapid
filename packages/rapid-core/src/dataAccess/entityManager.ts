@@ -951,7 +951,10 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
       singularCode: property.targetSingularCode!,
     });
 
-    const relatedEntitiesToBeSaved = entity[property.code];
+    let relatedEntitiesToBeSaved = entity[property.code];
+    if (relatedEntitiesToBeSaved === null) {
+      relatedEntitiesToBeSaved = [];
+    }
     if (!isArray(relatedEntitiesToBeSaved)) {
       throw new Error(`Value of field '${property.code}' should be an array.`);
     }
@@ -1292,7 +1295,10 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
       singularCode: property.targetSingularCode!,
     });
 
-    const relatedEntitiesToBeSaved = changes[property.code];
+    let relatedEntitiesToBeSaved = changes[property.code];
+    if (relatedEntitiesToBeSaved === null) {
+      relatedEntitiesToBeSaved = [];
+    }
     if (!isArray(relatedEntitiesToBeSaved)) {
       throw new Error(`Value of field '${property.code}' should be an array.`);
     }
