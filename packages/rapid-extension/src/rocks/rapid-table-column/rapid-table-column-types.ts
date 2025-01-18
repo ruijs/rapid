@@ -79,6 +79,8 @@ export type RapidTableColumnConfig = {
   $i18n?: RockI18nConfig;
 
   $locales?: RockLocalesConfig;
+
+  children?: RapidTableColumnRockConfig[];
 };
 
 export interface RapidTableColumnRockConfig extends SimpleRockConfig, RapidTableColumnConfig {}

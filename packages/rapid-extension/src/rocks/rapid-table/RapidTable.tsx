@@ -1,4 +1,4 @@
-import { MoveStyleUtils, Rock, handleComponentEvent } from "@ruiapp/move-style";
+import { Framework, MoveStyleUtils, Rock, RockInstanceContext, RuiRockLogger, handleComponentEvent } from "@ruiapp/move-style";
 import { toRenderRockSlot, convertToEventHandlers, convertToSlotProps, renderRock } from "@ruiapp/react-renderer";
 import { Table, TableProps } from "antd";
 import { ColumnType } from "antd/lib/table/interface";
@@ -8,6 +8,7 @@ import { RapidTableRockConfig } from "./rapid-table-types";
 import { parseRockExpressionFunc } from "../../utils/parse-utility";
 import { memo } from "react";
 import VirtualTable from "./VirtualTable";
+import { RapidTableColumnRockConfig } from "../rapid-table-column/rapid-table-column-types";
 
 const ExpandedRowComponent = memo<Record<string, any>>((props) => {
   const { expandedRow, record, index, context } = props;
@@ -34,21 +35,35 @@ const ExpandedRowComponent = memo<Record<string, any>>((props) => {
   }) as any;
 });
 
+function convertRapidTableColumnToAntdTableColumn(
+  logger: RuiRockLogger,
+  framework: Framework,
+  context: RockInstanceContext,
+  column: RapidTableColumnRockConfig,
+) {
+  MoveStyleUtils.localizeConfigProps(framework, logger.getInternalLogger(), column);
+
+  if (column.children) {
+    return {
+      ...MoveStyleUtils.omitSystemRockConfigFields(column),
+      children: map(column.children, (childColumn) => convertRapidTableColumnToAntdTableColumn(logger, framework, context, childColumn)),
+    };
+  }
+
+  return {
+    ...MoveStyleUtils.omitSystemRockConfigFields(column),
+    dataIndex: (column.fieldName || column.code).split("."),
+    key: column.key || column.fieldName || column.code,
+    render: toRenderRockSlot({ context, slot: column.cell, rockType: column.$type, slotPropName: "cell" }),
+  } as ColumnType<any>;
+}
+
 export default {
   Renderer(context, props: RapidTableRockConfig) {
     const { framework, logger, page, scope } = context;
     const tableColumns = map(
       filter(props.columns, (column) => !column._hidden),
-      (column) => {
-        MoveStyleUtils.localizeConfigProps(framework, logger.getInternalLogger(), column);
-
-        return {
-          ...MoveStyleUtils.omitSystemRockConfigFields(column),
-          dataIndex: (column.fieldName || column.code).split("."),
-          key: column.key || column.fieldName || column.code,
-          render: toRenderRockSlot({ context, slot: column.cell, rockType: column.$type, slotPropName: "cell" }),
-        } as ColumnType<any>;
-      },
+      (column) => convertRapidTableColumnToAntdTableColumn(logger, framework, context, column),
     );
 
     // calculate total width of columns

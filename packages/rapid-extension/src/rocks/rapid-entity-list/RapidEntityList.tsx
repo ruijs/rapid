@@ -125,22 +125,19 @@ export default {
       tableColumnRocks.push(tableRowNumColumnRock);
     }
 
-    props.columns.forEach((column) => {
+    function autoConfigTableColumnToRockConfig(column) {
       let cell: RockConfig | RockConfig[] | null = null;
 
       let columnTitle = column.title;
       let rpdField: RapidField | undefined;
-      if (mainEntity) {
+      if (!columnTitle && mainEntity) {
         const fieldName = column.fieldName || column.code;
         const fieldNameParts = fieldName.split(".");
         rpdField = getEntityPropertyByFieldNames(rapidAppDefinition.getAppDefinition(), mainEntity, fieldNameParts);
-
-        if (!columnTitle && rpdField) {
-          columnTitle = getMetaPropertyLocaleName(framework, mainEntity, rpdField);
-        }
-
         if (!rpdField) {
           logger.warn(props, `Unknown field name '${fieldName}'`);
+        } else {
+          columnTitle = getMetaPropertyLocaleName(framework, mainEntity, rpdField);
         }
       }
 
@@ -149,6 +146,14 @@ export default {
           $self: column,
           $parent: props,
         });
+      }
+
+      if (column.children) {
+        return {
+          $type: "rapidTableColumn",
+          title: columnTitle,
+          children: map(column.children, (childColumn) => autoConfigTableColumnToRockConfig(childColumn)),
+        };
       }
 
       if (column.cell) {
@@ -219,6 +224,11 @@ export default {
         $type: "rapidTableColumn",
         cell,
       };
+      return tableColumnRock;
+    }
+
+    props.columns.forEach((column) => {
+      const tableColumnRock = autoConfigTableColumnToRockConfig(column);
       tableColumnRocks.push(tableColumnRock);
     });
 

@@ -30,6 +30,20 @@ import { getExtensionLocaleStringResource, getMetaEntityLocaleName, getMetaPrope
 
 const DEFAULT_PAGE_SIZE = 20;
 
+function getToolboxColumns(framework: Framework, mainEntity: RapidEntity, tableColumns: RapidTableColumnConfig[]) {
+  const toolboxColumns: any[] = [];
+
+  for (const tableColumn of tableColumns) {
+    if (tableColumn.children) {
+      continue;
+    }
+
+    toolboxColumns.push(getToolboxColumnConfig(framework, mainEntity, tableColumn));
+  }
+
+  return toolboxColumns;
+}
+
 function getToolboxColumnConfig(framework: Framework, mainEntity: RapidEntity, column: RapidTableColumnConfig) {
   let columnTitle = column.title;
   const fieldName = column.fieldName || column.code;
@@ -140,7 +154,7 @@ export default {
         $type: "rapidEntityListToolbox",
         $id: `${props.$id}_toolbox`,
         dataSourceCode,
-        columns: props.columns.map((column) => getToolboxColumnConfig(framework, mainEntity, column)),
+        columns: getToolboxColumns(framework, mainEntity, props.columns),
         config: props.toolbox || {
           columnCacheKey: props.entityCode || props.entityName,
         },
