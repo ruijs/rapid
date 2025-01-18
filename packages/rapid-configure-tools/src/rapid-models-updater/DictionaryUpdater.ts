@@ -30,7 +30,7 @@ export function newDictionaryUpdater(rapidConfigApi: AxiosInstance) {
     },
 
     isEntityChanged(inputEntity, remoteEntity) {
-      const changedFieldNames = detectChangedFields(inputEntity, remoteEntity, ["name", "valueType", "description", "locales"]);
+      const changedFieldNames = detectChangedFields(inputEntity, remoteEntity, ["name", "valueType", "description", "locales", "deprecated"]);
       if (changedFieldNames.length) {
         console.log(`${this.modelType} ${this.inputTitlePrinter(inputEntity)} changed with these fields:`, changedFieldNames);
       }

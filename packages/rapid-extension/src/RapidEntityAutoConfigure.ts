@@ -51,6 +51,7 @@ export function autoConfigureRapidField(sourceField: RapidField): RapidField {
     readonly: sourceField.readonly,
     i18n: sourceField.i18n,
     locales: sourceField.locales,
+    deprecated: sourceField.deprecated,
   };
   return field;
 }
@@ -92,6 +93,7 @@ export function autoConfigureRapidEntity(sourceEntity: RapidEntity, entityDefini
     pluralCode,
     dbSchema: sourceEntity.dbSchema,
     tableName,
+    deprecated: sourceEntity.deprecated,
 
     fields: autoConfigureRapidFields(sourceEntity, entityDefinitions),
   };
@@ -120,6 +122,7 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: 
       type: "integer",
       required: true,
       autoIncrement: sourceEntity.base ? false : true,
+      deprecated: false,
     },
   ];
 
@@ -137,6 +140,7 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: 
           i18n: {
             name: "common.createdAt",
           },
+          deprecated: false,
         },
         {
           name: "创建人",
@@ -149,6 +153,7 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: 
           i18n: {
             name: "common.createdBy",
           },
+          deprecated: false,
         },
         {
           name: "更新时间",
@@ -159,6 +164,7 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: 
           i18n: {
             name: "common.updatedAt",
           },
+          deprecated: false,
         },
         {
           name: "更新人",
@@ -171,6 +177,7 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: 
           i18n: {
             name: "common.updatedBy",
           },
+          deprecated: false,
         },
         {
           name: "删除时间",
@@ -181,6 +188,7 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: 
           i18n: {
             name: "common.deletedAt",
           },
+          deprecated: false,
         },
         {
           name: "删除人",
@@ -193,6 +201,7 @@ function autoConfigureRapidFields(sourceEntity: RapidEntity, entityDefinitions: 
           i18n: {
             name: "common.deletedBy",
           },
+          deprecated: false,
         },
       ];
 
