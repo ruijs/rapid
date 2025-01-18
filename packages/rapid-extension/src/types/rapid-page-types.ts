@@ -1,4 +1,4 @@
-import type { RockChildrenConfig, RockI18nConfig, RockLocalesConfig, RockPageEventSubscriptionConfig, StoreConfig } from "@ruiapp/move-style";
+import type { FunctionConfig, RockChildrenConfig, RockI18nConfig, RockLocalesConfig, RockPageEventSubscriptionConfig, StoreConfig } from "@ruiapp/move-style";
 import { RapidActionPermissionCheck } from "./rapid-assertion-types";
 //@ts-ignore
 import { DataFunctionArgs } from "@remix-run/node";
@@ -47,6 +47,8 @@ export type RapidPage = {
    * 本地化资源配置
    */
   $locales?: RockLocalesConfig;
+
+  functions?: FunctionConfig[];
 };
 
 export type RapidPageGenerator = {
