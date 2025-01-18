@@ -211,6 +211,12 @@ export interface RpdDataModel {
    * Configure the property code to save derived type for base entity.
    */
   derivedTypePropertyCode?: string;
+
+  /**
+   * Indicates whether the entity is deprecated.
+   */
+  deprecated?: boolean;
+
   /**
    * Configure the property code used to display the entity.
    */
@@ -285,6 +291,12 @@ export interface RpdDataModelProperty {
    * 字段类型。
    */
   type: RpdDataPropertyTypes;
+
+  /**
+   * Indicates whether the property is deprecated.
+   */
+  deprecated?: boolean;
+
   /**
    * 是否必须有值。默认为 false。
    */
@@ -437,6 +449,11 @@ export type RpdDataDictionary = {
    * 本地化资源
    */
   locales?: Record<string, RpdDataDictionaryLocale>;
+
+  /**
+   * Indicates whether the data dictionary is deprecated.
+   */
+  deprecated?: boolean;
 };
 
 export type RpdDataDictionaryLocale = {
@@ -492,6 +509,11 @@ export type RpdDataDictionaryEntry = {
    * 本地化资源
    */
   locales?: Record<string, RpdDataDictionaryEntryLocale>;
+
+  /**
+   * Indicates whether the data dictionary entry is deprecated.
+   */
+  deprecated?: boolean;
 };
 
 /**

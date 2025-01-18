@@ -56,6 +56,7 @@ export function newPropertyUpdater(rapidConfigApi: AxiosInstance) {
         "entityDeletingReaction",
         "readonly",
         "locales",
+        "deprecated",
       ]);
       if (changedFieldNames.length) {
         console.log(`${this.modelType} ${this.inputTitlePrinter(inputEntity)} changed with these fields:`, changedFieldNames);
