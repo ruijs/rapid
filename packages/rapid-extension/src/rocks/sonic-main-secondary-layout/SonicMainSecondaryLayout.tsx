@@ -11,6 +11,7 @@ export default {
       handleComponentEvent("onSelectedIdsChange", message.framework, message.page as any, rockInstance._scope, props, props.main.onSelectedIdsChange, [
         {
           selectedIds: message.payload.selectedIds,
+          selectedRecords: message.payload.selectedRecords,
         },
       ]);
     }
