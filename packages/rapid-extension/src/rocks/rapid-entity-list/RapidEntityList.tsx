@@ -130,14 +130,16 @@ export default {
 
       let columnTitle = column.title;
       let rpdField: RapidField | undefined;
-      if (!columnTitle && mainEntity) {
+      if (mainEntity) {
         const fieldName = column.fieldName || column.code;
         const fieldNameParts = fieldName.split(".");
         rpdField = getEntityPropertyByFieldNames(rapidAppDefinition.getAppDefinition(), mainEntity, fieldNameParts);
         if (!rpdField) {
           logger.warn(props, `Unknown field name '${fieldName}'`);
         } else {
-          columnTitle = getMetaPropertyLocaleName(framework, mainEntity, rpdField);
+          if (!columnTitle) {
+            columnTitle = getMetaPropertyLocaleName(framework, mainEntity, rpdField);
+          }
         }
       }
 
