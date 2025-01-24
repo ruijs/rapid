@@ -126,12 +126,20 @@ export default {
     }
 
     function autoConfigTableColumnToRockConfig(column) {
+      if (column.$exps) {
+        page.interpreteComponentProperties(null, column as any, {
+          $self: column,
+          $parent: props,
+        });
+      }
+
       let cell: RockConfig | RockConfig[] | null = null;
 
       let columnTitle = column.title;
+
       let rpdField: RapidField | undefined;
       if (mainEntity) {
-        const fieldName = column.fieldName || column.code;
+        const fieldName = column.fieldName || column.code || "";
         const fieldNameParts = fieldName.split(".");
         rpdField = getEntityPropertyByFieldNames(rapidAppDefinition.getAppDefinition(), mainEntity, fieldNameParts);
         if (!rpdField) {
@@ -141,13 +149,6 @@ export default {
             columnTitle = getMetaPropertyLocaleName(framework, mainEntity, rpdField);
           }
         }
-      }
-
-      if (column.$exps) {
-        page.interpreteComponentProperties(null, column as any, {
-          $self: column,
-          $parent: props,
-        });
       }
 
       if (column.children) {
