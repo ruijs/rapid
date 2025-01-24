@@ -66,7 +66,7 @@ export function autoConfigureRapidField(sourceField: RapidField): RapidField {
  * - 当没有指定`singularCode`时，将其自动配置为原始实体定义`code`字段的snake_case形式。
  * - 当没有指定`pluralCode`时，将其自动配置为实体`singularCode`字段的复数形式。
  * - 当没有指定`tableName`时，将其自动配置为实体`pluralCode`字段。
- * - 当没有指定`displayPropertyName`时，将尝试配置为code为`name`，`title`，`label`或`text`的属性。
+ * - 当没有指定`displayPropertyCode`时，将尝试配置为code为`name`，`title`，`label`或`text`的属性。
  */
 export function autoConfigureRapidEntity(sourceEntity: RapidEntity, entityDefinitions: RapidEntity[]): RapidEntity {
   const singularCode = sourceEntity.singularCode || snakeCase(sourceEntity.code);
@@ -80,7 +80,7 @@ export function autoConfigureRapidEntity(sourceEntity: RapidEntity, entityDefini
       "base",
       "derivedType",
       "derivedTypePropertyCode",
-      "displayPropertyName",
+      "displayPropertyCode",
       "indexes",
       "permissionPolicies",
       "softDelete",
