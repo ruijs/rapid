@@ -16,6 +16,10 @@ export default {
 
 export { default as rapidAppDefinition } from "./rapidAppDefinition";
 
+export * from "./helpers/entityStoreHelper";
+export * from "./helpers/i18nHelper";
+export * from "./helpers/metaHelper";
+
 export { autoConfigureRapidEntity } from "./RapidEntityAutoConfigure";
 export * from "./utils/format-utility";
 export * from "./utils/storage-utility";
