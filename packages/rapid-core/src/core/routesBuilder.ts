@@ -54,6 +54,8 @@ export async function buildRoutes(server: IRpdServer, applicationConfig: RpdAppl
         input,
       });
 
+      routerContext.response.status = 200;
+
       let handlerContext: ActionHandlerContext = {
         logger,
         routerContext,
