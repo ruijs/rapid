@@ -70,7 +70,7 @@ export class RapidResponse {
   getResponse() {
     if (!this.#response) {
       this.#response = new Response(this.body, {
-        status: this.status || (this.body ? 200 : 404),
+        status: this.status || 200,
         headers: this.headers,
       });
     }
