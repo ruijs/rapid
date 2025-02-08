@@ -1,7 +1,7 @@
 import { EventEmitter, type Rock, type RockInstanceContext } from "@ruiapp/move-style";
 import SonicEntityTableSelectMeta from "./SonicEntityTableSelectMeta";
 import type { SonicEntityTableSelectRockConfig } from "./sonic-entity-table-select-types";
-import { convertToEventHandlers } from "@ruiapp/react-renderer";
+import { convertToEventHandlers, renderRock } from "@ruiapp/react-renderer";
 import { Table, Select, Input, TableProps, Empty, Spin } from "antd";
 import { debounce, filter, forEach, get, isArray, isFunction, isObject, isPlainObject, isString, last, omit, pick, set, split } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -37,7 +37,7 @@ export default {
   },
 
   Renderer(context, props: SonicEntityTableSelectRockConfig) {
-    const { framework } = context;
+    const { framework, page } = context;
     const entity = rapidAppDefinition.getEntityByCode(props.entityCode);
     const displayPropertyCode = entity.displayPropertyCode || "name";
     const displayProperty = getEntityPropertyByCode(rapidAppDefinition.getAppDefinition(), entity, displayPropertyCode);
@@ -185,25 +185,43 @@ export default {
 
     let tableColumns: TableProps<any>["columns"] = [];
     let tableWidth = 0;
-    (columns || []).forEach((col) => {
-      tableWidth += col.width || 100;
+    (columns || []).forEach((column) => {
+      tableWidth += column.width || 100;
       tableColumns.push({
-        title: col.title,
-        dataIndex: col.code,
-        width: col.width,
-        render: (text: any, record: any) => {
-          if (isFunction(col.render)) {
-            return col.render(record);
+        title: column.title,
+        dataIndex: column.code,
+        width: column.width,
+        render: (value: any, record: any) => {
+          if (column.$exps) {
+            page.interpreteComponentProperties(null, column as any, {
+              $self: column,
+              $parent: props,
+              $slot: { value, record },
+            });
           }
 
-          if (isString(col.render)) {
-            return context.page.interpreteExpression(col.render, {
+          if (isFunction(column.render)) {
+            return column.render(record);
+          }
+
+          if (isString(column.render)) {
+            return context.page.interpreteExpression(column.render, {
               record,
               $scope: context.scope,
             });
           }
 
-          return col.format ? replaceLabel(col.format, record) : get(record, col.code);
+          if (column.rendererType) {
+            return renderRock({
+              context,
+              rockConfig: {
+                $type: column.rendererType,
+                ...column.rendererProps,
+              },
+            });
+          }
+
+          return column.format ? replaceLabel(column.format, record) : get(record, column.code);
         },
       });
     });

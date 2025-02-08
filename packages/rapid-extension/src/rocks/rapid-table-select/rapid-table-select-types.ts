@@ -1,4 +1,4 @@
-import type { RockEventHandlerConfig, RockPropExpressions, SimpleRockConfig } from "@ruiapp/move-style";
+import type { RockEventHandlerConfig, RockExpsConfig, RockPropExpressions, SimpleRockConfig } from "@ruiapp/move-style";
 import { ReactNode } from "react";
 import { FindEntityOptions } from "../../rapid-types";
 import { FilterFieldConfig } from "../rapid-form-item/rapid-form-item-types";
@@ -10,6 +10,17 @@ export interface RapidTableSelectColumn {
   fixed?: "left" | "right";
   format?: string;
   render?: string | ((record: any) => ReactNode);
+  /**
+   * 渲染器类型
+   */
+  rendererType?: string;
+
+  /**
+   * 渲染器属性
+   */
+  rendererProps?: Record<string, any>;
+
+  $exps?: RockExpsConfig;
 }
 
 export interface RapidTableSelectRockConfig extends SimpleRockConfig {
