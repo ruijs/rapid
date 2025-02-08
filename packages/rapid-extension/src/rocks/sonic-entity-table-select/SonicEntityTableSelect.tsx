@@ -3,7 +3,7 @@ import SonicEntityTableSelectMeta from "./SonicEntityTableSelectMeta";
 import type { SonicEntityTableSelectRockConfig } from "./sonic-entity-table-select-types";
 import { convertToEventHandlers, renderRock } from "@ruiapp/react-renderer";
 import { Table, Select, Input, TableProps, Empty, Spin } from "antd";
-import { debounce, filter, forEach, get, isArray, isFunction, isObject, isPlainObject, isString, last, omit, pick, set, split } from "lodash";
+import { debounce, filter, forEach, get, isArray, isFunction, isObject, isPlainObject, isString, isUndefined, last, omit, pick, set, split } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMergeState } from "../../hooks/use-merge-state";
 import rapidApi from "../../rapidApi";
@@ -52,16 +52,22 @@ export default {
     const {
       listValueFieldName = "id",
       listTextFieldName = defaultDisplayField,
-      dropdownMatchSelectWidth = 360,
       listTextFormat,
       pageSize = 20,
       columns = [{ title: defaultDisplayTitle, code: defaultDisplayField, width: 120 }],
       listDataSourceCode,
       listFilterFields = [defaultDisplayField],
+      filterDisabled,
       allowClear,
       disabled,
       placeholder,
+      tableHeight = 400,
     } = props;
+
+    let { dropdownMatchSelectWidth } = props;
+    if (isUndefined(dropdownMatchSelectWidth)) {
+      dropdownMatchSelectWidth = 360;
+    }
 
     const isMultiple = props.mode === "multiple";
 
@@ -141,6 +147,17 @@ export default {
     }, [props.entityCode, currentState.offset, currentState.reloadKey, debouncedKeyword]);
 
     const getLabel = (record: Record<string, any>) => {
+      if (props.labelRendererType) {
+        return renderRock({
+          context,
+          rockConfig: {
+            $type: props.labelRendererType,
+            ...props.labelRendererProps,
+            value: record,
+          },
+        });
+      }
+
       if (!listTextFormat) {
         return get(record, listTextFieldName);
       }
@@ -290,8 +307,8 @@ export default {
         dropdownMatchSelectWidth={dropdownMatchSelectWidth}
         dropdownRender={(menu) => {
           return (
-            <div>
-              {listFilterFields?.length ? (
+            <>
+              {!filterDisabled && listFilterFields?.length ? (
                 <div className="pm-table-selector--toolbar">
                   <Input
                     allowClear
@@ -312,7 +329,7 @@ export default {
                   <Table
                     size="small"
                     rowKey={(record) => get(record, listValueFieldName)}
-                    scroll={{ x: tableWidth, y: 200 }}
+                    scroll={{ x: tableWidth, y: tableHeight }}
                     columns={tableColumns}
                     dataSource={data.list || []}
                     rowClassName="pm-table-row"
@@ -348,7 +365,7 @@ export default {
                   />
                 )}
               </Spin>
-            </div>
+            </>
           );
         }}
       />
