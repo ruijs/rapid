@@ -1,4 +1,4 @@
-import { RockChildrenConfig, RockI18nConfig, RockLocalesConfig, RockPropExpressions, SimpleRockConfig } from "@ruiapp/move-style";
+import { RockChildrenConfig, RockI18nConfig, RockLocalesConfig, RockExpsConfig, SimpleRockConfig } from "@ruiapp/move-style";
 import { RapidFieldType } from "../../types/rapid-entity-types";
 
 /**
@@ -74,7 +74,7 @@ export type RapidTableColumnConfig = {
 
   cell?: RockChildrenConfig;
 
-  $exps?: RockPropExpressions;
+  $exps?: RockExpsConfig;
 
   $i18n?: RockI18nConfig;
 

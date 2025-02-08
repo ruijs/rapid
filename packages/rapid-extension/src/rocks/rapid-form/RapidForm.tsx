@@ -6,6 +6,7 @@ import { assign, each, get, mapValues, trim } from "lodash";
 import { Form, message as antdMessage } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { parseRockExpressionFunc } from "../../utils/parse-utility";
+import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 
 export default {
   $type: "rapidForm",
@@ -48,6 +49,11 @@ export default {
 
     // 当前主要是触发 rerender
     const [currentFormData, setCurrentFormData] = useState<Record<string, any>>({});
+
+    if (!props.items) {
+      const errorRockConfig = generateRockConfigOfError(new Error(`RapidFormConfig.items are required.`));
+      return renderRock({ context, rockConfig: errorRockConfig });
+    }
 
     const dataFormItemRocks: RockConfig[] = [];
     if (props.items) {

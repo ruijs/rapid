@@ -13,6 +13,7 @@ import {
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { find } from "lodash";
 import { validateLicense } from "~/helpers/licenseHelper";
+import { RouteContext } from "~/core/routeContext";
 
 class CronJobPlugin implements RapidPlugin {
   #server: IRpdServer;
@@ -95,7 +96,7 @@ class CronJobPlugin implements RapidPlugin {
 
       let handlerContext: ActionHandlerContext = {
         logger,
-        routerContext: null,
+        routerContext: RouteContext.newSystemOperationContext(server),
         next: null,
         server,
         applicationConfig: null,
