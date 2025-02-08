@@ -219,19 +219,21 @@ export default {
       return;
     }
 
-    for (const formItem of props.items) {
-      const field = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItem.code);
-      if (field) {
-        if (!formItem.hasOwnProperty("required")) {
-          // 使用字段的必填设置作为表单项的必填设置
-          formItem.required = field.required;
+    if (props.items) {
+      for (const formItem of props.items) {
+        const field = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItem.code);
+        if (field) {
+          if (!formItem.hasOwnProperty("required")) {
+            // 使用字段的必填设置作为表单项的必填设置
+            formItem.required = field.required;
+          }
         }
-      }
 
-      let fieldType = formItem.valueFieldType || field?.type || "text";
-      if (formItem.type === "auto") {
-        // 根据字段的类型选择合适的表单项类型
-        formItem.type = fieldTypeToFormItemTypeMap[fieldType] || "text";
+        let fieldType = formItem.valueFieldType || field?.type || "text";
+        if (formItem.type === "auto") {
+          // 根据字段的类型选择合适的表单项类型
+          formItem.type = fieldTypeToFormItemTypeMap[fieldType] || "text";
+        }
       }
     }
 
