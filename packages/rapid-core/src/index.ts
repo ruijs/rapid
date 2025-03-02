@@ -12,6 +12,12 @@ export * from "./core/server";
 export * from "./core/http-types";
 export * from "./core/actionHandler";
 
+export { default as DataAccessor } from "./dataAccess/dataAccessor";
+export * from "./dataAccess/dataAccessor";
+
+export { default as EntityManager } from "./dataAccess/entityManager";
+export * from "./dataAccess/entityManager";
+
 export * from "./utilities/accessControlUtility";
 export * from "./utilities/entityUtility";
 export * from "./utilities/jwtUtility";
