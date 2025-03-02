@@ -26,14 +26,23 @@ export default {
     };
 
     const onModalOk: RockEventHandlerScript["script"] = (event: RockEvent) => {
-      const codeContent = cmdsEditor.current.getCodeContent();
-      try {
-        var value = JSON.parse(codeContent);
-        setCodeEditorVisible(false);
-        handleComponentEvent("onChange", framework, page, scope, props, onChange, [value]);
-      } catch (ex) {
-        logger.error(props, "Invalid JSON string.", { error: ex });
+      let codeContent = cmdsEditor.current.getCodeContent();
+      let value: any;
+      if (codeContent) {
+        codeContent = codeContent.trim();
       }
+      if (codeContent) {
+        try {
+          value = JSON.parse(codeContent);
+        } catch (ex) {
+          logger.error(props, "Invalid JSON string.", { error: ex });
+        }
+      } else {
+        value = null;
+      }
+
+      setCodeEditorVisible(false);
+      handleComponentEvent("onChange", framework, page, scope, props, onChange, [value]);
     };
 
     const onModalCancel: RockEventHandlerScript["script"] = (event: RockEvent) => {
