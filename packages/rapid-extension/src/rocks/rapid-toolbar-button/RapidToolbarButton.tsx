@@ -10,10 +10,11 @@ export default {
 
   Renderer(context, props: RapidToolbarButtonRockConfig) {
     const { framework } = context;
-    const { onAction, confirmText } = props;
+    const { onAction, confirmText, tooltipTitle, tooltipColor } = props;
     const actionEventName = props.actionEventName || "onClick";
 
-    const rockConfig: RockConfig = {
+    const buttonRockConfig: RockConfig = {
+      $id: `${props.$id}-button`,
       $type: "antdButton",
       type: props.actionStyle,
       danger: !!props.danger,
@@ -32,13 +33,13 @@ export default {
     };
 
     if (props.actionType === "pageLink") {
-      rockConfig.href = `/pages/${props.pageCode}`;
+      buttonRockConfig.href = `/pages/${props.pageCode}`;
     } else if (props.actionType === "link") {
-      rockConfig.href = props.url;
+      buttonRockConfig.href = props.url;
     }
 
     if (onAction) {
-      rockConfig[actionEventName] = [
+      buttonRockConfig[actionEventName] = [
         {
           $action: "script",
           script: (event: RockEvent) => {
@@ -58,7 +59,19 @@ export default {
         },
       ];
     }
-    return renderRock({ context, rockConfig });
+
+    let toolTipRockConfig: RockConfig | null = null;
+    if (tooltipTitle) {
+      toolTipRockConfig = {
+        $id: `${props.$id}-tooltip`,
+        $type: "antdTooltip",
+        title: tooltipTitle,
+        color: tooltipColor,
+        children: buttonRockConfig,
+      };
+    }
+
+    return renderRock({ context, rockConfig: toolTipRockConfig || buttonRockConfig });
   },
 
   ...RapidToolbarMeta,
