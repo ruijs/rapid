@@ -20,7 +20,12 @@ export type RapidActionBase = {
   /**
    * 提示文字
    */
-  tip?: string;
+  tooltipTitle?: string;
+
+  /**
+   * 提示颜色
+   */
+  tooltipColor?: string;
 
   /**
    * 触发onAction事件的事件名，一般为onClick。
@@ -73,7 +78,12 @@ export type RapidRecordActionBase = {
   /**
    * 提示文字
    */
-  tip?: string;
+  tooltipTitle?: string;
+
+  /**
+   * 提示颜色
+   */
+  tooltipColor?: string;
 
   /**
    * 需求描述
