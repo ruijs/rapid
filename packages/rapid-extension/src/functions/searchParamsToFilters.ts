@@ -59,17 +59,14 @@ export function parseConfigToFilters(filterConfigs: FilterFieldConfig[], value: 
 
       c.operator = "between";
 
-      value = [
-        value[0] && rangeUnit ? moment(value[0]).startOf(rangeUnit) : value[0],
-        value[1] && rangeUnit ? moment(value[1]).startOf(rangeUnit) : value[1],
-      ];
+      value = [value[0] && rangeUnit ? moment(value[0]).startOf(rangeUnit) : value[0], value[1] && rangeUnit ? moment(value[1]).startOf(rangeUnit) : value[1]];
     }
 
     filters.push({
       field: c.field,
       operator: c.operator,
       itemType: c.itemType,
-      value,
+      value: (c as any).value || value,
     });
   });
 

@@ -79,19 +79,23 @@ export default {
       };
 
       if (currentState.keyword && listFilterFields?.length) {
-        params.filters = [
-          {
-            operator: "or",
-            filters: listFilterFields.map((field) => {
-              if (isString(field)) {
-                const filterCodes = split(field, ".");
-                return parseSelectedRecordFilters(filterCodes, "contains", currentState.keyword)[0];
-              } else if (isObject(field)) {
-                return parseConfigToFilters([field], currentState.keyword)[0];
-              }
-            }),
-          },
-        ];
+        const filters = listFilterFields.map((field) => {
+          if (isString(field)) {
+            const filterCodes = split(field, ".");
+            return parseSelectedRecordFilters(filterCodes, "contains", currentState.keyword)[0];
+          } else if (isObject(field)) {
+            return parseConfigToFilters([field], currentState.keyword)[0];
+          }
+        });
+        params.filters =
+          filters.length > 1
+            ? [
+                {
+                  operator: "or",
+                  filters,
+                },
+              ]
+            : filters;
       }
 
       apiIns.request(params);
