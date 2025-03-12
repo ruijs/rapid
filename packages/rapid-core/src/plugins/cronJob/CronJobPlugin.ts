@@ -77,8 +77,7 @@ class CronJobPlugin implements RapidPlugin {
         ...(job.jobOptions || {}),
         cronTime: job.cronTime,
         onTick: async () => {
-          server.getLogger().info(`Executing cron job '${job.code}'...`);
-          await this.executeJob(server, job);
+          await this.tryExecuteJob(server, job);
         },
       });
       jobInstance.start();
@@ -89,28 +88,36 @@ class CronJobPlugin implements RapidPlugin {
     return find(this.#server.listCronJobs(), (job) => job.code === code);
   }
 
+  async tryExecuteJob(server: IRpdServer, job: CronJobConfiguration) {
+    const logger = server.getLogger();
+    logger.info(`Executing cron job '${job.code}'...`);
+
+    try {
+      await this.executeJob(server, job);
+      logger.info(`Completed cron job '${job.code}'...`);
+    } catch (ex: any) {
+      logger.error('Cron job "%s" execution error: %s', job.code, ex.message, { cronJobCode: job.code });
+    }
+  }
+
   async executeJob(server: IRpdServer, job: CronJobConfiguration) {
     const logger = server.getLogger();
-    try {
-      validateLicense(server);
+    validateLicense(server);
 
-      let handlerContext: ActionHandlerContext = {
-        logger,
-        routerContext: RouteContext.newSystemOperationContext(server),
-        next: null,
-        server,
-        applicationConfig: null,
-        input: null,
-      };
+    let handlerContext: ActionHandlerContext = {
+      logger,
+      routerContext: RouteContext.newSystemOperationContext(server),
+      next: null,
+      server,
+      applicationConfig: null,
+      input: null,
+    };
 
-      if (job.actionHandlerCode) {
-        const actionHandler = server.getActionHandlerByCode(job.code);
-        await actionHandler(handlerContext, job.handleOptions);
-      } else {
-        await job.handler(handlerContext, job.handleOptions);
-      }
-    } catch (ex) {
-      logger.error('Cron job "%s" execution error: %s', job.code, ex.message, { cronJobCode: job.code });
+    if (job.actionHandlerCode) {
+      const actionHandler = server.getActionHandlerByCode(job.code);
+      await actionHandler(handlerContext, job.handleOptions);
+    } else {
+      await job.handler(handlerContext, job.handleOptions);
     }
   }
 }
