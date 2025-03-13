@@ -1,6 +1,7 @@
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RunCronJobActionHandlerOptions, RunCronJobInput } from "../CronJobPluginTypes";
 import type CronJobPlugin from "../CronJobPlugin";
+import CronJobService from "../services/CronJobService";
 
 export const code = "runCronJob";
 
@@ -18,12 +19,13 @@ export async function handler(plugin: CronJobPlugin, ctx: ActionHandlerContext, 
     throw new Error(`Cron job code is required.`);
   }
 
-  const job = plugin.getJobConfigurationByCode(input.code);
+  const cronJobService = server.getService<CronJobService>("cronJobService");
+  const job = cronJobService.getJobConfigurationByCode(input.code);
   if (!job) {
     throw new Error(`Cron job with code '${input.code}' was not found.`);
   }
 
-  await plugin.executeJob(server, job);
+  await cronJobService.executeJob(job);
 
   response.json({});
 }

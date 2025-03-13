@@ -1,8 +1,6 @@
-import * as cron from "cron";
 import type { RpdApplicationConfig } from "~/types";
 import pluginActionHandlers from "./actionHandlers";
 import pluginRoutes from "./routes";
-import { CronJobConfiguration } from "~/types/cron-job-types";
 import {
   IRpdServer,
   RapidPlugin,
@@ -10,13 +8,11 @@ import {
   RpdServerPluginConfigurableTargetOptions,
   RpdServerPluginExtendingAbilities,
 } from "~/core/server";
-import { ActionHandlerContext } from "~/core/actionHandler";
-import { find } from "lodash";
-import { validateLicense } from "~/helpers/licenseHelper";
-import { RouteContext } from "~/core/routeContext";
+import CronJobService from "./services/CronJobService";
 
 class CronJobPlugin implements RapidPlugin {
   #server: IRpdServer;
+  #cronJobService!: CronJobService;
 
   constructor() {}
 
@@ -64,6 +60,11 @@ class CronJobPlugin implements RapidPlugin {
 
   async configureModelProperties(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {}
 
+  async configureServices(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
+    this.#cronJobService = new CronJobService(server);
+    server.registerService("cronJobService", this.#cronJobService);
+  }
+
   async configureRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
     server.appendApplicationConfig({ routes: pluginRoutes });
   }
@@ -71,54 +72,7 @@ class CronJobPlugin implements RapidPlugin {
   async onApplicationLoaded(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {}
 
   async onApplicationReady(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-    const cronJobs = server.listCronJobs();
-    for (const job of cronJobs) {
-      const jobInstance = cron.CronJob.from({
-        ...(job.jobOptions || {}),
-        cronTime: job.cronTime,
-        onTick: async () => {
-          await this.tryExecuteJob(server, job);
-        },
-      });
-      jobInstance.start();
-    }
-  }
-
-  getJobConfigurationByCode(code: string) {
-    return find(this.#server.listCronJobs(), (job) => job.code === code);
-  }
-
-  async tryExecuteJob(server: IRpdServer, job: CronJobConfiguration) {
-    const logger = server.getLogger();
-    logger.info(`Executing cron job '${job.code}'...`);
-
-    try {
-      await this.executeJob(server, job);
-      logger.info(`Completed cron job '${job.code}'...`);
-    } catch (ex: any) {
-      logger.error('Cron job "%s" execution error: %s', job.code, ex.message, { cronJobCode: job.code });
-    }
-  }
-
-  async executeJob(server: IRpdServer, job: CronJobConfiguration) {
-    const logger = server.getLogger();
-    validateLicense(server);
-
-    let handlerContext: ActionHandlerContext = {
-      logger,
-      routerContext: RouteContext.newSystemOperationContext(server),
-      next: null,
-      server,
-      applicationConfig: null,
-      input: null,
-    };
-
-    if (job.actionHandlerCode) {
-      const actionHandler = server.getActionHandlerByCode(job.code);
-      await actionHandler(handlerContext, job.handleOptions);
-    } else {
-      await job.handler(handlerContext, job.handleOptions);
-    }
+    this.#cronJobService.reloadJobs();
   }
 }
 
