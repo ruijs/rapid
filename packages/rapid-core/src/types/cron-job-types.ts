@@ -12,6 +12,11 @@ export interface CronJobConfiguration {
   description?: string;
 
   /**
+   * 是否禁用
+   */
+  disabled?: boolean;
+
+  /**
    * crontab 表达式
    */
   cronTime: string;
