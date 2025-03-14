@@ -58,6 +58,7 @@ import { ColumnSelectOptions, CountRowOptions, FindRowOptions, FindRowOrderByOpt
 import { newEntityOperationError } from "~/utilities/errorUtility";
 import { getNowStringWithTimezone } from "~/utilities/timeUtility";
 import { RouteContext } from "~/core/routeContext";
+import { validateEntity } from "./entityValidator";
 
 export type FindOneRelationEntitiesOptions = {
   server: IRpdServer;
@@ -777,8 +778,10 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     throw newEntityOperationError("Create base entity directly is not allowed.");
   }
 
-  const { entity, routeContext } = options;
+  let { entity } = options;
+  entity = await validateEntity(server, model, entity);
 
+  const { routeContext } = options;
   const userId = options.routeContext?.state?.userId;
   if (userId) {
     const createdByProperty = getEntityPropertyByCode(server, model, "createdBy");
@@ -1051,6 +1054,9 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     throw new Error("Id is required when updating an entity.");
   }
 
+  let { entityToSave } = options;
+  entityToSave = await validateEntity(server, model, entityToSave);
+
   const entity = await findById(server, dataAccessor, {
     routeContext,
     id,
@@ -1060,7 +1066,6 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     throw new Error(`${model.namespace}.${model.singularCode}  with id "${id}" was not found.`);
   }
 
-  let { entityToSave } = options;
   let changes = getEntityPartChanges(server, model, entity, entityToSave);
   if (!changes && !options.operation) {
     return entity;

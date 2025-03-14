@@ -1,6 +1,7 @@
 import type { IRpdServer } from "~/core/server";
 import { RpdDataModel } from "~/types";
 import { getEntityProperty, getEntityPropertyByCode, isRelationProperty } from "../helpers/metaHelper";
+import { getDateString } from "~/utilities/timeUtility";
 
 // TODO Generate mapper and cache it.
 
@@ -45,8 +46,18 @@ export function mapDbRowToEntity(server: IRpdServer, model: RpdDataModel, row: a
         result[columnName] = row[columnName];
       }
     } else {
+      let fieldValue = row[columnName];
+
+      if (property) {
+        if (property.type === "date") {
+          if (fieldValue) {
+            fieldValue = getDateString(fieldValue);
+          }
+        }
+      }
+
       if (!result[propertyName]) {
-        result[propertyName] = row[columnName];
+        result[propertyName] = fieldValue;
       }
     }
   });
