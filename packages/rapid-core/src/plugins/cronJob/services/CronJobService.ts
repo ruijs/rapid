@@ -48,7 +48,7 @@ export default class CronJobService {
         ...(job.jobOptions || {}),
         cronTime: job.cronTime,
         onTick: async () => {
-          await this.tryExecuteJob(server, job);
+          await this.tryExecuteJob(job);
         },
       });
       jobInstance.start();
@@ -60,26 +60,10 @@ export default class CronJobService {
     }
   }
 
-  async tryExecuteJob(server: IRpdServer, job: CronJobConfiguration) {
-    const logger = server.getLogger();
-    logger.info(`Executing cron job '${job.code}'...`);
-
-    try {
-      await this.executeJob(job);
-      logger.info(`Completed cron job '${job.code}'...`);
-    } catch (ex: any) {
-      logger.error('Cron job "%s" execution error: %s', job.code, ex.message, { cronJobCode: job.code });
-    }
-  }
-
-  /**
-   * 执行指定任务
-   * @param job
-   */
-  async executeJob(job: CronJobConfiguration) {
+  async tryExecuteJob(job: CronJobConfiguration) {
     const server = this.#server;
     const logger = server.getLogger();
-    validateLicense(server);
+    logger.info(`Executing cron job '${job.code}'...`);
 
     let handlerContext: ActionHandlerContext = {
       logger,
@@ -89,6 +73,30 @@ export default class CronJobService {
       applicationConfig: null,
       input: null,
     };
+
+    try {
+      await this.executeJob(handlerContext, job);
+      logger.info(`Completed cron job '${job.code}'...`);
+    } catch (ex: any) {
+      logger.error('Cron job "%s" execution error: %s', job.code, ex.message);
+
+      if (job.onError) {
+        try {
+          await job.onError(handlerContext, ex);
+        } catch (ex) {
+          logger.error('Error handler of cron job "%s" execution failed: %s', job.code, ex.message);
+        }
+      }
+    }
+  }
+
+  /**
+   * 执行指定任务
+   * @param job
+   */
+  async executeJob(handlerContext: ActionHandlerContext, job: CronJobConfiguration) {
+    const server = this.#server;
+    validateLicense(server);
 
     if (job.actionHandlerCode) {
       const actionHandler = server.getActionHandlerByCode(job.code);
