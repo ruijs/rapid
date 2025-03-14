@@ -43,6 +43,14 @@ export interface CronJobConfiguration {
    * 处理定时任务时的设置选项
    */
   handleOptions?: any;
+
+  /**
+   * 定时任务执行失败时的处理
+   * @param ctx
+   * @param error
+   * @returns
+   */
+  onError?: (ctx: ActionHandlerContext, error: any) => Promise<void>;
 }
 
 export interface CronJobOptions {

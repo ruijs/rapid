@@ -6,6 +6,7 @@ export type RunCronJobActionHandlerOptions = {
 
 export type RunCronJobInput = {
   code?: string;
+  input?: any;
 };
 
 export type NamedCronJobInstance = {

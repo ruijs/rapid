@@ -2,6 +2,7 @@ import { RpdApplicationConfig } from "~/types";
 import { IRpdServer, RapidPlugin } from "./server";
 import { Next, RouteContext } from "./routeContext";
 import { Logger } from "~/facilities/log/LogFacility";
+import { CronJobConfiguration } from "~/types/cron-job-types";
 
 export interface ActionHandlerContext {
   logger: Logger;

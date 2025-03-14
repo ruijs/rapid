@@ -25,7 +25,15 @@ export async function handler(plugin: CronJobPlugin, ctx: ActionHandlerContext, 
     throw new Error(`Cron job with code '${input.code}' was not found.`);
   }
 
-  await cronJobService.executeJob(job);
+  let jobExecutionContext: ActionHandlerContext = {
+    logger: server.getLogger(),
+    routerContext,
+    next: null,
+    server,
+    applicationConfig: null,
+    input: input.input,
+  };
+  await cronJobService.executeJob(jobExecutionContext, job);
 
   response.json({});
 }
