@@ -53,6 +53,13 @@ export function getEntityPropertiesIncludingBase(server: IRpdServer, model: RpdD
   return [...baseProperties, ...properties];
 }
 
+/**
+ * 根据 code 获取实体属性信息。如实体为派生实体，可能会返回基础实体中的属性信息。
+ * @param server
+ * @param model
+ * @param propertyCode
+ * @returns
+ */
 export function getEntityPropertyByCode(server: IRpdServer, model: RpdDataModel, propertyCode: string): RpdDataModelProperty | undefined {
   return getEntityProperty(server, model, (e) => e.code === propertyCode);
 }
