@@ -1,8 +1,8 @@
 import { Framework, MoveStyleUtils, Rock, RockInstanceContext, RuiRockLogger, handleComponentEvent } from "@ruiapp/move-style";
-import { toRenderRockSlot, convertToEventHandlers, convertToSlotProps, renderRock } from "@ruiapp/react-renderer";
+import { toRenderRockSlot, convertToEventHandlers, convertToSlotProps, renderRock, renderRockSlot } from "@ruiapp/react-renderer";
 import { Table, TableProps } from "antd";
 import { ColumnType } from "antd/lib/table/interface";
-import { filter, get, map, merge, omit, reduce, trim } from "lodash";
+import { filter, get, map, merge, omit, reduce, some, sum, trim } from "lodash";
 import RapidTableMeta from "./RapidTableMeta";
 import { RapidTableRockConfig } from "./rapid-table-types";
 import { parseRockExpressionFunc } from "../../utils/parse-utility";
@@ -35,6 +35,10 @@ const ExpandedRowComponent = memo<Record<string, any>>((props) => {
   }) as any;
 });
 
+function getColumnDataIndex(column: RapidTableColumnRockConfig) {
+  return (column.fieldName || column.code).split(".");
+}
+
 function convertRapidTableColumnToAntdTableColumn(
   logger: RuiRockLogger,
   framework: Framework,
@@ -52,7 +56,7 @@ function convertRapidTableColumnToAntdTableColumn(
 
   return {
     ...MoveStyleUtils.omitSystemRockConfigFields(column),
-    dataIndex: (column.fieldName || column.code).split("."),
+    dataIndex: getColumnDataIndex(column),
     key: column.key || column.fieldName || column.code,
     render: toRenderRockSlot({ context, slot: column.cell, rockType: column.$type, slotPropName: "cell" }),
   } as ColumnType<any>;
@@ -61,14 +65,14 @@ function convertRapidTableColumnToAntdTableColumn(
 export default {
   Renderer(context, props: RapidTableRockConfig) {
     const { framework, logger, page, scope } = context;
-    const tableColumns = map(
-      filter(props.columns, (column) => !column._hidden),
-      (column) => convertRapidTableColumnToAntdTableColumn(logger, framework, context, column),
-    );
+
+    const columns = filter(props.columns, (column) => !column._hidden);
+
+    const tableColumns = map(columns, (column) => convertRapidTableColumnToAntdTableColumn(logger, framework, context, column));
 
     // calculate total width of columns
     const columnsTotalWidth = reduce(
-      props.columns,
+      columns,
       (accumulatedWidth, column) => {
         return accumulatedWidth + (parseInt(column.width, 10) || parseInt(column.minWidth, 10) || 100);
       },
@@ -130,6 +134,41 @@ export default {
       },
     };
 
+    let summaryRenderer: any;
+    if (dataSource && dataSource.length && some(columns, (item) => !!item.summaryMethod)) {
+      summaryRenderer = (records: any[]) => {
+        return (
+          <Table.Summary.Row>
+            {columns.map((column, index) => {
+              let summaryResult = "";
+              if (column.summaryMethod === "sum") {
+                summaryResult = sum(map(dataSource, (record) => get(record, getColumnDataIndex(column)))).toString();
+              }
+
+              let summaryCellContent = summaryResult;
+              if (column.summaryRendererType) {
+                summaryCellContent = renderRock({
+                  context,
+                  rockConfig: {
+                    $id: `${props.$id}-summaryContent-${index}`,
+                    $type: column.summaryRendererType,
+                    ...column.summaryRendererProps,
+                    value: summaryResult,
+                  },
+                });
+              }
+              return (
+                <Table.Summary.Cell key={index} index={index}>
+                  {summaryResult}
+                </Table.Summary.Cell>
+              );
+            })}
+          </Table.Summary.Row>
+        );
+      };
+      antdProps.summary = summaryRenderer;
+    }
+
     const onRow: TableProps<any>["onRow"] = (record) => {
       return {
         onClick: (event) => {
@@ -144,7 +183,7 @@ export default {
       return <VirtualTable {...antdProps} onRow={onRow} />;
     }
 
-    return <Table {...antdProps} onRow={onRow}></Table>;
+    return <Table className="rapid-table" {...antdProps} onRow={onRow}></Table>;
   },
 
   ...RapidTableMeta,

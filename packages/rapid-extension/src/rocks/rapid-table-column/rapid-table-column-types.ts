@@ -81,6 +81,21 @@ export type RapidTableColumnConfig = {
   $locales?: RockLocalesConfig;
 
   children?: RapidTableColumnRockConfig[];
+
+  /**
+   * 汇总方式
+   */
+  summaryMethod?: "sum";
+
+  /**
+   * 汇总渲染器类型
+   */
+  summaryRendererType?: string;
+
+  /**
+   * 汇总渲染器属性
+   */
+  summaryRendererProps?: Record<string, any>;
 };
 
 export interface RapidTableColumnRockConfig extends SimpleRockConfig, RapidTableColumnConfig {}

@@ -12,6 +12,7 @@ import { RapidEntityListFilterCache } from "../rapid-entity-search-form/RapidEnt
 import { parseRockExpressionFunc } from "../../utils/parse-utility";
 import { getExtensionLocaleStringResource, getMetaPropertyLocaleName } from "../../helpers/i18nHelper";
 import { getEntityPropertyByFieldNames } from "../../helpers/metaHelper";
+import { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
 
 export default {
   onResolveState(props, state) {
@@ -125,7 +126,7 @@ export default {
       tableColumnRocks.push(tableRowNumColumnRock);
     }
 
-    function autoConfigTableColumnToRockConfig(column) {
+    function autoConfigTableColumnToRockConfig(column: RapidTableColumnConfig) {
       if (column.$exps) {
         page.interpreteComponentProperties(null, column as any, {
           $self: column,
