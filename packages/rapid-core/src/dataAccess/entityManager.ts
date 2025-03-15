@@ -1792,11 +1792,11 @@ export default class EntityManager<TEntity = any> {
     return await findEntities(this.#server, this.#dataAccessor, options);
   }
 
-  async findEntity(options: FindEntityOptions): Promise<TEntity | null> {
+  async findEntity(options: FindEntityOptions): Promise<TEntity | undefined> {
     return await findEntity(this.#server, this.#dataAccessor, options);
   }
 
-  async findById(options: FindEntityByIdOptions | string | number): Promise<TEntity | null> {
+  async findById(options: FindEntityByIdOptions | string | number): Promise<TEntity | undefined> {
     // options is id
     if (!isObject(options)) {
       options = {
