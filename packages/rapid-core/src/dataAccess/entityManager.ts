@@ -23,7 +23,7 @@ import { isNullOrUndefined } from "~/utilities/typeUtility";
 import { mapDbRowToEntity, mapEntityToDbRow } from "./entityMapper";
 import { mapPropertyNameToColumnName } from "./propertyMapper";
 import { IRpdServer, RapidPlugin } from "~/core/server";
-import { getEntityPartChanges } from "~/helpers/entityHelpers";
+import { detectChangedFieldsOfEntity } from "~/helpers/entityHelpers";
 import {
   cloneDeep,
   concat,
@@ -1066,7 +1066,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     throw new Error(`${model.namespace}.${model.singularCode}  with id "${id}" was not found.`);
   }
 
-  let changes = getEntityPartChanges(server, model, entity, entityToSave);
+  let changes = detectChangedFieldsOfEntity(server, model, entity, entityToSave);
   if (!changes && !options.operation) {
     return entity;
   }
@@ -1101,7 +1101,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     routeContext: options.routeContext,
   });
 
-  changes = getEntityPartChanges(server, model, entity, entityToSave);
+  changes = detectChangedFieldsOfEntity(server, model, entity, entityToSave);
 
   // check readonly properties
   Object.keys(changes).forEach((propertyName) => {
@@ -1792,11 +1792,11 @@ export default class EntityManager<TEntity = any> {
     return await findEntities(this.#server, this.#dataAccessor, options);
   }
 
-  async findEntity(options: FindEntityOptions): Promise<TEntity | null> {
+  async findEntity(options: FindEntityOptions): Promise<TEntity | undefined> {
     return await findEntity(this.#server, this.#dataAccessor, options);
   }
 
-  async findById(options: FindEntityByIdOptions | string | number): Promise<TEntity | null> {
+  async findById(options: FindEntityByIdOptions | string | number): Promise<TEntity | undefined> {
     // options is id
     if (!isObject(options)) {
       options = {

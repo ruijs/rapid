@@ -3,7 +3,7 @@ import { IRpdServer } from "~/core/server";
 import { getEntityPropertyByCode, isOneRelationProperty } from "~/helpers/metaHelper";
 import { RpdDataModel } from "~/types";
 
-export function getEntityPartChanges(server: IRpdServer, model: RpdDataModel, before: any, after: any): Record<string, any> | null {
+export function detectChangedFieldsOfEntity(server: IRpdServer, model: RpdDataModel, before: any, after: any): Record<string, any> | null {
   if (!before) {
     throw new Error("Argument 'before' can not be null.");
   }
