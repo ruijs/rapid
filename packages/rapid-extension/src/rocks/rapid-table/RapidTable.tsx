@@ -142,7 +142,7 @@ export default {
             {columns.map((column, index) => {
               let summaryResult = "";
               if (column.summaryMethod === "sum") {
-                summaryResult = sum(map(dataSource, (record) => get(record, getColumnDataIndex(column)))).toString();
+                summaryResult = (sum(map(dataSource, (record) => get(record, getColumnDataIndex(column)))) || 0).toString();
               }
 
               let summaryCellContent = summaryResult;
