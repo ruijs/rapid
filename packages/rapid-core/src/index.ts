@@ -23,6 +23,7 @@ export * from "./utilities/entityUtility";
 export * from "./utilities/jwtUtility";
 export * from "./utilities/timeUtility";
 
+export * from "./helpers/entityHelpers";
 export * from "./helpers/licenseHelper";
 
 export * from "./deno-std/http/cookie";
