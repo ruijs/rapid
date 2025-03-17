@@ -9,6 +9,7 @@ import { parseRockExpressionFunc } from "../../utils/parse-utility";
 import { memo } from "react";
 import VirtualTable from "./VirtualTable";
 import { RapidTableColumnRockConfig } from "../rapid-table-column/rapid-table-column-types";
+import { roundWithPrecision } from "../../utils/number-utility";
 
 const ExpandedRowComponent = memo<Record<string, any>>((props) => {
   const { expandedRow, record, index, context } = props;
@@ -142,7 +143,7 @@ export default {
             {columns.map((column, index) => {
               let summaryResult = "";
               if (column.summaryMethod === "sum") {
-                summaryResult = (sum(map(dataSource, (record) => get(record, getColumnDataIndex(column)))) || 0).toString();
+                summaryResult = roundWithPrecision(sum(map(dataSource, (record) => get(record, getColumnDataIndex(column)))) || 0, 4).toString();
               }
 
               let summaryCellContent = summaryResult;
