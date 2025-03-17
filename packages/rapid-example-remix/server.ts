@@ -137,7 +137,9 @@ export async function startServer() {
       }),
     ],
     plugins: [
-      new MetaManagePlugin(),
+      new MetaManagePlugin({
+        syncDatabaseSchemaOnLoaded: false,
+      }),
       new DataManagePlugin(),
       new RouteManagePlugin(),
       new SequencePlugin(),
