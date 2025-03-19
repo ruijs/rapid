@@ -516,7 +516,7 @@ function buildRangeFilterQuery(ctx: BuildQueryContext, filter: FindRowRangeFilte
 function buildContainsFilterQuery(ctx: BuildQueryContext, filter: FindRowRelationalFilterOptions) {
   let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
 
-  command += " LIKE ";
+  command += " ILIKE ";
 
   if (ctx.paramToLiteral) {
     // TODO: implement it
@@ -531,7 +531,7 @@ function buildContainsFilterQuery(ctx: BuildQueryContext, filter: FindRowRelatio
 function buildNotContainsFilterQuery(ctx: BuildQueryContext, filter: FindRowRelationalFilterOptions) {
   let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
 
-  command += " NOT LIKE ";
+  command += " NOT ILIKE ";
   if (ctx.paramToLiteral) {
     // TODO: implement it
   } else {
@@ -545,7 +545,7 @@ function buildNotContainsFilterQuery(ctx: BuildQueryContext, filter: FindRowRela
 function buildStartsWithFilterQuery(ctx: BuildQueryContext, filter: FindRowRelationalFilterOptions) {
   let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
 
-  command += " LIKE ";
+  command += " ILIKE ";
 
   if (ctx.paramToLiteral) {
     // TODO: implement it
@@ -560,7 +560,7 @@ function buildStartsWithFilterQuery(ctx: BuildQueryContext, filter: FindRowRelat
 function buildNotStartsWithFilterQuery(ctx: BuildQueryContext, filter: FindRowRelationalFilterOptions) {
   let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
 
-  command += " NOT LIKE ";
+  command += " NOT ILIKE ";
 
   if (ctx.paramToLiteral) {
     // TODO: implement it
@@ -575,7 +575,7 @@ function buildNotStartsWithFilterQuery(ctx: BuildQueryContext, filter: FindRowRe
 function buildEndsWithFilterQuery(ctx: BuildQueryContext, filter: FindRowRelationalFilterOptions) {
   let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
 
-  command += " LIKE ";
+  command += " ILIKE ";
 
   if (ctx.paramToLiteral) {
     // TODO: implement it
@@ -590,7 +590,7 @@ function buildEndsWithFilterQuery(ctx: BuildQueryContext, filter: FindRowRelatio
 function buildNotEndsWithFilterQuery(ctx: BuildQueryContext, filter: FindRowRelationalFilterOptions) {
   let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
 
-  command += " NOT LIKE ";
+  command += " NOT ILIKE ";
 
   if (ctx.paramToLiteral) {
     // TODO: implement it
