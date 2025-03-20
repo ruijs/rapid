@@ -9,9 +9,10 @@ export default {
   onReceiveMessage(message, state, props) {},
 
   Renderer(context, props) {
+    const slotIndex = props.$slot.index || "0";
     const actionLinkRockConfig: RockConfig = {
       ...MoveStyleUtils.omitSystemRockConfigFields(props),
-      $id: `${props.$id}-link`,
+      $id: `${props.$id}-link-${slotIndex}`,
       $type: "rapidTableAction",
       onAction: [
         {
@@ -30,7 +31,7 @@ export default {
 
     const modalRockConfig: RockConfig = {
       $type: "antdModal",
-      $id: `${props.$id}-modal`,
+      $id: `${props.$id}-modal-${slotIndex}`,
       title: props.modalTitle || props.text,
       $exps: {
         open: "!!$scope.vars['modal-open']",
@@ -66,7 +67,7 @@ export default {
 
     const rockConfig: RockConfig = {
       $type: "scope",
-      $id: `${props.$id}-scope`,
+      $id: `${props.$id}-scope-${slotIndex}`,
       children: [actionLinkRockConfig, modalRockConfig],
     };
 

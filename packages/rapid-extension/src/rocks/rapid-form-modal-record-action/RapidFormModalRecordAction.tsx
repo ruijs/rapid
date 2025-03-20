@@ -12,9 +12,12 @@ export default {
 
   Renderer(context, props) {
     // TODO: need a better implementation. a component should not care about whether it's in a slot.
-    const formRockId = `${props.$id}-form-${props.$slot.index}`;
+    const slotIndex = props.$slot.index || "0";
+    const formRockId = `${props.$id}-form-${slotIndex}`;
     const formRockConfig = cloneDeep(props.form);
     formRockConfig.$id = formRockId;
+
+    // 此设置只对rapidForm生效，因为rapidEntityForm会忽略onFinish设置
     formRockConfig.onFinish = [
       {
         $action: "script",
@@ -24,7 +27,9 @@ export default {
           });
 
           try {
-            await handleComponentEvent("onModalOk", event.framework, event.page as any, event.scope, event.sender, props.onModalOk, [event.args[0]]);
+            if (props.onFormSubmit) {
+              await handleComponentEvent("onFormSubmit", event.framework, event.page as any, event.scope, event.sender, props.onFormSubmit, [event.args[0]]);
+            }
 
             event.scope.setVars({
               "modal-saving": false,
@@ -47,20 +52,13 @@ export default {
 
     const actionLinkRockConfig: RockConfig = {
       ...MoveStyleUtils.omitSystemRockConfigFields(props),
-      $id: `${props.$id}-link`,
+      $id: `${props.$id}-link-${slotIndex}`,
       $type: "rapidTableAction",
       onAction: [
         {
           $action: "setVars",
           vars: {
             "modal-open": true,
-          },
-        },
-        {
-          $action: "sendComponentMessage",
-          componentId: formRockId,
-          message: {
-            name: "resetFields",
           },
         },
         {
@@ -73,9 +71,10 @@ export default {
 
     const modalRockConfig: RockConfig = {
       $type: "antdModal",
-      $id: `${props.$id}-modal`,
+      $id: `${props.$id}-modal-${slotIndex}`,
       title: props.modalTitle || props.text,
       $exps: {
+        _hidden: "!$scope.vars['modal-open']",
         open: "!!$scope.vars['modal-open']",
         confirmLoading: "!!$scope.vars['modal-saving']",
       },
@@ -106,7 +105,7 @@ export default {
 
     const rockConfig: RockConfig = {
       $type: "scope",
-      $id: `${props.$id}-scope-${props.$slot.index}`,
+      $id: `${props.$id}-scope-${slotIndex}`,
       children: [actionLinkRockConfig, modalRockConfig],
     };
 
