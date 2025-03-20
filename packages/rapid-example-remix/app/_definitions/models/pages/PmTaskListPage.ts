@@ -95,14 +95,29 @@ const page: RapidPage = {
         {
           $type: "sonicRecordActionEditEntity",
           code: "edit",
-          actionType: "edit",
+        },
+        {
+          $type: "sonicRecordActionEditEntity",
+          code: "rename",
+          actionText: "重命名",
+          entityCode: "PmTask",
+          modalTitle: "重命名",
+          successMessage: "重命名成功",
+          errorMessage: "重命名失败",
+          dataSourceCode: "list",
+          form: {
+            lazyLoadData: true,
+            items: [
+              {
+                type: "auto",
+                code: "title",
+              },
+            ],
+          },
         },
         {
           $type: "sonicRecordActionDeleteEntity",
           code: "delete",
-          actionType: "delete",
-          dataSourceCode: "list",
-          entityCode: "PmTask",
         },
       ],
       newForm: cloneDeep(formConfig),

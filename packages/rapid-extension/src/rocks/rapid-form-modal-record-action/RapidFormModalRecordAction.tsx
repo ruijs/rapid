@@ -16,6 +16,8 @@ export default {
     const formRockId = `${props.$id}-form-${slotIndex}`;
     const formRockConfig = cloneDeep(props.form);
     formRockConfig.$id = formRockId;
+
+    // 此设置只对rapidForm生效，因为rapidEntityForm会忽略onFinish设置
     formRockConfig.onFinish = [
       {
         $action: "script",
@@ -25,7 +27,9 @@ export default {
           });
 
           try {
-            await handleComponentEvent("onModalOk", event.framework, event.page as any, event.scope, event.sender, props.onModalOk, [event.args[0]]);
+            if (props.onFormSubmit) {
+              await handleComponentEvent("onFormSubmit", event.framework, event.page as any, event.scope, event.sender, props.onFormSubmit, [event.args[0]]);
+            }
 
             event.scope.setVars({
               "modal-saving": false,
@@ -58,13 +62,6 @@ export default {
           },
         },
         {
-          $action: "sendComponentMessage",
-          componentId: formRockId,
-          message: {
-            name: "resetFields",
-          },
-        },
-        {
           $action: "handleEvent",
           eventName: "onModalOpen",
           handlers: props.onModalOpen,
@@ -77,6 +74,7 @@ export default {
       $id: `${props.$id}-modal-${slotIndex}`,
       title: props.modalTitle || props.text,
       $exps: {
+        _hidden: "!$scope.vars['modal-open']",
         open: "!!$scope.vars['modal-open']",
         confirmLoading: "!!$scope.vars['modal-saving']",
       },

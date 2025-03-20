@@ -9,6 +9,8 @@ export interface RapidEntityFormConfig extends RapidFormConfig {
 
   entityId?: string;
 
+  lazyLoadData?: boolean;
+
   /**
    * 指定数据查询的属性。如果指定了`queryProperties`，则不会自动从`items`和`extraProperties`中提取查询属性。
    */

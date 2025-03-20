@@ -1,4 +1,4 @@
-import type { RockEvent, Rock, RockEventHandler, RuiRockLogger } from "@ruiapp/move-style";
+import type { RockEvent, Rock, RockEventHandler, RuiRockLogger, IScope, RuiEvent } from "@ruiapp/move-style";
 import { Framework, handleComponentEvent, MoveStyleUtils } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityFormMeta from "./RapidEntityFormMeta";
@@ -211,89 +211,89 @@ function generateDataFormItem(framework: Framework, logger: RuiRockLogger, entit
   return formItem;
 }
 
-export default {
-  onInit(context, props) {
-    const mainEntityCode = props.entityCode;
-    const mainEntity = rapidAppDefinition.getEntityByCode(mainEntityCode);
-    if (!mainEntity) {
-      return;
-    }
+function initDataStore(props: RapidEntityFormRockConfig, scope: IScope) {
+  const mainEntityCode = props.entityCode;
+  const mainEntity = rapidAppDefinition.getEntityByCode(mainEntityCode);
+  if (!mainEntity) {
+    return;
+  }
 
-    if (props.items) {
-      for (const formItem of props.items) {
-        const field = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItem.code);
-        if (field) {
-          if (!formItem.hasOwnProperty("required")) {
-            // 使用字段的必填设置作为表单项的必填设置
-            formItem.required = field.required;
-          }
-        }
-
-        let fieldType = formItem.valueFieldType || field?.type || "text";
-        if (formItem.type === "auto") {
-          // 根据字段的类型选择合适的表单项类型
-          formItem.type = fieldTypeToFormItemTypeMap[fieldType] || "text";
+  if (props.items) {
+    for (const formItem of props.items) {
+      const field = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItem.code);
+      if (field) {
+        if (!formItem.hasOwnProperty("required")) {
+          // 使用字段的必填设置作为表单项的必填设置
+          formItem.required = field.required;
         }
       }
+
+      let fieldType = formItem.valueFieldType || field?.type || "text";
+      if (formItem.type === "auto") {
+        // 根据字段的类型选择合适的表单项类型
+        formItem.type = fieldTypeToFormItemTypeMap[fieldType] || "text";
+      }
+    }
+  }
+
+  if (props.mode != "new" && !props.disabledLoadStore) {
+    const detailDataStoreConfig = generateEntityDetailStoreConfig({
+      entityModel: mainEntity,
+      entityId: props.entityId,
+      entityIdExpression: props.$exps?.entityId,
+      dataSourceCode: props.dataSourceCode,
+      items: props.items,
+      extraProperties: props.extraProperties,
+      keepNonPropertyFields: props.keepNonPropertyFields,
+      queryProperties: props.queryProperties,
+      relations: props.relations,
+    });
+    scope.addStore(detailDataStoreConfig);
+  }
+}
+
+export default {
+  onInit(context, props) {
+    if (!props.lazyLoadData) {
+      initDataStore(props, context.scope);
     }
 
-    if (props.mode != "new" && !props.disabledLoadStore) {
-      const detailDataStoreConfig = generateEntityDetailStoreConfig({
-        entityModel: mainEntity,
-        entityId: props.entityId,
-        entityIdExpression: props.$exps?.entityId,
-        dataSourceCode: props.dataSourceCode,
-        items: props.items,
-        extraProperties: props.extraProperties,
-        keepNonPropertyFields: props.keepNonPropertyFields,
-        queryProperties: props.queryProperties,
-        relations: props.relations,
-      });
-      context.scope.addStore(detailDataStoreConfig);
-    }
-
-    if (props.items) {
-      props.items.forEach((formItemConfig) => {
-        const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
-        if (!rpdField) {
-          return;
-        }
-
-        // if (rpdField.type === "relation" || rpdField.type === "relation[]") {
-        //   let listDataSourceCode = formItemConfig.formControlProps?.listDataSourceCode;
-        //   if (listDataSourceCode) {
-        //     // use specified data store.
-        //     return;
-        //   }
-
-        // const listDataStoreName = `dataFormItemList-${formItemConfig.code}`;
-
-        // const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
-        // const targetEntity = rapidAppDefinition.getEntityBySingularCode(rpdField.targetSingularCode);
-
-        // let { listDataFindOptions = {} } = formItemConfig;
-
-        // const listDataStoreConfig: EntityStoreConfig = {
-        //   type: "entityStore",
-        //   name: listDataStoreName,
-        //   entityModel: targetEntity,
-        //   fixedFilters: listDataFindOptions.fixedFilters,
-        //   filters: listDataFindOptions.filters,
-        //   properties: listDataFindOptions.properties || [],
-        //   orderBy: listDataFindOptions.orderBy || [
-        //     {
-        //       field: "id",
-        //     },
-        //   ],
-        //   pagination: listDataFindOptions.pagination,
-        //   keepNonPropertyFields: listDataFindOptions.keepNonPropertyFields,
-        //   $exps: listDataFindOptions.$exps,
-        // };
-
-        // context.scope.addStore(listDataStoreConfig);
-        // }
-      });
-    }
+    // if (props.items) {
+    //   props.items.forEach((formItemConfig) => {
+    //     const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
+    //     if (!rpdField) {
+    //       return;
+    //     }
+    //     if (rpdField.type === "relation" || rpdField.type === "relation[]") {
+    //       let listDataSourceCode = formItemConfig.formControlProps?.listDataSourceCode;
+    //       if (listDataSourceCode) {
+    //         // use specified data store.
+    //         return;
+    //       }
+    //     const listDataStoreName = `dataFormItemList-${formItemConfig.code}`;
+    //     const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
+    //     const targetEntity = rapidAppDefinition.getEntityBySingularCode(rpdField.targetSingularCode);
+    //     let { listDataFindOptions = {} } = formItemConfig;
+    //     const listDataStoreConfig: EntityStoreConfig = {
+    //       type: "entityStore",
+    //       name: listDataStoreName,
+    //       entityModel: targetEntity,
+    //       fixedFilters: listDataFindOptions.fixedFilters,
+    //       filters: listDataFindOptions.filters,
+    //       properties: listDataFindOptions.properties || [],
+    //       orderBy: listDataFindOptions.orderBy || [
+    //         {
+    //           field: "id",
+    //         },
+    //       ],
+    //       pagination: listDataFindOptions.pagination,
+    //       keepNonPropertyFields: listDataFindOptions.keepNonPropertyFields,
+    //       $exps: listDataFindOptions.$exps,
+    //     };
+    //     context.scope.addStore(listDataStoreConfig);
+    //     }
+    //   });
+    // }
   },
 
   onReceiveMessage(message, state, props) {
@@ -325,6 +325,10 @@ export default {
     if (!mainEntity) {
       const errorRockConfig = generateRockConfigOfError(new Error(`Entitiy with code '${mainEntityCode}' not found.`));
       return renderRock({ context, rockConfig: errorRockConfig });
+    }
+
+    if (props.lazyLoadData) {
+      initDataStore(props, context.scope);
     }
 
     const formItems: RapidFormItemConfig[] = [];
@@ -423,7 +427,7 @@ export default {
       items: formItems,
       disabledLoadStore: formConfig.disabledLoadStore,
       dataSourceCode: formConfig.mode === "new" ? null : !props.disabledLoadStore ? props.dataSourceCode || "detail" : null,
-      onFinish: formConfig.mode === "view" ? null : props.onFinish || formOnFinish,
+      onFinish: formConfig.mode === "view" ? null : formOnFinish,
     };
     return renderRock({ context, rockConfig });
   },
