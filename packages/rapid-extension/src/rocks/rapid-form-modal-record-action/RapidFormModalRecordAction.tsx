@@ -12,7 +12,8 @@ export default {
 
   Renderer(context, props) {
     // TODO: need a better implementation. a component should not care about whether it's in a slot.
-    const formRockId = `${props.$id}-form-${props.$slot.index}`;
+    const slotIndex = props.$slot.index || "0";
+    const formRockId = `${props.$id}-form-${slotIndex}`;
     const formRockConfig = cloneDeep(props.form);
     formRockConfig.$id = formRockId;
     formRockConfig.onFinish = [
@@ -47,7 +48,7 @@ export default {
 
     const actionLinkRockConfig: RockConfig = {
       ...MoveStyleUtils.omitSystemRockConfigFields(props),
-      $id: `${props.$id}-link`,
+      $id: `${props.$id}-link-${slotIndex}`,
       $type: "rapidTableAction",
       onAction: [
         {
@@ -73,7 +74,7 @@ export default {
 
     const modalRockConfig: RockConfig = {
       $type: "antdModal",
-      $id: `${props.$id}-modal`,
+      $id: `${props.$id}-modal-${slotIndex}`,
       title: props.modalTitle || props.text,
       $exps: {
         open: "!!$scope.vars['modal-open']",
@@ -106,7 +107,7 @@ export default {
 
     const rockConfig: RockConfig = {
       $type: "scope",
-      $id: `${props.$id}-scope-${props.$slot.index}`,
+      $id: `${props.$id}-scope-${slotIndex}`,
       children: [actionLinkRockConfig, modalRockConfig],
     };
 
