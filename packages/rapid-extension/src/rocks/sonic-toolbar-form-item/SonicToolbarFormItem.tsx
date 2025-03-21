@@ -7,6 +7,7 @@ import { SearchFormFilterConfiguration } from "../../types/rapid-entity-types";
 import { EntityStore } from "../../mod";
 import { searchParamsToFilters } from "../../functions/searchParamsToFilters";
 import { RapidEntityListFilterCache } from "../rapid-entity-search-form/RapidEntitySearchForm";
+import { useState } from "react";
 
 export default {
   Renderer(context, props) {
@@ -27,11 +28,13 @@ export default {
           {
             $action: "script",
             script: (event: RockEvent) => {
+              let inputValue = (event.args[0] || "").trim();
+
               const { scope } = event;
               const dataSourceCode = props.dataSourceCode || "list";
               // 设置搜索变量
               scope.setVars({
-                [props.code]: event.args[0],
+                [props.code]: inputValue,
                 [`stores-${dataSourceCode}-pageNum`]: 1,
               });
 
