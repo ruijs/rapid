@@ -2,7 +2,7 @@ import { MoveStyleUtils, RuiEvent, handleComponentEvent, type Rock, type RockCon
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidFormModalRecordActionMeta from "./RapidFormModalRecordActionMeta";
 import type { RapidFormModalRecordActionRockConfig } from "./rapid-form-modal-record-action-types";
-import { cloneDeep } from "lodash";
+import { cloneDeep, set } from "lodash";
 import { message } from "antd";
 
 export default {
@@ -49,6 +49,7 @@ export default {
         },
       },
     ];
+    set(formRockConfig, "$exps._hidden", "!$scope.vars['modal-open']");
 
     const actionLinkRockConfig: RockConfig = {
       ...MoveStyleUtils.omitSystemRockConfigFields(props),
@@ -74,7 +75,6 @@ export default {
       $id: `${props.$id}-modal-${slotIndex}`,
       title: props.modalTitle || props.text,
       $exps: {
-        _hidden: "!$scope.vars['modal-open']",
         open: "!!$scope.vars['modal-open']",
         confirmLoading: "!!$scope.vars['modal-saving']",
       },
