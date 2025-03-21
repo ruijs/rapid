@@ -1,12 +1,12 @@
-import { isArray, isObject } from "lodash";
 import { RapidRequest } from "./request";
 import { RapidResponse } from "./response";
-import { HttpStatus, ResponseData } from "./http-types";
+import { HttpStatus } from "./http-types";
 import { IRpdServer } from "./server";
-import { Logger } from "~/facilities/log/LogFacility";
 import { IDatabaseAccessor, IDatabaseClient } from "~/types";
 
 export type Next = () => Promise<void>;
+
+export type TransactionState = "uninited" | "inited" | "started";
 
 // TODO: should divide to RequestContext and OperationContext
 
@@ -21,6 +21,7 @@ export class RouteContext {
   routeConfig: any;
   #server: IRpdServer;
   #dbTransactionClient: IDatabaseClient | undefined;
+  #dbTransactionState: TransactionState;
 
   static newSystemOperationContext(server: IRpdServer) {
     return new RouteContext(server);
@@ -29,6 +30,8 @@ export class RouteContext {
   constructor(server: IRpdServer, request?: RapidRequest) {
     this.#server = server;
     this.databaseAccessor = server.getDatabaseAccessor();
+    this.#dbTransactionState = "uninited";
+
     this.request = request;
     this.state = {};
     this.response = new RapidResponse();
@@ -71,29 +74,54 @@ export class RouteContext {
     return this.#dbTransactionClient;
   }
 
-  async beginDbTransaction(): Promise<IDatabaseClient> {
+  async initDbTransactionClient(): Promise<IDatabaseClient> {
     let dbClient = this.#dbTransactionClient;
     if (dbClient) {
-      throw new Error("Database transaction has been started. You can not start a transaction more than once in a request context.");
+      return dbClient;
     }
 
     dbClient = await this.databaseAccessor.getClient();
-    await this.databaseAccessor.queryDatabaseObject("BEGIN", [], dbClient);
+    this.#dbTransactionState = "inited";
     this.#dbTransactionClient = dbClient;
     return dbClient;
   }
 
+  async beginDbTransaction(): Promise<void> {
+    if (!this.#dbTransactionClient) {
+      throw new Error("Database transaction has not been inited. You should call initDbTransactionClient() first.");
+    }
+
+    if (this.#dbTransactionState === "started") {
+      throw new Error("Database transaction has been started. You can not begin a new transaction before you commit or rollback it.");
+    }
+
+    await this.databaseAccessor.queryDatabaseObject("BEGIN", [], this.#dbTransactionClient);
+    this.#dbTransactionState = "started";
+  }
+
   async commitDbTransaction(): Promise<void> {
     if (!this.#dbTransactionClient) {
+      throw new Error("Database transaction has not been inited. You should call initDbTransactionClient() first.");
+    }
+
+    if (this.#dbTransactionState !== "started") {
       throw new Error("Database transaction has not been started. You should call beginDbTransaction() first.");
     }
+
     await this.databaseAccessor.queryDatabaseObject("COMMIT", [], this.#dbTransactionClient);
+    this.#dbTransactionState = "inited";
   }
 
   async rollbackDbTransaction(): Promise<void> {
     if (!this.#dbTransactionClient) {
+      throw new Error("Database transaction has not been inited. You should call initDbTransactionClient() first.");
+    }
+
+    if (this.#dbTransactionState !== "started") {
       throw new Error("Database transaction has not been started. You should call beginDbTransaction() first.");
     }
+
     await this.databaseAccessor.queryDatabaseObject("ROLLBACK", [], this.#dbTransactionClient);
+    this.#dbTransactionState = "inited";
   }
 }

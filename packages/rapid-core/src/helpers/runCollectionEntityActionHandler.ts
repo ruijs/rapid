@@ -28,7 +28,8 @@ export default async function runCollectionEntityActionHandler(
     let transactionDbClient: IDatabaseClient;
 
     try {
-      transactionDbClient = await routeContext.beginDbTransaction();
+      transactionDbClient = await routeContext.initDbTransactionClient();
+      await routeContext.beginDbTransaction();
 
       const result = handleEntityAction(entityManager, autoMergeInput ? mergedInput : input);
       if (result instanceof Promise) {
