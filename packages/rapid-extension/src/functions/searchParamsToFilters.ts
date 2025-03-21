@@ -8,8 +8,11 @@ export const searchParamsToFilters = (filterConfigurations: SearchFormFilterConf
   const filters: any[] = [];
 
   for (const filterConfig of filterConfigurations) {
-    const paramValue = searchParams[filterConfig.code];
-    if (isNull(paramValue) || isUndefined(paramValue) || (isArray(paramValue) && isEmpty(paramValue))) {
+    let paramValue = searchParams[filterConfig.code];
+    if (isString(paramValue)) {
+      paramValue = paramValue.trim();
+    }
+    if (isNull(paramValue) || isUndefined(paramValue) || isEmpty(paramValue)) {
       continue;
     }
 
