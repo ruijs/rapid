@@ -12,6 +12,10 @@ export interface RapidTableSelectRockConfig extends SimpleRockConfig {
   pageSize?: number;
   mode?: "multiple" | "single";
   listFilterFields?: (string | FilterFieldConfig)[]; // 默认 name、code
+
+  /**
+   * @deprecated use labelRendererType
+   */
   listTextFormat?: string;
   listTextFieldName?: string; // 默认 name
   listValueFieldName?: string; // 默认 id
@@ -29,6 +33,16 @@ export interface RapidTableSelectRockConfig extends SimpleRockConfig {
   value?: string | string[];
   onChange?(value: string): void;
   onSelectedRecord?(record: Record<string, any>, selectedRecords: Record<string, any>[]): void;
+
+  /**
+   * 标签渲染器类型
+   */
+  labelRendererType?: string;
+
+  /**
+   * 标签渲染器属性
+   */
+  labelRendererProps?: Record<string, any>;
 
   /**
    * 表格高度

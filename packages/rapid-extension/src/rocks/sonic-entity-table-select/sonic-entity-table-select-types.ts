@@ -20,6 +20,10 @@ export interface SonicEntityTableSelectRockConfig extends SimpleRockConfig {
    * 默认 name
    */
   listFilterFields?: (string | FilterFieldConfig)[];
+
+  /**
+   * @deprecated use labelRendererType
+   */
   listTextFormat?: string;
   listTextFieldName?: string; // 默认 name
   listValueFieldName?: string; // 默认 id

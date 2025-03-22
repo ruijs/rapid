@@ -1,4 +1,4 @@
-import { EventEmitter, type Rock, type RockInstanceContext } from "@ruiapp/move-style";
+import { EventEmitter, MoveStyleUtils, type Rock, type RockInstanceContext } from "@ruiapp/move-style";
 import SonicEntityTableSelectMeta from "./SonicEntityTableSelectMeta";
 import type { SonicEntityTableSelectRockConfig } from "./sonic-entity-table-select-types";
 import { convertToEventHandlers, renderRock } from "@ruiapp/react-renderer";
@@ -163,7 +163,7 @@ export default {
         return get(record, listTextFieldName);
       }
 
-      return replaceLabel(listTextFormat, record);
+      return MoveStyleUtils.fulfillVariablesInString(listTextFormat, record);
     };
 
     const selectedKeys = useMemo(() => {
@@ -479,10 +479,4 @@ function parseSelectedRecordFilters(codes: string[], operator: FindEntityOptions
   } else {
     return [];
   }
-}
-
-function replaceLabel(formatTpl: string, record: Record<string, any>) {
-  return formatTpl.replace(/\{\{(\S+?)\}\}/g, (match, key) => {
-    return get(record, key) || "";
-  });
 }
