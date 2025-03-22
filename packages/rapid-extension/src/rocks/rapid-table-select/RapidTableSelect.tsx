@@ -1,7 +1,7 @@
-import { EventEmitter, type Rock, type RockInstanceContext } from "@ruiapp/move-style";
+import { EventEmitter, MoveStyleUtils, type Rock, type RockInstanceContext } from "@ruiapp/move-style";
 import TableSelectorMeta from "./RapidTableSelectMeta";
 import type { RapidTableSelectRockConfig } from "./rapid-table-select-types";
-import { convertToEventHandlers } from "@ruiapp/react-renderer";
+import { convertToEventHandlers, renderRock } from "@ruiapp/react-renderer";
 import { Table, Select, Input, Empty, Spin } from "antd";
 import { debounce, filter, forEach, get, isArray, isObject, isPlainObject, isString, last, map, omit, pick, set, split } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -133,11 +133,22 @@ export default {
     }, [props.requestConfig?.url, currentState.offset, currentState.reloadKey, debouncedKeyword]);
 
     const getLabel = (record: Record<string, any>) => {
+      if (props.labelRendererType) {
+        return renderRock({
+          context,
+          rockConfig: {
+            $type: props.labelRendererType,
+            ...props.labelRendererProps,
+            value: record,
+          },
+        });
+      }
+
       if (!listTextFormat) {
         return get(record, listTextFieldName);
       }
 
-      return replaceLabel(listTextFormat, record);
+      return MoveStyleUtils.fulfillVariablesInString(listTextFormat, record);
     };
 
     const selectedKeys = useMemo(() => {
@@ -426,10 +437,4 @@ function parseSelectedRecordFilters(codes: string[], operator: FindEntityOptions
   } else {
     return [];
   }
-}
-
-function replaceLabel(formatTpl: string, record: Record<string, any>) {
-  return formatTpl.replace(/\{\{(\S+?)\}\}/g, (match, key) => {
-    return get(record, key) || "";
-  });
 }
