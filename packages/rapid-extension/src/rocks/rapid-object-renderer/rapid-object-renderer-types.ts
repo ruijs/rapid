@@ -5,7 +5,9 @@ export interface RapidObjectRendererRockConfig extends SimpleRockConfig {
 
   defaultText?: string;
 
-  items: RapidPropertyRenderConfig[];
+  format?: string;
+
+  items?: RapidPropertyRenderConfig[];
 }
 
 export interface RapidPropertyRenderConfig {

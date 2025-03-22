@@ -1,6 +1,7 @@
 import type { SimpleRockConfig } from "@ruiapp/move-style";
 import { FilterFieldConfig } from "../rapid-form-item/rapid-form-item-types";
-import { RapidTableSelectColumn, RapidTableSelectRockConfig } from "../rapid-table-select/rapid-table-select-types";
+import { RapidTableSelectRockConfig } from "../rapid-table-select/rapid-table-select-types";
+import { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
 
 export interface SonicEntityTableSelectRockConfig extends SimpleRockConfig {
   searchPlaceholder?: string;
@@ -22,7 +23,7 @@ export interface SonicEntityTableSelectRockConfig extends SimpleRockConfig {
   listTextFormat?: string;
   listTextFieldName?: string; // 默认 name
   listValueFieldName?: string; // 默认 id
-  columns?: RapidTableSelectColumn[];
+  columns?: RapidTableColumnConfig[];
   dropdownMatchSelectWidth?: boolean | number;
   entityCode: string;
   requestParams?: RapidTableSelectRockConfig["requestConfig"]["params"];

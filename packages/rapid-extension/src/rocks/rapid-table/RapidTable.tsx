@@ -2,13 +2,13 @@ import { Framework, MoveStyleUtils, Rock, RockInstanceContext, RuiRockLogger, ha
 import { toRenderRockSlot, convertToEventHandlers, convertToSlotProps, renderRock, renderRockSlot } from "@ruiapp/react-renderer";
 import { Table, TableProps } from "antd";
 import { ColumnType } from "antd/lib/table/interface";
-import { filter, get, map, merge, omit, reduce, some, sum, trim } from "lodash";
+import { filter, get, isFunction, isNumber, isString, map, merge, omit, reduce, some, sum, trim } from "lodash";
 import RapidTableMeta from "./RapidTableMeta";
 import { RapidTableRockConfig } from "./rapid-table-types";
 import { parseRockExpressionFunc } from "../../utils/parse-utility";
 import { memo } from "react";
 import VirtualTable from "./VirtualTable";
-import { RapidTableColumnRockConfig } from "../rapid-table-column/rapid-table-column-types";
+import { RapidTableColumnConfig, RapidTableColumnRockConfig } from "../rapid-table-column/rapid-table-column-types";
 import { roundWithPrecision } from "../../utils/number-utility";
 
 const ExpandedRowComponent = memo<Record<string, any>>((props) => {
@@ -40,7 +40,7 @@ function getColumnDataIndex(column: RapidTableColumnRockConfig) {
   return (column.fieldName || column.code).split(".");
 }
 
-function convertRapidTableColumnToAntdTableColumn(
+export function convertRapidTableColumnToAntdTableColumn(
   logger: RuiRockLogger,
   framework: Framework,
   context: RockInstanceContext,
@@ -55,12 +55,70 @@ function convertRapidTableColumnToAntdTableColumn(
     };
   }
 
+  let render: ColumnType<any>["render"];
+
+  if (isFunction(column.render)) {
+    render = column.render;
+  } else if (isString(column.render)) {
+    render = (value, record, index) => {
+      return context.page.interpreteExpression(column.render as string, {
+        value,
+        record,
+        index,
+        $scope: context.scope,
+      });
+    };
+  } else if (column.format) {
+    render = (value, record, index) => {
+      return MoveStyleUtils.fulfillVariablesInString(column.format, record);
+    };
+  } else if (column.cell) {
+    render = toRenderRockSlot({ context, slot: column.cell, rockType: column.$type, slotPropName: "cell" });
+  } else if (column.rendererType) {
+    const rendererType = column.rendererType;
+    const cell = {
+      $type: rendererType,
+      ...column.rendererProps,
+      $exps: {
+        value: "$slot.value",
+        ...(column.rendererProps?.$exps || {}),
+      },
+    };
+    render = toRenderRockSlot({ context, slot: cell, rockType: column.$type, slotPropName: "cell" });
+  } else {
+    // default renderer
+  }
+
   return {
     ...MoveStyleUtils.omitSystemRockConfigFields(column),
     dataIndex: getColumnDataIndex(column),
     key: column.key || column.fieldName || column.code,
-    render: toRenderRockSlot({ context, slot: column.cell, rockType: column.$type, slotPropName: "cell" }),
+    render,
   } as ColumnType<any>;
+}
+
+export function calculateColumnsTotalWidth(columns: RapidTableColumnConfig[]) {
+  return reduce(
+    columns,
+    (accumulatedWidth, column) => {
+      let columnWidth: number;
+      if (isString(column.width)) {
+        columnWidth = parseInt(column.width, 10);
+      } else {
+        columnWidth = column.width;
+      }
+
+      let columnMinWidth: number;
+      if (isString(column.minWidth)) {
+        columnMinWidth = parseInt(column.minWidth, 10);
+      } else {
+        columnMinWidth = column.minWidth;
+      }
+
+      return accumulatedWidth + (columnWidth || columnMinWidth || 100);
+    },
+    0,
+  );
 }
 
 export default {
@@ -70,15 +128,7 @@ export default {
     const columns = filter(props.columns, (column) => !column._hidden);
 
     const tableColumns = map(columns, (column) => convertRapidTableColumnToAntdTableColumn(logger, framework, context, column));
-
-    // calculate total width of columns
-    const columnsTotalWidth = reduce(
-      columns,
-      (accumulatedWidth, column) => {
-        return accumulatedWidth + (parseInt(column.width, 10) || parseInt(column.minWidth, 10) || 100);
-      },
-      0,
-    );
+    const columnsTotalWidth = calculateColumnsTotalWidth(columns);
 
     const eventHandlers = convertToEventHandlers({ context, rockConfig: props });
     const slotProps = convertToSlotProps({ context, rockConfig: props, slotsMeta: RapidTableMeta.slots });

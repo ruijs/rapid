@@ -1,27 +1,7 @@
-import type { RockEventHandlerConfig, RockExpsConfig, RockPropExpressions, SimpleRockConfig } from "@ruiapp/move-style";
-import { ReactNode } from "react";
+import type { RockExpsConfig, SimpleRockConfig } from "@ruiapp/move-style";
 import { FindEntityOptions } from "../../rapid-types";
 import { FilterFieldConfig } from "../rapid-form-item/rapid-form-item-types";
-
-export interface RapidTableSelectColumn {
-  code: string;
-  title?: string;
-  width?: number;
-  fixed?: "left" | "right";
-  format?: string;
-  render?: string | ((record: any) => ReactNode);
-  /**
-   * 渲染器类型
-   */
-  rendererType?: string;
-
-  /**
-   * 渲染器属性
-   */
-  rendererProps?: Record<string, any>;
-
-  $exps?: RockExpsConfig;
-}
+import { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
 
 export interface RapidTableSelectRockConfig extends SimpleRockConfig {
   searchPlaceholder?: string;
@@ -35,7 +15,7 @@ export interface RapidTableSelectRockConfig extends SimpleRockConfig {
   listTextFormat?: string;
   listTextFieldName?: string; // 默认 name
   listValueFieldName?: string; // 默认 id
-  columns?: RapidTableSelectColumn[];
+  columns?: RapidTableColumnConfig[];
   dropdownMatchSelectWidth?: number;
   requestConfig: {
     baseUrl?: string;
@@ -43,11 +23,15 @@ export interface RapidTableSelectRockConfig extends SimpleRockConfig {
     method?: "post" | "get"; // 默认 post
     params?: FindEntityOptions & {
       fixedFilters?: FindEntityOptions["filters"];
-
-      $exps?: RockPropExpressions;
+      $exps?: RockExpsConfig;
     };
   };
   value?: string | string[];
   onChange?(value: string): void;
   onSelectedRecord?(record: Record<string, any>, selectedRecords: Record<string, any>[]): void;
+
+  /**
+   * 表格高度
+   */
+  tableHeight?: number;
 }
