@@ -6,9 +6,10 @@ export default {
   $type: "rapidObjectRenderer",
 
   Renderer(context, props: RapidObjectRendererRockConfig) {
-    const { value, format, defaultText } = props;
+    const { value, format, items, defaultText } = props;
     if (value) {
       if (!format) {
+        // TODO: render items
         return value.toString();
       }
       return MoveStyleUtils.fulfillVariablesInString(format, value);

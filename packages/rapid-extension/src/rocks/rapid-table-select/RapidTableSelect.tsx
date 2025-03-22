@@ -2,8 +2,8 @@ import { EventEmitter, type Rock, type RockInstanceContext } from "@ruiapp/move-
 import TableSelectorMeta from "./RapidTableSelectMeta";
 import type { RapidTableSelectRockConfig } from "./rapid-table-select-types";
 import { convertToEventHandlers } from "@ruiapp/react-renderer";
-import { Table, Select, Input, TableProps, Empty, Spin } from "antd";
-import { debounce, filter, forEach, get, isArray, isFunction, isObject, isPlainObject, isString, last, omit, pick, set, slice, split, trim } from "lodash";
+import { Table, Select, Input, Empty, Spin } from "antd";
+import { debounce, filter, forEach, get, isArray, isObject, isPlainObject, isString, last, map, omit, pick, set, split } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMergeState } from "../../hooks/use-merge-state";
 import rapidApi from "../../rapidApi";
@@ -13,6 +13,7 @@ import dayjs from "dayjs";
 
 import "./rapid-table-select-style.css";
 import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
+import { calculateColumnsTotalWidth, convertRapidTableColumnToAntdTableColumn } from "../rapid-table/RapidTable";
 
 const bus = new EventEmitter();
 
@@ -35,7 +36,7 @@ export default {
     }
   },
   Renderer(context, props: RapidTableSelectRockConfig) {
-    const { framework } = context;
+    const { framework, logger } = context;
     const {
       listValueFieldName = "id",
       listTextFieldName = "name",
@@ -47,6 +48,7 @@ export default {
       allowClear,
       placeholder,
       disabled,
+      tableHeight = 400,
     } = props;
 
     const isMultiple = props.mode === "multiple";
@@ -173,30 +175,13 @@ export default {
 
     const eventHandlers = convertToEventHandlers({ context, rockConfig: props }) as any;
 
-    let tableColumns: TableProps<any>["columns"] = [];
-    let tableWidth = 0;
-    (columns || []).forEach((col) => {
-      tableWidth += col.width || 100;
-      tableColumns.push({
-        title: col.title,
-        dataIndex: col.code,
-        width: col.width,
-        render: (text: any, record: any) => {
-          if (isFunction(col.render)) {
-            return col.render(record);
-          }
-
-          if (isString(col.render)) {
-            return context.page.interpreteExpression(col.render, {
-              record,
-              $scope: context.scope,
-            });
-          }
-
-          return col.format ? replaceLabel(col.format, record) : get(record, col.code);
-        },
-      });
-    });
+    const tableColumns = map(columns, (column) =>
+      convertRapidTableColumnToAntdTableColumn(logger, framework, context, {
+        $type: "rapidTableColumn",
+        ...column,
+      }),
+    );
+    const columnsTotalWidth = calculateColumnsTotalWidth(columns);
 
     const current = isMultiple ? selectedKeys : selectedKeys[0];
 
@@ -281,7 +266,7 @@ export default {
                   <Table
                     size="small"
                     rowKey={(record) => get(record, listValueFieldName)}
-                    scroll={{ x: tableWidth, y: 200 }}
+                    scroll={{ x: columnsTotalWidth, y: tableHeight }}
                     columns={tableColumns}
                     dataSource={apiIns.records || []}
                     rowClassName="pm-table-row"

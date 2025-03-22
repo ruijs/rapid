@@ -5,7 +5,7 @@ import { RapidFieldType } from "../../types/rapid-entity-types";
  * 表格字段列
  */
 export type RapidTableColumnConfig = {
-  type: "auto" | "customize" | "text" | "number" | "date" | "datetime" | "link";
+  type?: "auto" | "customize" | "text" | "number" | "date" | "datetime" | "link";
   code: string;
   key?: string;
 
@@ -40,12 +40,12 @@ export type RapidTableColumnConfig = {
   /**
    * 列宽
    */
-  width?: string;
+  width?: string | number;
 
   /**
    * 最小列宽。适用于自适应宽度的列。
    */
-  minWidth?: string;
+  minWidth?: string | number;
 
   /**
    * 渲染器类型
@@ -71,6 +71,16 @@ export type RapidTableColumnConfig = {
    * 引用数据源
    */
   referenceDataSource?: string;
+
+  /**
+   * @deprecated use rendererType to customized rendering
+   */
+  render?: string | Function;
+
+  /**
+   * @deprecated use rapidObjectRenderer and set format in rendererProps
+   */
+  format?: string;
 
   cell?: RockChildrenConfig;
 

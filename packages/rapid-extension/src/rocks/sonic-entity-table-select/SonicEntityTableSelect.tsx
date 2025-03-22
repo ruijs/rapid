@@ -3,7 +3,7 @@ import SonicEntityTableSelectMeta from "./SonicEntityTableSelectMeta";
 import type { SonicEntityTableSelectRockConfig } from "./sonic-entity-table-select-types";
 import { convertToEventHandlers, renderRock } from "@ruiapp/react-renderer";
 import { Table, Select, Input, TableProps, Empty, Spin } from "antd";
-import { debounce, filter, forEach, get, isArray, isFunction, isObject, isPlainObject, isString, isUndefined, last, omit, pick, set, split } from "lodash";
+import { debounce, filter, forEach, get, isArray, isFunction, isObject, isPlainObject, isString, isUndefined, last, map, omit, pick, set, split } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMergeState } from "../../hooks/use-merge-state";
 import rapidApi from "../../rapidApi";
@@ -16,6 +16,7 @@ import dayjs from "dayjs";
 import "../rapid-table-select/rapid-table-select-style.css";
 import { getEntityPropertyByCode } from "../../helpers/metaHelper";
 import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
+import { calculateColumnsTotalWidth, convertRapidTableColumnToAntdTableColumn } from "../rapid-table/RapidTable";
 
 const bus = new EventEmitter();
 
@@ -37,7 +38,7 @@ export default {
   },
 
   Renderer(context, props: SonicEntityTableSelectRockConfig) {
-    const { framework, page } = context;
+    const { framework, logger, page } = context;
     const entity = rapidAppDefinition.getEntityByCode(props.entityCode);
     const displayPropertyCode = entity.displayPropertyCode || "name";
     const displayProperty = getEntityPropertyByCode(rapidAppDefinition.getAppDefinition(), entity, displayPropertyCode);
@@ -200,48 +201,13 @@ export default {
 
     const eventHandlers = convertToEventHandlers({ context, rockConfig: props }) as any;
 
-    let tableColumns: TableProps<any>["columns"] = [];
-    let tableWidth = 0;
-    (columns || []).forEach((column) => {
-      tableWidth += column.width || 100;
-      tableColumns.push({
-        title: column.title,
-        dataIndex: column.code,
-        width: column.width,
-        render: (value: any, record: any) => {
-          if (column.$exps) {
-            page.interpreteComponentProperties(null, column as any, {
-              $self: column,
-              $parent: props,
-              $slot: { value, record },
-            });
-          }
-
-          if (isFunction(column.render)) {
-            return column.render(record);
-          }
-
-          if (isString(column.render)) {
-            return context.page.interpreteExpression(column.render, {
-              record,
-              $scope: context.scope,
-            });
-          }
-
-          if (column.rendererType) {
-            return renderRock({
-              context,
-              rockConfig: {
-                $type: column.rendererType,
-                ...column.rendererProps,
-              },
-            });
-          }
-
-          return column.format ? replaceLabel(column.format, record) : get(record, column.code);
-        },
-      });
-    });
+    const tableColumns = map(columns, (column) =>
+      convertRapidTableColumnToAntdTableColumn(logger, framework, context, {
+        $type: "rapidTableColumn",
+        ...column,
+      }),
+    );
+    const columnsTotalWidth = calculateColumnsTotalWidth(columns);
 
     const current = isMultiple ? selectedKeys : selectedKeys[0];
 
@@ -329,7 +295,7 @@ export default {
                   <Table
                     size="small"
                     rowKey={(record) => get(record, listValueFieldName)}
-                    scroll={{ x: tableWidth, y: tableHeight }}
+                    scroll={{ x: columnsTotalWidth, y: tableHeight }}
                     columns={tableColumns}
                     dataSource={data.list || []}
                     rowClassName="pm-table-row"
