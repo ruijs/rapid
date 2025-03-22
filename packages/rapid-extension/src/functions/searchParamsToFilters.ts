@@ -12,7 +12,7 @@ export const searchParamsToFilters = (filterConfigurations: SearchFormFilterConf
     if (isString(paramValue)) {
       paramValue = paramValue.trim();
     }
-    if (isNull(paramValue) || isUndefined(paramValue) || isEmpty(paramValue)) {
+    if (isNull(paramValue) || isUndefined(paramValue) || ((isString(paramValue) || isArray(paramValue)) && isEmpty(paramValue))) {
       continue;
     }
 
