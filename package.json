@@ -7,6 +7,7 @@
     "start": "pnpm --filter=rapid-example-remix start",
     "gen-meta": "pnpm --filter=rapid-example-remix gen-meta",
     "update-rpd-models": "pnpm --filter=rapid-example-remix update-rpd-models",
+    "sync-db-schema": "pnpm --filter=rapid-example-remix sync-db-schema",
     "test": "lerna run test",
     "fmt:code": "prettier . --write"
   },

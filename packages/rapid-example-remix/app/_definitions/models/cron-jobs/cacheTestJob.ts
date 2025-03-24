@@ -2,14 +2,14 @@ import { CreateCacheFacilityOptions, Cache, type ActionHandlerContext, type Cron
 import dayjs from "dayjs";
 
 export default {
-  code: "testJob",
+  code: "cacheTestJob",
 
-  cronTime: "0 */1 * * * *",
+  description: "Job for testing cache expiration",
+
+  cronTime: "0 0/1 * * * *",
 
   async handler(ctx: ActionHandlerContext) {
     const { server, logger } = ctx;
-
-    logger.info("Executing test job...");
 
     const cache = await server.getFacility<Cache, CreateCacheFacilityOptions>("cache", { providerName: "redis" });
     let value = await cache.getObject("foo");

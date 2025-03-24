@@ -1,7 +1,7 @@
 import { EventEmitter, RockConfig, type Rock } from "@ruiapp/move-style";
-import { EntityTableSelectRockConfig } from "./entity-table-select-types";
+import { RapidEntityTableSelectRockConfig } from "./rapid-entity-table-select-types";
 import { renderRock } from "@ruiapp/react-renderer";
-import ModelTableSelectorMeta from "./EntityTableSelectMeta";
+import RapidEntityTableSelectMeta from "./RapidEntityTableSelectMeta";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { useEffect } from "react";
 
@@ -63,5 +63,5 @@ export default {
     return renderRock({ context, rockConfig });
   },
 
-  ...ModelTableSelectorMeta,
-} as Rock<EntityTableSelectRockConfig>;
+  ...RapidEntityTableSelectMeta,
+} as Rock<RapidEntityTableSelectRockConfig>;

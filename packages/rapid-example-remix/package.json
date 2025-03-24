@@ -6,12 +6,13 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "remix build",
-    "dev": "pnpm gen-meta && remix build && run-p \"dev:*\"",
+    "dev": "run-p \"dev:*\"",
     "dev:node": "cross-env NODE_ENV=development ts-node-esm --project ./tsconfig-node.json ./index.ts",
     "dev:remix": "remix watch",
     "start": "cross-env NODE_ENV=production ts-node-esm --project ./tsconfig-node.json ./index.ts",
     "gen-meta": "ts-node-esm --project ./tsconfig-node.json -r dotenv/config -r tsconfig-paths/register ./app/tools/gen-meta.ts",
     "update-rpd-models": "ts-node-esm --project ./tsconfig-node.json -r dotenv/config -r tsconfig-paths/register ./app/tools/update-rpd-models.ts",
+    "sync-db-schema": "cross-env NODE_ENV=development ts-node-esm -r dotenv/config -r tsconfig-paths/register ./app/tools/sync-db-schema.ts",
     "test": "echo \"Error: no test specified\""
   },
   "keywords": [],

@@ -19,7 +19,7 @@ import type { RapidFormAction, RapidFormRockConfig } from "../rapid-form/rapid-f
 import type { RapidSelectConfig } from "../rapid-select/rapid-select-types";
 import { RapidOptionFieldRendererConfig } from "../rapid-option-field-renderer/rapid-option-field-renderer-types";
 import { searchParamsToFilters } from "../../functions/searchParamsToFilters";
-import { EntityTableSelectRockConfig } from "../rapid-entity-table-select/entity-table-select-types";
+import { RapidEntityTableSelectRockConfig } from "../rapid-entity-table-select/rapid-entity-table-select-types";
 import { RapidExtStorage } from "../../utils/storage-utility";
 import { getExtensionLocaleStringResource, getMetaDictionaryEntryLocaleName, getMetaPropertyLocaleName } from "../../helpers/i18nHelper";
 
@@ -143,7 +143,7 @@ export function generateSearchFormItemForRelationProperty(framework: Framework, 
   const isMultiple =
     field.relation === "many" || formItemConfig.multipleValues || formItemConfig.filterMode === "in" || formItemConfig.filterMode === "overlap";
 
-  let formControlProps: Partial<EntityTableSelectRockConfig> = {
+  let formControlProps: Partial<RapidEntityTableSelectRockConfig> = {
     allowClear: !formItemConfig.required,
     placeholder: formItemConfig.placeholder,
     mode: isMultiple ? "multiple" : undefined,

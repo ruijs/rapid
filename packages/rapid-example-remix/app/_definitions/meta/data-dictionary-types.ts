@@ -8,6 +8,15 @@ export type BugLevel =
   ;
 
 /**
+ * 定时任务运行结果
+ */
+export type CronJobRunningResult =
+  | 'success'
+  | 'failed'
+  | 'error'
+  ;
+
+/**
  * 启用/禁用状态
  */
 export type EnabledDisabledState =

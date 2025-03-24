@@ -12,6 +12,7 @@ import PmProjectDetailsPage from '../models/pages/PmProjectDetailsPage';
 import PmProjectListPage from '../models/pages/PmProjectListPage';
 import PmTaskListPage from '../models/pages/PmTaskListPage';
 import sys$SysActionListPage from '../models/pages/sys/SysActionListPage';
+import sys$SysCronJobListPage from '../models/pages/sys/SysCronJobListPage';
 
 export default [
   BaseShiftListPage,
@@ -27,4 +28,5 @@ export default [
   PmProjectListPage,
   PmTaskListPage,
   sys$SysActionListPage,
+  sys$SysCronJobListPage,
 ] as TRapidPageLoader[];
