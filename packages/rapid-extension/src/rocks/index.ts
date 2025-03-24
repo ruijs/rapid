@@ -54,7 +54,7 @@ import SonicToolbarSelectEntityButton from "./sonic-toolbar-select-entity-button
 
 // 自定义组件
 import RapidTableSelect from "./rapid-table-select/RapidTableSelect";
-import RapidEntityTableSelect from "./rapid-entity-table-select/EntityTableSelect";
+import RapidEntityTableSelect from "./rapid-entity-table-select/RapidEntityTableSelect";
 import RapidEditableTable from "./rapid-editable-table/EditableTable";
 import SonicEntityTableSelect from "./sonic-entity-table-select/SonicEntityTableSelect";
 import RapidResizableLayout from "./rapid-resizable-layout/RapidResizableLayout";

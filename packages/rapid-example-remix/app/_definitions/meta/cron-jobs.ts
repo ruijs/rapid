@@ -1,6 +1,6 @@
 import type { CronJobConfiguration as TCronJobConfiguration } from '@ruiapp/rapid-core';
-import testJob from '../models/cron-jobs/testJob';
+import cacheTestJob from '../models/cron-jobs/cacheTestJob';
 
 export default [
-  testJob,
+  cacheTestJob,
 ] as TCronJobConfiguration[];

@@ -13,7 +13,7 @@ import type { RapidFormRockConfig } from "../rapid-form/rapid-form-types";
 import type { RapidSelectConfig } from "../rapid-select/rapid-select-types";
 import { RapidOptionFieldRendererConfig } from "../rapid-option-field-renderer/rapid-option-field-renderer-types";
 import { message } from "antd";
-import { EntityTableSelectRockConfig } from "../rapid-entity-table-select/entity-table-select-types";
+import { RapidEntityTableSelectRockConfig } from "../rapid-entity-table-select/rapid-entity-table-select-types";
 import { generateEntityDetailStoreConfig } from "../../helpers/entityStoreHelper";
 import { getMetaDictionaryEntryLocaleName, getMetaPropertyLocaleName } from "../../helpers/i18nHelper";
 
@@ -136,7 +136,7 @@ export function generateDataFormItemForRelationProperty(option: GenerateEntityFo
     ...formItemConfig.rendererProps,
   };
 
-  let formControlProps: Partial<EntityTableSelectRockConfig> = {
+  let formControlProps: Partial<RapidEntityTableSelectRockConfig> = {
     allowClear: !formItemConfig.required,
     placeholder: formItemConfig.placeholder,
     valueFieldName: "id",

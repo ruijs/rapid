@@ -8,6 +8,7 @@
       "request": "launch",
       "name": "Launch Program",
       "type": "node",
+      "outputCapture": "std",
       "cwd": "${workspaceFolder}/packages/rapid-example-remix",
       "program": "index.ts",
       "runtimeExecutable": "node",

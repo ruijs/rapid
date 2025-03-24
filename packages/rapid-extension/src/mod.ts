@@ -85,6 +85,6 @@ export * from "./rocks/sonic-toolbar-refresh-button/sonic-toolbar-refresh-button
 export * from "./rocks/sonic-toolbar-select-entity-button/sonic-toolbar-select-entity-button-types";
 export * from "./rocks/rapid-editable-table/editable-table-types";
 export * from "./rocks/rapid-table-select/rapid-table-select-types";
-export * from "./rocks/rapid-entity-table-select/entity-table-select-types";
+export * from "./rocks/rapid-entity-table-select/rapid-entity-table-select-types";
 export * from "./rocks/rapid-rich-text-editor/rich-text-editor-types";
 export * from "./rocks/rapid-rich-text-renderer/rich-text-renderer-types";

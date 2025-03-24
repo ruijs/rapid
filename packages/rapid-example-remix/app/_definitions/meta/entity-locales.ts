@@ -86,6 +86,10 @@ const entityLocales: Record<string, {translation: Record<string, any>}> = {
         fields: {
         },
       },
+      "SysCronJob": {
+        fields: {
+        },
+      },
       },
     },
   },
@@ -176,6 +180,10 @@ const entityLocales: Record<string, {translation: Record<string, any>}> = {
         fields: {
         },
       },
+      "SysCronJob": {
+        fields: {
+        },
+      },
       },
     },
   },
@@ -237,6 +245,10 @@ const entityLocales: Record<string, {translation: Record<string, any>}> = {
         },
       },
       "SysActionGroup": {
+        fields: {
+        },
+      },
+      "SysCronJob": {
         fields: {
         },
       },

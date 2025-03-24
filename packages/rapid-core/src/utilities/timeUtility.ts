@@ -11,3 +11,7 @@ export function getNowStringWithTimezone() {
 export function getDateString(timeString) {
   return dayjs(timeString).format("YYYY-MM-DD");
 }
+
+export function formatDateTimeWithTimezone(source: any) {
+  return dayjs(source).format("YYYY-MM-DD HH:mm:ss.SSSZ");
+}

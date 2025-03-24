@@ -16,6 +16,10 @@ const dictionaryLocales: Record<string, {translation: Record<string, any>}> = {
             },
           },
         },
+        "CronJobRunningResult": {
+          entries: {
+          },
+        },
         "EnabledDisabledState": {
           name: "Enabled/Disabled State",
           entries: {
@@ -135,6 +139,10 @@ const dictionaryLocales: Record<string, {translation: Record<string, any>}> = {
             },
           },
         },
+        "CronJobRunningResult": {
+          entries: {
+          },
+        },
         "EnabledDisabledState": {
           name: "启用/禁用状态",
           entries: {
@@ -252,6 +260,10 @@ const dictionaryLocales: Record<string, {translation: Record<string, any>}> = {
             "suggest": {
               name: "แนะนำ",
             },
+          },
+        },
+        "CronJobRunningResult": {
+          entries: {
           },
         },
         "EnabledDisabledState": {

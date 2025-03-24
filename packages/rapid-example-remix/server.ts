@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import process from "process";
 import path from "path";
-import express from "express";
+import express, { Application } from "express";
 import compression from "compression";
-import { format, transports } from "winston";
+import { format, Logger, transports } from "winston";
 import expressWinston from "express-winston";
 import { createRequestHandler } from "@remix-run/express";
 import { consoleFormat, createAppLogger } from "./rapid-logger";
@@ -37,49 +37,34 @@ import cronJobs from "./app/_definitions/meta/cron-jobs";
 import "dotenv/config";
 import RedisCacheProvider from "./rapid-facilities/redis/RedisCacheProvider";
 import RedisClientFactory from "./rapid-facilities/redis/RedisClientFactory";
+import { getRapidAppDefinitionFromRapidServer } from "./app/utils/app-definition-utility";
+import { parseBoolean } from "./app/utils/boolean-utils";
 
 const isDevelopmentEnv = process.env.NODE_ENV === "development";
 
 const BUILD_DIR = path.join(process.cwd(), "build");
 
-export async function startServer() {
-  const logLevel = process.env.RAPID_LOG_LEVEL || (isDevelopmentEnv ? "debug" : "info");
+const envFromProcess = process.env;
+const env = {
+  get: (name: string, defaultValue = "") => {
+    return envFromProcess[name] || defaultValue;
+  },
+};
+
+export function createLogger() {
+  const logLevel = env.get("RAPID_LOG_LEVEL", isDevelopmentEnv ? "debug" : "info");
   const logger = createAppLogger({
     level: logLevel,
   });
-  const app = express();
 
-  app.use(compression());
+  return logger;
+}
 
-  // http://expressjs.com/en/advanced/best-practice-security.html#at-a-minimum-disable-x-powered-by-header
-  app.disable("x-powered-by");
-
-  // Remix fingerprints its assets so we can cache forever.
-  app.use("/build", express.static("public/build", { immutable: true, maxAge: "1y" }));
-
-  // Everything else (like favicon.ico) is cached for an hour. You may want to be
-  // more aggressive with this caching.
-  app.use(express.static("public", { maxAge: "1h" }));
-
-  if (isDevelopmentEnv) {
-    app.use(
-      expressWinston.logger({
-        format: format.combine(format.timestamp(), format.splat()),
-        transports: [
-          new transports.Console({
-            format: consoleFormat(),
-          }),
-        ],
-        meta: false,
-        expressFormat: true,
-      }),
-    );
-  }
-
-  const envFromProcess = process.env;
+export async function createRapidServer(logger: Logger, envs: any) {
+  envs = Object.assign({}, process.env, envs || {});
   const env = {
     get: (name: string, defaultValue = "") => {
-      return envFromProcess[name] || defaultValue;
+      return envs[name] || defaultValue;
     },
   };
 
@@ -112,6 +97,8 @@ export async function startServer() {
     maxConnections: rapidConfig.dbPoolMaxConnections,
   });
 
+  const disableCronJob = parseBoolean(env.get("DISABLE_CRON_JOB"));
+
   const rapidServer = new RapidServer({
     logger,
     databaseAccessor,
@@ -138,7 +125,7 @@ export async function startServer() {
     ],
     plugins: [
       new MetaManagePlugin({
-        syncDatabaseSchemaOnLoaded: false,
+        syncDatabaseSchemaOnLoaded: parseBoolean(env.get("RAPID_SYNC_DATABASE_SCHEMA_ON_LOADED", "false")),
       }),
       new DataManagePlugin(),
       new RouteManagePlugin(),
@@ -155,7 +142,7 @@ export async function startServer() {
       }),
       new EntityAccessControlPlugin(),
       new StateMachinePlugin(),
-      new CronJobPlugin(),
+      ...(disableCronJob ? [] : [new CronJobPlugin()]),
       new MailPlugin({
         smtpServer: {
           host: rapidConfig.smtpHost,
@@ -170,9 +157,42 @@ export async function startServer() {
     entityWatchers,
     cronJobs,
   });
-  await rapidServer.start();
 
-  const rapidRequestHandler = createRapidRequestHandler(rapidServer);
+  return rapidServer;
+}
+
+export async function createExpressApp(rapidServer: RapidServer) {
+  const app = express();
+
+  app.use(compression());
+
+  // http://expressjs.com/en/advanced/best-practice-security.html#at-a-minimum-disable-x-powered-by-header
+  app.disable("x-powered-by");
+
+  // Remix fingerprints its assets so we can cache forever.
+  app.use("/build", express.static("public/build", { immutable: true, maxAge: "1y" }));
+
+  // Everything else (like favicon.ico) is cached for an hour. You may want to be
+  // more aggressive with this caching.
+  app.use(express.static("public", { maxAge: "1h" }));
+
+  const expressLogDisabled = parseBoolean(env.get("EXPRESS_LOG_DISABLED", "false"));
+  if (isDevelopmentEnv || !expressLogDisabled) {
+    app.use(
+      expressWinston.logger({
+        format: format.combine(format.timestamp(), format.splat()),
+        transports: [
+          new transports.Console({
+            format: consoleFormat(),
+          }),
+        ],
+        meta: false,
+        expressFormat: true,
+      }),
+    );
+  }
+
+  const rapidRequestHandler = createRapidRequestHandler(rapidServer as any);
   app.use("/api", (req, res, next) => {
     rapidRequestHandler(req, res, next);
   });
@@ -182,21 +202,33 @@ export async function startServer() {
     isDevelopmentEnv
       ? (req, res, next) => {
           purgeRequireCache();
-
-          return createRequestHandler({
-            build: require(BUILD_DIR),
-            mode: process.env.NODE_ENV,
-          })(req, res, next);
+          return createRemixRequestHandler(rapidServer)(req, res, next);
         }
-      : createRequestHandler({
-          build: require(BUILD_DIR),
-          mode: process.env.NODE_ENV,
-        }),
+      : createRemixRequestHandler(rapidServer),
   );
-  const port = process.env.PORT || 8000;
+
+  return app;
+}
+
+export async function startWebServer(logger: Logger, rapidServer: RapidServer, app: Application) {
+  const port = process.env.PORT || 3000;
 
   app.listen(port, () => {
     logger.info("Express server listening on port %d", port);
+  });
+}
+
+function createRemixRequestHandler(rapidServer: RapidServer) {
+  const appDefinition = getRapidAppDefinitionFromRapidServer(rapidServer);
+  return createRequestHandler({
+    build: require(BUILD_DIR),
+    mode: process.env.NODE_ENV,
+    getLoadContext(req, res) {
+      return {
+        rapidServer,
+        appDefinition,
+      };
+    },
   });
 }
 

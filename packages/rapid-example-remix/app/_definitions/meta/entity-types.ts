@@ -1,5 +1,6 @@
 import type {
   BugLevel,
+  CronJobRunningResult,
   EnabledDisabledState,
   PmProjectState,
   TaskState,
@@ -578,3 +579,98 @@ export interface SysActionGroup {
  * 系统操作分组
  */
 export type SaveSysActionGroupInput = Omit<SysActionGroup, 'id' | 'createdAt' | 'createdBy' | 'updatedAt' | 'updatedBy'>;
+
+/**
+ * 定时任务
+ */
+export interface SysCronJob {
+  /**
+   * id
+   */
+  id: number;
+  /**
+   * Code
+   */
+  code: string;
+  /**
+   * 描述
+   */
+  description?: string;
+  /**
+   * cron表达式
+   */
+  cronTime?: string;
+  /**
+   * 是否禁用
+   */
+  disabled: boolean;
+  /**
+   * 任务选项
+   */
+  jobOptions?: Record<string, any>;
+  /**
+   * 是否正在运行
+   */
+  isRunning: boolean;
+  /**
+   * 下次运行时间
+   */
+  nextRunningTime?: string;
+  /**
+   * 最后运行时间
+   */
+  lastRunningTime?: string;
+  /**
+   * 最后运行结果
+   */
+  lastRunningResult?: CronJobRunningResult;
+  /**
+   * 错误信息
+   */
+  lastError?: string;
+  /**
+   * 操作处理器编码
+   */
+  actionHandlerCode?: string;
+  /**
+   * 操作处理函数
+   */
+  handler?: string;
+  /**
+   * 处理选项
+   */
+  handleOptions?: Record<string, any>;
+  /**
+   * 错误处理函数
+   */
+  onError?: string;
+  /**
+   * 创建时间
+   */
+  createdAt?: string;
+  /**
+   * 创建人
+   */
+  createdBy?: Partial<OcUser>;
+  /**
+   * 更新时间
+   */
+  updatedAt?: string;
+  /**
+   * 更新人
+   */
+  updatedBy?: Partial<OcUser>;
+  /**
+   * 删除时间
+   */
+  deletedAt?: string;
+  /**
+   * 删除人
+   */
+  deletedBy?: Partial<OcUser>;
+}
+
+/**
+ * 定时任务
+ */
+export type SaveSysCronJobInput = Omit<SysCronJob, 'id' | 'createdAt' | 'createdBy' | 'updatedAt' | 'updatedBy'>;

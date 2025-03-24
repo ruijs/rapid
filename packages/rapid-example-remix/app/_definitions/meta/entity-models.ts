@@ -10,6 +10,7 @@ import pm$PmProject from '../models/entities/pm/PmProject';
 import pm$PmTask from '../models/entities/pm/PmTask';
 import sys$SysAction from '../models/entities/sys/SysAction';
 import sys$SysActionGroup from '../models/entities/sys/SysActionGroup';
+import sys$SysCronJob from '../models/entities/sys/SysCronJob';
 
 const entityDefinitions = [
   base$BaseShift,
@@ -22,6 +23,7 @@ const entityDefinitions = [
   pm$PmTask,
   sys$SysAction,
   sys$SysActionGroup,
+  sys$SysCronJob,
 ];
 const configuredEntities:TRapidEntity[] = [
   autoConfigureRapidEntity(base$BaseShift, entityDefinitions),
@@ -34,5 +36,6 @@ const configuredEntities:TRapidEntity[] = [
   autoConfigureRapidEntity(pm$PmTask, entityDefinitions),
   autoConfigureRapidEntity(sys$SysAction, entityDefinitions),
   autoConfigureRapidEntity(sys$SysActionGroup, entityDefinitions),
+  autoConfigureRapidEntity(sys$SysCronJob, entityDefinitions),
 ];
 export default configuredEntities;
