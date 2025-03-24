@@ -6,8 +6,8 @@ export default {
   valueType: "string",
   level: "sys",
   entries: [
-    { name: "成功", value: "success" },
-    { name: "失败", value: "failed" },
-    { name: "出错", value: "error" },
+    { name: "成功", value: "success", color: "green" },
+    { name: "失败", value: "failed", color: "red" },
+    { name: "出错", value: "error", color: "orange" },
   ],
 } as RapidDataDictionary;

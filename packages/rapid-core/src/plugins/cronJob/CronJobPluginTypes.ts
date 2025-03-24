@@ -18,6 +18,7 @@ export type NamedCronJobInstance = {
 export type JobRunningResult = "success" | "failed" | "error";
 
 export type SysCronJob = {
+  id: number;
   code: string;
   description: string;
   cronTime: string;
@@ -27,7 +28,8 @@ export type SysCronJob = {
   nextRunningTime: string;
   lastRunningTime: string;
   lastRunningResult?: JobRunningResult;
-  lastError?: string;
+  lastErrorMessage?: string;
+  lastErrorStack?: string;
   actionHandlerCode?: string;
   handler?: string;
   handleOptions?: Record<string, any>;

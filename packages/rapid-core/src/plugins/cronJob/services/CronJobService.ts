@@ -1,11 +1,12 @@
 import { CronJob } from "cron";
 import { IRpdServer } from "~/core/server";
-import { find, isNil, Many } from "lodash";
+import { find, isNil, isString, Many } from "lodash";
 import { RouteContext } from "~/core/routeContext";
 import { validateLicense } from "~/helpers/licenseHelper";
-import { NamedCronJobInstance, SysCronJob, UpdateJobConfigOptions } from "../CronJobPluginTypes";
+import { JobRunningResult, NamedCronJobInstance, SysCronJob, UpdateJobConfigOptions } from "../CronJobPluginTypes";
 import { CronJobConfiguration } from "~/types/cron-job-types";
 import { ActionHandlerContext } from "~/core/actionHandler";
+import { getNowString, getNowStringWithTimezone } from "~/utilities/timeUtility";
 
 export default class CronJobService {
   #server: IRpdServer;
@@ -75,7 +76,9 @@ export default class CronJobService {
   async tryExecuteJob(job: CronJobConfiguration) {
     const server = this.#server;
     const logger = server.getLogger();
-    logger.info(`Executing cron job '${job.code}'...`);
+
+    const jobCode = job.code;
+    logger.info(`Executing cron job '${jobCode}'...`);
 
     let handlerContext: ActionHandlerContext = {
       logger,
@@ -86,19 +89,47 @@ export default class CronJobService {
       input: null,
     };
 
+    let result: JobRunningResult;
+    let lastErrorMessage: string | null;
+    let lastErrorStack: string | null;
     try {
       await this.executeJob(handlerContext, job);
-      logger.info(`Completed cron job '${job.code}'...`);
+      result = "success";
+      logger.info(`Completed cron job '${jobCode}'...`);
     } catch (ex: any) {
-      logger.error('Cron job "%s" execution error: %s', job.code, ex.message);
+      logger.error('Cron job "%s" execution error: %s', jobCode, ex.message);
+      if (isString(ex)) {
+        lastErrorMessage = ex;
+      } else {
+        lastErrorMessage = ex.message;
+        lastErrorStack = ex.stack;
+      }
+      result = "failed";
 
       if (job.onError) {
         try {
           await job.onError(handlerContext, ex);
         } catch (ex) {
-          logger.error('Error handler of cron job "%s" execution failed: %s', job.code, ex.message);
+          logger.error('Error handler of cron job "%s" execution failed: %s', jobCode, ex.message);
         }
       }
+    }
+
+    const cronJobManager = server.getEntityManager<SysCronJob>("sys_cron_job");
+    const cronJobInDb = await cronJobManager.findEntity({
+      filters: [{ operator: "eq", field: "code", value: jobCode }],
+    });
+
+    if (cronJobInDb) {
+      await cronJobManager.updateEntityById({
+        id: cronJobInDb.id,
+        entityToSave: {
+          lastRunningResult: result,
+          lastRunningTime: getNowStringWithTimezone(),
+          lastErrorMessage,
+          lastErrorStack,
+        } as Partial<SysCronJob>,
+      });
     }
   }
 

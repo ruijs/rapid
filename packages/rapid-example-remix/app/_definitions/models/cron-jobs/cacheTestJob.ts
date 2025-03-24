@@ -11,6 +11,10 @@ export default {
   async handler(ctx: ActionHandlerContext) {
     const { server, logger } = ctx;
 
+    if (new Date().getSeconds() > 30) {
+      throw new Error("Ops...");
+    }
+
     const cache = await server.getFacility<Cache, CreateCacheFacilityOptions>("cache", { providerName: "redis" });
     let value = await cache.getObject("foo");
     if (value) {
