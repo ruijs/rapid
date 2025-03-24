@@ -6,7 +6,7 @@ import { validateLicense } from "~/helpers/licenseHelper";
 import { JobRunningResult, NamedCronJobInstance, SysCronJob, UpdateJobConfigOptions } from "../CronJobPluginTypes";
 import { CronJobConfiguration } from "~/types/cron-job-types";
 import { ActionHandlerContext } from "~/core/actionHandler";
-import { getNowString, getNowStringWithTimezone } from "~/utilities/timeUtility";
+import { formatDateTimeWithTimezone, getNowStringWithTimezone } from "~/utilities/timeUtility";
 
 export default class CronJobService {
   #server: IRpdServer;
@@ -35,11 +35,53 @@ export default class CronJobService {
     });
   }
 
+  async #startJobInstance(routeContext: RouteContext, jobConfiguration: CronJobConfiguration, jobInstance: CronJob) {
+    const server = this.#server;
+    const jobCode = jobConfiguration.code;
+    const cronJobManager = server.getEntityManager<SysCronJob>("sys_cron_job");
+    const cronJobInDb = await cronJobManager.findEntity({
+      routeContext,
+      filters: [{ operator: "eq", field: "code", value: jobCode }],
+    });
+
+    if (cronJobInDb) {
+      let nextRunningTime: string | null;
+      nextRunningTime = formatDateTimeWithTimezone(jobInstance.nextDate().toISO());
+
+      await cronJobManager.updateEntityById({
+        routeContext,
+        id: cronJobInDb.id,
+        entityToSave: {
+          nextRunningTime,
+        } as Partial<SysCronJob>,
+      });
+    }
+
+    jobInstance.start();
+  }
+
+  async #setJobNextRunningTime(routeContext: RouteContext, jobCode: string, nextRunningTime: string | null) {
+    const server = this.#server;
+    const cronJobManager = server.getEntityManager<SysCronJob>("sys_cron_job");
+    const cronJobInDb = await cronJobManager.findEntity({
+      routeContext,
+      filters: [{ operator: "eq", field: "code", value: jobCode }],
+    });
+    await cronJobManager.updateEntityById({
+      routeContext,
+      id: cronJobInDb.id,
+      entityToSave: {
+        nextRunningTime,
+      } as Partial<SysCronJob>,
+    });
+  }
+
   /**
    * 重新加载定时任务
    */
   async reloadJobs() {
     const server = this.#server;
+    const routeContext = RouteContext.newSystemOperationContext(server);
 
     if (this.#namedJobInstances) {
       for (const job of this.#namedJobInstances) {
@@ -50,24 +92,26 @@ export default class CronJobService {
     this.#namedJobInstances = [];
 
     const cronJobManager = server.getEntityManager<SysCronJob>("sys_cron_job");
-    const cronJobConfigurationsInDb = await cronJobManager.findEntities({});
+    const cronJobConfigurationsInDb = await cronJobManager.findEntities({ routeContext });
 
     const cronJobConfigurations = server.listCronJobs();
     for (const cronJobConfig of cronJobConfigurations) {
-      const jobConfigInDb = find(cronJobConfigurationsInDb, { code: cronJobConfig.code });
+      const jobCode = cronJobConfig.code;
+      const jobConfigInDb = find(cronJobConfigurationsInDb, { code: jobCode });
       if (jobConfigInDb) {
         overrideJobConfig(cronJobConfig, jobConfigInDb);
       }
 
       if (cronJobConfig.disabled) {
+        await this.#setJobNextRunningTime(routeContext, jobCode, null);
         continue;
       }
 
       const jobInstance = this.#createJobInstance(cronJobConfig);
-      jobInstance.start();
+      await this.#startJobInstance(routeContext, cronJobConfig, jobInstance);
 
       this.#namedJobInstances.push({
-        code: cronJobConfig.code,
+        code: jobCode,
         instance: jobInstance,
       });
     }
@@ -121,9 +165,16 @@ export default class CronJobService {
     });
 
     if (cronJobInDb) {
+      let nextRunningTime: string | null;
+      const namedJobInstance = find(this.#namedJobInstances, { code: jobCode });
+      if (namedJobInstance && namedJobInstance.instance) {
+        nextRunningTime = formatDateTimeWithTimezone(namedJobInstance.instance.nextDate().toISO());
+      }
+
       await cronJobManager.updateEntityById({
         id: cronJobInDb.id,
         entityToSave: {
+          nextRunningTime,
           lastRunningResult: result,
           lastRunningTime: getNowStringWithTimezone(),
           lastErrorMessage,
@@ -149,7 +200,7 @@ export default class CronJobService {
     }
   }
 
-  async updateJobConfig(options: UpdateJobConfigOptions) {
+  async updateJobConfig(routeContext: RouteContext, options: UpdateJobConfigOptions) {
     const server = this.#server;
     const cronJobs = server.listCronJobs();
     const jobCode = options.code;
@@ -174,9 +225,11 @@ export default class CronJobService {
       namedJobInstance.instance = null;
     }
 
-    if (!cronJobConfig.disabled) {
+    if (cronJobConfig.disabled) {
+      await this.#setJobNextRunningTime(routeContext, jobCode, null);
+    } else {
       const jobInstance = this.#createJobInstance(cronJobConfig);
-      jobInstance.start();
+      await this.#startJobInstance(routeContext, cronJobConfig, jobInstance);
 
       if (namedJobInstance) {
         namedJobInstance.instance = jobInstance;
