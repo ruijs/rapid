@@ -30,7 +30,7 @@ export default class CronJobService {
       ...(job.jobOptions || {}),
       cronTime: job.cronTime,
       onTick: async () => {
-        await this.tryExecuteJob(job);
+        await this.executeJob(job);
       },
     });
   }
@@ -117,7 +117,12 @@ export default class CronJobService {
     }
   }
 
-  async tryExecuteJob(job: CronJobConfiguration) {
+  /**
+   * 执行指定任务
+   * @param job
+   * @param input
+   */
+  async executeJob(job: CronJobConfiguration, input?: any) {
     const server = this.#server;
     const logger = server.getLogger();
 
@@ -130,14 +135,21 @@ export default class CronJobService {
       next: null,
       server,
       applicationConfig: null,
-      input: null,
+      input,
     };
 
     let result: JobRunningResult;
     let lastErrorMessage: string | null;
     let lastErrorStack: string | null;
     try {
-      await this.executeJob(handlerContext, job);
+      validateLicense(server);
+
+      if (job.actionHandlerCode) {
+        const actionHandler = server.getActionHandlerByCode(job.code);
+        await actionHandler(handlerContext, job.handleOptions);
+      } else {
+        await job.handler(handlerContext, job.handleOptions);
+      }
       result = "success";
       logger.info(`Completed cron job '${jobCode}'...`);
     } catch (ex: any) {
@@ -159,44 +171,32 @@ export default class CronJobService {
       }
     }
 
-    const cronJobManager = server.getEntityManager<SysCronJob>("sys_cron_job");
-    const cronJobInDb = await cronJobManager.findEntity({
-      filters: [{ operator: "eq", field: "code", value: jobCode }],
-    });
-
-    if (cronJobInDb) {
-      let nextRunningTime: string | null;
-      const namedJobInstance = find(this.#namedJobInstances, { code: jobCode });
-      if (namedJobInstance && namedJobInstance.instance) {
-        nextRunningTime = formatDateTimeWithTimezone(namedJobInstance.instance.nextDate().toISO());
-      }
-
-      await cronJobManager.updateEntityById({
-        id: cronJobInDb.id,
-        entityToSave: {
-          nextRunningTime,
-          lastRunningResult: result,
-          lastRunningTime: getNowStringWithTimezone(),
-          lastErrorMessage,
-          lastErrorStack,
-        } as Partial<SysCronJob>,
+    try {
+      const cronJobManager = server.getEntityManager<SysCronJob>("sys_cron_job");
+      const cronJobInDb = await cronJobManager.findEntity({
+        filters: [{ operator: "eq", field: "code", value: jobCode }],
       });
-    }
-  }
 
-  /**
-   * 执行指定任务
-   * @param job
-   */
-  async executeJob(handlerContext: ActionHandlerContext, job: CronJobConfiguration) {
-    const server = this.#server;
-    validateLicense(server);
+      if (cronJobInDb) {
+        let nextRunningTime: string | null;
+        const namedJobInstance = find(this.#namedJobInstances, { code: jobCode });
+        if (namedJobInstance && namedJobInstance.instance) {
+          nextRunningTime = formatDateTimeWithTimezone(namedJobInstance.instance.nextDate().toISO());
+        }
 
-    if (job.actionHandlerCode) {
-      const actionHandler = server.getActionHandlerByCode(job.code);
-      await actionHandler(handlerContext, job.handleOptions);
-    } else {
-      await job.handler(handlerContext, job.handleOptions);
+        await cronJobManager.updateEntityById({
+          id: cronJobInDb.id,
+          entityToSave: {
+            nextRunningTime,
+            lastRunningResult: result,
+            lastRunningTime: getNowStringWithTimezone(),
+            lastErrorMessage,
+            lastErrorStack,
+          } as Partial<SysCronJob>,
+        });
+      }
+    } catch (ex: any) {
+      logger.error("Failed to saving cron job running result. job code: %s, error: %s", jobCode, ex.message);
     }
   }
 

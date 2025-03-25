@@ -72,11 +72,6 @@ const page: RapidPage = {
         },
         {
           type: "auto",
-          code: "isRunning",
-          width: "100px",
-        },
-        {
-          type: "auto",
           code: "nextRunningTime",
           width: "160px",
         },
@@ -118,6 +113,23 @@ const page: RapidPage = {
           $exps: {
             _hidden: "!$slot.record.disabled",
           },
+        },
+        {
+          $type: "rapidTableAction",
+          code: "run",
+          actionText: "立即执行",
+          confirmText: "您确定要立即执行此任务吗？",
+          onAction: [
+            {
+              $action: "sendHttpRequest",
+              url: `/api/svc/runCronJob`,
+              method: "POST",
+              data: {},
+              $exps: {
+                "data.code": "$event.args[0].record.code",
+              },
+            },
+          ],
         },
       ],
       editForm: cloneDeep(formConfig),

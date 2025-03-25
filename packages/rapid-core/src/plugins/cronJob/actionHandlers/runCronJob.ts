@@ -6,12 +6,12 @@ import CronJobService from "../services/CronJobService";
 export const code = "runCronJob";
 
 export async function handler(plugin: CronJobPlugin, ctx: ActionHandlerContext, options: RunCronJobActionHandlerOptions) {
-  const { server, routerContext } = ctx;
-  const { response } = routerContext;
+  const { server, routerContext: routeContext } = ctx;
+  const { response } = routeContext;
 
   const input: RunCronJobInput = ctx.input;
 
-  if (options.code) {
+  if (options?.code) {
     input.code = options.code;
   }
 
@@ -20,20 +20,13 @@ export async function handler(plugin: CronJobPlugin, ctx: ActionHandlerContext, 
   }
 
   const cronJobService = server.getService<CronJobService>("cronJobService");
-  const job = cronJobService.getJobConfigurationByCode(input.code);
-  if (!job) {
+  const jobConfig = cronJobService.getJobConfigurationByCode(input.code);
+  if (!jobConfig) {
     throw new Error(`Cron job with code '${input.code}' was not found.`);
   }
 
-  let jobExecutionContext: ActionHandlerContext = {
-    logger: server.getLogger(),
-    routerContext,
-    next: null,
-    server,
-    applicationConfig: null,
-    input: input.input,
-  };
-  await cronJobService.executeJob(jobExecutionContext, job);
+  // running job in background.
+  cronJobService.executeJob(jobConfig, input.input);
 
   response.json({});
 }
