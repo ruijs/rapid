@@ -1,6 +1,6 @@
 {
   "name": "@ruiapp/rapid-core",
-  "version": "0.8.11",
+  "version": "0.8.12",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
