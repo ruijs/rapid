@@ -16,7 +16,7 @@ const dictionaryLocales: Record<string, {translation: Record<string, any>}> = {
             },
           },
         },
-        "CronJobRunningResult": {
+        "SysCronJobRunningResult": {
           entries: {
           },
         },
@@ -139,7 +139,7 @@ const dictionaryLocales: Record<string, {translation: Record<string, any>}> = {
             },
           },
         },
-        "CronJobRunningResult": {
+        "SysCronJobRunningResult": {
           entries: {
           },
         },
@@ -262,7 +262,7 @@ const dictionaryLocales: Record<string, {translation: Record<string, any>}> = {
             },
           },
         },
-        "CronJobRunningResult": {
+        "SysCronJobRunningResult": {
           entries: {
           },
         },

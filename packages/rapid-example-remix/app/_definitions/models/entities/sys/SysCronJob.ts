@@ -58,7 +58,7 @@ const entity: RapidEntity<TEntitySingularCodes, TDictionaryCodes> = {
       code: "lastRunningResult",
       name: "最后运行结果",
       type: "option",
-      dataDictionary: "CronJobRunningResult",
+      dataDictionary: "SysCronJobRunningResult",
     },
     {
       code: "lastError",

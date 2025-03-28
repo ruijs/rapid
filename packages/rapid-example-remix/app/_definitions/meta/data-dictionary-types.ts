@@ -10,7 +10,7 @@ export type BugLevel =
 /**
  * 定时任务运行结果
  */
-export type CronJobRunningResult =
+export type SysCronJobRunningResult =
   | 'success'
   | 'failed'
   | 'error'
