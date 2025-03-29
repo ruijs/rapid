@@ -4,6 +4,9 @@ import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityTableSelectMeta from "./RapidEntityTableSelectMeta";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { useEffect } from "react";
+import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
+import { autoConfigTableColumnToRockConfig } from "../rapid-entity-list/RapidEntityList";
+import { filter, map, uniq } from "lodash";
 
 const bus = new EventEmitter();
 
@@ -16,11 +19,15 @@ export default {
     }
   },
   Renderer(context, props) {
-    const { entityCode, requestParams, ...restProps } = props;
+    const { entityCode, requestParams, columns, queryProperties, extraProperties, relations, ...rapidTableSelectProps } = props;
 
-    let entityConfig = null;
+    let mainEntity = null;
     if (entityCode) {
-      entityConfig = rapidAppDefinition.getEntityByCode(entityCode);
+      mainEntity = rapidAppDefinition.getEntityByCode(entityCode);
+      if (!mainEntity) {
+        const errorRockConfig = generateRockConfigOfError(new Error(`Entitiy with code '${entityCode}' not found.`));
+        return renderRock({ context, rockConfig: errorRockConfig });
+      }
     }
 
     useEffect(() => {
@@ -45,16 +52,30 @@ export default {
       };
     }, [props.$id]);
 
+    const tableColumnRocks: RockConfig[] = columns.map((column) => autoConfigTableColumnToRockConfig(context, props, column, mainEntity));
+
+    const properties: string[] = uniq(
+      queryProperties || [
+        "id",
+        ...map(
+          filter(columns, (column) => !!column.code),
+          (column) => column.code,
+        ),
+        ...(extraProperties || []),
+      ],
+    );
+
     const rockConfig: RockConfig = {
-      ...restProps,
+      ...rapidTableSelectProps,
       $id: `${props.$id}-tableselect`,
       $type: "rapidTableSelect",
+      columns: tableColumnRocks,
       requestConfig: {
-        url: `/${entityConfig?.namespace}/${entityConfig?.pluralCode}/operations/find`,
+        url: `/${mainEntity?.namespace}/${mainEntity?.pluralCode}/operations/find`,
         method: "post",
         params: {
-          properties: entityConfig?.fields?.map((f) => f.code) || [],
-          ...(requestParams || {}),
+          properties,
+          relations,
         },
       },
       $exps: props.$exps,

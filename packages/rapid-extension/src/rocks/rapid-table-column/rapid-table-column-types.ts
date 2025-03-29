@@ -5,7 +5,7 @@ import { RapidFieldType } from "../../types/rapid-entity-types";
  * 表格字段列
  */
 export type RapidTableColumnConfig = {
-  type?: "auto" | "customize" | "text" | "number" | "date" | "datetime" | "link";
+  type?: "auto" | "link";
   code: string;
   key?: string;
 
