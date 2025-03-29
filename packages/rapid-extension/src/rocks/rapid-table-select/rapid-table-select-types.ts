@@ -9,6 +9,10 @@ export interface RapidTableSelectRockConfig extends SimpleRockConfig {
   allowClear?: boolean;
   disabled?: boolean;
   bordered?: boolean;
+
+  /**
+   * 分页大小。小于或者等于0时表示不分页。
+   */
   pageSize?: number;
   mode?: "multiple" | "single";
   listFilterFields?: (string | FilterFieldConfig)[]; // 默认 name、code
@@ -17,8 +21,11 @@ export interface RapidTableSelectRockConfig extends SimpleRockConfig {
    * @deprecated use labelRendererType
    */
   listTextFormat?: string;
-  listTextFieldName?: string; // 默认 name
-  listValueFieldName?: string; // 默认 id
+  listTextFieldName?: string;
+  /**
+   * 默认 id
+   */
+  listValueFieldName?: string;
   columns?: RapidTableColumnConfig[];
   dropdownMatchSelectWidth?: number;
   requestConfig: {

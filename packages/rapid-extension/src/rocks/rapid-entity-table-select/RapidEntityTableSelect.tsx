@@ -1,4 +1,4 @@
-import { EventEmitter, RockConfig, type Rock } from "@ruiapp/move-style";
+import { EventEmitter, type Rock } from "@ruiapp/move-style";
 import { RapidEntityTableSelectRockConfig } from "./rapid-entity-table-select-types";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityTableSelectMeta from "./RapidEntityTableSelectMeta";
@@ -7,6 +7,8 @@ import { useEffect } from "react";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import { autoConfigTableColumnToRockConfig } from "../rapid-entity-list/RapidEntityList";
 import { filter, map, uniq } from "lodash";
+import { RapidTableSelectRockConfig } from "../rapid-table-select/rapid-table-select-types";
+import { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
 
 const bus = new EventEmitter();
 
@@ -19,7 +21,7 @@ export default {
     }
   },
   Renderer(context, props) {
-    const { entityCode, requestParams, columns, queryProperties, extraProperties, relations, ...rapidTableSelectProps } = props;
+    const { entityCode, columns, queryProperties, extraProperties, relations, fixedFilters, orderBy, keepNonPropertyFields, ...rapidTableSelectProps } = props;
 
     let mainEntity = null;
     if (entityCode) {
@@ -52,7 +54,7 @@ export default {
       };
     }, [props.$id]);
 
-    const tableColumnRocks: RockConfig[] = columns.map((column) => autoConfigTableColumnToRockConfig(context, props, column, mainEntity));
+    const tableColumnRocks: RapidTableColumnConfig[] = columns.map((column) => autoConfigTableColumnToRockConfig(context, props, column, mainEntity));
 
     const properties: string[] = uniq(
       queryProperties || [
@@ -65,7 +67,7 @@ export default {
       ],
     );
 
-    const rockConfig: RockConfig = {
+    const rockConfig: RapidTableSelectRockConfig = {
       ...rapidTableSelectProps,
       $id: `${props.$id}-tableselect`,
       $type: "rapidTableSelect",
@@ -74,8 +76,11 @@ export default {
         url: `/${mainEntity?.namespace}/${mainEntity?.pluralCode}/operations/find`,
         method: "post",
         params: {
+          fixedFilters,
           properties,
           relations,
+          orderBy,
+          keepNonPropertyFields,
         },
       },
       $exps: props.$exps,
