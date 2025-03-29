@@ -1,7 +1,7 @@
 import type { RapidDataDictionary } from "@ruiapp/rapid-extension";
 
 export default {
-  code: "CronJobRunningResult",
+  code: "SysCronJobRunningResult",
   name: "定时任务运行结果",
   valueType: "string",
   level: "sys",

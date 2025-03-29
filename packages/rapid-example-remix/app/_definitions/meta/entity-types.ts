@@ -1,6 +1,5 @@
 import type {
   BugLevel,
-  CronJobRunningResult,
   EnabledDisabledState,
   PmProjectState,
   TaskState,
@@ -623,7 +622,7 @@ export interface SysCronJob {
   /**
    * 最后运行结果
    */
-  lastRunningResult?: CronJobRunningResult;
+  lastRunningResult?: undefined;
   /**
    * 错误信息
    */

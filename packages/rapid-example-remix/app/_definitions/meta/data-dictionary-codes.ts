@@ -1,6 +1,6 @@
 const dictionaryCodes = [
   'BugLevel',
-  'CronJobRunningResult',
+  'SysCronJobRunningResult',
   'EnabledDisabledState',
   'PmProjectState',
   'PublishState',

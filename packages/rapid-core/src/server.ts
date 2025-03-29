@@ -419,11 +419,13 @@ export class RapidServer implements IRpdServer {
     }
   }
 
-  async tryQueryDatabaseObject(sql: string, params?: unknown[] | Record<string, unknown>, client?: IDatabaseClient): Promise<any[]> {
+  async tryQueryDatabaseObject(sql: string, params?: unknown[] | Record<string, unknown>, client?: IDatabaseClient, silent?: boolean): Promise<any[]> {
     try {
       return await this.queryDatabaseObject(sql, params, client);
     } catch (err) {
-      this.#logger.error("Failed to query database object.", { errorMessage: err.message, sql, params });
+      if (!silent) {
+        this.#logger.error("Failed to query database object.", { errorMessage: err.message, sql, params });
+      }
     }
 
     return [];
