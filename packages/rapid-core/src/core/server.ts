@@ -34,8 +34,8 @@ export interface IRpdServer {
   getFacility<TFacility = any, TOptions = any>(name: string, options?: TOptions): Promise<TFacility>;
 
   getDatabaseAccessor(): IDatabaseAccessor;
-  queryDatabaseObject: (sql: string, params?: unknown[] | Record<string, unknown>, client?: IDatabaseClient) => Promise<any[]>;
-  tryQueryDatabaseObject: (sql: string, params?: unknown[] | Record<string, unknown>, client?: IDatabaseClient) => Promise<any[]>;
+  queryDatabaseObject: (sql: string, params?: unknown[] | Record<string, unknown>, client?: IDatabaseClient, dropErrorLog?: boolean) => Promise<any[]>;
+  tryQueryDatabaseObject: (sql: string, params?: unknown[] | Record<string, unknown>, client?: IDatabaseClient, dropErrorLog?: boolean) => Promise<any[]>;
   registerMiddleware(middleware: any): void;
   registerActionHandler(plugin: RapidPlugin, options: IPluginActionHandler): void;
   getActionHandlerByCode(code: string): ActionHandler | undefined;
