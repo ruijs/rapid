@@ -1,4 +1,13 @@
-import { handleComponentEvent, type Rock, type RockChildrenConfig, type RockConfig, type RockEvent } from "@ruiapp/move-style";
+import {
+  Framework,
+  handleComponentEvent,
+  Page,
+  RockInstanceContext,
+  type Rock,
+  type RockChildrenConfig,
+  type RockConfig,
+  type RockEvent,
+} from "@ruiapp/move-style";
 import { renderRock, renderRockChildren } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./RapidEntityListMeta";
 import type { RapidEntityListRockConfig, RapidEntityListState } from "./rapid-entity-list-types";
@@ -13,6 +22,107 @@ import { parseRockExpressionFunc } from "../../utils/parse-utility";
 import { getExtensionLocaleStringResource, getMetaPropertyLocaleName } from "../../helpers/i18nHelper";
 import { getEntityPropertyByFieldNames } from "../../helpers/metaHelper";
 import { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
+
+export function autoConfigTableColumnToRockConfig(context: RockInstanceContext, parentProps: any, column: RapidTableColumnConfig, mainEntity: RapidEntity) {
+  const { framework, logger, page } = context;
+  if (column.$exps) {
+    page.interpreteComponentProperties(null, column as any, {
+      $self: column,
+      $parent: parentProps,
+    });
+  }
+
+  let cell: RockConfig | RockConfig[] | null = null;
+
+  let columnTitle = column.title;
+
+  let rpdField: RapidField | undefined;
+  if (mainEntity) {
+    const fieldName = column.fieldName || column.code || "";
+    const fieldNameParts = fieldName.split(".");
+    rpdField = getEntityPropertyByFieldNames(rapidAppDefinition.getAppDefinition(), mainEntity, fieldNameParts);
+    if (!rpdField) {
+      logger.warn(parentProps, `Unknown field name '${fieldName}'`);
+    } else {
+      if (!columnTitle) {
+        columnTitle = getMetaPropertyLocaleName(framework, mainEntity, rpdField);
+      }
+    }
+  }
+
+  if (column.children) {
+    return {
+      $type: "rapidTableColumn",
+      title: columnTitle,
+      children: map(column.children, (childColumn) => autoConfigTableColumnToRockConfig(context, parentProps, childColumn, mainEntity)),
+    };
+  }
+
+  if (column.cell) {
+    cell = column.cell;
+  } else if (column.type === "link") {
+    const url: string | undefined = column.rendererProps?.url;
+    const text: string | undefined = column.rendererProps?.text;
+    if (url) {
+      cell = {
+        $type: "anchor",
+        href: url,
+        children: {
+          $type: "text",
+          $exps: {
+            text: text ? `$rui.execVarText('${text}', $slot.record)` : "$slot.value",
+          },
+        },
+        $exps: {
+          href: `$rui.execVarText('${url}', $slot.record)`,
+          ...(column.rendererProps?.$exps || {}),
+        },
+      };
+    }
+  } else {
+    let fieldType = column.fieldType || rpdField?.type || "text";
+    let rendererType = column.rendererType || RapidExtensionSetting.getDefaultRendererTypeOfFieldType(fieldType);
+    let defaultRendererProps: any = RapidExtensionSetting.getDefaultRendererProps(fieldType, rendererType);
+    let fieldTypeRelatedRendererProps: any = {};
+    if (rpdField) {
+      if (fieldType === "option" || fieldType === "option[]") {
+        fieldTypeRelatedRendererProps = {
+          dictionaryCode: rpdField.dataDictionary,
+        };
+      } else if ((fieldType === "relation" || fieldType === "relation[]") && !column.rendererType) {
+        if (rpdField.relation === "many") {
+          rendererType = "rapidArrayRenderer";
+        } else {
+          rendererType = "rapidObjectRenderer";
+        }
+
+        const relationEntity = rapidAppDefinition.getEntityBySingularCode(rpdField.targetSingularCode);
+        if (relationEntity?.displayPropertyCode) {
+          fieldTypeRelatedRendererProps.format = `{{${relationEntity.displayPropertyCode}}}`;
+        }
+      }
+    }
+
+    cell = {
+      $type: rendererType,
+      ...defaultRendererProps,
+      ...fieldTypeRelatedRendererProps,
+      ...column.rendererProps,
+      $exps: {
+        value: "$slot.value",
+        ...(column.rendererProps?.$exps || {}),
+      },
+    };
+  }
+
+  const tableColumnRock: RockConfig = {
+    ...column,
+    title: columnTitle,
+    $type: "rapidTableColumn",
+    cell,
+  };
+  return tableColumnRock;
+}
 
 export default {
   onResolveState(props, state) {
@@ -126,113 +236,8 @@ export default {
       tableColumnRocks.push(tableRowNumColumnRock);
     }
 
-    function autoConfigTableColumnToRockConfig(column: RapidTableColumnConfig) {
-      if (column.$exps) {
-        page.interpreteComponentProperties(null, column as any, {
-          $self: column,
-          $parent: props,
-        });
-      }
-
-      let cell: RockConfig | RockConfig[] | null = null;
-
-      let columnTitle = column.title;
-
-      let rpdField: RapidField | undefined;
-      if (mainEntity) {
-        const fieldName = column.fieldName || column.code || "";
-        const fieldNameParts = fieldName.split(".");
-        rpdField = getEntityPropertyByFieldNames(rapidAppDefinition.getAppDefinition(), mainEntity, fieldNameParts);
-        if (!rpdField) {
-          logger.warn(props, `Unknown field name '${fieldName}'`);
-        } else {
-          if (!columnTitle) {
-            columnTitle = getMetaPropertyLocaleName(framework, mainEntity, rpdField);
-          }
-        }
-      }
-
-      if (column.children) {
-        return {
-          $type: "rapidTableColumn",
-          title: columnTitle,
-          children: map(column.children, (childColumn) => autoConfigTableColumnToRockConfig(childColumn)),
-        };
-      }
-
-      if (column.cell) {
-        cell = column.cell;
-      } else if (column.type === "link") {
-        const url: string | undefined = column.rendererProps?.url;
-        const text: string | undefined = column.rendererProps?.text;
-        if (url) {
-          cell = {
-            $type: "anchor",
-            href: url,
-            children: {
-              $type: "text",
-              $exps: {
-                text: text ? `$rui.execVarText('${text}', $slot.record)` : "$slot.value",
-              },
-            },
-            $exps: {
-              href: `$rui.execVarText('${url}', $slot.record)`,
-              ...(column.rendererProps?.$exps || {}),
-            },
-          };
-        }
-      } else if (column.type === "auto") {
-        let fieldType = column.fieldType || rpdField?.type || "text";
-        let rendererType = column.rendererType || RapidExtensionSetting.getDefaultRendererTypeOfFieldType(fieldType);
-        let defaultRendererProps: any = RapidExtensionSetting.getDefaultRendererProps(fieldType, rendererType);
-        let fieldTypeRelatedRendererProps: any = {};
-        if (rpdField) {
-          if (fieldType === "option" || fieldType === "option[]") {
-            fieldTypeRelatedRendererProps = {
-              dictionaryCode: rpdField.dataDictionary,
-            };
-          } else if ((fieldType === "relation" || fieldType === "relation[]") && !column.rendererType) {
-            if (rpdField.relation === "many") {
-              rendererType = "rapidArrayRenderer";
-            } else {
-              rendererType = "rapidObjectRenderer";
-            }
-
-            const relationEntity = rapidAppDefinition.getEntityBySingularCode(rpdField.targetSingularCode);
-            if (relationEntity?.displayPropertyCode) {
-              fieldTypeRelatedRendererProps.format = `{{${relationEntity.displayPropertyCode}}}`;
-            }
-          }
-        }
-
-        cell = {
-          $type: rendererType,
-          ...defaultRendererProps,
-          ...fieldTypeRelatedRendererProps,
-          ...column.rendererProps,
-          $exps: {
-            value: "$slot.value",
-            ...(column.rendererProps?.$exps || {}),
-          },
-        };
-      } else {
-        cell = {
-          $type: "text",
-          text: `Unknown column type: ${column.type}`,
-        };
-      }
-
-      const tableColumnRock: RockConfig = {
-        ...column,
-        title: columnTitle,
-        $type: "rapidTableColumn",
-        cell,
-      };
-      return tableColumnRock;
-    }
-
     props.columns.forEach((column) => {
-      const tableColumnRock = autoConfigTableColumnToRockConfig(column);
+      const tableColumnRock = autoConfigTableColumnToRockConfig(context, props, column, mainEntity);
       tableColumnRocks.push(tableColumnRock);
     });
 
