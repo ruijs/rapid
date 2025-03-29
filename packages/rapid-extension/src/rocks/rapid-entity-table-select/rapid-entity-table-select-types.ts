@@ -1,8 +1,11 @@
+import { SimpleRockConfig } from "@ruiapp/move-style";
 import { EntityFilterOptions, FindEntityFindRelationEntitiesOptions, FindEntityOrderByOptions } from "../../types/rapid-entity-types";
-import { RapidTableSelectRockConfig } from "../rapid-table-select/rapid-table-select-types";
+import { RapidTableSelectConfigBase, RapidTableSelectRequestConfig } from "../rapid-table-select/rapid-table-select-types";
 
-export interface RapidEntityTableSelectRockConfig extends Omit<RapidTableSelectRockConfig, "requestConfig"> {
+export interface RapidEntityTableSelectConfig extends RapidTableSelectConfigBase {
   entityCode: string;
+
+  requestConfig?: RapidTableSelectRequestConfig;
 
   /**
    * 固定过滤器
@@ -34,3 +37,5 @@ export interface RapidEntityTableSelectRockConfig extends Omit<RapidTableSelectR
    */
   keepNonPropertyFields?: boolean;
 }
+
+export interface RapidEntityTableSelectRockConfig extends RapidEntityTableSelectConfig, SimpleRockConfig {}
