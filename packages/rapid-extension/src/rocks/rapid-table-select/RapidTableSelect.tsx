@@ -1,5 +1,5 @@
 import { EventEmitter, MoveStyleUtils, type Rock, type RockInstanceContext } from "@ruiapp/move-style";
-import TableSelectorMeta from "./RapidTableSelectMeta";
+import RapidTableSelectMeta from "./RapidTableSelectMeta";
 import type { RapidTableSelectRockConfig } from "./rapid-table-select-types";
 import { convertToEventHandlers, renderRock } from "@ruiapp/react-renderer";
 import { Table, Select, Input, Empty, Spin } from "antd";
@@ -320,7 +320,7 @@ export default {
     );
   },
 
-  ...TableSelectorMeta,
+  ...RapidTableSelectMeta,
 } as Rock;
 
 interface IRequestState {
