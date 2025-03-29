@@ -361,11 +361,13 @@ export default class MetaService {
       for (const index of model.indexes) {
         const sqlCreateIndex = generateTableIndexDDL(queryBuilder, server, model, index);
         try {
-          await server.queryDatabaseObject(sqlCreateIndex, [], null);
+          await server.queryDatabaseObject(sqlCreateIndex, [], null, true);
         } catch (err: any) {
           const logger = this.#server.getLogger();
           if ((err as Error).message.includes("already exists")) {
             logger.warn("Failed to create index.", { errorMessage: err.message, sqlCreateIndex });
+          } else {
+            logger.error("Failed to create index.", { errorMessage: err.message, sqlCreateIndex });
           }
         }
       }
