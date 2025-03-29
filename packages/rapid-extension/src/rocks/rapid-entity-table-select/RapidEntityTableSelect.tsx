@@ -72,7 +72,7 @@ export default {
       $id: `${props.$id}-tableselect`,
       $type: "rapidTableSelect",
       columns: tableColumnRocks,
-      requestConfig: {
+      requestConfig: props.requestConfig || {
         url: `/${mainEntity?.namespace}/${mainEntity?.pluralCode}/operations/find`,
         method: "post",
         params: {

@@ -1,9 +1,9 @@
-import type { RockExpsConfig, SimpleRockConfig } from "@ruiapp/move-style";
+import type { RockEventHandlerConfig, RockExpsConfig, SimpleRockConfig } from "@ruiapp/move-style";
 import { FindEntityOptions } from "../../rapid-types";
 import { FilterFieldConfig } from "../rapid-form-item/rapid-form-item-types";
 import { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
 
-export interface RapidTableSelectRockConfig extends SimpleRockConfig {
+export interface RapidTableSelectConfigBase {
   searchPlaceholder?: string;
   placeholder?: string;
   allowClear?: boolean;
@@ -28,18 +28,9 @@ export interface RapidTableSelectRockConfig extends SimpleRockConfig {
   listValueFieldName?: string;
   columns?: RapidTableColumnConfig[];
   dropdownMatchSelectWidth?: number;
-  requestConfig: {
-    baseUrl?: string;
-    url: string;
-    method?: "post" | "get"; // 默认 post
-    params?: FindEntityOptions & {
-      fixedFilters?: FindEntityOptions["filters"];
-      $exps?: RockExpsConfig;
-    };
-  };
   value?: string | string[];
   onChange?(value: string): void;
-  onSelectedRecord?(record: Record<string, any>, selectedRecords: Record<string, any>[]): void;
+  onSelectedRecord?: RockEventHandlerConfig;
 
   /**
    * 标签渲染器类型
@@ -56,3 +47,29 @@ export interface RapidTableSelectRockConfig extends SimpleRockConfig {
    */
   tableHeight?: number;
 }
+
+export interface RapidTableSelectConfig extends RapidTableSelectConfigBase {
+  requestConfig: RapidTableSelectRequestConfig;
+}
+
+export interface RapidTableSelectRockConfig extends RapidTableSelectConfig, SimpleRockConfig {
+  requestConfig: {
+    baseUrl?: string;
+    url: string;
+    method?: "post" | "get"; // 默认 post
+    params?: FindEntityOptions & {
+      fixedFilters?: FindEntityOptions["filters"];
+      $exps?: RockExpsConfig;
+    };
+  };
+}
+
+export type RapidTableSelectRequestConfig = {
+  baseUrl?: string;
+  url: string;
+  method?: "post" | "get"; // 默认 post
+  params?: FindEntityOptions & {
+    fixedFilters?: FindEntityOptions["filters"];
+    $exps?: RockExpsConfig;
+  };
+};
