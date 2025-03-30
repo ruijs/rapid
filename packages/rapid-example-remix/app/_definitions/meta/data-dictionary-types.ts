@@ -8,15 +8,6 @@ export type BugLevel =
   ;
 
 /**
- * 定时任务运行结果
- */
-export type SysCronJobRunningResult =
-  | 'success'
-  | 'failed'
-  | 'error'
-  ;
-
-/**
  * 启用/禁用状态
  */
 export type EnabledDisabledState =
@@ -73,4 +64,13 @@ export type TaskType =
 export type UndeletedDeletedState =
   | 'undeleted'
   | 'deleted'
+  ;
+
+/**
+ * 定时任务运行结果
+ */
+export type SysCronJobRunningResult =
+  | 'success'
+  | 'failed'
+  | 'error'
   ;

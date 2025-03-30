@@ -13,7 +13,7 @@
     "gen-meta": "ts-node-esm --project ./tsconfig-node.json -r dotenv/config -r tsconfig-paths/register ./app/tools/gen-meta.ts",
     "update-rpd-models": "ts-node-esm --project ./tsconfig-node.json -r dotenv/config -r tsconfig-paths/register ./app/tools/update-rpd-models.ts",
     "sync-db-schema": "cross-env NODE_ENV=development ts-node-esm -r dotenv/config -r tsconfig-paths/register ./app/tools/sync-db-schema.ts",
-    "test": "echo \"Error: no test specified\""
+    "test": "jest"
   },
   "keywords": [],
   "author": "Fossil",
@@ -66,6 +66,7 @@
     "@ruiapp/rapid-configure-tools": "workspace:^",
     "@types/compression": "^1.7.5",
     "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.14",
     "@types/lodash": "^4.14.200",
     "@types/morgan": "^1.9.9",
     "@types/node": "^18.18.8",
@@ -77,9 +78,11 @@
     "@types/triple-beam": "^1.3.5",
     "chokidar": "^3.5.3",
     "eslint": "^8.23.1",
+    "jest": "^29.7.0",
     "nodemon": "^2.0.19",
     "npm-run-all": "^4.1.5",
     "prettier": "2.8.8",
+    "ts-jest": "^29.3.0",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "tslib": "^2.6.2",
