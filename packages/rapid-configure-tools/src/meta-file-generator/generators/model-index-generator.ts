@@ -50,7 +50,12 @@ function generateEntityModelIndexFilesOfTypeDir({
   flattenModelArray,
 }: GenerateModelsIndexFileOption) {
   const filesDir = path.join(modelsDir, categoryDirName);
-  const fileNames = enumFileBaseNamesInDirectory(filesDir);
+  const fileNames = enumFileBaseNamesInDirectory({
+    dirPath: filesDir,
+    fileNameFilter(fileName) {
+      return !(fileName.endsWith(".test.js") || fileName.endsWith(".test.ts"));
+    },
+  });
 
   const models = fileNames.map((fileName) => {
     return {
@@ -122,7 +127,12 @@ function generateModelIndexFilesOfTypeDir({
   flattenModelArray,
 }: GenerateModelsIndexFileOption) {
   const filesDir = path.join(modelsDir, categoryDirName);
-  const fileNames = enumFileBaseNamesInDirectory(filesDir);
+  const fileNames = enumFileBaseNamesInDirectory({
+    dirPath: filesDir,
+    fileNameFilter(fileName) {
+      return !(fileName.endsWith(".test.js") || fileName.endsWith(".test.ts"));
+    },
+  });
 
   const models = fileNames.map((fileName) => {
     return {

@@ -10,7 +10,14 @@ export function ensureDirectoryExists(dirPath: string) {
   }
 }
 
-export function enumFileBaseNamesInDirectory(dirPath: string, prefix: string = ""): string[] {
+export type EnumFileBaseNamesOptions = {
+  dirPath: string;
+  prefix?: string;
+  fileNameFilter?: (fileName: string) => boolean;
+};
+
+export function enumFileBaseNamesInDirectory(options: EnumFileBaseNamesOptions): string[] {
+  const { dirPath, prefix, fileNameFilter } = options;
   let fileNames = [];
 
   let resolvedDirPath = dirPath;
@@ -29,8 +36,18 @@ export function enumFileBaseNamesInDirectory(dirPath: string, prefix: string = "
     const filePathName = path.join(resolvedDirPath, fileName);
     const fileStat = fs.statSync(filePathName);
     if (fileStat.isDirectory()) {
-      fileNames = fileNames.concat(enumFileBaseNamesInDirectory(filePathName, prefix ? `${prefix}/${fileName}` : fileName));
+      fileNames = fileNames.concat(
+        enumFileBaseNamesInDirectory({
+          dirPath: filePathName,
+          prefix: prefix ? `${prefix}/${fileName}` : fileName,
+          fileNameFilter,
+        }),
+      );
     } else if (fileStat.isFile()) {
+      if (fileNameFilter && !fileNameFilter(fileName)) {
+        continue;
+      }
+
       const baseName = path.parse(fileName).name;
       if (prefix) {
         fileNames.push(`${prefix}/${baseName}`);

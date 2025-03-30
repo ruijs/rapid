@@ -2,6 +2,7 @@ import type {
   BugLevel,
   EnabledDisabledState,
   PmProjectState,
+  SysCronJobRunningResult,
   TaskState,
 } from "./data-dictionary-types";
 export type FileOrImageFieldType = { key: string; name: string; size: number; type: string };
@@ -622,7 +623,7 @@ export interface SysCronJob {
   /**
    * 最后运行结果
    */
-  lastRunningResult?: undefined;
+  lastRunningResult?: SysCronJobRunningResult;
   /**
    * 错误信息
    */

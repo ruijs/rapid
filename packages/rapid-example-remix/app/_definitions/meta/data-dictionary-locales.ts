@@ -16,10 +16,6 @@ const dictionaryLocales: Record<string, {translation: Record<string, any>}> = {
             },
           },
         },
-        "SysCronJobRunningResult": {
-          entries: {
-          },
-        },
         "EnabledDisabledState": {
           name: "Enabled/Disabled State",
           entries: {
@@ -119,6 +115,10 @@ const dictionaryLocales: Record<string, {translation: Record<string, any>}> = {
             },
           },
         },
+        "SysCronJobRunningResult": {
+          entries: {
+          },
+        },
       },
     },
   },
@@ -137,10 +137,6 @@ const dictionaryLocales: Record<string, {translation: Record<string, any>}> = {
             "suggest": {
               name: "建议",
             },
-          },
-        },
-        "SysCronJobRunningResult": {
-          entries: {
           },
         },
         "EnabledDisabledState": {
@@ -242,6 +238,10 @@ const dictionaryLocales: Record<string, {translation: Record<string, any>}> = {
             },
           },
         },
+        "SysCronJobRunningResult": {
+          entries: {
+          },
+        },
       },
     },
   },
@@ -260,10 +260,6 @@ const dictionaryLocales: Record<string, {translation: Record<string, any>}> = {
             "suggest": {
               name: "แนะนำ",
             },
-          },
-        },
-        "SysCronJobRunningResult": {
-          entries: {
           },
         },
         "EnabledDisabledState": {
@@ -363,6 +359,10 @@ const dictionaryLocales: Record<string, {translation: Record<string, any>}> = {
             "deleted": {
               name: "ถูกลบ",
             },
+          },
+        },
+        "SysCronJobRunningResult": {
+          entries: {
           },
         },
       },
