@@ -1,4 +1,4 @@
-import { find, isBoolean, isNull, isNumber, isString, isUndefined } from "lodash";
+import { find, isBoolean, isNil, isNull, isNumber, isString, isUndefined } from "lodash";
 import { RpdDataModel, RpdDataModelProperty, CreateEntityOptions, QuoteTableOptions, DatabaseQuery, IQueryBuilder } from "../types";
 import {
   CountRowOptions,
@@ -420,10 +420,18 @@ function buildFilterQuery(level: number, ctx: BuildQueryContext, filter: RowFilt
     return buildInFilterQuery(ctx, filter);
   } else if (operator === "between") {
     return buildRangeFilterQuery(ctx, filter);
+  } else if (operator === "matches") {
+    return buildMatchesFilterQuery(ctx, filter);
+  } else if (operator === "matchesCS") {
+    return buildMatchesCSFilterQuery(ctx, filter);
   } else if (operator === "contains") {
     return buildContainsFilterQuery(ctx, filter);
+  } else if (operator === "containsCS") {
+    return buildContainsCSFilterQuery(ctx, filter);
   } else if (operator === "notContains") {
     return buildNotContainsFilterQuery(ctx, filter);
+  } else if (operator === "notContainsCS") {
+    return buildNotContainsCSFilterQuery(ctx, filter);
   } else if (operator === "startsWith") {
     return buildStartsWithFilterQuery(ctx, filter);
   } else if (operator === "notStartsWith") {
@@ -513,6 +521,46 @@ function buildRangeFilterQuery(ctx: BuildQueryContext, filter: FindRowRangeFilte
   return command;
 }
 
+function convertSearchTextToLikeParamValue(searchText: string) {
+  if (isNil(searchText)) {
+    return searchText;
+  }
+
+  let result = searchText.replace(/\*/g, "%");
+  result = result.replace(/\?/g, "_");
+  return result;
+}
+
+function buildMatchesFilterQuery(ctx: BuildQueryContext, filter: FindRowRelationalFilterOptions) {
+  let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
+
+  command += " ILIKE ";
+
+  if (ctx.paramToLiteral) {
+    // TODO: implement it
+  } else {
+    ctx.params.push(`%${convertSearchTextToLikeParamValue(filter.value)}%`);
+    command += "$" + ctx.params.length;
+  }
+
+  return command;
+}
+
+function buildMatchesCSFilterQuery(ctx: BuildQueryContext, filter: FindRowRelationalFilterOptions) {
+  let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
+
+  command += " LIKE ";
+
+  if (ctx.paramToLiteral) {
+    // TODO: implement it
+  } else {
+    ctx.params.push(`%${convertSearchTextToLikeParamValue(filter.value)}%`);
+    command += "$" + ctx.params.length;
+  }
+
+  return command;
+}
+
 function buildContainsFilterQuery(ctx: BuildQueryContext, filter: FindRowRelationalFilterOptions) {
   let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
 
@@ -528,10 +576,39 @@ function buildContainsFilterQuery(ctx: BuildQueryContext, filter: FindRowRelatio
   return command;
 }
 
+function buildContainsCSFilterQuery(ctx: BuildQueryContext, filter: FindRowRelationalFilterOptions) {
+  let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
+
+  command += " LIKE ";
+
+  if (ctx.paramToLiteral) {
+    // TODO: implement it
+  } else {
+    ctx.params.push(`%${filter.value}%`);
+    command += "$" + ctx.params.length;
+  }
+
+  return command;
+}
+
 function buildNotContainsFilterQuery(ctx: BuildQueryContext, filter: FindRowRelationalFilterOptions) {
   let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
 
   command += " NOT ILIKE ";
+  if (ctx.paramToLiteral) {
+    // TODO: implement it
+  } else {
+    ctx.params.push(`%${filter.value}%`);
+    command += "$" + ctx.params.length;
+  }
+
+  return command;
+}
+
+function buildNotContainsCSFilterQuery(ctx: BuildQueryContext, filter: FindRowRelationalFilterOptions) {
+  let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
+
+  command += " NOT LIKE ";
   if (ctx.paramToLiteral) {
     // TODO: implement it
   } else {

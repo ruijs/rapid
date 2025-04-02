@@ -591,6 +591,8 @@ export type EntityFilterRelationalOperators =
   | "lte"
   | "gt"
   | "gte"
+  | "matches"
+  | "matchesCS"
   | "contains"
   | "notContains"
   | "containsCS"
