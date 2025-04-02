@@ -13,10 +13,16 @@ export default {
       props.value = moment(props.value);
     }
 
+    function onDatePickerChange(value: any) {
+      const today = value.format("YYYY-MM-DD");
+      props.onChange && props.onChange(today);
+    }
+
     const rockConfig: RockConfig = {
       ...props,
       $id: `${props.$id}-inner`,
       $type: "antdDatePicker",
+      onChange: onDatePickerChange,
     };
 
     return renderRock({ context, rockConfig });
