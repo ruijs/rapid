@@ -26,6 +26,10 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
           field: "login",
           value: account,
         },
+        {
+          operator: "null",
+          field: "deletedAt",
+        },
       ],
     },
     routeContext?.getDbTransactionClient(),
@@ -33,6 +37,10 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
 
   if (!user) {
     throw new Error("用户名或密码错误。");
+  }
+
+  if (user.state !== "enabled") {
+    throw new Error("用户已被禁用，不允许登录。");
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
