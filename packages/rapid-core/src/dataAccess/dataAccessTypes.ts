@@ -19,6 +19,8 @@ export type RowFilterRelationalOperators =
   | "lte"
   | "gt"
   | "gte"
+  | "matches"
+  | "matchesCS"
   | "contains"
   | "notContains"
   | "containsCS"
