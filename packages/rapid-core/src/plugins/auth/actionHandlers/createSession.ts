@@ -28,7 +28,7 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
         },
         {
           operator: "null",
-          field: "deletedAt",
+          field: "deleted_at",
         },
       ],
     },
