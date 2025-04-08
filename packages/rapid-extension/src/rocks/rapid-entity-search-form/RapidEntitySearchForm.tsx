@@ -364,19 +364,8 @@ export default {
       {
         $action: "script",
         script: async (event: RockEvent) => {
-          const filterConfigurations: SearchFormFilterConfiguration[] = [];
-          for (const formItem of props.items) {
-            filterConfigurations.push({
-              code: formItem.code,
-              filterMode: formItem.filterMode,
-              filterFields: formItem.filterFields,
-              itemType: formItem.itemType,
-              filterExtra: formItem.filterExtra,
-            });
-          }
-
           const searchParams = event.args[0];
-          const filters = searchParamsToFilters(filterConfigurations, searchParams);
+          const filters = getRapidEntityListFilters(props.items, searchParams);
 
           const dataSourceCode = props.dataSourceCode || "list";
           // 设置搜索变量
@@ -424,6 +413,19 @@ const FILTER_CACHE_KEY = "rapid_entity_list_filter_cache";
 export function getRapidEntityListFilters(formItems: RapidEntitySearchFormConfig["items"], formData: Record<string, any>) {
   const filterConfigurations: SearchFormFilterConfiguration[] = [];
   for (const formItem of formItems) {
+    if (formItem.type === "dateRange" || formItem.type === "dateTimeRange") {
+      if (!formItem.filterMode) {
+        formItem.filterMode = "range";
+      }
+
+      if (formItem.type === "dateRange") {
+        const rangeUnit = get(formItem, "filterExtra.rangeUnit");
+        if (!rangeUnit) {
+          set(formItem, "filterExtra.rangeUnit", "day");
+        }
+      }
+    }
+
     filterConfigurations.push({
       code: formItem.code,
       filterMode: formItem.filterMode,
