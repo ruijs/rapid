@@ -43,33 +43,48 @@ export default {
 export function parseConfigToFilters(filterConfigs: FilterFieldConfig[], value: any) {
   let filters: any[] = [];
 
-  forEach(filterConfigs, (c) => {
-    if (c.filters && !isEmpty(c.filters)) {
+  forEach(filterConfigs, (filterConfig) => {
+    if (filterConfig.filters && !isEmpty(filterConfig.filters)) {
       filters.push({
-        field: c.field,
-        operator: c.operator,
-        filters: parseConfigToFilters(c.filters, value),
+        field: filterConfig.field,
+        operator: filterConfig.operator,
+        filters: parseConfigToFilters(filterConfig.filters, value),
       });
       return;
     }
 
-    if (c.operator === "range" || c.operator === "between") {
-      const { rangeUnit } = c.extra || {};
+    if (filterConfig.operator === "range" || filterConfig.operator === "between") {
+      const { rangeUnit } = filterConfig.extra || {};
 
       if (!isArray(value) && value.length != 2) {
-        throw new Error(`Filter config operator '${c.operator}' need two values.`);
+        throw new Error(`Filter config operator '${filterConfig.operator}' need two values.`);
       }
 
-      c.operator = "between";
+      let beginValue = value[0];
+      if (rangeUnit && beginValue) {
+        beginValue = moment(beginValue).startOf(rangeUnit);
+      }
+      let endValue = value[1];
+      if (rangeUnit && endValue) {
+        endValue = moment(endValue).startOf(rangeUnit);
+      }
 
-      value = [value[0] && rangeUnit ? moment(value[0]).startOf(rangeUnit) : value[0], value[1] && rangeUnit ? moment(value[1]).startOf(rangeUnit) : value[1]];
+      if (filterConfig.operator === "range") {
+        if (rangeUnit === "day") {
+          if (endValue) {
+            endValue = moment(endValue).add(1, "day");
+          }
+        }
+      }
+
+      value = [beginValue, endValue];
     }
 
     filters.push({
-      field: c.field,
-      operator: c.operator,
-      itemType: c.itemType,
-      value: (c as any).value || value,
+      field: filterConfig.field,
+      operator: filterConfig.operator,
+      itemType: filterConfig.itemType,
+      value: (filterConfig as any).value || value,
     });
   });
 

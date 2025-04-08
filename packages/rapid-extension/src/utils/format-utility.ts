@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 
-export function formatDateTime(value: string, format?: string) {
+export function formatDateTime(value: dayjs.ConfigType, format?: string) {
   const dateTime = dayjs(value);
   if (!dateTime.isValid()) {
     return "-";

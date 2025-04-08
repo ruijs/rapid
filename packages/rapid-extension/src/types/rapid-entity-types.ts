@@ -555,4 +555,4 @@ export type EntityFilterUnaryOperators = "null" | "notNull";
 
 export type EntityFilterExistenceOperators = "exists" | "notExists";
 
-export type EntityFilterRangeOperators = "between";
+export type EntityFilterRangeOperators = "between" | "range";

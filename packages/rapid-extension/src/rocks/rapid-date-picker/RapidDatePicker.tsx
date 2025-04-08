@@ -22,7 +22,7 @@ export default {
       ...props,
       $id: `${props.$id}-inner`,
       $type: "antdDatePicker",
-      onChange: onDatePickerChange,
+      onChange: props.showTime ? props.onChange : onDatePickerChange,
     };
 
     return renderRock({ context, rockConfig });
