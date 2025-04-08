@@ -1,3 +1,4 @@
+import { isNil } from "lodash";
 import { IRpdServer } from "~/core/server";
 import { getEntityPropertyByCode, getEntityPropertyByFieldName } from "~/helpers/metaHelper";
 import { RpdDataModel } from "~/types";
@@ -7,11 +8,17 @@ export async function validateEntity(server: IRpdServer, model: RpdDataModel, en
   for (const propCode in entity) {
     let prop = getEntityPropertyByCode(server, model, propCode);
     if (!prop) {
-      getEntityPropertyByFieldName(server, model, propCode);
+      prop = getEntityPropertyByFieldName(server, model, propCode);
     }
 
     if (!prop) {
       continue;
+    }
+
+    if (propCode === "id") {
+      if (isNil(entity[propCode])) {
+        delete entity[propCode];
+      }
     }
 
     if (prop.type === "date") {
