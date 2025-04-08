@@ -418,7 +418,7 @@ function buildFilterQuery(level: number, ctx: BuildQueryContext, filter: RowFilt
     return buildUnaryFilterQuery(ctx, filter);
   } else if (operator === "in" || operator === "notIn") {
     return buildInFilterQuery(ctx, filter);
-  } else if (operator === "between") {
+  } else if (operator === "between" || operator === "range") {
     return buildRangeFilterQuery(ctx, filter);
   } else if (operator === "matches") {
     return buildMatchesFilterQuery(ctx, filter);
@@ -498,12 +498,14 @@ function buildInFilterQuery(ctx: BuildQueryContext, filter: FindRowSetFilterOpti
 }
 
 function buildRangeFilterQuery(ctx: BuildQueryContext, filter: FindRowRangeFilterOptions) {
-  let command = ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
+  let command = "";
+
+  if (filter.value.length != 2) {
+    throw new Error(`Filter operator '${filter.operator}' need two values.`);
+  }
 
   if (filter.operator === "between") {
-    if (filter.value.length != 2) {
-      throw new Error(`Filter operator '${filter.operator}' need two values.`);
-    }
+    command += ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias);
 
     command += " BETWEEN ";
 
@@ -514,6 +516,14 @@ function buildRangeFilterQuery(ctx: BuildQueryContext, filter: FindRowRangeFilte
 
     ctx.params.push(filter.value[1]);
     command += `$${ctx.params.length}`;
+  } else if (filter.operator === "range") {
+    ctx.params.push(filter.value[0]);
+    command += `(${ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias)} >= $${ctx.params.length}`;
+
+    command += " AND ";
+
+    ctx.params.push(filter.value[1]);
+    command += `${ctx.builder.quoteColumn(ctx.model, filter.field, ctx.emitTableAlias)} < $${ctx.params.length})`;
   } else {
     throw new Error(`Filter operator '${filter.operator}' is not supported.`);
   }

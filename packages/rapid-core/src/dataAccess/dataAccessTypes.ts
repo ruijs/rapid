@@ -34,7 +34,7 @@ export type RowFilterArrayOperators = "arrayContains" | "arrayOverlap";
 
 export type RowFilterSetOperators = "in" | "notIn";
 
-export type RowFilterRangeOperators = "between";
+export type RowFilterRangeOperators = "between" | "range";
 
 export type RowFilterLogicalOperators = "or" | "and";
 
