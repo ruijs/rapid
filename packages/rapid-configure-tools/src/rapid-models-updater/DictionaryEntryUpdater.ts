@@ -42,7 +42,7 @@ export function newDictionaryEntryUpdater(rapidConfigApi: AxiosInstance) {
     },
 
     isEntityChanged(inputEntity, remoteEntity) {
-      const changedFieldNames = detectChangedFields(inputEntity, remoteEntity, ["value", "description", "locales", "deprecated"]);
+      const changedFieldNames = detectChangedFields(inputEntity, remoteEntity, ["value", "description", "color", "icon", "i18n", "locales", "deprecated"]);
       if (changedFieldNames.length) {
         console.log(`${this.modelType} ${this.inputTitlePrinter(inputEntity)} changed with these fields:`, changedFieldNames);
       }
@@ -57,6 +57,9 @@ export function newDictionaryEntryUpdater(rapidConfigApi: AxiosInstance) {
         color: input.color,
         icon: input.icon,
         description: input.description,
+        i18n: input.i18n,
+        locales: input.locales,
+        deprecated: input.deprecated,
         orderNum: inputIndex + 1,
         disabled: false,
       };
@@ -72,6 +75,9 @@ export function newDictionaryEntryUpdater(rapidConfigApi: AxiosInstance) {
         color: input.color,
         icon: input.icon,
         description: input.description,
+        i18n: input.i18n,
+        locales: input.locales,
+        deprecated: input.deprecated,
         orderNum: inputIndex + 1,
         disabled: remoteEntity.disabled,
       };
