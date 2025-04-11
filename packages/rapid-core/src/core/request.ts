@@ -20,6 +20,7 @@ export class RapidRequest {
   #parsedCookies: Record<string, string>;
   method: string;
   url: URL;
+  ip?: string;
 
   constructor(server: IRpdServer, req: Request) {
     this.#logger = server.getLogger();

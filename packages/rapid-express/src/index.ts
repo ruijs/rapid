@@ -1,6 +1,6 @@
 import type * as express from "express";
 import { createReadableStreamFromReadable, writeReadableStreamToWritable } from "./stream";
-import { IRpdServer } from "@ruiapp/rapid-core";
+import { IRpdServer, RapidRequest } from "@ruiapp/rapid-core";
 
 export type RequestHandler = (req: express.Request, res: express.Response, next: express.NextFunction) => Promise<void>;
 
@@ -8,7 +8,9 @@ export function createRapidRequestHandler(server: IRpdServer): RequestHandler {
   return async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
       let request = createStandardRequest(req, res);
-      let response: Response = await server.handleRequest(request, function () {} as any);
+      let rapidRequest = new RapidRequest(server, request);
+      rapidRequest.ip = req.ip;
+      let response: Response = await server.handleRequest(rapidRequest, function () {} as any);
       await sendStandardResponse(res, response);
     } catch (error: unknown) {
       // Express doesn't support async functions, so we have to pass along the
