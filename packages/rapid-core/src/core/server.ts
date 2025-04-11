@@ -22,6 +22,7 @@ import EntityManager from "~/dataAccess/entityManager";
 import { Logger } from "~/facilities/log/LogFacility";
 import { FacilityFactory } from "./facility";
 import { CronJobConfiguration } from "~/types/cron-job-types";
+import { RapidRequest } from "./request";
 
 export interface IRpdServer {
   config: RapidServerConfig;
@@ -50,7 +51,7 @@ export interface IRpdServer {
   registerEventHandler<K extends keyof RpdServerEventTypes>(eventName: K, listener: (...args: RpdServerEventTypes[K]) => void);
   registerEntityWatcher(entityWatcher: EntityWatcherType);
   emitEvent<TEventName extends keyof RpdServerEventTypes>(event: EmitServerEventOptions<TEventName>): void;
-  handleRequest(request: Request, next: Next): Promise<Response>;
+  handleRequest(request: RapidRequest, next: Next): Promise<Response>;
   beforeRunRouteActions(handlerContext: ActionHandlerContext): Promise<void>;
   beforeCreateEntity(model: RpdDataModel, options: CreateEntityOptions): Promise<void>;
   beforeUpdateEntity(model: RpdDataModel, options: UpdateEntityByIdOptions, currentEntity: any): Promise<void>;

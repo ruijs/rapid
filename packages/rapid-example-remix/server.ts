@@ -164,6 +164,8 @@ export async function createRapidServer(logger: Logger, envs: any) {
 export async function createExpressApp(rapidServer: RapidServer) {
   const app = express();
 
+  app.set("trust proxy", true);
+
   app.use(compression());
 
   // http://expressjs.com/en/advanced/best-practice-security.html#at-a-minimum-disable-x-powered-by-header

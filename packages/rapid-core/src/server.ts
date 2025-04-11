@@ -437,8 +437,7 @@ export class RapidServer implements IRpdServer {
     return this.#middlewares;
   }
 
-  async handleRequest(request: Request, next: Next) {
-    const rapidRequest = new RapidRequest(this, request);
+  async handleRequest(rapidRequest: RapidRequest, next: Next) {
     await rapidRequest.parseBody();
     const routeContext: RouteContext = new RouteContext(this, rapidRequest);
     const { response } = routeContext;
