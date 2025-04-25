@@ -142,7 +142,7 @@ export default {
   },
 
   Renderer(context, props, state) {
-    const { logger, scope } = context;
+    const { logger, page, scope } = context;
     const dataDictionaries = rapidAppDefinition.getDataDictionaries();
     const descriptionsConfig = props;
     const mainEntityCode = descriptionsConfig.entityCode;
@@ -163,6 +163,12 @@ export default {
       return null;
     }
 
+    const form = {
+      getFieldValue(name: string) {
+        return get(dataSource, name);
+      },
+    };
+
     if (descriptionsConfig && descriptionsConfig.items) {
       descriptionsConfig.items.forEach((descriptionItemConfig) => {
         const propValue = get(dataSource, descriptionItemConfig.valueFieldName || descriptionItemConfig.code);
@@ -177,14 +183,16 @@ export default {
           },
           propValue,
         );
+        (descriptionItem as any).form = form; // 兼容 rapidEntityForm
+        page.interpreteComponentProperties(props, descriptionItem as any, {});
 
         const itemRockId = `${props.$id}-items-${descriptionItemConfig.uniqueKey || descriptionItemConfig.code}`;
-        descriptionItems.push({
+        const descriptionItemRockConfig: RockConfig = {
           $id: itemRockId,
           $type: "antdDescriptionsItem",
-          $exps: descriptionItem.$exps,
-          $i18n: descriptionItem.$i18n,
-          $locales: descriptionItem.$locales,
+          _hidden: (descriptionItem as any)._hidden,
+          $i18n: descriptionItemConfig.$i18n,
+          $locales: descriptionItemConfig.$locales,
           label: descriptionItem.label,
           labelStyle: descriptionItem.labelStyle,
           contentStyle: descriptionItem.contentStyle,
@@ -195,7 +203,11 @@ export default {
             ...descriptionItem.rendererProps,
             value: descriptionItem.value,
           },
-        });
+        };
+
+        if (!descriptionItemRockConfig._hidden) {
+          descriptionItems.push(descriptionItemRockConfig);
+        }
       });
     }
 
