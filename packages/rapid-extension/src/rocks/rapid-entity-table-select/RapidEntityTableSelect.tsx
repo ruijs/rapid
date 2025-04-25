@@ -21,7 +21,8 @@ export default {
     }
   },
   Renderer(context, props) {
-    const { entityCode, columns, queryProperties, extraProperties, relations, fixedFilters, orderBy, keepNonPropertyFields, ...rapidTableSelectProps } = props;
+    const { entityCode, queryProperties, extraProperties, relations, fixedFilters, orderBy, keepNonPropertyFields, ...rapidTableSelectProps } = props;
+    let { columns } = props;
 
     let mainEntity = null;
     if (entityCode) {
@@ -54,6 +55,13 @@ export default {
       };
     }, [props.$id]);
 
+    if (!columns) {
+      columns = [
+        {
+          code: mainEntity.displayPropertyCode,
+        },
+      ] satisfies RapidEntityTableSelectRockConfig["columns"];
+    }
     const tableColumnRocks: RapidTableColumnConfig[] = columns.map((column) => autoConfigTableColumnToRockConfig(context, props, column, mainEntity));
 
     const properties: string[] = uniq(
