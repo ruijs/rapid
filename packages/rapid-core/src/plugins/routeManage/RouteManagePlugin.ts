@@ -10,7 +10,8 @@ import {
   IRpdServer,
   RapidPlugin,
 } from "~/core/server";
-import * as httpProxy from "./actionHandlers/httpProxy";
+import * as httpProxyActionHandler from "./actionHandlers/httpProxy";
+import * as mockActionHandler from "./actionHandlers/mock";
 
 class RouteManager implements RapidPlugin {
   get code(): string {
@@ -34,7 +35,8 @@ class RouteManager implements RapidPlugin {
   }
 
   async registerActionHandlers(server: IRpdServer): Promise<any> {
-    server.registerActionHandler(this, httpProxy);
+    server.registerActionHandler(this, httpProxyActionHandler);
+    server.registerActionHandler(this, mockActionHandler);
   }
 
   async registerEventHandlers(server: IRpdServer): Promise<any> {
