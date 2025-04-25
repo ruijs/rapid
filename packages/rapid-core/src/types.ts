@@ -63,6 +63,28 @@ export interface RunProxyHandlerOptions {
   target: string;
 }
 
+export interface RunMockHandlerOptions {
+  /**
+   * 响应时间，毫秒
+   */
+  responseTime?: number;
+
+  /**
+   * 响应状态
+   */
+  responseStatus?: number;
+
+  /**
+   * 响应头
+   */
+  responseHeaders?: Record<string, string>;
+
+  /**
+   * 响应体
+   */
+  responseBody?: any;
+}
+
 export interface GetDataAccessorOptions {
   namespace?: string;
   singularCode: string;
