@@ -1,4 +1,4 @@
-import type { RockPropExpressions, SimpleRockConfig } from "@ruiapp/move-style";
+import type { RockExpsConfig, RockI18nConfig, RockLocalesConfig, SimpleRockConfig } from "@ruiapp/move-style";
 import { FindEntityFindRelationEntitiesOptions, RapidFieldType } from "../../types/rapid-entity-types";
 import { CSSProperties } from "react";
 import { RapidPropertyDisplayType } from "../../types/rapid-extension-types";
@@ -145,7 +145,9 @@ export type RapidDescriptionsItemConfig = {
    */
   rendererProps?: Record<string, any>;
 
-  $exps?: RockPropExpressions;
+  $exps?: RockExpsConfig;
+  $i18n?: RockI18nConfig;
+  $locales?: RockLocalesConfig;
 };
 
 export interface RapidEntityDescriptionsRockConfig extends SimpleRockConfig, RapidEntityDescriptionsConfig {}
