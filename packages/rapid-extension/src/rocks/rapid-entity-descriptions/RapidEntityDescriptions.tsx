@@ -2,7 +2,7 @@ import type { Rock, RuiRockLogger, RockConfig } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityDescriptionsMeta from "./RapidEntityDescriptionsMeta";
 import type { RapidDescriptionsItemConfig, RapidEntityDescriptionsRockConfig } from "./rapid-entity-descriptions-types";
-import { get, isUndefined } from "lodash";
+import { get, isUndefined, omit } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import type { RapidDataDictionary, RapidDataDictionaryEntry, RapidEntity, RapidField, RapidFieldType } from "../../types/rapid-entity-types";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
@@ -182,6 +182,9 @@ export default {
         descriptionItems.push({
           $id: itemRockId,
           $type: "antdDescriptionsItem",
+          $exps: descriptionItem.$exps,
+          $i18n: descriptionItem.$i18n,
+          $locales: descriptionItem.$locales,
           label: descriptionItem.label,
           labelStyle: descriptionItem.labelStyle,
           contentStyle: descriptionItem.contentStyle,
