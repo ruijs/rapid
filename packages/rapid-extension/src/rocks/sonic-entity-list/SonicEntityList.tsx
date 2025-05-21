@@ -552,10 +552,11 @@ export default {
               $action: "script",
               script: async (event) => {
                 const recordAction: RapidUpdateRecordActionOptions = event.args[0];
-                let { confirmText, recordId, entity } = recordAction;
+                let { confirmTitle, confirmText, recordId, entity } = recordAction;
                 if (confirmText) {
                   Modal.confirm({
-                    title: confirmText,
+                    title: confirmTitle,
+                    content: confirmText,
                     okText: getExtensionLocaleStringResource(framework, "ok"),
                     cancelText: getExtensionLocaleStringResource(framework, "cancel"),
                     onOk: () => {
@@ -588,7 +589,7 @@ export default {
               $action: "script",
               script: async (event) => {
                 const recordAction: RapidDeleteRecordActionOptions = event.args[0];
-                let { confirmText, recordId } = recordAction;
+                let { confirmTitle, confirmText, recordId } = recordAction;
                 if (!confirmText) {
                   const entityName = props.entityName || getMetaEntityLocaleName(framework, mainEntity);
                   confirmText = getExtensionLocaleStringResource(framework, "deleteConfirmText", {
@@ -597,7 +598,8 @@ export default {
                 }
 
                 Modal.confirm({
-                  title: confirmText,
+                  title: confirmTitle,
+                  content: confirmText,
                   okText: getExtensionLocaleStringResource(framework, "ok"),
                   cancelText: getExtensionLocaleStringResource(framework, "cancel"),
                   onOk: () => {
