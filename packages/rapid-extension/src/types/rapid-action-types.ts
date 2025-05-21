@@ -33,7 +33,12 @@ export type RapidActionBase = {
   actionEventName?: string;
 
   /**
-   * 执行Action前的确认提示文字
+   * 执行操作前的确认对话框标题
+   */
+  confirmTitle?: string;
+
+  /**
+   * 执行操作前的确认提示文字
    */
   confirmText?: string;
 
@@ -89,6 +94,11 @@ export type RapidRecordActionBase = {
    * 需求描述
    */
   requirements?: string;
+
+  /**
+   * 执行操作前的确认对话框标题
+   */
+  confirmTitle?: string;
 
   /**
    * 执行操作前的确认文本
@@ -150,11 +160,13 @@ export type RapidRecordActionRequest = RapidRecordActionBase & {
 
 export type RapidDeleteRecordActionOptions = {
   recordId: string;
+  confirmTitle?: string;
   confirmText?: string;
 };
 
 export type RapidUpdateRecordActionOptions = {
   recordId: string;
+  confirmTitle?: string;
   confirmText?: string;
   entity?: Record<string, any>;
 };

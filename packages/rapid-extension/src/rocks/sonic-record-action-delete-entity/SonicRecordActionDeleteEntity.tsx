@@ -13,7 +13,7 @@ export default {
   Renderer(context, props) {
     const { framework } = context;
     const rockConfig: RockConfig = {
-      ...(MoveStyleUtils.omitSystemRockConfigFields(omit(props, ["confirmText"]) as any) as SonicRecordActionDeleteEntityConfig),
+      ...(MoveStyleUtils.omitSystemRockConfigFields(omit(props, ["confirmTitle", "confirmText"]) as any) as SonicRecordActionDeleteEntityConfig),
       $type: "rapidTableAction",
       actionText: props.actionText || getExtensionLocaleStringResource(framework, "delete"),
       recordId: props.recordId,
@@ -24,6 +24,7 @@ export default {
           args: [
             {
               recordId: props.recordId,
+              confirmTitle: props.confirmTitle,
               confirmText: props.confirmText,
             },
           ],

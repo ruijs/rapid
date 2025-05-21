@@ -3,6 +3,7 @@ import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./SonicRecordActionUpdateEntityMeta";
 import type { SonicRecordActionUpdateEntityConfig, SonicRecordActionUpdateEntityRockConfig } from "./sonic-record-action-update-entity-types";
 import { RapidTableActionRockConfig } from "../rapid-table-action/rapid-table-action-types";
+import { omit } from "lodash";
 
 export default {
   onInit(context, props) {},
@@ -11,7 +12,7 @@ export default {
 
   Renderer(context, props) {
     const rockConfig: RapidTableActionRockConfig = {
-      ...(MoveStyleUtils.omitSystemRockConfigFields(props) as SonicRecordActionUpdateEntityConfig),
+      ...(MoveStyleUtils.omitSystemRockConfigFields(omit(props, ["confirmTitle", "confirmText"]) as any) as SonicRecordActionUpdateEntityConfig),
       $type: "rapidTableAction",
       onAction: [
         {
@@ -20,6 +21,7 @@ export default {
           args: [
             {
               recordId: props.recordId,
+              confirmTitle: props.confirmTitle,
               confirmText: props.confirmText,
               entity: props.entity,
             },

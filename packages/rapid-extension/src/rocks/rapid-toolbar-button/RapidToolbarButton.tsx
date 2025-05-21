@@ -10,7 +10,7 @@ export default {
 
   Renderer(context, props: RapidToolbarButtonRockConfig) {
     const { framework } = context;
-    const { onAction, confirmText, tooltipTitle, tooltipColor } = props;
+    const { onAction, confirmTitle, confirmText, tooltipTitle, tooltipColor } = props;
     const actionEventName = props.actionEventName || "onClick";
 
     const buttonRockConfig: RockConfig = {
@@ -45,7 +45,8 @@ export default {
           script: (event: RockEvent) => {
             if (confirmText) {
               Modal.confirm({
-                title: confirmText,
+                title: confirmTitle,
+                content: confirmText,
                 okText: getExtensionLocaleStringResource(framework, "ok"),
                 cancelText: getExtensionLocaleStringResource(framework, "cancel"),
                 onOk: async () => {

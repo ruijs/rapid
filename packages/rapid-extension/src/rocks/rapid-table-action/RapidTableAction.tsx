@@ -12,7 +12,7 @@ export default {
 
   Renderer(context, props) {
     const { framework } = context;
-    const { record, recordId, actionText, actionType, confirmText, onAction, disabled, disabledTooltipText, url } = props;
+    const { record, recordId, actionText, confirmTitle, confirmText, onAction, disabled, disabledTooltipText, url } = props;
     let rockConfig: RockConfig = {
       $id: `${props.$id}-anchor`,
       $type: "anchor",
@@ -61,7 +61,8 @@ export default {
           script: (event: RockEvent) => {
             if (confirmText) {
               Modal.confirm({
-                title: confirmText,
+                title: confirmTitle,
+                content: confirmText,
                 okText: getExtensionLocaleStringResource(framework, "ok"),
                 cancelText: getExtensionLocaleStringResource(framework, "cancel"),
                 onOk: async () => {
