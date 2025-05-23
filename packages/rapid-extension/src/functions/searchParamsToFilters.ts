@@ -71,8 +71,11 @@ export function parseConfigToFilters(filterConfigs: FilterFieldConfig[], value: 
 
       if (filterConfig.operator === "range") {
         if (rangeUnit === "day") {
+          if (beginValue) {
+            beginValue = moment(beginValue).format("YYYY-MM-DD");
+          }
           if (endValue) {
-            endValue = moment(endValue).add(1, "day");
+            endValue = moment(endValue).add(1, "day").format("YYYY-MM-DD");
           }
         }
       }
