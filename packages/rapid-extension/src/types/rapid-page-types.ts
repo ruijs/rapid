@@ -8,6 +8,10 @@ import { DataFunctionArgs } from "@remix-run/node";
  */
 export type RapidPage = {
   /**
+   * 所属模块编码
+   */
+  subSystem?: string;
+  /**
    * 页面编码
    */
   code: string;
