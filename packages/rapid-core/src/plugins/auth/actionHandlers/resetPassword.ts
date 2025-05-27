@@ -1,16 +1,18 @@
 import bcrypt from "bcrypt";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
+import AuthPlugin from "../AuthPlugin";
 
 export const code = "resetPassword";
 
-export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: any) {
+export async function handler(plugin: AuthPlugin, ctx: ActionHandlerContext, options: any) {
   const { server, input, routerContext: routeContext } = ctx;
   const { response } = routeContext;
   const { userId, password } = input;
 
+  const userEntitySingularCode = plugin.options?.userEntitySingularCode || "oc_user";
   const userDataAccessor = server.getDataAccessor({
-    singularCode: "oc_user",
+    singularCode: userEntitySingularCode,
   });
 
   const user = await userDataAccessor.findOne(
