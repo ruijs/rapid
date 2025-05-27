@@ -17,9 +17,19 @@ import pluginRoutes from "./routes";
 import { RouteContext } from "~/core/routeContext";
 import { verifyJwt } from "~/utilities/jwtUtility";
 import AuthService from "./services/AuthService";
+import { AuthPluginInitOptions } from "./AuthPluginTypes";
 
 class AuthPlugin implements RapidPlugin {
+  #options: AuthPluginInitOptions;
   #authService!: AuthService;
+
+  constructor(options: AuthPluginInitOptions) {
+    this.#options = Object.freeze(options);
+  }
+
+  get options(): AuthPluginInitOptions {
+    return this.#options;
+  }
 
   get code(): string {
     return "authManager";

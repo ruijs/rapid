@@ -1,9 +1,10 @@
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
+import AuthPlugin from "../AuthPlugin";
 
 export const code = "getMyProfile";
 
-export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: any) {
+export async function handler(plugin: AuthPlugin, ctx: ActionHandlerContext, options: any) {
   const { server, input, routerContext } = ctx;
 
   const userId = routerContext.state.userId;
@@ -17,7 +18,9 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
     return;
   }
 
-  const entityManager = server.getEntityManager("oc_user");
+  const userEntitySingularCode = plugin.options?.userEntitySingularCode || "oc_user";
+  const profilePropertyCodes = plugin.options?.profilePropertyCodes || ["id", "name", "login", "email", "department", "roles", "state", "createdAt"];
+  const entityManager = server.getEntityManager(userEntitySingularCode);
   const user = await entityManager.findEntity({
     filters: [
       {
@@ -26,7 +29,7 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
         value: userId,
       },
     ],
-    properties: ["id", "name", "login", "email", "department", "roles", "state", "createdAt"],
+    properties: profilePropertyCodes,
   });
 
   ctx.output = {

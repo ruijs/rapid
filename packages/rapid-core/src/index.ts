@@ -47,6 +47,7 @@ export * from "./plugins/sequence/SequencePluginTypes";
 export { default as WebhooksPlugin } from "./plugins/webhooks/WebhooksPlugin";
 
 export { default as AuthPlugin } from "./plugins/auth/AuthPlugin";
+export * from "./plugins/auth/AuthPluginTypes";
 
 export { default as FileManagePlugin } from "./plugins/fileManage/FileManagePlugin";
 

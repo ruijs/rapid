@@ -4,18 +4,20 @@ import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 import AuthService from "../services/AuthService";
 import { validateLicense } from "~/helpers/licenseHelper";
+import AuthPlugin from "../AuthPlugin";
 
 export const code = "createSession";
 
-export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: any) {
+export async function handler(plugin: AuthPlugin, ctx: ActionHandlerContext, options: any) {
   const { server, input, routerContext: routeContext, logger } = ctx;
   const { response } = routeContext;
   const { account, password } = input;
 
   validateLicense(server);
 
+  const userEntitySingularCode = plugin.options?.userEntitySingularCode || "oc_user";
   const userDataAccessor = server.getDataAccessor({
-    singularCode: "oc_user",
+    singularCode: userEntitySingularCode,
   });
 
   const user = await userDataAccessor.findOne(
