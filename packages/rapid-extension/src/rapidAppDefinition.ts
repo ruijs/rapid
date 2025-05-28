@@ -20,7 +20,7 @@ export default {
   },
 
   getApiBaseUrl() {
-    return apiBaseUrl;
+    return apiBaseUrl || "/api";
   },
 
   getAppDefinition() {

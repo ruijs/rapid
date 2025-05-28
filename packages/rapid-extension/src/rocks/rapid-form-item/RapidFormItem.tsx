@@ -34,7 +34,7 @@ const formItemTypeToControlRockTypeMap: Record<Exclude<RapidFormItemType, "auto"
   richText: "rapidRichTextEditor",
 };
 
-const apiBaseUrl = rapidAppDefinition.getApiBaseUrl() || "/api";
+const apiBaseUrl = rapidAppDefinition.getApiBaseUrl();
 
 const defaultUploadProps = {
   name: "files",

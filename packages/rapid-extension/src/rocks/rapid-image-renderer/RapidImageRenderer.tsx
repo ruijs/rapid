@@ -61,7 +61,7 @@ export type RenderImageProps = {
 
 function renderImage(props: RenderImageProps) {
   const { fileInfo, preview, height, width, fallback, alt } = props;
-  const apiBaseUrl = rapidAppDefinition.getApiBaseUrl() || "/api";
+  const apiBaseUrl = rapidAppDefinition.getApiBaseUrl();
   const downloadUrl = `${apiBaseUrl}/download/file?fileKey=${encodeURIComponent(fileInfo.key)}&fileName=${encodeURIComponent(fileInfo.name)}`;
   return <Image src={downloadUrl} preview={preview} height={height} width={width} fallback={fallback} alt={alt} />;
 }

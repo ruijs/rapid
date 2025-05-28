@@ -136,7 +136,7 @@ export class EntityStore implements IStore<EntityStoreConfig> {
       return;
     }
 
-    const apiBaseUrl = rapidAppDefinition.getApiBaseUrl() || "/api";
+    const apiBaseUrl = rapidAppDefinition.getApiBaseUrl();
 
     const requestOptions: HttpRequestOptions<FindEntityOptions> = {
       method: "POST",

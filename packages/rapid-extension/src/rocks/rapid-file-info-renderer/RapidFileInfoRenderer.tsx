@@ -46,7 +46,7 @@ export default {
 } as Rock;
 
 function renderFileInfo(fileInfo: RapidFileInfo, showFileSize: boolean, fileSizeDecimalPlaces?: number) {
-  const apiBaseUrl = rapidAppDefinition.getApiBaseUrl() || "/api";
+  const apiBaseUrl = rapidAppDefinition.getApiBaseUrl();
   return (
     <>
       <a href={`${apiBaseUrl}/download/file?fileKey=${encodeURIComponent(fileInfo.key)}&fileName=${encodeURIComponent(fileInfo.name)}`}>

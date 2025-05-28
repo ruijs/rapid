@@ -44,7 +44,7 @@ const RapidEditor = memo<IProps>((props) => {
     [props.toolbarConfig],
   );
 
-  const apiBaseUrl = rapidAppDefinition.getApiBaseUrl() || "/api";
+  const apiBaseUrl = rapidAppDefinition.getApiBaseUrl();
 
   // 编辑器配置
   const editorConfig: Partial<IEditorConfig> = useMemo(

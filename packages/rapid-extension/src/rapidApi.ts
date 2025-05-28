@@ -1,7 +1,7 @@
 import axios from "axios";
 import rapidAppDefinition from "./rapidAppDefinition";
 
-const apiBaseUrl = rapidAppDefinition.getApiBaseUrl() || "/api";
+const apiBaseUrl = rapidAppDefinition.getApiBaseUrl();
 
 const rapidApi = axios.create({
   baseURL: apiBaseUrl,
