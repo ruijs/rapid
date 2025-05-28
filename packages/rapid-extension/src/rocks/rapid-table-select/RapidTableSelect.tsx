@@ -10,7 +10,6 @@ import rapidApi from "../../rapidApi";
 import { FindEntityOptions } from "../../rapid-types";
 import { parseConfigToFilters } from "../../functions/searchParamsToFilters";
 import dayjs from "dayjs";
-
 import "./rapid-table-select-style.css";
 import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
 import { calculateColumnsTotalWidth, convertRapidTableColumnToAntdTableColumn } from "../rapid-table/RapidTable";
