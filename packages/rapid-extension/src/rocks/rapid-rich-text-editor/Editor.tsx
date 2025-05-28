@@ -7,6 +7,7 @@ import attachmentMenu from "./attachment";
 
 import "@wangeditor/editor/dist/css/style.css";
 import "./rich-text-editor-style.css";
+import rapidAppDefinition from "../../rapidAppDefinition";
 
 Boot.registerModule(attachmentMenu);
 
@@ -43,6 +44,8 @@ const RapidEditor = memo<IProps>((props) => {
     [props.toolbarConfig],
   );
 
+  const apiBaseUrl = rapidAppDefinition.getApiBaseUrl() || "/api";
+
   // 编辑器配置
   const editorConfig: Partial<IEditorConfig> = useMemo(
     () =>
@@ -67,7 +70,7 @@ const RapidEditor = memo<IProps>((props) => {
                       const data = res.data;
                       if (res.status >= 200 && res.status < 400) {
                         // 预览(preview)：inline=true
-                        const url = `/api/download/file?fileKey=${data.fileKey}&fileName=${encodeURIComponent(file.name)}`;
+                        const url = `${apiBaseUrl}/download/file?fileKey=${data.fileKey}&fileName=${encodeURIComponent(file.name)}`;
                         insertFn(file.name, url);
                         resolve("ok");
                       } else {
@@ -91,7 +94,7 @@ const RapidEditor = memo<IProps>((props) => {
                     .then((res) => {
                       const data = res.data;
                       if (res.status >= 200 && res.status < 400) {
-                        const url = `/api/download/file?inline=true&fileKey=${data.fileKey}&fileName=${encodeURIComponent(file.name)}`;
+                        const url = `${apiBaseUrl}/download/file?inline=true&fileKey=${data.fileKey}&fileName=${encodeURIComponent(file.name)}`;
                         insertFn(url, file.name, url);
                         resolve("ok");
                       } else {

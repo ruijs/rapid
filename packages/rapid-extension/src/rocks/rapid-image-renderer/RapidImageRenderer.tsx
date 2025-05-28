@@ -5,6 +5,7 @@ import { renderRock } from "@ruiapp/react-renderer";
 import { isArray, merge } from "lodash";
 import { RapidFileInfo } from "../rapid-uploader-form-input/rapid-uploader-form-input-types";
 import { Image } from "antd";
+import rapidAppDefinition from "../../rapidAppDefinition";
 
 export default {
   $type: "rapidImageRenderer",
@@ -60,6 +61,7 @@ export type RenderImageProps = {
 
 function renderImage(props: RenderImageProps) {
   const { fileInfo, preview, height, width, fallback, alt } = props;
-  const downloadUrl = `/api/download/file?fileKey=${encodeURIComponent(fileInfo.key)}&fileName=${encodeURIComponent(fileInfo.name)}`;
+  const apiBaseUrl = rapidAppDefinition.getApiBaseUrl() || "/api";
+  const downloadUrl = `${apiBaseUrl}/download/file?fileKey=${encodeURIComponent(fileInfo.key)}&fileName=${encodeURIComponent(fileInfo.name)}`;
   return <Image src={downloadUrl} preview={preview} height={height} width={width} fallback={fallback} alt={alt} />;
 }
