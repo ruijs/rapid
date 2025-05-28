@@ -6,24 +6,21 @@ export interface AppDefinition {
   dataDictionaries: RapidDataDictionary[];
 }
 
-export interface AppBaseUrl {
-  apiBaseUrl: string;
-}
-
 let appDef: AppDefinition;
-let urlDef: AppBaseUrl;
+
+let apiBaseUrl: string;
 
 export default {
   setAppDefinition(def: AppDefinition) {
     appDef = def;
   },
 
-  setAppBaseUrl(baseUrl: AppBaseUrl) {
-    urlDef = baseUrl;
+  setApiBaseUrl(baseUrl: string) {
+    apiBaseUrl = baseUrl;
   },
 
-  getAppBaseApiUrl() {
-    return urlDef.apiBaseUrl;
+  getApiBaseUrl() {
+    return apiBaseUrl;
   },
 
   getAppDefinition() {

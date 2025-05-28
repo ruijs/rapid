@@ -136,11 +136,11 @@ export class EntityStore implements IStore<EntityStoreConfig> {
       return;
     }
 
-    const appBaseApiUrl = rapidAppDefinition.getAppBaseApiUrl() || "/api";
+    const apiBaseUrl = rapidAppDefinition.getApiBaseUrl() || "/api";
 
     const requestOptions: HttpRequestOptions<FindEntityOptions> = {
       method: "POST",
-      url: `${appBaseApiUrl}/${entityModel.namespace}/${entityModel.pluralCode}/operations/find`,
+      url: `${apiBaseUrl}/${entityModel.namespace}/${entityModel.pluralCode}/operations/find`,
       data: {
         filters: config.filters,
         orderBy: config.orderBy,
