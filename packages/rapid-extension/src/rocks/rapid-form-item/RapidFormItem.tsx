@@ -4,6 +4,7 @@ import RapidFormItemMeta from "./RapidFormItemMeta";
 import { RapidFormItemRockConfig, RapidFormItemType } from "./rapid-form-item-types";
 import RapidExtensionSetting from "../../RapidExtensionSetting";
 import { useEffect, useMemo, useRef } from "react";
+import rapidAppDefinition from "../../rapidAppDefinition";
 
 const formItemTypeToControlRockTypeMap: Record<Exclude<RapidFormItemType, "auto" | "custom">, string> = {
   box: "box",
@@ -33,9 +34,11 @@ const formItemTypeToControlRockTypeMap: Record<Exclude<RapidFormItemType, "auto"
   richText: "rapidRichTextEditor",
 };
 
+const apiBaseUrl = rapidAppDefinition.getApiBaseUrl();
+
 const defaultUploadProps = {
   name: "files",
-  action: "/api/upload",
+  action: `${apiBaseUrl}/upload`,
   headers: {},
 };
 

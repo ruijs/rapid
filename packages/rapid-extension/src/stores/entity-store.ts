@@ -95,6 +95,7 @@ export class EntityStore implements IStore<EntityStoreConfig> {
     this.#isLoading = true;
 
     let entityModel = this.#config.entityModel;
+
     if (!entityModel) {
       const entities = rapidAppDefinition.getEntities();
       const entityCode = this.#config.entityCode;
@@ -135,9 +136,11 @@ export class EntityStore implements IStore<EntityStoreConfig> {
       return;
     }
 
+    const apiBaseUrl = rapidAppDefinition.getApiBaseUrl();
+
     const requestOptions: HttpRequestOptions<FindEntityOptions> = {
       method: "POST",
-      url: `/api/${entityModel.namespace}/${entityModel.pluralCode}/operations/find`,
+      url: `${apiBaseUrl}/${entityModel.namespace}/${entityModel.pluralCode}/operations/find`,
       data: {
         filters: config.filters,
         orderBy: config.orderBy,

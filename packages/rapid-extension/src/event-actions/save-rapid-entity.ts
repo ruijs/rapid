@@ -1,6 +1,6 @@
 import { handleComponentEvent, type EventAction, type Framework, type Page, type RockEventHandlerConfig, type Scope } from "@ruiapp/move-style";
 import { message } from "antd";
-import rapidApi from "../rapidApi";
+import { getRapidApi } from "../rapidApi";
 import { AxiosResponse } from "axios";
 
 export interface RockEventHandlerSaveRapidEntity {
@@ -28,6 +28,7 @@ export async function saveRapidEntity(
   eventArgs: any,
 ) {
   const entity = eventArgs[0];
+  const rapidApi = getRapidApi();
   const { entityId, onSuccess, onError, customRequest } = eventHandler;
   try {
     let res: AxiosResponse<any, any>;

@@ -1,8 +1,19 @@
-import axios from "axios";
+import axios, { AxiosInstance } from "axios";
+import rapidAppDefinition from "./rapidAppDefinition";
 
-const rapidApi = axios.create({
-  baseURL: "/api",
-  validateStatus: null,
-});
+let rapidApi: AxiosInstance | null = null;
 
-export default rapidApi;
+export function initRapidApi() {
+  const apiBaseUrl = rapidAppDefinition.getApiBaseUrl();
+  rapidApi = axios.create({
+    baseURL: apiBaseUrl,
+    validateStatus: null,
+  });
+}
+
+export function getRapidApi() {
+  if (!rapidApi) {
+    initRapidApi();
+  }
+  return rapidApi;
+}

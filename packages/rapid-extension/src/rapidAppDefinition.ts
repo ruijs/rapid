@@ -5,11 +5,22 @@ export interface AppDefinition {
   entities: RapidEntity[];
   dataDictionaries: RapidDataDictionary[];
 }
+
 let appDef: AppDefinition;
+
+let apiBaseUrl: string;
 
 export default {
   setAppDefinition(def: AppDefinition) {
     appDef = def;
+  },
+
+  setApiBaseUrl(baseUrl: string) {
+    apiBaseUrl = baseUrl;
+  },
+
+  getApiBaseUrl() {
+    return apiBaseUrl || "/api";
   },
 
   getAppDefinition() {

@@ -5,6 +5,7 @@ import { renderRock } from "@ruiapp/react-renderer";
 import { isArray, isString, merge } from "lodash";
 import { RapidFileInfo } from "../rapid-uploader-form-input/rapid-uploader-form-input-types";
 import { formatFileSize } from "../../utils/format-utility";
+import rapidAppDefinition from "../../rapidAppDefinition";
 
 export default {
   $type: "rapidFileInfoRenderer",
@@ -45,9 +46,12 @@ export default {
 } as Rock;
 
 function renderFileInfo(fileInfo: RapidFileInfo, showFileSize: boolean, fileSizeDecimalPlaces?: number) {
+  const apiBaseUrl = rapidAppDefinition.getApiBaseUrl();
   return (
     <>
-      <a href={`/api/download/file?fileKey=${encodeURIComponent(fileInfo.key)}&fileName=${encodeURIComponent(fileInfo.name)}`}>{fileInfo.name.toString()}</a>
+      <a href={`${apiBaseUrl}/download/file?fileKey=${encodeURIComponent(fileInfo.key)}&fileName=${encodeURIComponent(fileInfo.name)}`}>
+        {fileInfo.name.toString()}
+      </a>
       {showFileSize ? ` (${formatFileSize(fileInfo.size, fileSizeDecimalPlaces)})` : ""}
     </>
   );

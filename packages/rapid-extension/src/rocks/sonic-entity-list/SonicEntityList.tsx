@@ -24,7 +24,7 @@ import { RapidExtStorage } from "../../utils/storage-utility";
 import { getColumnUniqueKey, ICacheRapidTableColumn } from "../rapid-entity-list-toolbox/RapidEntityListToolbox";
 import { getRapidEntityListFilters, RapidEntityListFilterCache } from "../rapid-entity-search-form/RapidEntitySearchForm";
 import { message, Modal } from "antd";
-import rapidApi from "../../rapidApi";
+import { getRapidApi } from "../../rapidApi";
 import { RapidEntityListToolboxColumnConfig } from "../rapid-entity-list-toolbox/RapidEntityListToolbox";
 import { getExtensionLocaleStringResource, getMetaEntityLocaleName, getMetaPropertyLocaleName } from "../../helpers/i18nHelper";
 
@@ -46,6 +46,7 @@ function getToolboxColumns(framework: Framework, mainEntity: RapidEntity, tableC
 
 function getToolboxColumnConfig(framework: Framework, mainEntity: RapidEntity, column: RapidTableColumnConfig) {
   let columnTitle = column.title;
+
   const fieldName = column.fieldName || column.code;
   const fieldNameParts = fieldName.split(".");
   const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, fieldNameParts[0]);
@@ -100,7 +101,7 @@ export default {
     const entities = rapidAppDefinition.getEntities();
     const entityCode = props.entityCode;
     let entityName = props.entityName;
-
+    const rapidApi = getRapidApi();
     let mainEntity: RapidEntity | undefined;
     if (entityCode) {
       mainEntity = find(entities, (item) => item.code === entityCode);

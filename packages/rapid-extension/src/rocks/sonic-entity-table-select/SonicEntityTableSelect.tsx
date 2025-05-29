@@ -6,7 +6,7 @@ import { Table, Select, Input, TableProps, Empty, Spin } from "antd";
 import { debounce, filter, forEach, get, isArray, isFunction, isObject, isPlainObject, isString, isUndefined, last, map, omit, pick, set, split } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMergeState } from "../../hooks/use-merge-state";
-import rapidApi from "../../rapidApi";
+import { getRapidApi } from "../../rapidApi";
 import { FindEntityOptions } from "../../rapid-types";
 import { parseConfigToFilters } from "../../functions/searchParamsToFilters";
 import rapidAppDefinition from "../../rapidAppDefinition";
@@ -39,6 +39,7 @@ export default {
 
   Renderer(context, props: SonicEntityTableSelectRockConfig) {
     const { framework, logger, page } = context;
+
     const entity = rapidAppDefinition.getEntityByCode(props.entityCode);
     const displayPropertyCode = entity.displayPropertyCode || "name";
     const displayProperty = getEntityPropertyByCode(rapidAppDefinition.getAppDefinition(), entity, displayPropertyCode);
@@ -419,7 +420,7 @@ function useRequest(props: SonicEntityTableSelectRockConfig, context: RockInstan
 
 function useSelectedRecords(props: SonicEntityTableSelectRockConfig, onSuccess: (records: any[]) => void) {
   const { requestParams, listValueFieldName = "id" } = props;
-
+  const rapidApi = getRapidApi();
   const [loading, setLoading] = useState<boolean>(false);
 
   const loadSelectedRecords = async (keys: string[]) => {
