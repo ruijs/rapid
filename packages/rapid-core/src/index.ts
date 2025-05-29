@@ -22,6 +22,7 @@ export * from "./utilities/accessControlUtility";
 export * from "./utilities/entityUtility";
 export * from "./utilities/jwtUtility";
 export * from "./utilities/timeUtility";
+export * from "./utilities/passwordUtility";
 
 export * from "./helpers/entityHelpers";
 export * from "./helpers/licenseHelper";

@@ -1,10 +1,9 @@
-import bcrypt from "bcrypt";
 import { setCookie } from "~/deno-std/http/cookie";
 import { ActionHandlerContext } from "~/core/actionHandler";
-import { RapidPlugin } from "~/core/server";
 import AuthService from "../services/AuthService";
 import { validateLicense } from "~/helpers/licenseHelper";
 import AuthPlugin from "../AuthPlugin";
+import { validatePassword } from "~/utilities/passwordUtility";
 
 export const code = "createSession";
 
@@ -45,7 +44,7 @@ export async function handler(plugin: AuthPlugin, ctx: ActionHandlerContext, opt
     throw new Error("用户已被禁用，不允许登录。");
   }
 
-  const isMatch = await bcrypt.compare(password, user.password);
+  const isMatch = await validatePassword(password, user.password);
   if (!isMatch) {
     throw new Error("用户名或密码错误。");
   }
