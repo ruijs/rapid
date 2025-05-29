@@ -1,6 +1,6 @@
-import bcrypt from "bcrypt";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
+import { generatePasswordHash } from "~/utilities/passwordUtility";
 
 export const code = "resetPassword";
 
@@ -27,8 +27,7 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
     throw new Error("User not found.");
   }
 
-  const saltRounds = 10;
-  const passwordHash = await bcrypt.hash(password, saltRounds);
+  const passwordHash = await generatePasswordHash(password);
 
   await userDataAccessor.updateById(user.id, {
     password: passwordHash,

@@ -1,6 +1,6 @@
-import bcrypt from "bcrypt";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
+import { generatePasswordHash, validatePassword } from "~/utilities/passwordUtility";
 
 export const code = "changePassword";
 
@@ -38,13 +38,12 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
     throw new Error("User not found.");
   }
 
-  const isMatch = await bcrypt.compare(oldPassword, user.password);
+  const isMatch = await validatePassword(oldPassword, user.password);
   if (!isMatch) {
     throw new Error("旧密码错误。");
   }
 
-  const saltRounds = 10;
-  const passwordHash = await bcrypt.hash(newPassword, saltRounds);
+  const passwordHash = await generatePasswordHash(newPassword);
 
   await userDataAccessor.updateById(user.id, {
     password: passwordHash,
