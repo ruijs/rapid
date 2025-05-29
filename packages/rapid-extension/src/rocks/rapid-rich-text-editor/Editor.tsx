@@ -2,7 +2,7 @@ import { useState, useEffect, memo, useMemo, CSSProperties } from "react";
 import { Editor, Toolbar } from "@wangeditor/editor-for-react";
 import { IDomEditor, IEditorConfig, IToolbarConfig, DomEditor, Boot } from "@wangeditor/editor";
 import { merge } from "lodash";
-import rapidApi from "../../rapidApi";
+import { getRapidApi } from "../../rapidApi";
 import attachmentMenu from "./attachment";
 
 import "@wangeditor/editor/dist/css/style.css";
@@ -25,7 +25,7 @@ interface IProps {
 
 const RapidEditor = memo<IProps>((props) => {
   const { height = 500 } = props;
-
+  const rapidApi = getRapidApi();
   const [editor, setEditor] = useState<IDomEditor | null>(null);
 
   // 工具栏配置

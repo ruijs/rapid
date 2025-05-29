@@ -6,7 +6,7 @@ import { Table, Select, Input, Empty, Spin } from "antd";
 import { debounce, filter, forEach, get, isArray, isObject, isPlainObject, isString, last, map, omit, pick, set, split } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMergeState } from "../../hooks/use-merge-state";
-import rapidApi from "../../rapidApi";
+import { getRapidApi } from "../../rapidApi";
 import { FindEntityOptions } from "../../rapid-types";
 import { parseConfigToFilters } from "../../functions/searchParamsToFilters";
 import dayjs from "dayjs";
@@ -331,7 +331,7 @@ interface IRequestState {
 
 function useRequest(config: RapidTableSelectRockConfig["requestConfig"], context: RockInstanceContext) {
   const [state, setState] = useMergeState<IRequestState>({});
-
+  const rapidApi = getRapidApi();
   const request = async (params: any) => {
     if (!config?.url) {
       return;
@@ -379,7 +379,7 @@ function useRequest(config: RapidTableSelectRockConfig["requestConfig"], context
 
 function useSelectedRecords(props: RapidTableSelectRockConfig, onSuccess: (records: any[]) => void) {
   const { requestConfig: config, listValueFieldName = "id" } = props;
-
+  const rapidApi = getRapidApi();
   const [loading, setLoading] = useState<boolean>(false);
 
   const loadSelectedRecords = async (keys: string[]) => {
