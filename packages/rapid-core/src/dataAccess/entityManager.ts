@@ -23,7 +23,7 @@ import { isNullOrUndefined } from "~/utilities/typeUtility";
 import { mapDbRowToEntity, mapEntityToDbRow } from "./entityMapper";
 import { mapPropertyNameToColumnName } from "./propertyMapper";
 import { IRpdServer, RapidPlugin } from "~/core/server";
-import { detectChangedFieldsOfEntity } from "~/helpers/entityHelpers";
+import { detectChangedFieldsOfEntity } from "~/helpers/entityHelper";
 import {
   cloneDeep,
   concat,

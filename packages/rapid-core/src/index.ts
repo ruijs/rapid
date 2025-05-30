@@ -24,8 +24,11 @@ export * from "./utilities/jwtUtility";
 export * from "./utilities/timeUtility";
 export * from "./utilities/passwordUtility";
 
-export * from "./helpers/entityHelpers";
+export * from "./helpers/entityHelper";
 export * from "./helpers/licenseHelper";
+export * as entityHelper from "./helpers/entityHelper";
+export * as licenseHelper from "./helpers/licenseHelper";
+export * as metaHelper from "./helpers/metaHelper";
 
 export * from "./deno-std/http/cookie";
 
