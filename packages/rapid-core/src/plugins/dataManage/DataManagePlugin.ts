@@ -25,71 +25,71 @@ import {
   RapidPlugin,
 } from "~/core/server";
 
-const routeConfigs: {
-  code: string;
-  method: RpdHttpMethod;
-  endpoint: string;
-  handlerCode: string;
+const entityOperationConfigs: {
+  operationCode: string;
+  httpMethod: RpdHttpMethod;
+  requestEndpoint: string;
+  actionHandlerCode: string;
 }[] = [
   {
-    code: "createBatch",
-    method: "POST",
-    endpoint: "/operations/create_batch",
-    handlerCode: "createCollectionEntitiesBatch",
+    operationCode: "createBatch",
+    httpMethod: "POST",
+    requestEndpoint: "/operations/create_batch",
+    actionHandlerCode: "createCollectionEntitiesBatch",
   },
   {
-    code: "find",
-    method: "POST",
-    endpoint: "/operations/find",
-    handlerCode: "findCollectionEntities",
+    operationCode: "find",
+    httpMethod: "POST",
+    requestEndpoint: "/operations/find",
+    actionHandlerCode: "findCollectionEntities",
   },
   {
-    code: "count",
-    method: "POST",
-    endpoint: "/operations/count",
-    handlerCode: "countCollectionEntities",
+    operationCode: "count",
+    httpMethod: "POST",
+    requestEndpoint: "/operations/count",
+    actionHandlerCode: "countCollectionEntities",
   },
   {
-    code: "delete",
-    method: "POST",
-    endpoint: "/operations/delete",
-    handlerCode: "deleteCollectionEntities",
+    operationCode: "delete",
+    httpMethod: "POST",
+    requestEndpoint: "/operations/delete",
+    actionHandlerCode: "deleteCollectionEntities",
   },
   {
-    code: "addRelations",
-    method: "POST",
-    endpoint: "/operations/add_relations",
-    handlerCode: "addEntityRelations",
+    operationCode: "addRelations",
+    httpMethod: "POST",
+    requestEndpoint: "/operations/add_relations",
+    actionHandlerCode: "addEntityRelations",
   },
   {
-    code: "removeRelations",
-    method: "POST",
-    endpoint: "/operations/remove_relations",
-    handlerCode: "removeEntityRelations",
+    operationCode: "removeRelations",
+    httpMethod: "POST",
+    requestEndpoint: "/operations/remove_relations",
+    actionHandlerCode: "removeEntityRelations",
   },
   {
-    code: "getById",
-    method: "GET",
-    endpoint: "/:id",
-    handlerCode: "findCollectionEntityById",
+    operationCode: "getById",
+    httpMethod: "GET",
+    requestEndpoint: "/:id",
+    actionHandlerCode: "findCollectionEntityById",
   },
   {
-    code: "create",
-    method: "POST",
-    endpoint: "",
-    handlerCode: "createCollectionEntity",
+    operationCode: "create",
+    httpMethod: "POST",
+    requestEndpoint: "",
+    actionHandlerCode: "createCollectionEntity",
   },
   {
-    code: "updateById",
-    method: "PATCH",
-    endpoint: "/:id",
-    handlerCode: "updateCollectionEntityById",
+    operationCode: "updateById",
+    httpMethod: "PATCH",
+    requestEndpoint: "/:id",
+    actionHandlerCode: "updateCollectionEntityById",
   },
   {
-    code: "deleteById",
-    method: "DELETE",
-    endpoint: "/:id",
-    handlerCode: "deleteCollectionEntityById",
+    operationCode: "deleteById",
+    httpMethod: "DELETE",
+    requestEndpoint: "/:id",
+    actionHandlerCode: "deleteCollectionEntityById",
   },
 ];
 
@@ -135,17 +135,17 @@ class DataManager implements RapidPlugin {
     models.forEach((model) => {
       const { namespace, singularCode, pluralCode } = model;
 
-      routeConfigs.forEach((routeConfig) => {
+      entityOperationConfigs.forEach((entityOperationConfig) => {
         routes.push({
           namespace,
-          name: `${namespace}.${singularCode}.${routeConfig.code}`,
-          code: `${namespace}.${singularCode}.${routeConfig.code}`,
+          name: `${namespace}.${singularCode}.${entityOperationConfig.operationCode}`,
+          code: `${namespace}.${singularCode}.${entityOperationConfig.operationCode}`,
           type: "RESTful",
-          method: routeConfig.method,
-          endpoint: `/${namespace}/${pluralCode}${routeConfig.endpoint}`,
+          method: entityOperationConfig.httpMethod,
+          endpoint: `/${namespace}/${pluralCode}${entityOperationConfig.requestEndpoint}`,
           actions: [
             {
-              code: routeConfig.handlerCode,
+              code: entityOperationConfig.actionHandlerCode,
               config: {
                 namespace,
                 singularCode,

@@ -13,6 +13,7 @@ import {
   RpdApplicationConfig,
   RpdDataModel,
   RpdDataModelProperty,
+  RpdRouteActionConfig,
   RpdServerEventTypes,
   UpdateEntityByIdOptions,
 } from "~/types";
@@ -53,6 +54,7 @@ export interface IRpdServer {
   emitEvent<TEventName extends keyof RpdServerEventTypes>(event: EmitServerEventOptions<TEventName>): void;
   handleRequest(request: RapidRequest, next: Next): Promise<Response>;
   beforeRunRouteActions(handlerContext: ActionHandlerContext): Promise<void>;
+  beforeRunActionHandler(handlerContext: ActionHandlerContext, actionConfig: RpdRouteActionConfig): Promise<void>;
   beforeCreateEntity(model: RpdDataModel, options: CreateEntityOptions): Promise<void>;
   beforeUpdateEntity(model: RpdDataModel, options: UpdateEntityByIdOptions, currentEntity: any): Promise<void>;
 
@@ -145,6 +147,8 @@ export interface RapidPlugin {
   onPrepareRouteContext?: (server: IRpdServer, routeContext: RouteContext) => Promise<any>;
   /** 在接收到HTTP请求，执行 actions 前调用。 */
   beforeRunRouteActions?: (server: IRpdServer, handlerContext: ActionHandlerContext) => Promise<any>;
+  /** 在执行 action hanlder 前调用。 */
+  beforeRunActionHandler?: (server: IRpdServer, handlerContext: ActionHandlerContext, actionConfig: RpdRouteActionConfig) => Promise<any>;
   /** 在创建实体前调用。 */
   beforeCreateEntity?: (server: IRpdServer, model: RpdDataModel, options: CreateEntityOptions) => Promise<any>;
   /** 在更新实体前调用。 */

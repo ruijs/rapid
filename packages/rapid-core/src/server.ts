@@ -18,6 +18,7 @@ import {
   RpdEntityCreateEventPayload,
   EmitServerEventOptions,
   IDatabaseClient,
+  RpdRouteActionConfig,
 } from "./types";
 
 import QueryBuilder from "./queryBuilder/queryBuilder";
@@ -473,6 +474,10 @@ export class RapidServer implements IRpdServer {
 
   async beforeRunRouteActions(handlerContext: ActionHandlerContext) {
     await this.#pluginManager.beforeRunRouteActions(handlerContext);
+  }
+
+  async beforeRunActionHandler(handlerContext: ActionHandlerContext, actionConfig: RpdRouteActionConfig) {
+    await this.#pluginManager.beforeRunActionHandler(handlerContext, actionConfig);
   }
 
   async beforeCreateEntity(model: RpdDataModel, options: CreateEntityOptions) {

@@ -74,6 +74,8 @@ export async function buildRoutes(server: IRpdServer, applicationConfig: RpdAppl
           throw new Error("Unknown handler: " + actionCode);
         }
 
+        await server.beforeRunActionHandler(handlerContext, actionConfig);
+
         const result = handler(handlerContext, actionConfig.config);
         if (result instanceof Promise) {
           await result;
