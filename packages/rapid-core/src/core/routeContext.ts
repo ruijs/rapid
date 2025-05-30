@@ -2,7 +2,7 @@ import { RapidRequest } from "./request";
 import { RapidResponse } from "./response";
 import { HttpStatus } from "./http-types";
 import { IRpdServer } from "./server";
-import { IDatabaseAccessor, IDatabaseClient } from "~/types";
+import { IDatabaseAccessor, IDatabaseClient, RpdRoute } from "~/types";
 
 export type Next = () => Promise<void>;
 
@@ -18,7 +18,7 @@ export class RouteContext {
   method: string;
   path: string;
   params: Record<string, string>;
-  routeConfig: any;
+  routeConfig: RpdRoute;
   #server: IRpdServer;
   #dbTransactionClient: IDatabaseClient | undefined;
   #dbTransactionState: TransactionState;
