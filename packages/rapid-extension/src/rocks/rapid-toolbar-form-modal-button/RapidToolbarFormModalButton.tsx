@@ -1,4 +1,4 @@
-import { handleComponentEvent, MoveStyleUtils, RockEvent, type Rock, type RockConfig } from "@ruiapp/move-style";
+import { handleComponentEvent, MoveStyleUtils, RockEvent, RockEventHandler, type Rock, type RockConfig } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./RapidToolbarFormModalButtonMeta";
 import type { RapidToolbarFormModalButtonRockConfig } from "./rapid-toolbar-form-modal-button-types";
@@ -35,14 +35,56 @@ export default {
       ],
     };
 
+    const formRockId = `${props.$id}-form`;
+    let modalBody: RockConfig | RockConfig[] = null;
+    if (props.form) {
+      const formRockConfig: RockConfig = {
+        $id: formRockId,
+        ...props.form,
+        onFormSubmit: [
+          {
+            $action: "setVars",
+            vars: {
+              "modal-saving": true,
+            },
+          },
+        ],
+        onSaveSuccess: [
+          {
+            $action: "setVars",
+            vars: {
+              "modal-saving": false,
+              "modal-open": false,
+            },
+          },
+          ...((props.form.onSaveSuccess as RockEventHandler[]) || []),
+          ...((props.onSaveSuccess as RockEventHandler[]) || []),
+        ],
+        onSaveError: [
+          {
+            $action: "setVars",
+            vars: {
+              "modal-saving": false,
+            },
+          },
+          ...((props.form.onSaveError as RockEventHandler[]) || []),
+          ...((props.onSaveError as RockEventHandler[]) || []),
+        ],
+      };
+      modalBody = formRockConfig;
+    } else {
+      modalBody = props.modalBody || [];
+    }
+
     const modalRockConfig: RockConfig = {
       $type: "antdModal",
       $id: `${props.$id}-modal`,
       title: props.modalTitle || props.text,
       $exps: {
         open: "!!$scope.vars['modal-open']",
+        confirmLoading: "!!$scope.vars['modal-saving']",
       },
-      children: props.modalBody,
+      children: modalBody,
       onOk: [
         {
           $action: "handleEvent",
@@ -50,9 +92,10 @@ export default {
           handlers: props.onModalOk,
         },
         {
-          $action: "setVars",
-          vars: {
-            "modal-open": false,
+          $action: "sendComponentMessage",
+          componentId: formRockId,
+          message: {
+            name: "submit",
           },
         },
       ],

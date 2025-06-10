@@ -9,6 +9,8 @@ export interface RapidToolbarModalButtonConfig extends Omit<RapidToolbarButtonCo
 
   modalBody: RockChildrenConfig;
 
+  onModalOpen: RockEventHandlerConfig;
+
   onModalOk: RockEventHandlerConfig;
 
   onModalCancel: RockEventHandlerConfig;

@@ -1,4 +1,4 @@
-import type { RockChildrenConfig, RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
+import type { RockChildrenConfig, RockConfig, RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
 import { RapidToolbarButtonConfig } from "../rapid-toolbar-button/rapid-toolbar-button-types";
 
 export interface RapidToolbarFormModalButtonConfig extends Omit<RapidToolbarButtonConfig, "actionEventName"> {
@@ -7,11 +7,19 @@ export interface RapidToolbarFormModalButtonConfig extends Omit<RapidToolbarButt
    */
   modalTitle: string;
 
-  modalBody: RockChildrenConfig;
+  modalBody?: RockChildrenConfig;
+
+  form: RockConfig;
+
+  onModalOpen: RockEventHandlerConfig;
 
   onModalOk: RockEventHandlerConfig;
 
   onModalCancel: RockEventHandlerConfig;
+
+  onSaveSuccess: RockEventHandlerConfig;
+
+  onSaveError: RockEventHandlerConfig;
 }
 
 export interface RapidToolbarFormModalButtonRockConfig extends SimpleRockConfig, RapidToolbarFormModalButtonConfig {}
