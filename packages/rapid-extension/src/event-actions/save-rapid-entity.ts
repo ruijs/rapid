@@ -8,9 +8,8 @@ export interface RockEventHandlerSaveRapidEntity {
   entityNamespace: string;
   entityPluralCode: string;
   customRequest?: {
-    baseUrl?: string;
     url: string;
-    method: "patch" | "post" | "put";
+    method?: "patch" | "post" | "put";
   };
   entityId?: string | number;
   fixedFields?: Record<string, any>;
@@ -34,8 +33,8 @@ export async function saveRapidEntity(
     let res: AxiosResponse<any, any>;
     const requestData = Object.assign({}, entity, eventHandler.fixedFields);
 
-    if (customRequest?.url && customRequest?.method) {
-      res = await rapidApi[customRequest.method](`${customRequest.baseUrl || ""}${customRequest.url}`, requestData);
+    if (customRequest) {
+      res = await rapidApi[customRequest.method || "post"](customRequest.url, requestData);
     } else {
       if (entityId) {
         res = await rapidApi.patch(`${eventHandler.entityNamespace}/${eventHandler.entityPluralCode}/${entityId}`, requestData);

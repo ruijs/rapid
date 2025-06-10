@@ -5,7 +5,7 @@ import { FindEntityFindRelationEntitiesOptions, RapidEntity } from "../types/rap
 export interface GetEntityDetailStoreConfigOptions {
   entityModel: RapidEntity;
 
-  entityId?: string;
+  entityId?: string | number;
 
   entityIdExpression?: string;
 

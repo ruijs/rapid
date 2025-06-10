@@ -1,13 +1,14 @@
 import type { ContainerRockConfig, RockEventHandlerConfig } from "@ruiapp/move-style";
 import { RapidFormConfig } from "../rapid-form/rapid-form-types";
 import { FindEntityFindRelationEntitiesOptions } from "../../types/rapid-entity-types";
+import { RockEventHandlerSaveRapidEntity } from "../../event-actions/save-rapid-entity";
 
 export interface RapidEntityFormConfig extends RapidFormConfig {
   mode?: "view" | "edit" | "new";
 
   entityCode: string;
 
-  entityId?: string;
+  entityId?: string | number;
 
   lazyLoadData?: boolean;
 
@@ -45,6 +46,16 @@ export interface RapidEntityFormConfig extends RapidFormConfig {
   onSaveSuccess?: RockEventHandlerConfig;
 
   onSaveError?: RockEventHandlerConfig;
+
+  /**
+   * @deprecated
+   * 使用 `submitMethod` 和 `submitUrl` 替代
+   */
+  customRequest?: RockEventHandlerSaveRapidEntity["customRequest"];
+
+  submitMethod?: RockEventHandlerSaveRapidEntity["customRequest"]["method"];
+
+  submitUrl?: RockEventHandlerSaveRapidEntity["customRequest"]["url"];
 }
 
 export interface RapidEntityFormRockConfig extends ContainerRockConfig, RapidEntityFormConfig {}
