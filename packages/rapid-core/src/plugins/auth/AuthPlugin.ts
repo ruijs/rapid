@@ -91,7 +91,7 @@ class AuthPlugin implements RapidPlugin {
     try {
       const secretKey = Buffer.from(server.config.jwtKey, "base64");
       const tokenPayload = verifyJwt(token, secretKey);
-      routeContext.state.userId = tokenPayload.aud as string;
+      routeContext.state.userId = Number(tokenPayload.aud as string);
       routeContext.state.userLogin = tokenPayload.act as string;
     } catch (error) {
       const logger = server.getLogger();
