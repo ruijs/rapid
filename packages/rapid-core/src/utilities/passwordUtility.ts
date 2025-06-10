@@ -21,6 +21,6 @@ export async function generatePasswordHash(password: string, salt?: number | str
  * @returns
  */
 export async function validatePassword(password: string, passwordHash: string): Promise<boolean> {
-  const isMatch = await bcrypt.compare(password, passwordHash);
+  const isMatch = await bcrypt.compare(password || "", passwordHash || "");
   return isMatch;
 }
