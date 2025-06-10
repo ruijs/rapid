@@ -16,6 +16,7 @@ import { message } from "antd";
 import { RapidEntityTableSelectRockConfig } from "../rapid-entity-table-select/rapid-entity-table-select-types";
 import { generateEntityDetailStoreConfig } from "../../helpers/entityStoreHelper";
 import { getMetaDictionaryEntryLocaleName, getMetaPropertyLocaleName } from "../../helpers/i18nHelper";
+import { RockEventHandlerSaveRapidEntity } from "../../event-actions/save-rapid-entity";
 
 const fieldTypeToFormItemTypeMap: Record<RapidFieldType, RapidFormItemType | null> = {
   text: "text",
@@ -373,12 +374,24 @@ export default {
       });
     }
 
+    let customRequest: RockEventHandlerSaveRapidEntity["customRequest"] = null;
+    if (formConfig.customRequest) {
+      customRequest = formConfig.customRequest;
+    }
+
+    if (formConfig.submitUrl) {
+      customRequest = {
+        url: formConfig.submitUrl,
+        method: formConfig.submitMethod || "post",
+      };
+    }
+
     const formOnFinish: RockEventHandler[] = [
       {
         $action: "saveRapidEntity",
         entityNamespace: mainEntity.namespace,
         entityPluralCode: mainEntity.pluralCode,
-        customRequest: formConfig.customRequest,
+        customRequest,
         entityId: props.entityId,
         fixedFields: props.fixedFields,
         onSuccess: [
