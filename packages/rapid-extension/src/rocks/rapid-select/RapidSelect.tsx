@@ -31,8 +31,8 @@ export default {
       };
     });
 
-    if (isArray(props.filterOptionValues) && props.filterOptionValues.length) {
-      options = filter(options, (item) => !props.filterOptionValues.includes(item.value));
+    if (isArray(props.listRejectItemValues) && props.listRejectItemValues.length) {
+      options = filter(options, (item) => !props.listRejectItemValues.includes(item.value));
     }
 
     let selectedValue: string | string[];
