@@ -60,7 +60,7 @@ export interface RapidSelectConfig extends SimpleRockConfig {
   listFilterFields?: string[];
 
   /**
-   * 过滤指定值
+   * 需要过滤掉的列表项的值
    */
-  filterOptionValues?: (string | number)[];
+  listRejectItemValues?: (string | number)[];
 }
