@@ -63,7 +63,12 @@ export interface GenerateEntityFormItemOption {
   rpdField: RapidField;
 }
 
-function generateDataFormItemForOptionProperty(framework: Framework, option: GenerateEntityFormItemOption, valueFieldType: "option" | "option[]") {
+function generateDataFormItemForOptionProperty(
+  framework: Framework,
+  option: GenerateEntityFormItemOption,
+  valueFieldType: "option" | "option[]",
+  formItemRequired: boolean,
+) {
   const { formItemConfig, rpdField } = option;
 
   let dictionaryEntries: RapidDataDictionaryEntry[] = [];
@@ -102,7 +107,7 @@ function generateDataFormItemForOptionProperty(framework: Framework, option: Gen
     multipleValues: valueFieldType === "option[]",
     uniqueKey: formItemConfig.uniqueKey,
     code: formItemConfig.code,
-    required: formItemConfig.required,
+    required: formItemRequired,
     label: formItemConfig.label,
     hidden: formItemConfig.hidden,
     wrapperCol: formItemConfig.wrapperCol,
@@ -118,7 +123,7 @@ function generateDataFormItemForOptionProperty(framework: Framework, option: Gen
   return formItem;
 }
 
-export function generateDataFormItemForRelationProperty(option: GenerateEntityFormItemOption) {
+export function generateDataFormItemForRelationProperty(option: GenerateEntityFormItemOption, formItemRequired: boolean) {
   const { formItemConfig, rpdField } = option;
 
   let listDataSourceCode = formItemConfig.formControlProps?.listDataSourceCode;
@@ -155,7 +160,7 @@ export function generateDataFormItemForRelationProperty(option: GenerateEntityFo
     multipleValues: rpdField.relation === "many",
     uniqueKey: formItemConfig.uniqueKey,
     code: formItemConfig.code,
-    required: formItemConfig.required,
+    required: formItemRequired,
     label: formItemConfig.label,
     hidden: formItemConfig.hidden,
     wrapperCol: formItemConfig.wrapperCol,
@@ -176,22 +181,34 @@ export function generateDataFormItemForRelationProperty(option: GenerateEntityFo
 function generateDataFormItem(framework: Framework, logger: RuiRockLogger, entityFormProps: any, option: GenerateEntityFormItemOption) {
   const { formItemConfig, rpdField } = option;
 
-  let valueFieldType = formItemConfig.valueFieldType || rpdField?.type || "text";
+  let valueFieldType = formItemConfig.valueFieldType || rpdField.type || "text";
   if (formItemConfig.type === "richText") {
     valueFieldType = "richText";
   }
 
+  let formItemRequired = rpdField.required;
+  if (!formItemConfig.hasOwnProperty("required")) {
+    formItemRequired = formItemConfig.required;
+  }
+
   if (valueFieldType === "option" || valueFieldType === "option[]") {
-    return generateDataFormItemForOptionProperty(framework, option, valueFieldType);
+    return generateDataFormItemForOptionProperty(framework, option, valueFieldType, formItemRequired);
   } else if (valueFieldType === "relation" || valueFieldType === "relation[]") {
-    return generateDataFormItemForRelationProperty(option);
+    return generateDataFormItemForRelationProperty(option, formItemRequired);
+  }
+
+  let formItemType = formItemConfig.type;
+  if (!formItemType || formItemType === "auto") {
+    // 根据字段的类型选择合适的表单项类型
+    let fieldType = formItemConfig.valueFieldType || rpdField.type || "text";
+    formItemType = fieldTypeToFormItemTypeMap[fieldType] || "text";
   }
 
   let formItem: Omit<RapidFormItemConfig, "$type"> = {
-    type: formItemConfig.type,
+    type: formItemType,
     code: formItemConfig.code,
     uniqueKey: formItemConfig.uniqueKey,
-    required: formItemConfig.required,
+    required: formItemRequired,
     hidden: formItemConfig.hidden,
     wrapperCol: formItemConfig.wrapperCol,
     labelCol: formItemConfig.labelCol,
@@ -217,24 +234,6 @@ function initDataStore(props: RapidEntityFormRockConfig, scope: IScope) {
   const mainEntity = rapidAppDefinition.getEntityByCode(mainEntityCode);
   if (!mainEntity) {
     return;
-  }
-
-  if (props.items) {
-    for (const formItem of props.items) {
-      const field = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItem.code);
-      if (field) {
-        if (!formItem.hasOwnProperty("required")) {
-          // 使用字段的必填设置作为表单项的必填设置
-          formItem.required = field.required;
-        }
-      }
-
-      let fieldType = formItem.valueFieldType || field?.type || "text";
-      if (formItem.type === "auto") {
-        // 根据字段的类型选择合适的表单项类型
-        formItem.type = fieldTypeToFormItemTypeMap[fieldType] || "text";
-      }
-    }
   }
 
   if (props.mode != "new" && !props.disabledLoadStore) {
