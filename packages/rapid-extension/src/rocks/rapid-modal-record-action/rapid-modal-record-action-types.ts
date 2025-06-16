@@ -12,6 +12,10 @@ export interface RapidModalRecordActionConfig extends RapidTableActionConfig {
   onModalOk: RockEventHandlerConfig;
 
   onModalCancel: RockEventHandlerConfig;
+
+  modalWidth?: string;
+
+  modalHeight?: string;
 }
 
 export interface RapidModalRecordActionRockConfig extends SimpleRockConfig, RapidModalRecordActionConfig {}

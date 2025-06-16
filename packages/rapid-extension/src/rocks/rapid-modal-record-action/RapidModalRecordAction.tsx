@@ -36,6 +36,8 @@ export default {
       $exps: {
         open: "!!$scope.vars['modal-open']",
       },
+      width: props.modalWidth,
+      height: props.modalHeight,
       children: props.modalBody,
       onOk: [
         {
