@@ -203,7 +203,7 @@ function generateDataFormItem(framework: Framework, logger: RuiRockLogger, entit
   }
 
   let formItemRequired = rpdField?.required;
-  if (!formItemConfig.hasOwnProperty("required")) {
+  if (formItemConfig.hasOwnProperty("required")) {
     formItemRequired = formItemConfig.required;
   }
 
