@@ -60,7 +60,18 @@ const defaultValidationMessages = {
 
 export interface GenerateEntityFormItemOption {
   formItemConfig: RapidFormItemConfig;
-  rpdField: RapidField;
+  rpdField?: RapidField;
+}
+
+function decideFormItemType(formItemConfig: RapidFormItemConfig, rpdField?: RapidField) {
+  let formItemType = formItemConfig.type;
+  if (!formItemType || formItemType === "auto") {
+    // 根据字段的类型选择合适的表单项类型
+    let fieldType = formItemConfig.valueFieldType || rpdField?.type || "text";
+    formItemType = fieldTypeToFormItemTypeMap[fieldType] || "text";
+  }
+
+  return formItemType;
 }
 
 function generateDataFormItemForOptionProperty(
@@ -101,8 +112,11 @@ function generateDataFormItemForOptionProperty(
   let rendererProps: RapidOptionFieldRendererConfig = {
     dictionaryCode: dataDictionaryCode,
   };
+
+  let formItemType = decideFormItemType(formItemConfig, rpdField);
+
   let formItem: RapidFormItemConfig = {
-    type: formItemConfig.type,
+    type: formItemType,
     valueFieldType: valueFieldType,
     multipleValues: valueFieldType === "option[]",
     uniqueKey: formItemConfig.uniqueKey,
@@ -132,7 +146,7 @@ export function generateDataFormItemForRelationProperty(option: GenerateEntityFo
   }
 
   let fieldTypeRelatedRendererProps: any = {};
-  const relationEntity = rapidAppDefinition.getEntityBySingularCode(rpdField.targetSingularCode);
+  const relationEntity = rapidAppDefinition.getEntityBySingularCode(rpdField?.targetSingularCode);
   if (relationEntity?.displayPropertyCode) {
     fieldTypeRelatedRendererProps.format = `{{${relationEntity.displayPropertyCode}}}`;
   }
@@ -149,15 +163,17 @@ export function generateDataFormItemForRelationProperty(option: GenerateEntityFo
     ...formItemConfig.formControlProps,
     listDataSourceCode,
     entityCode: relationEntity.code,
-    mode: rpdField.relation === "many" ? "multiple" : "single",
-    multiple: rpdField.relation === "many",
+    mode: rpdField?.relation === "many" ? "multiple" : "single",
+    multiple: rpdField?.relation === "many",
     requestParams: merge({}, formItemConfig.listDataFindOptions, formItemConfig.formControlProps?.requestParams),
   };
 
+  let formItemType = decideFormItemType(formItemConfig, rpdField);
+
   let formItem: RapidFormItemConfig = {
-    type: formItemConfig.type,
+    type: formItemType,
     valueFieldType: "relation",
-    multipleValues: rpdField.relation === "many",
+    multipleValues: rpdField?.relation === "many",
     uniqueKey: formItemConfig.uniqueKey,
     code: formItemConfig.code,
     required: formItemRequired,
@@ -181,12 +197,12 @@ export function generateDataFormItemForRelationProperty(option: GenerateEntityFo
 function generateDataFormItem(framework: Framework, logger: RuiRockLogger, entityFormProps: any, option: GenerateEntityFormItemOption) {
   const { formItemConfig, rpdField } = option;
 
-  let valueFieldType = formItemConfig.valueFieldType || rpdField.type || "text";
+  let valueFieldType = formItemConfig.valueFieldType || rpdField?.type || "text";
   if (formItemConfig.type === "richText") {
     valueFieldType = "richText";
   }
 
-  let formItemRequired = rpdField.required;
+  let formItemRequired = rpdField?.required;
   if (!formItemConfig.hasOwnProperty("required")) {
     formItemRequired = formItemConfig.required;
   }
@@ -197,12 +213,7 @@ function generateDataFormItem(framework: Framework, logger: RuiRockLogger, entit
     return generateDataFormItemForRelationProperty(option, formItemRequired);
   }
 
-  let formItemType = formItemConfig.type;
-  if (!formItemType || formItemType === "auto") {
-    // 根据字段的类型选择合适的表单项类型
-    let fieldType = formItemConfig.valueFieldType || rpdField.type || "text";
-    formItemType = fieldTypeToFormItemTypeMap[fieldType] || "text";
-  }
+  let formItemType = decideFormItemType(formItemConfig, rpdField);
 
   let formItem: Omit<RapidFormItemConfig, "$type"> = {
     type: formItemType,
