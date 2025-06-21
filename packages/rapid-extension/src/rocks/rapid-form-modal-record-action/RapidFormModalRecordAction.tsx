@@ -11,6 +11,8 @@ export default {
   onReceiveMessage(message, state, props) {},
 
   Renderer(context, props) {
+    const { resetFormOnModalOpen } = props;
+
     // TODO: need a better implementation. a component should not care about whether it's in a slot.
     const slotIndex = props.$slot.index || "0";
     const formRockId = `${props.$id}-form-${slotIndex}`;
@@ -62,6 +64,17 @@ export default {
             "modal-open": true,
           },
         },
+        ...(resetFormOnModalOpen
+          ? [
+              {
+                $action: "sendComponentMessage",
+                componentId: formRockId,
+                message: {
+                  name: "resetFields",
+                },
+              },
+            ]
+          : []),
         {
           $action: "handleEvent",
           eventName: "onModalOpen",
