@@ -14,6 +14,8 @@ export interface RapidFormModalRecordActionConfig extends RapidTableActionConfig
   errorMessage?: string;
 
   onFormSubmit: RockEventHandlerConfig;
+
+  resetFormOnModalOpen?: boolean;
 }
 
 export interface RapidFormModalRecordActionRockConfig extends SimpleRockConfig, RapidFormModalRecordActionConfig {}
