@@ -437,6 +437,7 @@ export interface SearchFormFilterConfiguration extends RapidSearchFormItemConfig
 export type EntityFilterOptions =
   | FindEntityRelationalFilterOptions
   | FindEntitySetFilterOptions
+  | FindEntityRangeFilterOptions
   | FindEntityArrayFilterOptions
   | FindEntityLogicalFilterOptions
   | FindEntityUnaryFilterOptions
@@ -481,6 +482,13 @@ export interface FindEntityRelationalFilterOptions {
 export interface FindEntitySetFilterOptions {
   field: string;
   operator: EntityFilterSetOperators;
+  value: any[];
+  itemType?: string;
+}
+
+export interface FindEntityRangeFilterOptions {
+  field: string;
+  operator: EntityFilterRangeOperators;
   value: any[];
   itemType?: string;
 }
