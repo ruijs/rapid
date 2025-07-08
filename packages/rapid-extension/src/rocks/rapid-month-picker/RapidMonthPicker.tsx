@@ -1,7 +1,7 @@
 import { Rock, RockConfig } from "@ruiapp/move-style";
 import RapidToolbarLinkMeta from "./RapidMonthPickerMeta";
 import { renderRock } from "@ruiapp/react-renderer";
-import { RapidDateMonthTimePickerRockConfig } from "./rapid-month-picker-types";
+import { RapidMonthPickerRockConfig } from "./rapid-month-picker-types";
 import { isString } from "lodash";
 import moment from "moment";
 
@@ -30,4 +30,4 @@ export default {
   },
 
   ...RapidToolbarLinkMeta,
-} as Rock<RapidDateMonthTimePickerRockConfig>;
+} as Rock<RapidMonthPickerRockConfig>;
