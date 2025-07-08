@@ -1,12 +1,12 @@
 import { Rock, RockConfig } from "@ruiapp/move-style";
-import RapidToolbarLinkMeta from "./RapidDatePickerMeta";
+import RapidToolbarLinkMeta from "./RapidMonthPickerMeta";
 import { renderRock } from "@ruiapp/react-renderer";
-import { RapidDateMonthTimePickerRockConfig } from "./rapid-date-month-time-picker-types";
+import { RapidDateMonthTimePickerRockConfig } from "./rapid-month-picker-types";
 import { isString } from "lodash";
 import moment from "moment";
 
 export default {
-  $type: "rapidDateMonthTimePicker",
+  $type: "rapidMonthPicker",
 
   Renderer(context, props) {
     if (isString(props.value)) {
@@ -23,7 +23,7 @@ export default {
       $id: `${props.$id}-inner`,
       $type: "antdDatePicker",
       picker: "month",
-      onChange: props.showTime ? props.onChange : onMonthDatePickerChange,
+      onChange: onMonthDatePickerChange,
     };
 
     return renderRock({ context, rockConfig });

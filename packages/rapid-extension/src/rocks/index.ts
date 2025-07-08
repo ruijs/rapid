@@ -3,7 +3,7 @@ import RapidBoolRenderer from "./rapid-bool-renderer/RapidBoolRenderer";
 import RapidCheckboxListFormInput from "./rapid-checkbox-list-form-input/RapidCheckboxListFormInput";
 import RapidCurrencyRenderer from "./rapid-currency-renderer/RapidCurrencyRenderer";
 import RapidDatePicker from "./rapid-date-picker/RapidDatePicker";
-import RapidDateMonthTimePicker from "./rapid-date-month-time-picker/RapidDateMonthTimePicker";
+import RapidMonthPicker from "./rapid-month-picker/RapidMonthPicker";
 import RapidDateTimeRenderer from "./rapid-date-time-renderer/RapidDateTimeRenderer";
 import RapidDescriptionsRenderer from "./rapid-descriptions-renderer/RapidDescriptionsRenderer";
 import RapidDictionaryEntryRenderer from "./rapid-dictionary-entry-renderer/RapidDictionaryEntryRenderer";
@@ -73,7 +73,7 @@ export default [
   RapidCheckboxListFormInput,
   RapidCurrencyRenderer,
   RapidDatePicker,
-  RapidDateMonthTimePicker,
+  RapidMonthPicker,
   RapidDateTimeRenderer,
   RapidDescriptionsRenderer,
   RapidDictionaryEntryRenderer,

@@ -1,7 +1,7 @@
 import { RockMeta } from "@ruiapp/move-style";
 
 export default {
-  $type: "rapidDateMonthTimePicker",
+  $type: "rapidMonthPicker",
 
   propertyPanels: [],
 } as RockMeta;
