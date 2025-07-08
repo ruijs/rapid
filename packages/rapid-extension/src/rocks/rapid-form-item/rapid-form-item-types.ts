@@ -174,6 +174,7 @@ export type RapidFormItemType =
   | "checkboxList"
   | "radioList"
   | "date"
+  | "monthDate"
   | "time"
   | "datetime"
   | "dateRange"
