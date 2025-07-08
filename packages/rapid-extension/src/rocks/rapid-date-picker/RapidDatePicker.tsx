@@ -14,8 +14,21 @@ export default {
     }
 
     function onDatePickerChange(value: any) {
-      const today = value.format("YYYY-MM-DD");
-      props.onChange && props.onChange(today);
+      if (props.picker) {
+        let formatedValue: any;
+        switch (props.picker) {
+          case "year":
+            formatedValue = value.format("YYYY");
+            break;
+          case "month":
+            formatedValue = value.format("YYYY-MM");
+            break;
+          default:
+            formatedValue = value.format("YYYY-MM-DD");
+            break;
+        }
+        return props.onChange && props.onChange(formatedValue);
+      }
     }
 
     const rockConfig: RockConfig = {
