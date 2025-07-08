@@ -15,19 +15,19 @@ export default {
 
     function onDatePickerChange(value: any) {
       if (props.picker) {
-        let today: any;
+        let formatedValue: any;
         switch (props.picker) {
           case "year":
-            today = value.format("YYYY");
+            formatedValue = value.format("YYYY");
             break;
           case "month":
-            today = value.format("YYYY-MM");
+            formatedValue = value.format("YYYY-MM");
             break;
           default:
-            today = value.format("YYYY-MM-DD");
+            formatedValue = value.format("YYYY-MM-DD");
             break;
         }
-        return props.onChange && props.onChange(today);
+        return props.onChange && props.onChange(formatedValue);
       }
     }
 
