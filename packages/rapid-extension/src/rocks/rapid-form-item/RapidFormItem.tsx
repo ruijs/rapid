@@ -17,6 +17,7 @@ const formItemTypeToControlRockTypeMap: Record<Exclude<RapidFormItemType, "auto"
   checkboxList: "rapidCheckboxListFormInput",
   radioList: "rapidRadioListFormInput",
   date: "rapidDatePicker",
+  month: "rapidMonthPicker",
   time: "rapidTimePicker",
   datetime: "rapidDatePicker",
   dateRange: "antdDatePickerRangePicker",
