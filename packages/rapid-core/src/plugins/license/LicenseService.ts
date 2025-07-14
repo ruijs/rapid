@@ -37,19 +37,15 @@ export default class LicenseService {
   async loadLicense(): Promise<void> {
     const settingService = this.#server.getService<SettingService>("settingService");
     const licenseSettings = await settingService.getSystemSettingValues("license");
-    const { deployId } = licenseSettings as LicenseSettings;
-    const certText = licenseSettings.cert;
+    const { deployId, cert: certText } = licenseSettings as LicenseSettings;
 
     if (!deployId || !certText) {
       this.#server.getLogger().warn("License was not loaded properly.");
       return;
     }
 
-    const certJSON = Buffer.from(certText, "base64").toString();
-    const cert: RpdCert = JSON.parse(certJSON);
-
     try {
-      const license = extractCertLicense(this.#encryptionKey, deployId, cert);
+      const license = this.parseLicense(deployId, certText);
       this.#license = license;
     } catch (error) {
       this.#server.getLogger().error("Loading license failed.", error);
@@ -59,6 +55,29 @@ export default class LicenseService {
 
   getLicense() {
     return this.#license;
+  }
+
+  parseLicense(deployId: string, certText: string): RpdLicense {
+    const certJSON = Buffer.from(certText, "base64").toString();
+    const cert: RpdCert = JSON.parse(certJSON);
+    return extractCertLicense(this.#encryptionKey, deployId, cert);
+  }
+
+  async updateLicense(certText: string) {
+    const settingService = this.#server.getService<SettingService>("settingService");
+    const deployId: string = await settingService.getSystemSettingValue("license", "deployId");
+
+    let license: RpdLicense;
+    try {
+      license = this.parseLicense(deployId, certText);
+    } catch (error) {
+      this.#server.getLogger().error("Parse license failed.", error);
+      throw new Error("Parse license failed.");
+    }
+
+    await settingService.setSystemSettingValue("license", "cert", certText);
+    this.#license = license;
+    return license;
   }
 
   isExpired() {
