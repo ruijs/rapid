@@ -1,5 +1,5 @@
 import { v1 as uuidv1 } from "uuid";
-import { appendFile } from "~/utilities/fsUtility";
+import { writeFile } from "~/utilities/fsUtility";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import path from "path";
 import { isArray } from "lodash";
@@ -27,7 +27,7 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
   const filePathName = path.join(server.config.localFileStoragePath, fileKey);
 
   const fileBuffer = await file.arrayBuffer();
-  await appendFile(filePathName, fileBuffer);
+  await writeFile(filePathName, fileBuffer);
 
   ctx.output = { ok: true, fileKey };
 }

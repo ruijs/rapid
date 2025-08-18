@@ -20,6 +20,7 @@ export * from "./dataAccess/entityManager";
 
 export * from "./utilities/accessControlUtility";
 export * from "./utilities/entityUtility";
+export * from "./utilities/fsUtility";
 export * from "./utilities/jwtUtility";
 export * from "./utilities/timeUtility";
 export * from "./utilities/passwordUtility";

@@ -5,7 +5,7 @@
 import fs from "fs";
 import { forEach } from "lodash";
 import path from "path";
-import { ensureDirectoryExists, enumFileBaseNamesInDirectory } from "../../utils/file-utility";
+import { ensureDirectoryExists, enumFileBaseNamesInDirectory } from "@ruiapp/rapid-core";
 
 interface GenerateModelsIndexFileOption {
   /**

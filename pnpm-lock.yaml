@@ -20,6 +20,9 @@ importers:
 
   packages/rapid-configure-tools:
     dependencies:
+      '@ruiapp/rapid-core':
+        specifier: workspace:^
+        version: link:../rapid-core
       '@ruiapp/rapid-extension':
         specifier: workspace:^
         version: link:../rapid-extension
@@ -422,11 +425,11 @@ importers:
         specifier: ~1.19.3
         version: 1.19.3
       '@ruiapp/move-style':
-        specifier: ^0.4.12
-        version: 0.4.12(lodash@4.17.21)
+        specifier: ^0.4.15
+        version: 0.4.15(dayjs@1.11.10)(lodash@4.17.21)(winston@3.11.0)
       '@ruiapp/react-renderer':
         specifier: ^0.4.3
-        version: 0.4.3(@ruiapp/move-style@0.4.12(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 0.4.3(@ruiapp/move-style@0.4.15(dayjs@1.11.10)(lodash@4.17.21)(winston@3.11.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       axios:
         specifier: ^1.1.2
         version: 1.6.7
@@ -2664,6 +2667,12 @@ packages:
       react: ^18.2.0
       react-dom: ^18.2.0
 
+  '@ruiapp/log@0.1.0':
+    resolution: {integrity: sha512-yumCvYO6oInDqkZkHpbHZl9ICu+G1g0HRMubtsmlTayJwRs5RsUFP6qbuEw+Khb6bbKDk+uUIVk7ATJGrFVmKQ==}
+    peerDependencies:
+      dayjs: ^1.11.11
+      winston: ^3.13.0
+
   '@ruiapp/monaco-extension@0.4.0':
     resolution: {integrity: sha512-YmGkMJYw2LziCOgUmYPF7EzSMvk6HMUUczSf6ne2aonJYdKr+2xcE7gdL87VFiPAFgp1/eVJhsn2Ow9Q6YGfoQ==}
     peerDependencies:
@@ -2672,8 +2681,8 @@ packages:
       react: ^18.2.0
       react-dom: ^18.2.0
 
-  '@ruiapp/move-style@0.4.12':
-    resolution: {integrity: sha512-OOEbnKx7djplJQrTIxFsVP9qH5UENFFQ2o//lZUJ8dpdgtEKXAZFhovgZBh+hy4+cl40qVBQZiagtKJ7x+TP1g==}
+  '@ruiapp/move-style@0.4.15':
+    resolution: {integrity: sha512-Ci27Uhmp+nojjSZvxw9jPY4i5n+ehKCF3F4BMNPWHyTUQVfZKP2VPQm9FDK33QyNSS472EdpFLmC7u8XCHU6AQ==}
     peerDependencies:
       lodash: ^4.17.21
 
@@ -11573,6 +11582,11 @@ snapshots:
     transitivePeerDependencies:
       - echarts
 
+  '@ruiapp/log@0.1.0(dayjs@1.11.10)(winston@3.11.0)':
+    dependencies:
+      dayjs: 1.11.10
+      winston: 3.11.0
+
   '@ruiapp/monaco-extension@0.4.0(@ruiapp/move-style@0.4.9(lodash@4.17.21))(@ruiapp/react-renderer@0.4.3(@ruiapp/move-style@0.4.9(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@ruiapp/move-style': 0.4.9(lodash@4.17.21)
@@ -11581,14 +11595,17 @@ snapshots:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
-  '@ruiapp/move-style@0.4.12(lodash@4.17.21)':
+  '@ruiapp/move-style@0.4.15(dayjs@1.11.10)(lodash@4.17.21)(winston@3.11.0)':
     dependencies:
+      '@ruiapp/log': 0.1.0(dayjs@1.11.10)(winston@3.11.0)
       axios: 1.6.8
       events: 3.3.0
       lodash: 4.17.21
       qs: 6.12.1
     transitivePeerDependencies:
+      - dayjs
       - debug
+      - winston
 
   '@ruiapp/move-style@0.4.9(lodash@4.17.21)':
     dependencies:
@@ -11599,9 +11616,9 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@ruiapp/react-renderer@0.4.3(@ruiapp/move-style@0.4.12(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@ruiapp/react-renderer@0.4.3(@ruiapp/move-style@0.4.15(dayjs@1.11.10)(lodash@4.17.21)(winston@3.11.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
-      '@ruiapp/move-style': 0.4.12(lodash@4.17.21)
+      '@ruiapp/move-style': 0.4.15(dayjs@1.11.10)(lodash@4.17.21)(winston@3.11.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
