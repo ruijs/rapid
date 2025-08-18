@@ -1,3 +1,4 @@
+import { ActionHandlerContext } from "./core/actionHandler";
 import { RouteContext } from "./core/routeContext";
 import { IRpdServer, RapidPlugin } from "./core/server";
 import { ColumnSelectOptions, CountRowOptions, FindRowOptions, RowFilterOptions } from "./dataAccess/dataAccessTypes";
@@ -586,6 +587,7 @@ export interface RpdRoute {
   method: RpdHttpMethod;
   endpoint: string;
   actions?: RpdRouteActionConfig[];
+  handler?: string | ((ctx: ActionHandlerContext) => Promise<void>);
 }
 
 export type RpdHttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";

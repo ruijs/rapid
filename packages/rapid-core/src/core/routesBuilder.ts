@@ -5,7 +5,7 @@ import { IRpdServer } from "~/core/server";
 import { RpdApplicationConfig } from "~/types";
 import { isNullOrUndefined } from "~/utilities/typeUtility";
 import { Next, RouteContext } from "./routeContext";
-import { cloneDeep } from "lodash";
+import { cloneDeep, isFunction, isString } from "lodash";
 
 export async function buildRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig) {
   const logger = server.getLogger();
@@ -67,19 +67,37 @@ export async function buildRoutes(server: IRpdServer, applicationConfig: RpdAppl
 
       await server.beforeRunRouteActions(handlerContext);
 
-      for (const actionConfig of routeConfig.actions) {
-        const actionCode = actionConfig.code;
-        const handler = server.getActionHandlerByCode(actionCode);
-        if (!handler) {
-          throw new Error("Unknown handler: " + actionCode);
+      let handler = routeConfig.handler as any;
+      if (handler) {
+        if (isString(handler)) {
+          handler = new Function(`return (${routeConfig.handler})`) as any;
         }
 
-        await server.beforeRunActionHandler(handlerContext, actionConfig);
-
-        const result = handler(handlerContext, actionConfig.config);
-        if (result instanceof Promise) {
-          await result;
+        if (isFunction(handler)) {
+          const result = handler(handlerContext);
+          if (result instanceof Promise) {
+            await result;
+          }
+        } else {
+          throw new Error(`Invalid handler for route ${routeConfig.code}: ${routeConfig.handler}`);
         }
+      } else if (routeConfig.actions) {
+        for (const actionConfig of routeConfig.actions) {
+          const actionCode = actionConfig.code;
+          const handler = server.getActionHandlerByCode(actionCode);
+          if (!handler) {
+            throw new Error("Unknown handler: " + actionCode);
+          }
+
+          await server.beforeRunActionHandler(handlerContext, actionConfig);
+
+          const result = handler(handlerContext, actionConfig.config);
+          if (result instanceof Promise) {
+            await result;
+          }
+        }
+      } else {
+        throw new Error(`No handler or actions defined for route ${routeConfig.code}`);
       }
 
       if (!isNullOrUndefined(handlerContext.output)) {
