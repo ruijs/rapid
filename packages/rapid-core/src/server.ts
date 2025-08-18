@@ -35,6 +35,7 @@ import { bind, cloneDeep, find, forEach, isString, merge, omit } from "lodash";
 import { Logger } from "./facilities/log/LogFacility";
 import { FacilityFactory } from "./core/facility";
 import { CronJobConfiguration } from "./types/cron-job-types";
+import coreRoutes from "./core/routes";
 
 export interface InitServerOptions {
   logger: Logger;
@@ -367,7 +368,12 @@ export class RapidServer implements IRpdServer {
       }
     }
 
+    this.#applicationConfig = cloneDeep(this.#bootstrapApplicationConfig) as RpdApplicationConfig;
+    this.appendApplicationConfig({
+      routes: coreRoutes,
+    });
     await this.configureApplication();
+    this.#buildedRoutes = await buildRoutes(this, this.#applicationConfig);
 
     if (!this.#disableCronJobs) {
       await pluginManager.registerCronJobs();
@@ -378,8 +384,6 @@ export class RapidServer implements IRpdServer {
   }
 
   async configureApplication() {
-    this.#applicationConfig = cloneDeep(this.#bootstrapApplicationConfig) as RpdApplicationConfig;
-
     const pluginManager = this.#pluginManager;
     await pluginManager.onLoadingApplication(this.#applicationConfig);
     await pluginManager.configureModels(this.#applicationConfig);
@@ -390,8 +394,6 @@ export class RapidServer implements IRpdServer {
     // TODO: check application configuration.
 
     await pluginManager.onApplicationLoaded(this.#applicationConfig);
-
-    this.#buildedRoutes = await buildRoutes(this, this.#applicationConfig);
   }
 
   registerFacilityFactory(factory: FacilityFactory) {
