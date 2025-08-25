@@ -40,12 +40,13 @@ export function autoConfigTableColumnToRockConfig(context: RockInstanceContext, 
   if (mainEntity) {
     const fieldName = column.fieldName || column.code || "";
     const fieldNameParts = fieldName.split(".");
-    rpdField = getEntityPropertyByFieldNames(rapidAppDefinition.getAppDefinition(), mainEntity, fieldNameParts);
+    const result = getEntityPropertyByFieldNames(rapidAppDefinition.getAppDefinition(), mainEntity, fieldNameParts);
+    rpdField = result.property;
     if (!rpdField) {
       logger.warn(parentProps, `Unknown field name '${fieldName}'`);
     } else {
       if (!columnTitle) {
-        columnTitle = getMetaPropertyLocaleName(framework, mainEntity, rpdField);
+        columnTitle = getMetaPropertyLocaleName(framework, result.entity, rpdField);
       }
     }
   }
