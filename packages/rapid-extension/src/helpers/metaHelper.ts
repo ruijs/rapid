@@ -94,20 +94,29 @@ export function getEntityPropertyByFieldName(appDef: AppDefinition, model: Rapid
   return property;
 }
 
-export function getEntityPropertyByFieldNames(appDef: AppDefinition, model: RapidEntity, fieldNames: string[]): RapidField | undefined {
-  let result: RapidField | undefined;
+export type GetEntityPropertyResult = {
+  entity?: RapidEntity | undefined;
+  property?: RapidField | undefined;
+};
+
+export function getEntityPropertyByFieldNames(appDef: AppDefinition, model: RapidEntity, fieldNames: string[]): GetEntityPropertyResult {
+  let result: GetEntityPropertyResult = {
+    entity: model,
+  };
   for (let i = 0; i < fieldNames.length; i++) {
-    result = getEntityPropertyByFieldName(appDef, model, fieldNames[i]);
-    if (!result) {
+    result.property = getEntityPropertyByFieldName(appDef, result.entity, fieldNames[i]);
+    if (!result.property) {
       return result;
     }
 
-    if (!isRelationProperty(result)) {
+    if (!isRelationProperty(result.property)) {
       return result;
     }
 
     // field type is `relation`
-    model = getEntityBySingularCode(appDef, result.targetSingularCode);
+    if (i < fieldNames.length - 1) {
+      result.entity = getEntityBySingularCode(appDef, result.property.targetSingularCode);
+    }
   }
 
   return result;
