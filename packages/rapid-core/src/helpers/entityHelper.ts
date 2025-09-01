@@ -1,9 +1,15 @@
 import { isNumber, isObject } from "lodash";
 import { IRpdServer } from "~/core/server";
 import { getEntityPropertyByCode, isOneRelationProperty } from "~/helpers/metaHelper";
-import { RpdDataModel } from "~/types";
+import { RpdDataModel, UpdateEntityByIdOptions } from "~/types";
 
-export function detectChangedFieldsOfEntity(server: IRpdServer, model: RpdDataModel, before: any, after: any): Record<string, any> | null {
+export function detectChangedFieldsOfEntity(
+  server: IRpdServer,
+  model: RpdDataModel,
+  before: any,
+  after: any,
+  relationPropertiesToUpdate: UpdateEntityByIdOptions["relationPropertiesToUpdate"],
+): Record<string, any> | null {
   if (!before) {
     throw new Error("Argument 'before' can not be null.");
   }
@@ -19,7 +25,14 @@ export function detectChangedFieldsOfEntity(server: IRpdServer, model: RpdDataMo
     if (property && isOneRelationProperty(property)) {
       const afterValue: number | { id: number } | null = after[key];
       const beforeValue: number | { id: number } | null = before[key] || before[property.targetIdColumnName];
+
       if (afterValue) {
+        if (relationPropertiesToUpdate && relationPropertiesToUpdate[property.code]) {
+          changed = true;
+          changes[key] = afterValue;
+          continue;
+        }
+
         if (isNumber(afterValue)) {
           if (beforeValue) {
             if (isNumber(beforeValue)) {
