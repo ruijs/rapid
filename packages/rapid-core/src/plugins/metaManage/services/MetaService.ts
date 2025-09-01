@@ -156,7 +156,7 @@ export default class MetaService {
     const { queryBuilder } = server;
 
     for (const model of applicationConfig.models) {
-      logger.debug(`Checking data table for '${model.namespace}.${model.singularCode}'...`);
+      logger.info(`Checking data table for '${model.namespace}.${model.singularCode}'...`);
 
       const expectedTableSchema = model.schema || server.databaseConfig.dbDefaultSchema;
       const expectedTableName = model.tableName;
@@ -176,7 +176,7 @@ export default class MetaService {
     const columnsInDb: ColumnInformation[] = await server.queryDatabaseObject(sqlQueryColumnInformations, []);
 
     for (const model of applicationConfig.models) {
-      logger.debug(`Checking data columns for '${model.namespace}.${model.singularCode}'...`);
+      logger.info(`Checking data columns for '${model.namespace}.${model.singularCode}'...`);
 
       for (const property of model.properties) {
         let columnDDL = "";
@@ -336,7 +336,7 @@ export default class MetaService {
       const expectedTableSchema = model.schema || server.databaseConfig.dbDefaultSchema;
       const expectedTableName = model.tableName;
       const expectedContraintName = `${expectedTableName}_pk`;
-      logger.debug(`Checking pk for '${expectedTableSchema}.${expectedTableName}'...`);
+      logger.info(`Checking pk for '${expectedTableSchema}.${expectedTableName}'...`);
       const constraintInDb = find(constraintsInDb, {
         table_schema: expectedTableSchema,
         table_name: expectedTableName,
@@ -357,7 +357,7 @@ export default class MetaService {
         continue;
       }
 
-      logger.debug(`Creating indexes of table ${queryBuilder.quoteTable(model)}`);
+      logger.info(`Creating indexes of table ${queryBuilder.quoteTable(model)}`);
       for (const index of model.indexes) {
         const sqlCreateIndex = generateTableIndexDDL(queryBuilder, server, model, index);
         try {
