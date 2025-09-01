@@ -62,7 +62,11 @@ class AuthPlugin implements RapidPlugin {
   }
 
   async configureServices(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
-    this.#authService = new AuthService(server, server.config.jwtKey);
+    this.#authService = new AuthService(server, {
+      jwtKey: server.config.jwtKey,
+      userEntitySingularCode: this.#options.userEntitySingularCode,
+      profilePropertyCodes: this.#options.profilePropertyCodes,
+    });
     server.registerService("authService", this.#authService);
   }
 
