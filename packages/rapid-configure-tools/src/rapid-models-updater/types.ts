@@ -1,4 +1,4 @@
-import type { RapidDataDictionary, RapidDataDictionaryEntry, RapidEntity, RapidField } from "@ruiapp/rapid-extension";
+import type { RapidDataDictionary, RapidDataDictionaryEntry, RapidEntity, RapidField, RapidPage } from "@ruiapp/rapid-extension";
 
 export type IRapidModelUpdater<TEntity, TInput, TMainEntity = any> =
   | IRapidModelUpdaterBatchGetMode<TEntity, TInput, TMainEntity>
@@ -62,3 +62,19 @@ export type CreateRapidPropertyInput = RapidField & {
 export type UpdateRapidPropertyInput = CreateRapidPropertyInput;
 
 export type RapidProperty = ObjWithIdProp & RapidField;
+
+export type CreateRapidPageInput = RapidPage;
+export type UpdateRapidPageInput = CreateRapidPageInput;
+
+export type RapidPageEntity = {
+  id?: string;
+  subSystem?: string;
+  appCode?: string;
+  code: string;
+  parentCode?: string;
+  routePath?: string;
+  name: string;
+  title?: string;
+  config?: Record<any, any>;
+  permissionCheck?: Record<any, any>;
+};
