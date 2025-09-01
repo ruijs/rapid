@@ -736,6 +736,114 @@ export default {
         },
       ],
     },
+    {
+      maintainedBy: "metaManager",
+      namespace: "meta",
+      name: "page",
+      code: "Page",
+      singularCode: "page",
+      pluralCode: "pages",
+      schema: "public",
+      tableName: "meta_pages",
+      properties: [
+        {
+          name: "id",
+          code: "id",
+          columnName: "id",
+          type: "integer",
+          required: true,
+          autoIncrement: true,
+        },
+        {
+          name: "code",
+          code: "code",
+          columnName: "code",
+          type: "text",
+          required: true,
+        },
+        {
+          name: "parentCode",
+          code: "parentCode",
+          columnName: "parent_code",
+          type: "text",
+          required: false,
+        },
+        {
+          name: "subSystem",
+          code: "subSystem",
+          columnName: "sub_system",
+          type: "text",
+          required: false,
+        },
+        {
+          name: "appCode",
+          code: "appCode",
+          columnName: "app_code",
+          type: "text",
+          required: false,
+        },
+        {
+          name: "routePath",
+          code: "routePath",
+          columnName: "route_path",
+          type: "text",
+          required: false,
+        },
+        {
+          name: "name",
+          code: "name",
+          columnName: "name",
+          type: "text",
+          required: false,
+        },
+        {
+          name: "title",
+          code: "title",
+          columnName: "title",
+          type: "text",
+          required: false,
+        },
+        {
+          name: "config",
+          code: "config",
+          columnName: "config",
+          type: "json",
+          required: false,
+        },
+        {
+          name: "permissionCheck",
+          code: "permissionCheck",
+          columnName: "permission_check",
+          type: "json",
+          required: false,
+        },
+      ],
+      indexes: [
+        {
+          name: "meta_pages_code_uindex",
+          properties: [
+            {
+              code: "code",
+            },
+          ],
+          unique: true,
+        },
+        {
+          name: "meta_pages_subsystem_appcode_code_idx",
+          properties: [
+            {
+              code: "subSystem",
+            },
+            {
+              code: "appCode",
+            },
+            {
+              code: "code",
+            },
+          ],
+        },
+      ],
+    },
   ],
   dataDictionaries: [],
   routes: [
