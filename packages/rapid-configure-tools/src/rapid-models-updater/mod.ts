@@ -8,23 +8,27 @@ import { newDictionaryUpdater } from "./DictionaryUpdater";
 import { newDictionaryEntryUpdater } from "./DictionaryEntryUpdater";
 import { newModelUpdater } from "./ModelUpdater";
 import { newPropertyUpdater } from "./PropertyUpdater";
-import type { RapidDataDictionary, RapidEntity } from "@ruiapp/rapid-extension";
+import type { RapidDataDictionary, RapidEntity, RapidPage } from "@ruiapp/rapid-extension";
+import { newPageUpdater } from "./PageUpdater";
 
 export interface RapidModelsUpdateOptions {
   appDataDirLocation: string;
   rapidApiUrl: string;
   entities: RapidEntity[];
   dataDictionaries: RapidDataDictionary[];
+  pages: RapidPage[];
 }
 
 export default class RapidModelsUpdater {
   #rapidConfigApi: AxiosInstance;
   #entities: RapidEntity[];
   #dataDictionaries: RapidDataDictionary[];
+  #pages: RapidPage[];
 
   constructor(options: RapidModelsUpdateOptions) {
     this.#entities = options.entities;
     this.#dataDictionaries = options.dataDictionaries;
+    this.#pages = options.pages;
 
     const { appDataDirLocation, rapidApiUrl } = options;
 
@@ -61,6 +65,7 @@ export default class RapidModelsUpdater {
         newDictionaryEntryUpdater(rapidConfigApi),
         newModelUpdater(rapidConfigApi),
         newPropertyUpdater(rapidConfigApi),
+        newPageUpdater(rapidConfigApi),
       ],
     });
     appUpdater.updateModels([
@@ -71,6 +76,10 @@ export default class RapidModelsUpdater {
       {
         modelType: "model",
         entities: this.#entities.filter((item) => !item.metaOnly),
+      },
+      {
+        modelType: "page",
+        entities: this.#pages,
       },
     ]);
   }

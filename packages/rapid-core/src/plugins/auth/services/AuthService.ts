@@ -1,6 +1,12 @@
 import { IRpdServer } from "~/core/server";
 import { createJwt } from "~/utilities/jwtUtility";
 
+export type AuthServiceOptions = {
+  jwtKey: string;
+  userEntitySingularCode?: string;
+  profilePropertyCodes?: string[];
+};
+
 export interface UserAccessToken {
   sub: "userAccessToken";
   aud: string;
@@ -15,10 +21,14 @@ export interface CreateUserAccessTokenOptions {
 export default class AuthService {
   #server: IRpdServer;
   #jwtKey: string;
+  #userEntitySingularCode?: string;
+  #profilePropertyCodes?: string[];
 
-  constructor(server: IRpdServer, jwtKey: string) {
+  constructor(server: IRpdServer, options: AuthServiceOptions) {
     this.#server = server;
-    this.#jwtKey = jwtKey;
+    this.#jwtKey = options.jwtKey;
+    this.#userEntitySingularCode = options.userEntitySingularCode;
+    this.#profilePropertyCodes = options.profilePropertyCodes;
   }
 
   createUserAccessToken(options: CreateUserAccessTokenOptions): string {
@@ -35,5 +45,22 @@ export default class AuthService {
     );
 
     return token;
+  }
+
+  async getProfileOfUser(userId: number) {
+    const userEntitySingularCode = this.#userEntitySingularCode || "oc_user";
+    const profilePropertyCodes = this.#profilePropertyCodes || ["id", "name", "login", "email", "department", "roles", "state", "createdAt"];
+    const entityManager = this.#server.getEntityManager(userEntitySingularCode);
+    const user = await entityManager.findEntity({
+      filters: [
+        {
+          operator: "eq",
+          field: "id",
+          value: userId,
+        },
+      ],
+      properties: profilePropertyCodes,
+    });
+    return user;
   }
 }

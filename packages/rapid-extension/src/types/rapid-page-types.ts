@@ -12,6 +12,10 @@ export type RapidPage = {
    */
   subSystem?: string;
   /**
+   * 所属应用编码
+   */
+  appCode?: string;
+  /**
    * 页面编码
    */
   code: string;
@@ -20,6 +24,11 @@ export type RapidPage = {
    * 父页面编码，用于导航展开和高亮
    */
   parentCode?: string;
+
+  /**
+   * 路由路径
+   */
+  routePath?: string;
 
   /**
    * 页面名称

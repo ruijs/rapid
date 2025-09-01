@@ -62,7 +62,7 @@ export default class RapidUpdater {
     }
 
     for (const entityToSave of entitiesToSave) {
-      if (!modelUpdater.relationFields) {
+      if (!modelUpdater.relationFields || !modelUpdater.relationFields.length) {
         continue;
       }
 

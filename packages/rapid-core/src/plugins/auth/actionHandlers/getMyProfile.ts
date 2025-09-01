@@ -1,6 +1,7 @@
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RapidPlugin } from "~/core/server";
 import AuthPlugin from "../AuthPlugin";
+import AuthService from "../services/AuthService";
 
 export const code = "getMyProfile";
 
@@ -18,19 +19,8 @@ export async function handler(plugin: AuthPlugin, ctx: ActionHandlerContext, opt
     return;
   }
 
-  const userEntitySingularCode = plugin.options?.userEntitySingularCode || "oc_user";
-  const profilePropertyCodes = plugin.options?.profilePropertyCodes || ["id", "name", "login", "email", "department", "roles", "state", "createdAt"];
-  const entityManager = server.getEntityManager(userEntitySingularCode);
-  const user = await entityManager.findEntity({
-    filters: [
-      {
-        operator: "eq",
-        field: "id",
-        value: userId,
-      },
-    ],
-    properties: profilePropertyCodes,
-  });
+  const authService = server.getService<AuthService>("authService");
+  const user = await authService.getProfileOfUser(userId);
 
   ctx.output = {
     user,
