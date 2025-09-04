@@ -42,6 +42,7 @@ export function newModelUpdater(rapidConfigApi: AxiosInstance) {
         "derivedType",
         "derivedTypePropertyCode",
         "displayPropertyCode",
+        "defaultOrderBy",
         "indexes",
         "permissionPolicies",
         "softDelete",

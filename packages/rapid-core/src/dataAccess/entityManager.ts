@@ -1066,7 +1066,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     throw new Error(`${model.namespace}.${model.singularCode}  with id "${id}" was not found.`);
   }
 
-  let changes = detectChangedFieldsOfEntity(server, model, entity, entityToSave);
+  let changes = detectChangedFieldsOfEntity(server, model, entity, entityToSave, options.relationPropertiesToUpdate);
   if (!changes && !options.operation) {
     return entity;
   }
@@ -1101,7 +1101,7 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     routeContext: options.routeContext,
   });
 
-  changes = detectChangedFieldsOfEntity(server, model, entity, entityToSave);
+  changes = detectChangedFieldsOfEntity(server, model, entity, entityToSave, options.relationPropertiesToUpdate);
 
   // check readonly properties
   Object.keys(changes).forEach((propertyName) => {

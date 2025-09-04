@@ -81,6 +81,7 @@ export function autoConfigureRapidEntity(sourceEntity: RapidEntity, entityDefini
       "derivedType",
       "derivedTypePropertyCode",
       "displayPropertyCode",
+      "defaultOrderBy",
       "indexes",
       "permissionPolicies",
       "softDelete",

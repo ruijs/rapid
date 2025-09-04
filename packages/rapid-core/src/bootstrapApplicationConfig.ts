@@ -153,6 +153,13 @@ export default {
           required: true,
           defaultValue: "false",
         },
+        {
+          name: "defaultOrderBy",
+          code: "defaultOrderBy",
+          columnName: "default_order_by",
+          type: "json",
+          required: false,
+        },
       ],
       indexes: [
         {

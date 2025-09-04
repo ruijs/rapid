@@ -168,11 +168,12 @@ export default {
         keepNonPropertyFields: props.keepNonPropertyFields,
         properties,
         relations: props.relations,
-        orderBy: props.orderBy || [
-          {
-            field: "id",
-          },
-        ],
+        orderBy: props.orderBy ||
+          mainEntity.defaultOrderBy || [
+            {
+              field: "id",
+            },
+          ],
         pagination:
           pageSize > 0
             ? {
