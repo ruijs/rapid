@@ -1,6 +1,7 @@
 import { pick, map, defaultTo, snakeCase, find } from "lodash";
 import pluralize from "pluralize";
 import { RapidEntity, RapidField, RapidFieldType } from "./types/rapid-entity-types";
+import { getEntityOwnPropertyByCode } from "./helpers/metaHelper";
 
 export function getRapidFieldRelation(fieldType: RapidFieldType): RapidField["relation"] {
   if (fieldType === "relation") {
@@ -106,6 +107,17 @@ export function autoConfigureRapidEntity(sourceEntity: RapidEntity, entityDefini
         entity.displayPropertyCode = candidateCode;
         break;
       }
+    }
+  }
+
+  if (!entity.defaultOrderBy || !entity.defaultOrderBy) {
+    const orderNumProperty = getEntityOwnPropertyByCode(entity, "orderNum");
+    if (orderNumProperty) {
+      entity.defaultOrderBy = [
+        {
+          field: orderNumProperty.code,
+        },
+      ];
     }
   }
 
