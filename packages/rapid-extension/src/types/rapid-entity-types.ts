@@ -212,6 +212,11 @@ export type RapidEntity<TEntitySingularCodes extends string = string, TDictionar
   displayPropertyCode?: string;
 
   /**
+   * 默认排序方式
+   */
+  defaultOrderBy?: FindEntityOrderByOptions[];
+
+  /**
    * Indicates whether the entity is deprecated.
    */
   deprecated?: boolean;

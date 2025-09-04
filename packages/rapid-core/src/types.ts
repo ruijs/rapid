@@ -244,6 +244,12 @@ export interface RpdDataModel {
    * Configure the property code used to display the entity.
    */
   displayPropertyCode?: string;
+
+  /**
+   * 默认排序方式
+   */
+  defaultOrderBy?: FindEntityOrderByOptions[];
+
   properties: RpdDataModelProperty[];
   indexes?: RpdDataModelIndex[];
   extensions?: RpdDataModelExtension[];

@@ -7,7 +7,7 @@ import { debounce, filter, forEach, get, isArray, isFunction, isObject, isPlainO
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMergeState } from "../../hooks/use-merge-state";
 import { getRapidApi } from "../../rapidApi";
-import { FindEntityOptions } from "../../rapid-types";
+import { FindEntityOptions, RapidEntity } from "../../rapid-types";
 import { parseConfigToFilters } from "../../functions/searchParamsToFilters";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { EntityStore, EntityStoreConfig } from "../../stores/entity-store";
@@ -81,7 +81,7 @@ export default {
       [],
     );
 
-    const apiIns = useRequest(props, context);
+    const apiIns = useRequest(context, props, entity);
     const { loadSelectedRecords, loading } = useSelectedRecords(props, (records) => {
       forEach(records, (record) => {
         const recordValue = get(record, listValueFieldName);
@@ -346,7 +346,7 @@ interface IRequestState {
   loading?: boolean;
 }
 
-function useRequest(props: SonicEntityTableSelectRockConfig, context: RockInstanceContext) {
+function useRequest(context: RockInstanceContext, props: SonicEntityTableSelectRockConfig, entity: RapidEntity) {
   const [state, setState] = useMergeState<IRequestState>({});
 
   useEffect(() => {
@@ -367,11 +367,12 @@ function useRequest(props: SonicEntityTableSelectRockConfig, context: RockInstan
       fixedFilters: requestParams.fixedFilters,
       filters: requestParams.filters,
       properties: requestParams.properties || [],
-      orderBy: requestParams.orderBy || [
-        {
-          field: "id",
-        },
-      ],
+      orderBy: requestParams.orderBy ||
+        entity.defaultOrderBy || [
+          {
+            field: "id",
+          },
+        ],
       pagination: requestParams.pagination || { limit: props.pageSize || 20, offset: 0 },
       keepNonPropertyFields: requestParams.keepNonPropertyFields,
       $exps: requestParams.$exps,
