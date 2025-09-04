@@ -14,7 +14,7 @@ export default {
     }
 
     function onDatePickerChange(value: any) {
-      if (props.picker) {
+      if (props.onChange) {
         let formatedValue: any;
         switch (props.picker) {
           case "year":
@@ -27,7 +27,7 @@ export default {
             formatedValue = value.format("YYYY-MM-DD");
             break;
         }
-        return props.onChange && props.onChange(formatedValue);
+        return props.onChange(formatedValue);
       }
     }
 
