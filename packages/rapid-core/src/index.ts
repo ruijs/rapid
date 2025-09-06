@@ -11,6 +11,7 @@ export * from "./core/routeContext";
 export * from "./core/server";
 export * from "./core/http-types";
 export * from "./core/actionHandler";
+export { default as EventManager } from "./core/eventManager";
 
 export { default as DataAccessor } from "./dataAccess/dataAccessor";
 export * from "./dataAccess/dataAccessor";
