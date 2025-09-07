@@ -27,6 +27,11 @@ export interface CronJobConfiguration {
   jobOptions?: CronJobOptions;
 
   /**
+   * 是否在事务中执行
+   */
+  executeInDbTransaction?: boolean;
+
+  /**
    * 任务处理程序编号。当指定处理程序编号时，忽略 handler 配置。
    */
   actionHandlerCode?: string;

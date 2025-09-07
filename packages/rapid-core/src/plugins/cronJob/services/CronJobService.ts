@@ -7,6 +7,7 @@ import { JobRunningResult, NamedCronJobInstance, SysCronJob, UpdateJobConfigOpti
 import { CronJobConfiguration } from "~/types/cron-job-types";
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { formatDateTimeWithTimezone, getNowStringWithTimezone } from "~/utilities/timeUtility";
+import { executeInRouteContext } from "~/helpers/dbTransactionHelper";
 
 export default class CronJobService {
   #server: IRpdServer;
@@ -144,12 +145,15 @@ export default class CronJobService {
     try {
       validateLicense(server);
 
-      if (job.actionHandlerCode) {
-        const actionHandler = server.getActionHandlerByCode(job.code);
-        await actionHandler(handlerContext, job.handleOptions);
-      } else {
-        await job.handler(handlerContext, job.handleOptions);
-      }
+      await executeInRouteContext(handlerContext.routerContext, job.executeInDbTransaction, async () => {
+        if (job.actionHandlerCode) {
+          const actionHandler = server.getActionHandlerByCode(job.code);
+          await actionHandler(handlerContext, job.handleOptions);
+        } else {
+          await job.handler(handlerContext, job.handleOptions);
+        }
+      });
+
       result = "success";
       logger.info(`Completed cron job '${jobCode}'...`);
     } catch (ex: any) {

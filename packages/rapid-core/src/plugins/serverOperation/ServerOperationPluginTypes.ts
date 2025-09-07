@@ -7,6 +7,11 @@ export interface ServerOperation {
   description?: string;
   method: RpdHttpMethod;
   permissionCheck?: PermissionCheckPolicy;
+
+  /**
+   * 是否在事务中执行
+   */
+  executeInDbTransaction?: boolean;
   handler: (ctx: ActionHandlerContext) => Promise<void>;
 }
 
