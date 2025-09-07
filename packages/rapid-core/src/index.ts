@@ -31,6 +31,7 @@ export * from "./helpers/licenseHelper";
 export * as entityHelper from "./helpers/entityHelper";
 export * as licenseHelper from "./helpers/licenseHelper";
 export * as metaHelper from "./helpers/metaHelper";
+export * from "./helpers/dbTransactionHelper";
 
 export * from "./deno-std/http/cookie";
 

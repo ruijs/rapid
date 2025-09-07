@@ -75,6 +75,7 @@ class ServerOperationPlugin implements RapidPlugin {
             config: {
               operation: operation.handler,
               permissionCheck: operation.permissionCheck,
+              executeInDbTransaction: operation.executeInDbTransaction,
             },
           },
         ],
