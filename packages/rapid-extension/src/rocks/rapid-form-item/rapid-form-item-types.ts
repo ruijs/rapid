@@ -91,6 +91,8 @@ export type RapidFormItemConfig = {
    */
   formControlProps?: Record<string, any>;
 
+  formControlValuePropName?: string;
+
   /**
    * 展示值的渲染器类型
    */

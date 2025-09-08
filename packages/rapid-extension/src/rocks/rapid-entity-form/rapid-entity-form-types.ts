@@ -27,22 +27,6 @@ export interface RapidEntityFormConfig extends RapidFormConfig {
    */
   relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
 
-  /**
-   * 表单固定字段，用于数据提交
-   */
-  fixedFields?: Record<string, any>;
-
-  /**
-   * 表单默认字段，可用于新建表单设置默认值
-   */
-  defaultFormFields?: Record<string, any>;
-
-  onFormSubmit?: RockEventHandlerConfig;
-
-  onFormRefresh?: RockEventHandlerConfig;
-
-  onValuesChange?: RockEventHandlerConfig;
-
   onSaveSuccess?: RockEventHandlerConfig;
 
   onSaveError?: RockEventHandlerConfig;

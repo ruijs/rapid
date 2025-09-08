@@ -3,10 +3,11 @@ import { renderRock } from "@ruiapp/react-renderer";
 import RapidFormMeta from "./RapidFormMeta";
 import type { RapidFormRockConfig } from "./rapid-form-types";
 import { assign, each, get, mapValues, trim } from "lodash";
-import { Form, message as antdMessage } from "antd";
+import { Form } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { parseRockExpressionFunc } from "../../utils/parse-utility";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
+import { RapidFormSubmitOptions } from "../../types/rapid-action-types";
 
 export default {
   $type: "rapidForm",
@@ -41,6 +42,8 @@ export default {
     } else if (message.name === "refreshView") {
       state.form.resetFields();
       handleComponentEvent("onFormRefresh", message.framework, message.page as any, rockInstance._scope, props, props.onFormRefresh, [{ form: state.form }]);
+    } else if (message.name === "setSubmitOptions") {
+      state.submitOptions = message.payload;
     }
   },
 
@@ -88,17 +91,28 @@ export default {
 
     const formActionRocks: RockConfig[] = [];
     each(props.actions, (formAction, index) => {
+      page.interpreteComponentProperties(null, formAction as any, {});
+
       const formActionRock: RockConfig = {
         $id: `${props.$id}-actions-${index}`,
         $type: "antdButton",
-        form: state.form,
         children: {
           $type: "text",
           text: formAction.actionText,
         },
+        onClick: () => {
+          page.sendComponentMessage(props.$id, {
+            name: "setSubmitOptions",
+            payload: {
+              requestMethod: formAction.requestMethod,
+              requestUrl: formAction.requestUrl,
+              fixedFields: formAction.fixedFields,
+            },
+          });
+        },
       };
       if (formAction.actionType === "submit") {
-        formActionRock.type = "primary";
+        formActionRock.type = formAction.buttonType || "primary";
         formActionRock.htmlType = "submit";
         formActionRock.form = undefined;
       }
@@ -193,7 +207,9 @@ export default {
           $action: "script",
           script: async (event: RockEvent) => {
             if (props.onFinish) {
-              let formValues = omitUndefinedValues(Object.assign({}, event.args[0], props.fixedFields));
+              const submitOptions: RapidFormSubmitOptions = state.submitOptions;
+              let formValues = omitUndefinedValues(Object.assign({}, event.args[0], props.fixedFields, submitOptions?.fixedFields));
+
               if (typeof props.beforeSubmitFormDataAdapter === "string" && trim(props.beforeSubmitFormDataAdapter)) {
                 const adapter = parseRockExpressionFunc(
                   props.beforeSubmitFormDataAdapter,
@@ -203,7 +219,10 @@ export default {
                 formValues = adapter();
               }
 
-              await handleComponentEvent("onFinish", event.framework, event.page as any, event.scope, event.sender, props.onFinish, [formValues]);
+              await handleComponentEvent("onFinish", event.framework, event.page as any, event.scope, event.sender, props.onFinish, [
+                formValues,
+                submitOptions,
+              ]);
             }
           },
         },

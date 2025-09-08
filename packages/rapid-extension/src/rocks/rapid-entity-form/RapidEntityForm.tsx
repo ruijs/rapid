@@ -403,7 +403,6 @@ export default {
         entityPluralCode: mainEntity.pluralCode,
         customRequest,
         entityId: props.entityId,
-        fixedFields: props.fixedFields,
         onSuccess: [
           {
             $action: "script",
@@ -450,6 +449,7 @@ export default {
       items: formItems,
       disabledLoadStore: formConfig.disabledLoadStore,
       dataSourceCode: formConfig.mode === "new" ? null : !props.disabledLoadStore ? props.dataSourceCode || "detail" : null,
+      fixedFields: formConfig.fixedFields,
       onFinish: formConfig.mode === "view" ? null : formOnFinish,
     };
     return renderRock({ context, rockConfig });

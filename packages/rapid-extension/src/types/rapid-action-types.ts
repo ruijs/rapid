@@ -170,3 +170,20 @@ export type RapidUpdateRecordActionOptions = {
   confirmText?: string;
   entity?: Record<string, any>;
 };
+
+export type RapidFormSubmitOptions = {
+  /**
+   * 请求方法，设置后会覆盖表单的请求方法
+   */
+  requestMethod?: "POST" | "PUT";
+
+  /**
+   * 请求地址，设置后覆盖表单的请求地址
+   */
+  requestUrl?: string;
+
+  /**
+   * 表单固定字段。当操作类型为submit时，将会合并到表单数据中一起提交。
+   */
+  fixedFields?: Record<string, any>;
+};

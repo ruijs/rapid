@@ -1,5 +1,6 @@
-import { ContainerRockConfig, RockEventHandlerConfig } from "@ruiapp/move-style";
+import { ContainerRockConfig, RockEventHandlerConfig, RockExpsConfig } from "@ruiapp/move-style";
 import { RapidFormItemConfig } from "../rapid-form-item/rapid-form-item-types";
+import { RapidFormSubmitOptions } from "../../types/rapid-action-types";
 
 export type RapidFormConfig = {
   /**
@@ -69,6 +70,12 @@ export type RapidFormConfig = {
 
   onFinish?: RockEventHandlerConfig;
 
+  onFormSubmit?: RockEventHandlerConfig;
+
+  onFormRefresh?: RockEventHandlerConfig;
+
+  onValuesChange?: RockEventHandlerConfig;
+
   /**
    * formData 适配器， 遵循 rui expression 规范（解析）
    */
@@ -89,6 +96,11 @@ export type RapidFormAction = {
   actionType: RapidFormActionType;
 
   /**
+   * 按钮类型
+   */
+  buttonType?: "primary" | "ghost" | "dashed" | "link" | "text" | "default";
+
+  /**
    * 操作文字
    */
   actionText?: string;
@@ -106,18 +118,27 @@ export type RapidFormAction = {
   /**
    * 请求方法，设置后会覆盖表单的请求方法
    */
-  requestMethod?: "POST" | "PUT";
+  requestMethod?: RapidFormSubmitOptions["requestMethod"];
 
   /**
    * 请求地址，设置后覆盖表单的请求地址
    */
-  requestUrl?: string;
+  requestUrl?: RapidFormSubmitOptions["requestUrl"];
+
+  /**
+   * 表单固定字段。当操作类型为submit时，将会合并到表单数据中一起提交。
+   */
+  fixedFields?: RapidFormSubmitOptions["fixedFields"];
+
+  $exps?: RockExpsConfig;
 };
 
+/**
+ * 表单按钮的行为类型。`submit`表示提交表单；`reset`表示重置表单；`button`表示没有默认行为。
+ */
 export type RapidFormActionType =
+  | "button"
   | "submit" // 提交
   | "reset"; // 重置
-// | "closeModal" // 关闭模态窗
-// | "closeDrawer" // 关闭抽屉
 
 export interface RapidFormRockConfig extends ContainerRockConfig, RapidFormConfig {}
