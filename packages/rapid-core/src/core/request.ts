@@ -66,7 +66,7 @@ export class RapidRequest {
     } else if (contentType.startsWith("multipart/form-data")) {
       this.#body = {
         type: "form-data",
-        value: await parseFormDataBody(req),
+        value: await parseFormDataBody(req, { all: true }),
       };
     }
     this.#bodyParsed = true;

@@ -1,5 +1,3 @@
-import type { RapidRequest } from "../request";
-
 export type BodyData = Record<string, string | File | (string | File)[]>;
 export type ParseBodyOptions = {
   /**
