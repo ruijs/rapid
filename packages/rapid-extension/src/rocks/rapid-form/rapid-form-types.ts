@@ -1,5 +1,6 @@
-import { ContainerRockConfig, RockEventHandlerConfig } from "@ruiapp/move-style";
+import { ContainerRockConfig, RockEventHandlerConfig, RockExpsConfig } from "@ruiapp/move-style";
 import { RapidFormItemConfig } from "../rapid-form-item/rapid-form-item-types";
+import { RapidFormSubmitOptions } from "../../types/rapid-action-types";
 
 export type RapidFormConfig = {
   /**
@@ -69,6 +70,12 @@ export type RapidFormConfig = {
 
   onFinish?: RockEventHandlerConfig;
 
+  onFormSubmit?: RockEventHandlerConfig;
+
+  onFormRefresh?: RockEventHandlerConfig;
+
+  onValuesChange?: RockEventHandlerConfig;
+
   /**
    * formData 适配器， 遵循 rui expression 规范（解析）
    */
@@ -111,12 +118,19 @@ export type RapidFormAction = {
   /**
    * 请求方法，设置后会覆盖表单的请求方法
    */
-  requestMethod?: "POST" | "PUT";
+  requestMethod?: RapidFormSubmitOptions["requestMethod"];
 
   /**
    * 请求地址，设置后覆盖表单的请求地址
    */
-  requestUrl?: string;
+  requestUrl?: RapidFormSubmitOptions["requestUrl"];
+
+  /**
+   * 表单固定字段。当操作类型为submit时，将会合并到表单数据中一起提交。
+   */
+  fixedFields?: RapidFormSubmitOptions["fixedFields"];
+
+  $exps?: RockExpsConfig;
 };
 
 /**

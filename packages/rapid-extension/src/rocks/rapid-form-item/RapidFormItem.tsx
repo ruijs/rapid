@@ -89,6 +89,7 @@ export default {
 
     const mode = props.mode || "input";
     let inputRockType = null;
+    let formItemValuePropName: string = "value";
     let childRock: RockConfig = null;
     if (mode === "input") {
       inputRockType = props.formControlType || formItemTypeToControlRockTypeMap[props.type] || "antdInput";
@@ -107,6 +108,8 @@ export default {
       if (props.multipleValues) {
         childRock.mode = "multiple";
       }
+
+      formItemValuePropName = props.formControlValuePropName || (inputRockType && valuePropNameOfFormInput[inputRockType]) || "value";
     } else {
       let rendererType = props.rendererType;
       if (!rendererType) {
@@ -144,7 +147,7 @@ export default {
       name: (props.valueFieldName || props.code)?.split("."), // TODO: should `code` be required for a search form item?
       label: props.label,
       hidden: props.hidden,
-      valuePropName: (inputRockType && valuePropNameOfFormInput[inputRockType]) || "value",
+      valuePropName: formItemValuePropName,
       form: props.form,
       children: childRock,
       rules: props.rules,

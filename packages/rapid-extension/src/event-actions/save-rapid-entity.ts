@@ -1,7 +1,7 @@
 import { handleComponentEvent, type EventAction, type Framework, type Page, type RockEventHandlerConfig, type Scope } from "@ruiapp/move-style";
-import { message } from "antd";
 import { getRapidApi } from "../rapidApi";
 import { AxiosResponse } from "axios";
+import { RapidFormSubmitOptions } from "../types/rapid-action-types";
 
 export interface RockEventHandlerSaveRapidEntity {
   $action: "saveRapidEntity";
@@ -27,14 +27,23 @@ export async function saveRapidEntity(
   eventArgs: any,
 ) {
   const entity = eventArgs[0];
+  const submitOptions = eventArgs[1] as RapidFormSubmitOptions;
   const rapidApi = getRapidApi();
-  const { entityId, onSuccess, onError, customRequest } = eventHandler;
+  const { entityId, onSuccess, onError } = eventHandler;
+  let { customRequest } = eventHandler;
   try {
     let res: AxiosResponse<any, any>;
     const requestData = Object.assign({}, entity, eventHandler.fixedFields);
 
+    if (submitOptions && submitOptions.requestUrl) {
+      customRequest = {
+        method: submitOptions.requestMethod as any,
+        url: submitOptions.requestUrl,
+      };
+    }
+
     if (customRequest) {
-      res = await rapidApi[customRequest.method || "post"](customRequest.url, requestData);
+      res = await rapidApi[(customRequest.method || "post").toLowerCase()](customRequest.url, requestData);
     } else {
       if (entityId) {
         res = await rapidApi.patch(`${eventHandler.entityNamespace}/${eventHandler.entityPluralCode}/${entityId}`, requestData);
