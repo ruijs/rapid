@@ -1,3 +1,4 @@
+import { isArray } from "lodash";
 import type { RapidRequest } from "../request";
 
 export type BodyData = Record<string, string | File | (string | File)[]>;
@@ -57,7 +58,15 @@ function convertFormDataToBodyData<T extends BodyData = BodyData>(formData: Form
     const shouldParseAllValues = options.all || key.endsWith("[]");
 
     if (!shouldParseAllValues) {
-      form[key] = value;
+      if (form.hasOwnProperty(key)) {
+        if (isArray(form[key])) {
+          form[key].push(value);
+        } else {
+          form[key] = value;
+        }
+      } else {
+        form[key] = value;
+      }
     } else {
       handleParsingAllValues(form, key, value);
     }
