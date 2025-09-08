@@ -76,6 +76,7 @@ export * from "./rocks/rapid-time-picker/rapid-time-picker-types";
 export * from "./rocks/rapid-tree-select/rapid-tree-select-types";
 export * from "./rocks/sonic-entity-details/sonic-entity-details-types";
 export * from "./rocks/sonic-entity-list/sonic-entity-list-types";
+export * from "./rocks/sonic-entity-table-select/sonic-entity-table-select-types";
 export * from "./rocks/sonic-main-secondary-layout/sonic-main-secondary-layout-types";
 export * from "./rocks/sonic-record-action-delete-entity/sonic-record-action-delete-entity-types";
 export * from "./rocks/sonic-record-action-edit-entity/sonic-record-action-edit-entity-types";
