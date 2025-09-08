@@ -98,7 +98,7 @@ export default {
         },
       };
       if (formAction.actionType === "submit") {
-        formActionRock.type = "primary";
+        formActionRock.type = formAction.buttonType || "primary";
         formActionRock.htmlType = "submit";
         formActionRock.form = undefined;
       }

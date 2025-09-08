@@ -89,6 +89,11 @@ export type RapidFormAction = {
   actionType: RapidFormActionType;
 
   /**
+   * 按钮类型
+   */
+  buttonType?: "primary" | "ghost" | "dashed" | "link" | "text" | "default";
+
+  /**
    * 操作文字
    */
   actionText?: string;
@@ -114,10 +119,12 @@ export type RapidFormAction = {
   requestUrl?: string;
 };
 
+/**
+ * 表单按钮的行为类型。`submit`表示提交表单；`reset`表示重置表单；`button`表示没有默认行为。
+ */
 export type RapidFormActionType =
+  | "button"
   | "submit" // 提交
   | "reset"; // 重置
-// | "closeModal" // 关闭模态窗
-// | "closeDrawer" // 关闭抽屉
 
 export interface RapidFormRockConfig extends ContainerRockConfig, RapidFormConfig {}
