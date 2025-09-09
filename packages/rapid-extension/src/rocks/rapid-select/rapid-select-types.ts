@@ -25,7 +25,21 @@ export interface RapidSelectConfig extends SimpleRockConfig {
   valueFieldName?: string;
 
   /**
-   * 下拉列表的数据源编号
+   * 列表
+   */
+  listItems?: Record<string, any>[];
+
+  /**
+   * 列表的数据源
+   */
+  listDataSource?: {
+    data?: {
+      list: Record<string, any>[];
+    };
+  };
+
+  /**
+   * 列表的数据源编号
    */
   listDataSourceCode?: string;
 

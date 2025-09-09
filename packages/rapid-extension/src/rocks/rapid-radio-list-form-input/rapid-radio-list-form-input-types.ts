@@ -17,7 +17,21 @@ export interface RapidRadioListFormInputConfig {
   valueFieldName?: string;
 
   /**
-   * 列表数据源编号
+   * 列表
+   */
+  listItems?: Record<string, any>[];
+
+  /**
+   * 列表的数据源
+   */
+  listDataSource?: {
+    data?: {
+      list: Record<string, any>[];
+    };
+  };
+
+  /**
+   * 列表的数据源编号
    */
   listDataSourceCode?: string;
 

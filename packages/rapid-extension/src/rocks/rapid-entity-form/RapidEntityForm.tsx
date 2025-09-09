@@ -99,11 +99,7 @@ function generateDataFormItemForOptionProperty(
   let formControlProps: Partial<RapidSelectConfig> = {
     allowClear: !formItemConfig.required,
     placeholder: formItemConfig.placeholder,
-    listDataSource: {
-      data: {
-        list: dictionaryEntries,
-      },
-    },
+    listItems: dictionaryEntries,
     listTextFieldName: "name",
     listValueFieldName: "value",
     ...formItemConfig.formControlProps,

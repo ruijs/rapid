@@ -10,20 +10,22 @@ export default {
 
   Renderer(context, props: RapidSelectConfig) {
     const { scope } = context;
-    let dataList = props.listDataSource?.data?.list;
+    let listItems = [];
     if (props.listDataSourceCode) {
-      dataList = scope.stores[props.listDataSourceCode]?.data?.list;
+      listItems = scope.stores[props.listDataSourceCode]?.data?.list;
+    } else {
+      listItems = props.listItems || props.listDataSource?.data?.list;
     }
     const listTextFieldName = props.listTextFieldName || "name";
     const listValueFieldName = props.listValueFieldName || "id";
-    let options: SelectProps["options"] = map(dataList, (dataRecord) => {
+    let options: SelectProps["options"] = map(listItems, (listItem) => {
       let label: string;
       if (props.listTextFormat) {
-        label = MoveStyleUtils.fulfillVariablesInString(props.listTextFormat, dataRecord);
+        label = MoveStyleUtils.fulfillVariablesInString(props.listTextFormat, listItem);
       } else {
-        label = get(dataRecord, listTextFieldName);
+        label = get(listItem, listTextFieldName);
       }
-      const value = get(dataRecord, listValueFieldName);
+      const value = get(listItem, listValueFieldName);
 
       return {
         label,

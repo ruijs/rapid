@@ -12,11 +12,13 @@ export default {
   Renderer(context, props: RapidRadioListFormInputRockConfig) {
     const { scope } = context;
 
-    const { listDataSource, listDataSourceCode, listTextFormat } = props;
+    const { listTextFormat } = props;
 
-    let itemList = listDataSource?.data?.list;
-    if (listDataSourceCode) {
-      itemList = scope.stores[listDataSourceCode]?.data?.list;
+    let listItems = [];
+    if (props.listDataSourceCode) {
+      listItems = scope.stores[props.listDataSourceCode]?.data?.list;
+    } else {
+      listItems = props.listItems || props.listDataSource?.data?.list;
     }
 
     const listTextFieldName = props.listTextFieldName || "name";
@@ -59,7 +61,7 @@ export default {
     const radioList = useMemo(() => {
       return (
         <Space direction={props.direction || "horizontal"}>
-          {itemList.map((item, index) => {
+          {listItems.map((item, index) => {
             const option = getCheckboxOption(item);
             return (
               <Radio key={index} value={option.value}>
@@ -69,7 +71,7 @@ export default {
           })}
         </Space>
       );
-    }, [itemList]);
+    }, [listItems]);
 
     return <Radio.Group {...antdProps}>{radioList}</Radio.Group>;
   },
