@@ -1,0 +1,24 @@
+.rapid-page-section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.rapid-page-section-header {
+}
+
+.rapid-page-section-title {
+  font-size: 18px;
+  line-height: 40px;
+}
+
+.rapid-page-section-body {
+}
+
+.rui-page-section + .rapid-page-section {
+  margin-top: 16px;
+}
+
+.rapid-page-section + .rapid-page-section {
+  margin-top: 16px;
+}

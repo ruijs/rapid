@@ -62,6 +62,7 @@ export * from "./rocks/rapid-form-item/rapid-form-item-types";
 export * from "./rocks/rapid-form-modal-record-action/rapid-form-modal-record-action-types";
 export * from "./rocks/rapid-image-renderer/rapid-image-renderer-types";
 export * from "./rocks/rapid-json-form-input/rapid-json-form-input-types";
+export * from "./rocks/rapid-page-section/rapid-page-section-types";
 export * from "./rocks/rapid-percent-renderer/rapid-percent-renderer-types";
 export * from "./rocks/rapid-secret-text-renderer/rapid-secret-text-renderer-types";
 export * from "./rocks/rapid-table/rapid-table-types";

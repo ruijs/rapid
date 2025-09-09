@@ -66,6 +66,7 @@ import RapidRichTextRenderer from "./rapid-rich-text-renderer/RichTextRenderer";
 import RapidRichTextEditor from "./rapid-rich-text-editor/RichTextEditor";
 import RapidToolbarModalButton from "./rapid-toolbar-modal-button/RapidToolbarModalButton";
 import RapidSecretTextRenderer from "./rapid-secret-text-renderer/RapidSecretTextRenderer";
+import RapidPageSection from "./rapid-page-section/RapidPageSection";
 
 export default [
   RapidArrayRenderer,
@@ -96,6 +97,7 @@ export default [
   RapidNumberRenderer,
   RapidObjectRenderer,
   RapidOptionFieldRenderer,
+  RapidPageSection,
   RapidPercentRenderer,
   RapidRadioListFormInput,
   RapidReferenceRenderer,
