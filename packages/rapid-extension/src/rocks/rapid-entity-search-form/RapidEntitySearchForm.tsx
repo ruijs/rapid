@@ -92,11 +92,7 @@ function generateSearchFormItemForOptionProperty(framework: Framework, option: G
     placeholder: formItemConfig.placeholder,
     mode: isMultiple ? "multiple" : undefined,
     multiple: isMultiple,
-    listDataSource: {
-      data: {
-        list: dictionaryEntries,
-      },
-    },
+    listItems: dictionaryEntries,
     listTextFieldName: "name",
     listValueFieldName: "value",
     ...formItemConfig.formControlProps,

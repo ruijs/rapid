@@ -18,7 +18,21 @@ export interface RapidCheckboxListFormInputConfig {
   valueFieldName?: string;
 
   /**
-   * 列表数据源编号
+   * 列表
+   */
+  listItems?: Record<string, any>[];
+
+  /**
+   * 列表的数据源
+   */
+  listDataSource?: {
+    data?: {
+      list: Record<string, any>[];
+    };
+  };
+
+  /**
+   * 列表的数据源编号
    */
   listDataSourceCode?: string;
 
@@ -43,6 +57,36 @@ export interface RapidCheckboxListFormInputConfig {
   groupByFieldName?: string;
 
   /**
+   * 分组
+   */
+  groupItems?: Record<string, any>[];
+
+  /**
+   * 分组的数据源
+   */
+  groupDataSource?: {
+    data?: {
+      list: Record<string, any>[];
+    };
+  };
+
+  /**
+   * 分组数据源编号
+   */
+  groupDataSourceCode?: string;
+
+  /**
+   * @deprecated
+   * 分组的数据源
+   */
+  groupsDataSource?: {
+    data?: {
+      list: Record<string, any>[];
+    };
+  };
+
+  /**
+   * @deprecated
    * 分组数据源编号
    */
   groupsDataSourceCode?: string;

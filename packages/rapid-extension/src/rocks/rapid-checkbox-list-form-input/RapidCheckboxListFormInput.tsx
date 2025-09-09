@@ -15,16 +15,20 @@ export default {
   Renderer(context, props: RapidCheckboxListFormInputRockConfig) {
     const { scope } = context;
 
-    const { groupsDataSource, groupsDataSourceCode, listDataSource, listDataSourceCode, groupByFieldName, listTextFormat } = props;
+    const { groupByFieldName, listTextFormat } = props;
 
-    let groupList = groupsDataSource?.data?.list;
-    if (groupsDataSourceCode) {
-      groupList = scope.stores[groupsDataSourceCode]?.data?.list;
+    let groupItems = [];
+    if (props.groupDataSourceCode || props.groupsDataSourceCode) {
+      groupItems = scope.stores[props.groupDataSourceCode || props.groupsDataSourceCode]?.data?.list;
+    } else {
+      groupItems = props.groupItems || props.groupDataSource?.data?.list || props.groupsDataSource?.data?.list;
     }
 
-    let itemList: any[] = listDataSource?.data?.list || [];
-    if (listDataSourceCode) {
-      itemList = scope.stores[listDataSourceCode]?.data?.list || [];
+    let listItems = [];
+    if (props.listDataSourceCode) {
+      listItems = scope.stores[props.listDataSourceCode]?.data?.list;
+    } else {
+      listItems = props.listItems || props.listDataSource?.data?.list;
     }
 
     const listTextFieldName = props.listTextFieldName || "name";
@@ -54,9 +58,9 @@ export default {
 
     const checkboxList = useMemo(() => {
       if (groupByFieldName) {
-        return (groupList || []).map((group, index) => {
+        return (groupItems || []).map((group, index) => {
           const groupValue = get(group, groupValueFieldName) || index;
-          const itemsInGroup = filter(itemList, (item) => get(item, groupByFieldName) === groupValue);
+          const itemsInGroup = filter(listItems, (item) => get(item, groupByFieldName) === groupValue);
 
           return (
             <div key={groupValue} style={{ marginBottom: "15px", ...props.groupStyle }} className={props.groupClassName}>
@@ -78,7 +82,7 @@ export default {
       } else {
         return (
           <CheckboxList
-            itemList={itemList}
+            itemList={listItems}
             itemListStyle={props.itemListStyle}
             itemListClassName={props.itemListClassName}
             direction={props.direction}
@@ -88,7 +92,7 @@ export default {
           />
         );
       }
-    }, [groupList, itemList, groupByFieldName]);
+    }, [groupItems, listItems, groupByFieldName]);
 
     return <Checkbox.Group {...antdProps}>{checkboxList}</Checkbox.Group>;
   },
