@@ -145,6 +145,11 @@ export type RapidDescriptionsItemConfig = {
    */
   rendererProps?: Record<string, any>;
 
+  /**
+   * 是否隐藏。作用同`_hidden`。
+   */
+  hidden?: boolean;
+
   $exps?: RockExpsConfig;
   $i18n?: RockI18nConfig;
   $locales?: RockLocalesConfig;

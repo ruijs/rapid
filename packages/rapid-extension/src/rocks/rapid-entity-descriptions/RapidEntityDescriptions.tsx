@@ -205,7 +205,7 @@ export default {
           },
         };
 
-        if (!descriptionItemRockConfig._hidden) {
+        if (!descriptionItemRockConfig._hidden && !descriptionItemConfig.hidden) {
           descriptionItems.push(descriptionItemRockConfig);
         }
       });
