@@ -40,6 +40,7 @@ export function autoConfigureRapidField(sourceField: RapidField): RapidField {
     config: sourceField.config,
     relation: getRapidFieldRelation(sourceField.type),
     targetSingularCode: sourceField.targetSingularCode,
+    targetTypeColumnName: sourceField.targetTypeColumnName,
     linkTableName: sourceField.linkTableName,
     linkDbSchema: sourceField.linkDbSchema,
     targetIdColumnName: sourceField.targetIdColumnName,
