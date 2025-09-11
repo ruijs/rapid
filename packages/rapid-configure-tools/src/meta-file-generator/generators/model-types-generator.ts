@@ -34,8 +34,8 @@ function convertSdRpdFieldTypeToTypeScriptType(field: RapidField, entities: Rapi
       return `${dataDictionary}[]`;
     case "relation":
     case "relation[]":
-      const targetCode = find(entities, { singularCode: targetSingularCode })?.code;
-      return relation === "one" ? `Partial<${targetCode}>` : `Partial<${targetCode}>[]`;
+      const targetType = find(entities, { singularCode: targetSingularCode })?.code || "any";
+      return relation === "one" ? `Partial<${targetType}>` : `Partial<${targetType}>[]`;
     case "file":
     case "image":
       return "FileOrImageFieldType";
