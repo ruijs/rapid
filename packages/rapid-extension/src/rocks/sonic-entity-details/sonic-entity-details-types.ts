@@ -100,6 +100,11 @@ export interface SonicEntityDetailsConfig {
   actions?: RockConfig[];
 
   footer?: RockConfig[];
+
+  /**
+   * 是否隐藏头部（标题、状态、操作项等）
+   */
+  hideHeader?: boolean;
 }
 
 export interface SonicEntityDetailsRockConfig extends SimpleRockConfig, SonicEntityDetailsConfig {}
