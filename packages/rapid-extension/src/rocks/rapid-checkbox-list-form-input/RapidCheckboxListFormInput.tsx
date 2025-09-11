@@ -33,6 +33,7 @@ export default {
 
     const listTextFieldName = props.listTextFieldName || "name";
     const listValueFieldName = props.listValueFieldName || "id";
+    const listDisabledFieldName = props.listDisabledFieldName || "disabled";
 
     const groupTextFieldName = props.groupTextFieldName || "name";
     const groupValueFieldName = props.groupValueFieldName || "id";
@@ -75,6 +76,7 @@ export default {
                 listTextFormat={listTextFormat}
                 listTextFieldName={listTextFieldName}
                 listValueFieldName={listValueFieldName}
+                listDisabledFieldName={listDisabledFieldName}
               />
             </div>
           );
@@ -89,6 +91,7 @@ export default {
             listTextFormat={listTextFormat}
             listTextFieldName={listTextFieldName}
             listValueFieldName={listValueFieldName}
+            listDisabledFieldName={listDisabledFieldName}
           />
         );
       }
@@ -108,6 +111,7 @@ interface CheckboxListProps {
   listTextFormat?: string;
   listTextFieldName?: string;
   listValueFieldName?: string;
+  listDisabledFieldName?: string;
 }
 
 function CheckboxList(props: CheckboxListProps) {
@@ -121,10 +125,11 @@ function CheckboxList(props: CheckboxListProps) {
           listTextFormat: props.listTextFormat,
           listTextFieldName: props.listTextFieldName,
           listValueFieldName: props.listValueFieldName,
+          listDisabledFieldName: props.listDisabledFieldName,
         });
         return (
           <div className={direction === "horizontal" ? "rapid-checkbox-list-item-horizontal" : "rapid-checkbox-list-item-vertical"}>
-            <Checkbox key={index} value={option.value}>
+            <Checkbox key={index} value={option.value} disabled={option.disabled}>
               {option.label}
             </Checkbox>
           </div>
@@ -139,10 +144,11 @@ interface GetCheckboxOptionOptions {
   listTextFormat?: string;
   listTextFieldName?: string;
   listValueFieldName?: string;
+  listDisabledFieldName?: string;
 }
 
 function getCheckboxOption(options: GetCheckboxOptionOptions): CheckboxOptionType {
-  const { item, listTextFormat, listTextFieldName, listValueFieldName } = options;
+  const { item, listTextFormat, listTextFieldName, listValueFieldName, listDisabledFieldName } = options;
   let label: string;
   if (listTextFormat) {
     label = MoveStyleUtils.fulfillVariablesInString(listTextFormat, item);
@@ -150,9 +156,11 @@ function getCheckboxOption(options: GetCheckboxOptionOptions): CheckboxOptionTyp
     label = get(item, listTextFieldName);
   }
   const value = get(item, listValueFieldName);
+  const disabled = get(item, listDisabledFieldName);
 
   return {
     label,
     value,
+    disabled,
   };
 }

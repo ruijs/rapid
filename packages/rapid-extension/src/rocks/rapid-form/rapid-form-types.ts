@@ -77,13 +77,32 @@ export type RapidFormConfig = {
   onValuesChange?: RockEventHandlerConfig;
 
   /**
-   * formData 适配器， 遵循 rui expression 规范（解析）
+   * 对defaultFormFields或者数据源中的数据进行预处理的函数。
+   * 可在函数中使用以下变量：
+   * - `data`: 原始数据
+   * - `form`: 表单实例对象
    */
   formDataAdapter?: string;
+
   /**
-   * 表单提交前数据处理
+   * 在触发onFinish事件之前对表单数据进行处理的函数。
+   * 可在函数中使用以下变量：
+   * - `formData`: 表单数据
+   * - `fixedFields`: 固定字段
    */
   beforeSubmitFormDataAdapter?: string;
+
+  /**
+   * 表单数据在提交数据中的字段名称。默认表单数据就是提交数据。当设置该字段后，表单数据作为提交数据的一个字段值。
+   *
+   * 例如，当`fieldNameOfFormDataInSubmitData`设置为`formData`时，提交数据结构如下：
+   * ```json
+   * {
+   *   "formData": formData
+   * }
+   * ```
+   */
+  fieldNameOfFormDataInSubmitData?: string;
 };
 
 /**

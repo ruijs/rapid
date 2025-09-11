@@ -2,7 +2,7 @@ import { Rock, RockConfig, RockEvent, RockEventHandlerScript, handleComponentEve
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidFormMeta from "./RapidFormMeta";
 import type { RapidFormRockConfig } from "./rapid-form-types";
-import { assign, each, get, mapValues, trim } from "lodash";
+import { assign, each, get, mapValues, set, trim } from "lodash";
 import { Form } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { parseRockExpressionFunc } from "../../utils/parse-utility";
@@ -208,7 +208,7 @@ export default {
           script: async (event: RockEvent) => {
             if (props.onFinish) {
               const submitOptions: RapidFormSubmitOptions = state.submitOptions;
-              let formValues = omitUndefinedValues(Object.assign({}, event.args[0], props.fixedFields, submitOptions?.fixedFields));
+              let submitData = omitUndefinedValues(Object.assign({}, event.args[0], props.fixedFields, submitOptions?.fixedFields));
 
               if (typeof props.beforeSubmitFormDataAdapter === "string" && trim(props.beforeSubmitFormDataAdapter)) {
                 const adapter = parseRockExpressionFunc(
@@ -216,11 +216,15 @@ export default {
                   { formData: omitUndefinedValues(event.args[0]), fixedFields: omitUndefinedValues(props.fixedFields) },
                   context,
                 );
-                formValues = adapter();
+                submitData = adapter();
+              }
+
+              if (props.fieldNameOfFormDataInSubmitData) {
+                submitData = set({}, props.fieldNameOfFormDataInSubmitData, submitData);
               }
 
               await handleComponentEvent("onFinish", event.framework, event.page as any, event.scope, event.sender, props.onFinish, [
-                formValues,
+                submitData,
                 submitOptions,
               ]);
             }

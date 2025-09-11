@@ -52,6 +52,11 @@ export interface RapidCheckboxListFormInputConfig {
   listTextFormat?: string;
 
   /**
+   * 列表数据中表示是否禁用的字段名。默认为`disabled`。
+   */
+  listDisabledFieldName?: string;
+
+  /**
    * 用于分组的字段名。
    */
   groupByFieldName?: string;

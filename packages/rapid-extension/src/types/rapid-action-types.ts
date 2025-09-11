@@ -183,7 +183,7 @@ export type RapidFormSubmitOptions = {
   requestUrl?: string;
 
   /**
-   * 表单固定字段。当操作类型为submit时，将会合并到表单数据中一起提交。
+   * 待提交数据的固定字段。当操作类型为submit时，将会合并到待提交数据中一起提交。
    */
   fixedFields?: Record<string, any>;
 };
