@@ -49,6 +49,7 @@ export function newPropertyUpdater(rapidConfigApi: AxiosInstance) {
         "maxLength",
         "relation",
         "targetSingularCode",
+        "targetTypeColumnName",
         "targetIdColumnName",
         "selfIdColumnName",
         "linkTableName",
