@@ -351,6 +351,13 @@ export default {
           required: false,
         },
         {
+          name: "target type column name",
+          code: "targetTypeColumnName",
+          columnName: "target_type_column_name",
+          type: "text",
+          required: false,
+        },
+        {
           name: "target id column name",
           code: "targetIdColumnName",
           columnName: "target_id_column_name",

@@ -338,6 +338,11 @@ export type RapidField<TEntitySingularCodes extends string = string, TDictionary
   targetSingularCode?: TEntitySingularCodes;
 
   /**
+   * 保存关联实体类型的字段名。当设置 targetTypeColumnName 时，表示关联实体类型不固定，可以关联不同类型的实体。
+   */
+  targetTypeColumnName?: string;
+
+  /**
    * 当 relation 为 one 时，设置当前模型表中表示关联实体 id 的列名。
    * 当 relation 为 many，并且使用关联关系表保存关联信息时，设置关联关系表中表示关联实体 id 的列名。
    * 当 relation 为 many，并且不使用关联关系表保存关联信息时，关联实体 id 的列名默认为`id`，此时可以不设置 targetIdColumnName。
