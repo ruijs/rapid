@@ -2,7 +2,7 @@ import { Rock, RockConfig, RockEvent, RockEventHandlerScript, handleComponentEve
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidFormMeta from "./RapidFormMeta";
 import type { RapidFormRockConfig } from "./rapid-form-types";
-import { assign, each, get, mapValues, set, trim } from "lodash";
+import { assign, each, forEach, get, mapValues, merge, set, trim } from "lodash";
 import { Form } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { parseRockExpressionFunc } from "../../utils/parse-utility";
@@ -207,21 +207,24 @@ export default {
           $action: "script",
           script: async (event: RockEvent) => {
             if (props.onFinish) {
+              let formData = Object.assign({}, omitUndefinedValues(event.args[0]));
+
               const submitOptions: RapidFormSubmitOptions = state.submitOptions;
-              let submitData = omitUndefinedValues(Object.assign({}, event.args[0], props.fixedFields, submitOptions?.fixedFields));
+              const fixedFields = omitUndefinedValues(merge({}, props.fixedFields, submitOptions?.fixedFields));
 
               if (typeof props.beforeSubmitFormDataAdapter === "string" && trim(props.beforeSubmitFormDataAdapter)) {
-                const adapter = parseRockExpressionFunc(
-                  props.beforeSubmitFormDataAdapter,
-                  { formData: omitUndefinedValues(event.args[0]), fixedFields: omitUndefinedValues(props.fixedFields) },
-                  context,
-                );
-                submitData = adapter();
+                const adapter = parseRockExpressionFunc(props.beforeSubmitFormDataAdapter, { formData, fixedFields }, context);
+                formData = adapter();
               }
 
+              let submitData: any;
               if (props.fieldNameOfFormDataInSubmitData) {
-                submitData = set({}, props.fieldNameOfFormDataInSubmitData, submitData);
+                submitData = set({}, props.fieldNameOfFormDataInSubmitData, formData);
+              } else {
+                submitData = formData;
               }
+
+              submitData = merge(submitData, fixedFields);
 
               await handleComponentEvent("onFinish", event.framework, event.page as any, event.scope, event.sender, props.onFinish, [
                 submitData,
