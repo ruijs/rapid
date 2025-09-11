@@ -5,6 +5,7 @@ import { RapidFormItemRockConfig, RapidFormItemType } from "./rapid-form-item-ty
 import RapidExtensionSetting from "../../RapidExtensionSetting";
 import { useEffect, useMemo, useRef } from "react";
 import rapidAppDefinition from "../../rapidAppDefinition";
+import { cloneDeep } from "lodash";
 
 const formItemTypeToControlRockTypeMap: Record<Exclude<RapidFormItemType, "auto" | "custom">, string> = {
   box: "box",
@@ -93,7 +94,7 @@ export default {
     let childRock: RockConfig = null;
     if (mode === "input") {
       inputRockType = props.formControlType || formItemTypeToControlRockTypeMap[props.type] || "antdInput";
-      const defaultFormControlProps = defaultControlPropsOfFormItemType[props.type];
+      const defaultFormControlProps = cloneDeep(defaultControlPropsOfFormItemType[props.type]);
       childRock = {
         $id: `${props.$id}-input`,
         $type: inputRockType,
