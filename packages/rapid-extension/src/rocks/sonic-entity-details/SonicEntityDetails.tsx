@@ -97,27 +97,38 @@ export default {
       }
     }
 
-    const rockConfig: RockConfig = {
-      $id: `${props.$id}-internal`,
-      $type: "antdPageHeader",
-      title,
-      subTitle,
-      tags: stateRockConfig,
-      extra: props.actions,
-      footer: props.footer,
-      children: {
-        $id: `${props.$id}-descriptions`,
-        $type: "rapidEntityDescriptions",
-        entityCode: props.entityCode,
-        dataSource,
-        bordered: props.descriptionBordered,
-        size: props.descriptionSize,
-        layout: props.descriptionLayout,
-        colon: props.descriptionColon,
-        column: props.descriptionColumn || props.column,
-        items: props.descriptionItems || props.items,
-      },
+    const descriptionsRockConfig: RockConfig = {
+      $id: `${props.$id}-descriptions`,
+      $type: "rapidEntityDescriptions",
+      entityCode: props.entityCode,
+      dataSource,
+      bordered: props.descriptionBordered,
+      size: props.descriptionSize,
+      layout: props.descriptionLayout,
+      colon: props.descriptionColon,
+      column: props.descriptionColumn || props.column,
+      items: props.descriptionItems || props.items,
     };
+
+    let rockConfig: RockConfig;
+    if (props.hideHeader) {
+      rockConfig = {
+        $id: `${props.$id}-internal-withoutHeader`,
+        $type: "box",
+        children: [descriptionsRockConfig, props.footer],
+      };
+    } else {
+      rockConfig = {
+        $id: `${props.$id}-internal-withHeader`,
+        $type: "antdPageHeader",
+        title,
+        subTitle,
+        tags: stateRockConfig,
+        extra: props.actions,
+        footer: props.footer,
+        children: descriptionsRockConfig,
+      };
+    }
     return renderRock({ context, rockConfig });
   },
 
