@@ -447,6 +447,7 @@ export default {
       dataSourceCode: formConfig.mode === "new" ? null : !props.disabledLoadStore ? props.dataSourceCode || "detail" : null,
       fixedFields: formConfig.fixedFields,
       onFinish: formConfig.mode === "view" ? null : formOnFinish,
+      fieldNameOfFormDataInSubmitData: formConfig.fieldNameOfFormDataInSubmitData,
     };
     return renderRock({ context, rockConfig });
   },
