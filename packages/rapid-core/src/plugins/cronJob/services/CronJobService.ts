@@ -133,10 +133,9 @@ export default class CronJobService {
     let handlerContext: ActionHandlerContext = {
       logger,
       routerContext: RouteContext.newSystemOperationContext(server),
-      next: null,
       server,
-      applicationConfig: null,
       input,
+      results: [],
     };
 
     let result: JobRunningResult;

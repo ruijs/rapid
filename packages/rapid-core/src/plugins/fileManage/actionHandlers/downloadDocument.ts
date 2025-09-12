@@ -7,7 +7,7 @@ import { getFileBaseName } from "~/utilities/pathUtility";
 export const code = "downloadDocument";
 
 export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: any) {
-  const { server, applicationConfig, routerContext: routeContext, input } = ctx;
+  const { server, routerContext: routeContext, input } = ctx;
   const { request, response } = routeContext;
 
   const documentDataAccessor = ctx.server.getDataAccessor({

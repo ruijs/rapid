@@ -16,6 +16,7 @@ import * as deleteCollectionEntities from "./actionHandlers/deleteCollectionEnti
 import * as deleteCollectionEntityById from "./actionHandlers/deleteCollectionEntityById";
 import * as addEntityRelations from "./actionHandlers/addEntityRelations";
 import * as removeEntityRelations from "./actionHandlers/removeEntityRelations";
+import * as saveEntity from "./actionHandlers/saveEntity";
 import * as queryDatabase from "./actionHandlers/queryDatabase";
 import {
   RpdServerPluginExtendingAbilities,
@@ -125,6 +126,7 @@ class DataManager implements RapidPlugin {
     server.registerActionHandler(this, removeEntityRelations);
     server.registerActionHandler(this, deleteCollectionEntities);
     server.registerActionHandler(this, deleteCollectionEntityById);
+    server.registerActionHandler(this, saveEntity);
     server.registerActionHandler(this, queryDatabase);
   }
 

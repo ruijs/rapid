@@ -7,11 +7,12 @@ import { CronJobConfiguration } from "~/types/cron-job-types";
 export interface ActionHandlerContext {
   logger: Logger;
   routerContext: RouteContext;
-  next: Next;
+  next?: Next;
   server: IRpdServer;
-  applicationConfig: RpdApplicationConfig;
+  vars?: Record<string, any>;
   input?: any;
   output?: any;
+  results: any[];
   status?: Response["status"];
 }
 

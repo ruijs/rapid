@@ -19,6 +19,7 @@ import {
   EmitServerEventOptions,
   IDatabaseClient,
   RpdRouteActionConfig,
+  RunActionHandlersOptions,
 } from "./types";
 
 import QueryBuilder from "./queryBuilder/queryBuilder";
@@ -36,6 +37,7 @@ import { Logger } from "./facilities/log/LogFacility";
 import { FacilityFactory } from "./core/facility";
 import { CronJobConfiguration } from "./types/cron-job-types";
 import coreRoutes from "./core/routes";
+import { interpreteConfigExpressions } from "./core/ExpressionInterpreter";
 
 export interface InitServerOptions {
   logger: Logger;
@@ -472,6 +474,26 @@ export class RapidServer implements IRpdServer {
       );
     }
     return response.getResponse();
+  }
+
+  async runActionHandlers(handlerContext: ActionHandlerContext, actions: RpdRouteActionConfig[]) {
+    if (!actions) {
+      return;
+    }
+    for (const action of actions) {
+      const actionCode = action.code;
+      interpreteConfigExpressions(action.config, handlerContext.vars);
+
+      const handler = this.getActionHandlerByCode(actionCode);
+      if (!handler) {
+        throw new Error("Unknown handler: " + actionCode);
+      }
+
+      await this.beforeRunActionHandler(handlerContext, action);
+
+      const result = await handler(handlerContext, action.config);
+      handlerContext.results.push(result);
+    }
   }
 
   async beforeRunRouteActions(handlerContext: ActionHandlerContext) {

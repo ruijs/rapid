@@ -15,6 +15,7 @@ import {
   RpdDataModelProperty,
   RpdRouteActionConfig,
   RpdServerEventTypes,
+  RunActionHandlersOptions,
   UpdateEntityByIdOptions,
 } from "~/types";
 import { IPluginActionHandler, ActionHandler, ActionHandlerContext } from "./actionHandler";
@@ -53,6 +54,7 @@ export interface IRpdServer {
   registerEntityWatcher(entityWatcher: EntityWatcherType);
   emitEvent<TEventName extends keyof RpdServerEventTypes>(event: EmitServerEventOptions<TEventName>): void;
   handleRequest(request: RapidRequest, next: Next): Promise<Response>;
+  runActionHandlers(handlerContext: ActionHandlerContext, actions: RpdRouteActionConfig[]): Promise<void>;
   beforeRunRouteActions(handlerContext: ActionHandlerContext): Promise<void>;
   beforeRunActionHandler(handlerContext: ActionHandlerContext, actionConfig: RpdRouteActionConfig): Promise<void>;
   beforeCreateEntity(model: RpdDataModel, options: CreateEntityOptions): Promise<void>;

@@ -8,7 +8,7 @@ import { RapidPlugin } from "~/core/server";
 export const code = "uploadFile";
 
 export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: any) {
-  const { server, applicationConfig, routerContext, input } = ctx;
+  const { server, routerContext, input } = ctx;
   const { request, response } = routerContext;
 
   let file: File | File[] | null = input.file || input.files;

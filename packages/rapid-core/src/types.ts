@@ -35,6 +35,10 @@ export interface IDatabaseAccessor {
   queryDatabaseObject: (sql: string, params?: unknown[] | Record<string, unknown>, client?: IDatabaseClient) => Promise<any[]>;
 }
 
+export type RunActionHandlersOptions = {
+  actions: RpdRouteActionConfig[];
+};
+
 export interface RunEntityActionHandlerOptions {
   /** 模型所在的命名空间 */
   namespace: string;
