@@ -61,8 +61,8 @@ export async function buildRoutes(server: IRpdServer, applicationConfig: RpdAppl
         routerContext,
         next,
         server,
-        applicationConfig,
         input,
+        results: [],
       };
 
       await server.beforeRunRouteActions(handlerContext);

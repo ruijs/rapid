@@ -13,7 +13,7 @@ export type DownloadFileInput = {
 export const code = "downloadFile";
 
 export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: any) {
-  const { server, applicationConfig, routerContext: routeContext } = ctx;
+  const { server, routerContext: routeContext } = ctx;
   const { request, response } = routeContext;
   //TODO: only public files can download by this handler
 
