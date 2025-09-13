@@ -19,8 +19,7 @@ export default {
     const formRockConfig = cloneDeep(props.form);
     formRockConfig.$id = formRockId;
 
-    // 此设置只对rapidForm生效，因为rapidEntityForm会忽略onFinish设置
-    formRockConfig.onFinish = [
+    formRockConfig.onFormSubmit = [
       {
         $action: "script",
         script: async (event: RuiEvent) => {

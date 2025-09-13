@@ -356,7 +356,7 @@ export default {
       },
     ];
 
-    const formOnFinish: RockEventHandler[] = [
+    const onFormSubmit: RockEventHandler[] = [
       {
         $action: "script",
         script: async (event: RockEvent) => {
@@ -385,11 +385,10 @@ export default {
       actionsAlign: formConfig.actionsAlign,
       defaultFormFields: formConfig.defaultFormFields,
       formDataAdapter: formConfig.formDataAdapter,
-      onFormSubmit: formConfig.onFormSubmit,
+      onFormSubmit,
       onFormRefresh: formConfig.onFormRefresh,
       onValuesChange: formConfig.onValuesChange,
       items: formItems,
-      onFinish: formOnFinish,
     };
 
     return renderRock({ context, rockConfig });

@@ -2,7 +2,7 @@ import { Rock, RockConfig, RockEvent, RockEventHandlerScript, handleComponentEve
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidFormMeta from "./RapidFormMeta";
 import type { RapidFormRockConfig } from "./rapid-form-types";
-import { assign, each, forEach, get, mapValues, merge, set, trim } from "lodash";
+import { assign, each, forEach, get, mapValues, merge, pick, set, trim } from "lodash";
 import { Form } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { parseRockExpressionFunc } from "../../utils/parse-utility";
@@ -26,9 +26,6 @@ export default {
       try {
         const values = await form.validateFields();
         form.submit();
-        await handleComponentEvent("onFormSubmit", message.framework, message.page as any, rockInstance._scope, props, props.onFormSubmit, [
-          { form: state.form },
-        ]);
       } catch (err) {
         message.framework.getRockLogger().error(props, `Failed to submit form: ${err.message}`, { error: err });
       }
@@ -54,8 +51,17 @@ export default {
     const [currentFormData, setCurrentFormData] = useState<Record<string, any>>({});
 
     if (!props.items) {
-      const errorRockConfig = generateRockConfigOfError(new Error(`RapidFormConfig.items are required.`));
-      return renderRock({ context, rockConfig: errorRockConfig });
+      return renderRock({
+        context,
+        rockConfig: generateRockConfigOfError(new Error(`RapidFormConfig.items are required.`)),
+      });
+    }
+
+    if (props.onFinish && props.onFormSubmit) {
+      return renderRock({
+        context,
+        rockConfig: generateRockConfigOfError(new Error(`"onFinish" event should not be listened when "onFormSubmit" has been listened.`)),
+      });
     }
 
     const dataFormItemRocks: RockConfig[] = [];
@@ -101,14 +107,18 @@ export default {
           text: formAction.actionText,
         },
         onClick: () => {
-          page.sendComponentMessage(props.$id, {
-            name: "setSubmitOptions",
-            payload: {
-              requestMethod: formAction.requestMethod,
-              requestUrl: formAction.requestUrl,
-              fixedFields: formAction.fixedFields,
-            },
-          });
+          if (formAction.submitMethod || formAction.submitUrl || formAction.fixedFields) {
+            page.sendComponentMessage(props.$id, {
+              name: "setSubmitOptions",
+              payload: {
+                submitMethod: formAction.submitMethod,
+                submitUrl: formAction.submitUrl,
+                fixedFields: formAction.fixedFields,
+                onSucess: formAction.onSucess,
+                onError: formAction.onError,
+              } satisfies RapidFormSubmitOptions,
+            });
+          }
         },
       };
       if (formAction.actionType === "submit") {
@@ -206,7 +216,8 @@ export default {
         {
           $action: "script",
           script: async (event: RockEvent) => {
-            if (props.onFinish) {
+            const onFormSubmit = props.onFormSubmit || props.onFinish;
+            if (onFormSubmit) {
               let formData = Object.assign({}, omitUndefinedValues(event.args[0]));
 
               const submitOptions: RapidFormSubmitOptions = state.submitOptions;
@@ -226,7 +237,7 @@ export default {
 
               submitData = merge(submitData, fixedFields);
 
-              await handleComponentEvent("onFinish", event.framework, event.page as any, event.scope, event.sender, props.onFinish, [
+              await handleComponentEvent("onFormSubmit", event.framework, event.page as any, event.scope, event.sender, onFormSubmit, [
                 submitData,
                 submitOptions,
               ]);

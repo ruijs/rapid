@@ -36,10 +36,6 @@ export interface RapidEntityFormConfig extends RapidFormConfig {
    * 使用 `submitMethod` 和 `submitUrl` 替代
    */
   customRequest?: RockEventHandlerSaveRapidEntity["customRequest"];
-
-  submitMethod?: RockEventHandlerSaveRapidEntity["customRequest"]["method"];
-
-  submitUrl?: RockEventHandlerSaveRapidEntity["customRequest"]["url"];
 }
 
 export interface RapidEntityFormRockConfig extends ContainerRockConfig, RapidEntityFormConfig {}

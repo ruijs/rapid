@@ -15,8 +15,9 @@ import { RapidOptionFieldRendererConfig } from "../rapid-option-field-renderer/r
 import { message } from "antd";
 import { RapidEntityTableSelectRockConfig } from "../rapid-entity-table-select/rapid-entity-table-select-types";
 import { generateEntityDetailStoreConfig } from "../../helpers/entityStoreHelper";
-import { getMetaDictionaryEntryLocaleName, getMetaPropertyLocaleName } from "../../helpers/i18nHelper";
+import { getExtensionLocaleStringResource, getMetaDictionaryEntryLocaleName, getMetaPropertyLocaleName } from "../../helpers/i18nHelper";
 import { RockEventHandlerSaveRapidEntity } from "../../event-actions/save-rapid-entity";
+import { RapidFormSubmitOptions } from "../../types/rapid-action-types";
 
 const fieldTypeToFormItemTypeMap: Record<RapidFieldType, RapidFormItemType | null> = {
   text: "text",
@@ -388,11 +389,11 @@ export default {
     if (formConfig.submitUrl) {
       customRequest = {
         url: formConfig.submitUrl,
-        method: formConfig.submitMethod || "post",
+        method: formConfig.submitMethod || "POST",
       };
     }
 
-    const formOnFinish: RockEventHandler[] = [
+    const onFormSubmit: RockEventHandler[] = [
       {
         $action: "saveRapidEntity",
         entityNamespace: mainEntity.namespace,
@@ -403,10 +404,19 @@ export default {
           {
             $action: "script",
             script: async (event: RockEvent) => {
-              message.success("保存成功。");
+              const [responseData, submitData, submitOptions] = event.args as [any, any, RapidFormSubmitOptions];
+              const successMessage = submitOptions.successMessage || props.successMessage || getExtensionLocaleStringResource(framework, "saveSuccess");
+              message.success(successMessage);
+
+              if (submitOptions.onSucess) {
+                await handleComponentEvent("onSaveSuccess", event.framework, event.page as any, event.scope, event.sender, submitOptions.onSucess, [
+                  responseData,
+                ]);
+              }
+
               if (formConfig.onSaveSuccess) {
                 await handleComponentEvent("onSaveSuccess", event.framework, event.page as any, event.scope, event.sender, formConfig.onSaveSuccess, [
-                  event.args[0],
+                  responseData,
                 ]);
               }
             },
@@ -416,11 +426,16 @@ export default {
           {
             $action: "script",
             script: async (event: RockEvent) => {
-              message.error(`保存失败：${event.args[0].message}`);
+              const [error, submitData, submitOptions] = event.args as [any, any, RapidFormSubmitOptions];
+              const errorMessage = props.errorMessage || getExtensionLocaleStringResource(framework, "saveFailed");
+              message.error(`${errorMessage} ${error.message}`);
+
+              if (submitOptions.onError) {
+                await handleComponentEvent("onSaveError", event.framework, event.page as any, event.scope, event.sender, submitOptions.onError, [error]);
+              }
+
               if (formConfig.onSaveError) {
-                await handleComponentEvent("onSaveError", event.framework, event.page as any, event.scope, event.sender, formConfig.onSaveError, [
-                  event.args[0],
-                ]);
+                await handleComponentEvent("onSaveError", event.framework, event.page as any, event.scope, event.sender, formConfig.onSaveError, [error]);
               }
             },
           },
@@ -439,14 +454,13 @@ export default {
       actionsLayout: formConfig.actionsLayout,
       defaultFormFields: formConfig.defaultFormFields,
       formDataAdapter: formConfig.formDataAdapter,
-      onFormSubmit: formConfig.onFormSubmit,
+      onFormSubmit: formConfig.mode === "view" ? null : onFormSubmit,
       onFormRefresh: formConfig.onFormRefresh,
       onValuesChange: formConfig.onValuesChange,
       items: formItems,
       disabledLoadStore: formConfig.disabledLoadStore,
       dataSourceCode: formConfig.mode === "new" ? null : !props.disabledLoadStore ? props.dataSourceCode || "detail" : null,
       fixedFields: formConfig.fixedFields,
-      onFinish: formConfig.mode === "view" ? null : formOnFinish,
       fieldNameOfFormDataInSubmitData: formConfig.fieldNameOfFormDataInSubmitData,
     };
     return renderRock({ context, rockConfig });

@@ -1,4 +1,4 @@
-import type { RockEventHandlerConfig, RockPropExpressions } from "@ruiapp/move-style";
+import type { HttpRequestOptions, RockEventHandlerConfig, RockPropExpressions } from "@ruiapp/move-style";
 
 export type RapidActionBase = {
   code?: string;
@@ -175,15 +175,29 @@ export type RapidFormSubmitOptions = {
   /**
    * 请求方法，设置后会覆盖表单的请求方法
    */
-  requestMethod?: "POST" | "PUT";
+  submitMethod?: HttpRequestOptions["method"];
 
   /**
    * 请求地址，设置后覆盖表单的请求地址
    */
-  requestUrl?: string;
+  submitUrl?: HttpRequestOptions["url"];
 
   /**
    * 待提交数据的固定字段。当操作类型为submit时，将会合并到待提交数据中一起提交。
    */
   fixedFields?: Record<string, any>;
+
+  /**
+   * 表单提交成功后的提示消息
+   */
+  successMessage?: string;
+
+  /**
+   * 表单提交失败后的提示消息
+   */
+  errorMessage?: string;
+
+  onSucess?: RockEventHandlerConfig;
+
+  onError?: RockEventHandlerConfig;
 };
