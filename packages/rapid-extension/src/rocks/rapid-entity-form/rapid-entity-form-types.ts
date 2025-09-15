@@ -27,8 +27,14 @@ export interface RapidEntityFormConfig extends RapidFormConfig {
    */
   relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
 
+  /**
+   * @deprecated 请使用 onSubmitSuccess
+   */
   onSaveSuccess?: RockEventHandlerConfig;
 
+  /**
+   * @deprecated 请使用 onSubmitError
+   */
   onSaveError?: RockEventHandlerConfig;
 
   /**

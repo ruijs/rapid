@@ -356,7 +356,7 @@ export default {
       },
     ];
 
-    const onFormSubmit: RockEventHandler[] = [
+    const onSubmit: RockEventHandler[] = [
       {
         $action: "script",
         script: async (event: RockEvent) => {
@@ -374,7 +374,7 @@ export default {
       },
     ];
 
-    const rockConfig: RapidFormRockConfig = {
+    const rockConfig = {
       $id: formId,
       $type: "rapidForm",
       size: formConfig.size,
@@ -385,11 +385,11 @@ export default {
       actionsAlign: formConfig.actionsAlign,
       defaultFormFields: formConfig.defaultFormFields,
       formDataAdapter: formConfig.formDataAdapter,
-      onFormSubmit,
+      onSubmit: onSubmit,
       onFormRefresh: formConfig.onFormRefresh,
       onValuesChange: formConfig.onValuesChange,
       items: formItems,
-    };
+    } satisfies RapidFormRockConfig;
 
     return renderRock({ context, rockConfig });
   },

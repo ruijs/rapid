@@ -35,7 +35,7 @@ export async function saveRapidEntity(
   eventArgs: any,
 ) {
   const submitData = eventArgs[0];
-  const submitOptions = eventArgs[1] as RapidFormSubmitOptions;
+  const submitOptions = eventArgs[1] as RapidFormSubmitOptions | undefined;
   const rapidApi = getRapidApi();
   const { entityId, onSuccess, onError } = eventHandler;
   let { customRequest } = eventHandler;

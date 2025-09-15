@@ -69,11 +69,22 @@ export type RapidFormConfig = {
   defaultFormFields?: Record<string, any>;
 
   /**
-   * @deprecated 请使用 onFormSubmit
+   * @deprecated 请使用 onSubmit
    */
   onFinish?: RockEventHandlerConfig;
 
+  /**
+   * @deprecated 请使用 onSubmit
+   */
   onFormSubmit?: RockEventHandlerConfig;
+
+  beforeSubmit?: RockEventHandlerConfig;
+
+  onSubmit?: RockEventHandlerConfig;
+
+  onSubmitSuccess?: RockEventHandlerConfig;
+
+  onSubmitError?: RockEventHandlerConfig;
 
   onFormRefresh?: RockEventHandlerConfig;
 
@@ -192,3 +203,8 @@ export type RapidFormActionType =
   | "reset"; // 重置
 
 export interface RapidFormRockConfig extends ContainerRockConfig, RapidFormConfig {}
+
+export interface RapidFormState {
+  form: any;
+  submitOptions?: RapidFormSubmitOptions;
+}

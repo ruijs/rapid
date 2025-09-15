@@ -1,13 +1,14 @@
-import { Rock, RockConfig, RockEvent, RockEventHandlerScript, handleComponentEvent } from "@ruiapp/move-style";
+import { Rock, RockConfig, RockEvent, RockEventHandler, RockEventHandlerScript, handleComponentEvent } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidFormMeta from "./RapidFormMeta";
-import type { RapidFormRockConfig } from "./rapid-form-types";
+import type { RapidFormRockConfig, RapidFormState } from "./rapid-form-types";
 import { assign, each, forEach, get, mapValues, merge, pick, set, trim } from "lodash";
 import { Form } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { parseRockExpressionFunc } from "../../utils/parse-utility";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import { RapidFormSubmitOptions } from "../../types/rapid-action-types";
+import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
 
 export default {
   $type: "rapidForm",
@@ -44,8 +45,8 @@ export default {
     }
   },
 
-  Renderer(context, props: RapidFormRockConfig, state: any) {
-    const { framework, page, scope } = context;
+  Renderer(context, props, state) {
+    const { framework, page, scope, logger } = context;
 
     // 当前主要是触发 rerender
     const [currentFormData, setCurrentFormData] = useState<Record<string, any>>({});
@@ -60,7 +61,7 @@ export default {
     if (props.onFinish && props.onFormSubmit) {
       return renderRock({
         context,
-        rockConfig: generateRockConfigOfError(new Error(`"onFinish" event should not be listened when "onFormSubmit" has been listened.`)),
+        rockConfig: generateRockConfigOfError(new Error(`"onFinish" should not be configured while "onFormSubmit" is configured.`)),
       });
     }
 
@@ -114,6 +115,8 @@ export default {
                 submitMethod: formAction.submitMethod,
                 submitUrl: formAction.submitUrl,
                 fixedFields: formAction.fixedFields,
+                successMessage: formAction.successMessage,
+                errorMessage: formAction.errorMessage,
                 onSucess: formAction.onSucess,
                 onError: formAction.onError,
               } satisfies RapidFormSubmitOptions,
@@ -216,32 +219,73 @@ export default {
         {
           $action: "script",
           script: async (event: RockEvent) => {
-            const onFormSubmit = props.onFormSubmit || props.onFinish;
-            if (onFormSubmit) {
-              let formData = Object.assign({}, omitUndefinedValues(event.args[0]));
+            const submitOptions = state.submitOptions;
+            const submitUrl = submitOptions?.submitUrl || props.submitUrl;
+            let onSubmit = props.onSubmit || props.onFormSubmit || props.onFinish;
+            if (!submitUrl && !onSubmit) {
+              logger.error(props, `Failed to submit form: submitUrl or onSubmit is not configured.`);
+              return;
+            }
 
-              const submitOptions: RapidFormSubmitOptions = state.submitOptions;
-              const fixedFields = omitUndefinedValues(merge({}, props.fixedFields, submitOptions?.fixedFields));
+            let formData = Object.assign({}, omitUndefinedValues(event.args[0]));
 
-              if (typeof props.beforeSubmitFormDataAdapter === "string" && trim(props.beforeSubmitFormDataAdapter)) {
-                const adapter = parseRockExpressionFunc(props.beforeSubmitFormDataAdapter, { formData, fixedFields }, context);
-                formData = adapter();
-              }
+            const fixedFields = omitUndefinedValues(merge({}, props.fixedFields, submitOptions?.fixedFields));
 
-              let submitData: any;
-              if (props.fieldNameOfFormDataInSubmitData) {
-                submitData = set({}, props.fieldNameOfFormDataInSubmitData, formData);
-              } else {
-                submitData = formData;
-              }
+            if (typeof props.beforeSubmitFormDataAdapter === "string" && trim(props.beforeSubmitFormDataAdapter)) {
+              const adapter = parseRockExpressionFunc(props.beforeSubmitFormDataAdapter, { formData, fixedFields }, context);
+              formData = adapter();
+            }
 
-              submitData = merge(submitData, fixedFields);
+            let submitData: any;
+            if (props.fieldNameOfFormDataInSubmitData) {
+              submitData = set({}, props.fieldNameOfFormDataInSubmitData, formData);
+            } else {
+              submitData = formData;
+            }
+            submitData = merge(submitData, fixedFields);
 
-              await handleComponentEvent("onFormSubmit", event.framework, event.page as any, event.scope, event.sender, onFormSubmit, [
+            if (props.beforeSubmit) {
+              await handleComponentEvent("beforeSubmit", event.framework, event.page as any, event.scope, event.sender, props.beforeSubmit, [
                 submitData,
                 submitOptions,
               ]);
             }
+
+            if (!onSubmit) {
+              const submitMethod = submitOptions?.submitMethod || props.submitMethod || "POST";
+              const successMessage = submitOptions?.successMessage || props.successMessage || getExtensionLocaleStringResource(framework, "saveSuccess");
+              const errorMessage = submitOptions?.errorMessage || props.errorMessage || getExtensionLocaleStringResource(framework, "saveError");
+
+              const onSubmitSuccess = submitOptions?.onSucess || props.onSubmitSuccess;
+              const onSubmitError = submitOptions?.onError || props.onSubmitError;
+
+              onSubmit = {
+                $action: "sendHttpRequest",
+                method: submitMethod,
+                url: submitUrl,
+                data: submitData,
+                onSuccess: [
+                  {
+                    $action: "antdToast",
+                    type: "success",
+                    content: successMessage,
+                  },
+                  ...(onSubmitSuccess ? (Array.isArray(onSubmitSuccess) ? onSubmitSuccess : [onSubmitSuccess]) : []),
+                ],
+                onError: [
+                  {
+                    $action: "antdToast",
+                    type: "error",
+                    $exps: {
+                      content: `${JSON.stringify(errorMessage)}+ " " + $event.args[0].message`,
+                    },
+                  },
+                  ...(onSubmitError ? (Array.isArray(onSubmitError) ? onSubmitError : [onSubmitError]) : []),
+                ],
+              };
+            }
+
+            await handleComponentEvent("onSubmit", event.framework, event.page as any, event.scope, event.sender, onSubmit, [submitData, submitOptions]);
           },
         },
       ],
@@ -276,7 +320,7 @@ export default {
   },
 
   ...RapidFormMeta,
-} as Rock<RapidFormRockConfig>;
+} as Rock<RapidFormRockConfig, RapidFormState>;
 
 function omitUndefinedValues(data: Record<string, any>) {
   return mapValues(data, (v) => (v === undefined ? null : v));

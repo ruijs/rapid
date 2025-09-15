@@ -4,6 +4,7 @@ import RapidFormModalRecordActionMeta from "./RapidFormModalRecordActionMeta";
 import type { RapidFormModalRecordActionRockConfig } from "./rapid-form-modal-record-action-types";
 import { cloneDeep, set } from "lodash";
 import { message } from "antd";
+import { RapidFormRockConfig } from "../rapid-form/rapid-form-types";
 
 export default {
   onInit(context, props) {},
@@ -16,10 +17,10 @@ export default {
     // TODO: need a better implementation. a component should not care about whether it's in a slot.
     const slotIndex = props.$slot.index || "0";
     const formRockId = `${props.$id}-form-${slotIndex}`;
-    const formRockConfig = cloneDeep(props.form);
+    const formRockConfig = cloneDeep(props.form) as RapidFormRockConfig;
     formRockConfig.$id = formRockId;
 
-    formRockConfig.onFormSubmit = [
+    formRockConfig.onSubmit = [
       {
         $action: "script",
         script: async (event: RuiEvent) => {
@@ -27,9 +28,10 @@ export default {
             "modal-saving": true,
           });
 
+          const onSubmit = props.onSubmit || props.onFormSubmit;
           try {
-            if (props.onFormSubmit) {
-              await handleComponentEvent("onFormSubmit", event.framework, event.page as any, event.scope, event.sender, props.onFormSubmit, [event.args[0]]);
+            if (onSubmit) {
+              await handleComponentEvent("onSubmit", event.framework, event.page as any, event.scope, event.sender, onSubmit, [event.args[0]]);
             }
 
             event.scope.setVars({

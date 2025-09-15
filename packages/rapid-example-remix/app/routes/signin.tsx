@@ -118,7 +118,7 @@ const rapidPage: RapidPage = {
               },
             },
           ],
-          onFormSubmit: [
+          onSubmit: [
             {
               $action: "script",
               script: async (event: RuiEvent) => {

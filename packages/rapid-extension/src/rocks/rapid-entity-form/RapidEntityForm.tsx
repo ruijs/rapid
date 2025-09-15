@@ -393,7 +393,7 @@ export default {
       };
     }
 
-    const onFormSubmit: RockEventHandler[] = [
+    const onSubmit: RockEventHandler[] = [
       {
         $action: "saveRapidEntity",
         entityNamespace: mainEntity.namespace,
@@ -404,20 +404,14 @@ export default {
           {
             $action: "script",
             script: async (event: RockEvent) => {
-              const [responseData, submitData, submitOptions] = event.args as [any, any, RapidFormSubmitOptions];
-              const successMessage = submitOptions.successMessage || props.successMessage || getExtensionLocaleStringResource(framework, "saveSuccess");
+              const [responseData, submitData, submitOptions] = event.args as [any, any, RapidFormSubmitOptions | undefined];
+              const successMessage = submitOptions?.successMessage || props.successMessage || getExtensionLocaleStringResource(framework, "saveSuccess");
               message.success(successMessage);
 
-              if (submitOptions.onSucess) {
-                await handleComponentEvent("onSaveSuccess", event.framework, event.page as any, event.scope, event.sender, submitOptions.onSucess, [
-                  responseData,
-                ]);
-              }
+              const onSubmitSuccess = submitOptions?.onSucess || props.onSubmitSuccess || props.onSaveSuccess;
 
-              if (formConfig.onSaveSuccess) {
-                await handleComponentEvent("onSaveSuccess", event.framework, event.page as any, event.scope, event.sender, formConfig.onSaveSuccess, [
-                  responseData,
-                ]);
+              if (onSubmitSuccess) {
+                await handleComponentEvent("onSubmitSuccess", event.framework, event.page as any, event.scope, event.sender, onSubmitSuccess, [responseData]);
               }
             },
           },
@@ -426,16 +420,14 @@ export default {
           {
             $action: "script",
             script: async (event: RockEvent) => {
-              const [error, submitData, submitOptions] = event.args as [any, any, RapidFormSubmitOptions];
-              const errorMessage = props.errorMessage || getExtensionLocaleStringResource(framework, "saveFailed");
+              const [error, submitData, submitOptions] = event.args as [any, any, RapidFormSubmitOptions | undefined];
+              const errorMessage = props.errorMessage || getExtensionLocaleStringResource(framework, "saveError");
               message.error(`${errorMessage} ${error.message}`);
 
-              if (submitOptions.onError) {
-                await handleComponentEvent("onSaveError", event.framework, event.page as any, event.scope, event.sender, submitOptions.onError, [error]);
-              }
+              const onSubmitError = submitOptions?.onError || props.onSubmitError || props.onSaveError;
 
-              if (formConfig.onSaveError) {
-                await handleComponentEvent("onSaveError", event.framework, event.page as any, event.scope, event.sender, formConfig.onSaveError, [error]);
+              if (onSubmitError) {
+                await handleComponentEvent("onSubmitError", event.framework, event.page as any, event.scope, event.sender, onSubmitError, [error]);
               }
             },
           },
@@ -454,7 +446,7 @@ export default {
       actionsLayout: formConfig.actionsLayout,
       defaultFormFields: formConfig.defaultFormFields,
       formDataAdapter: formConfig.formDataAdapter,
-      onFormSubmit: formConfig.mode === "view" ? null : onFormSubmit,
+      onSubmit: formConfig.mode === "view" ? null : onSubmit,
       onFormRefresh: formConfig.onFormRefresh,
       onValuesChange: formConfig.onValuesChange,
       items: formItems,

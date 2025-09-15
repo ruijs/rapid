@@ -5,6 +5,7 @@ import type { SonicRecordActionEditEntityConfig, SonicRecordActionEditEntityRock
 import { RapidTableActionRockConfig } from "../rapid-table-action/rapid-table-action-types";
 import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
 import { omit } from "lodash";
+import { RapidEntityFormRockConfig } from "../rapid-entity-form/rapid-entity-form-types";
 
 export default {
   onInit(context, props) {},
@@ -53,17 +54,19 @@ function renderActionWithSpecifiedForm(context: RockInstanceContext, props: Soni
   const scopeId = context.scope.config.$id;
   const { entityCode, form, dataSourceCode } = props;
 
+  const onSubmitSuccess = form.onSubmitSuccess || form.onSaveSuccess;
+  const onSubmitError = form.onSubmitError || form.onSaveError;
   const rockConfig: RapidTableActionRockConfig = {
     ...(MoveStyleUtils.omitSystemRockConfigFields(props) as SonicRecordActionEditEntityConfig),
     $id: `${props.$id}-action`,
     $type: "rapidFormModalRecordAction",
     form: {
       $type: "rapidEntityForm",
-      ...omit(form, ["entityCode"]),
-      entityCode: entityCode,
+      ...(form as RapidEntityFormRockConfig),
+      entityCode,
       mode: "edit",
       entityId,
-      onFormSubmit: [
+      beforeSubmit: [
         {
           $action: "setVars",
           vars: {
@@ -72,7 +75,7 @@ function renderActionWithSpecifiedForm(context: RockInstanceContext, props: Soni
         },
       ],
 
-      onSaveSuccess: [
+      onSubmitSuccess: [
         {
           $action: "setVars",
           vars: {
@@ -80,26 +83,25 @@ function renderActionWithSpecifiedForm(context: RockInstanceContext, props: Soni
             "modal-open": false,
           },
         },
-        ...(form.onSaveSuccess
-          ? (form.onSaveSuccess as RockEventHandler[])
-          : [
-              {
-                $action: "loadStoreData",
-                scopeId,
-                storeName: dataSourceCode,
-              },
-            ]),
+        ...(onSubmitSuccess ? (Array.isArray(onSubmitSuccess) ? onSubmitSuccess : [onSubmitSuccess]) : []),
+        ...[
+          {
+            $action: "loadStoreData",
+            scopeId,
+            storeName: dataSourceCode,
+          },
+        ],
       ],
-      onSaveError: [
+      onSubmitError: [
         {
           $action: "setVars",
           vars: {
             "modal-saving": false,
           },
         },
-        ...((form.onSaveError as RockEventHandler[]) || []),
+        ...(onSubmitError ? (Array.isArray(onSubmitError) ? onSubmitError : [onSubmitError]) : []),
       ],
-    },
+    } satisfies RapidEntityFormRockConfig,
     onModalOpen: [
       {
         $action: "loadStoreData",

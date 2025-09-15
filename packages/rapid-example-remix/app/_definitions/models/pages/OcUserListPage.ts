@@ -202,7 +202,7 @@ const page: RapidPage = {
           },
           successMessage: "密码重置成功。",
           errorMessage: "密码重置失败。",
-          onFormSubmit: [
+          onSubmit: [
             {
               $action: "sendHttpRequest",
               url: `/api/resetPassword`,

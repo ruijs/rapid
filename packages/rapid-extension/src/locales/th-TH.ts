@@ -22,7 +22,7 @@ const resource: LocaleResource = {
     pleaseSelect: "กรุณาเลือก",
     refresh: "รีเฟรช",
     reset: "รีเซ็ต",
-    saveFailed: "บันทึกไม่สำเร็จ",
+    saveError: "บันทึกไม่สำเร็จ",
     saveSuccess: "บันทึกสำเร็จ",
     search: "ค้นหา",
     selectEntityModalTitle: "เลือก{{entityName}}",

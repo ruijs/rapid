@@ -17,7 +17,7 @@ import rapidAppDefinition from "../../rapidAppDefinition";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import { RapidEntity } from "../../types/rapid-entity-types";
 import { RapidDeleteRecordActionOptions, RapidUpdateRecordActionOptions } from "../../types/rapid-action-types";
-import { EntityStore, RapidTableColumnConfig, RapidToolbarRockConfig } from "../../mod";
+import { EntityStore, RapidEntityFormRockConfig, RapidTableColumnConfig, RapidToolbarRockConfig } from "../../mod";
 import { useState } from "react";
 import moment from "moment";
 import { RapidExtStorage } from "../../utils/storage-utility";
@@ -285,6 +285,8 @@ export default {
         }
       : null;
 
+    const onNewFormSubmitSuccess = props.newForm?.onSubmitSuccess || props.newForm?.onSaveSuccess;
+    const onNewFormSubmitError = props.newForm?.onSubmitError || props.newForm?.onSaveError;
     const newModalRockConfig: RockConfig | null = props.newForm
       ? {
           $type: "antdModal",
@@ -305,10 +307,10 @@ export default {
             {
               $type: "rapidEntityForm",
               $id: `${props.$id}-newForm`,
-              entityCode: entityCode,
               mode: "new",
-              ...omit(props.newForm, ["entityCode", "onSaveSuccess", "onSaveError"]),
-              onFormSubmit: [
+              ...(props.newForm as RapidEntityFormRockConfig),
+              entityCode,
+              beforeSubmit: [
                 {
                   $action: "setVars",
                   vars: {
@@ -316,7 +318,7 @@ export default {
                   },
                 },
               ],
-              onSaveSuccess: [
+              onSubmitSuccess: [
                 {
                   $action: "setVars",
                   vars: {
@@ -324,25 +326,24 @@ export default {
                     "modal-saving": false,
                   },
                 },
-                ...(props.newForm?.onSaveSuccess
-                  ? (props.newForm.onSaveSuccess as RockEventHandler[])
-                  : [
-                      {
-                        $action: "loadStoreData",
-                        storeName: dataSourceCode,
-                      },
-                    ]),
+                ...(onNewFormSubmitSuccess ? (Array.isArray(onNewFormSubmitSuccess) ? onNewFormSubmitSuccess : [onNewFormSubmitSuccess]) : []),
+                ...[
+                  {
+                    $action: "loadStoreData",
+                    storeName: dataSourceCode,
+                  },
+                ],
               ],
-              onSaveError: [
+              onSubmitError: [
                 {
                   $action: "setVars",
                   vars: {
                     "modal-saving": false,
                   },
                 },
-                ...((props.newForm?.onSaveError as RockEventHandler[]) || []),
+                ...(onNewFormSubmitError ? (Array.isArray(onNewFormSubmitError) ? onNewFormSubmitError : [onNewFormSubmitError]) : []),
               ],
-            },
+            } satisfies RapidEntityFormRockConfig,
           ],
           onOk: [
             {
@@ -364,6 +365,8 @@ export default {
         }
       : null;
 
+    const onEditFormSubmitSuccess = props.editForm?.onSubmitSuccess || props.editForm?.onSaveSuccess;
+    const onEditFormSubmitError = props.editForm?.onSubmitError || props.editForm?.onSaveError;
     const editModalRockConfig: RockConfig | null = props.editForm
       ? {
           $type: "antdModal",
@@ -384,13 +387,13 @@ export default {
             {
               $type: "rapidEntityForm",
               $id: `${props.$id}-editForm`,
-              entityCode: entityCode,
               mode: "edit",
-              ...omit(props.editForm, ["entityCode"]),
+              ...(props.editForm as RapidEntityFormRockConfig),
+              entityCode,
               $exps: {
                 entityId: "$scope.vars.activeEntityId",
               },
-              onFormSubmit: [
+              beforeSubmit: [
                 {
                   $action: "setVars",
                   vars: {
@@ -398,7 +401,7 @@ export default {
                   },
                 },
               ],
-              onSaveSuccess: [
+              onSubmitSuccess: [
                 {
                   $action: "setVars",
                   vars: {
@@ -406,25 +409,24 @@ export default {
                     "modal-saving": false,
                   },
                 },
-                ...(props.editForm?.onSaveSuccess
-                  ? (props.editForm.onSaveSuccess as RockEventHandler[])
-                  : [
-                      {
-                        $action: "loadStoreData",
-                        storeName: dataSourceCode,
-                      },
-                    ]),
+                ...(onEditFormSubmitSuccess ? (Array.isArray(onEditFormSubmitSuccess) ? onEditFormSubmitSuccess : [onEditFormSubmitSuccess]) : []),
+                ...[
+                  {
+                    $action: "loadStoreData",
+                    storeName: dataSourceCode,
+                  },
+                ],
               ],
-              onSaveError: [
+              onSubmitError: [
                 {
                   $action: "setVars",
                   vars: {
                     "modal-saving": false,
                   },
                 },
-                ...((props.editForm?.onSaveError as RockEventHandler[]) || []),
+                ...(onEditFormSubmitError ? (Array.isArray(onEditFormSubmitError) ? onEditFormSubmitError : [onEditFormSubmitError]) : []),
               ],
-            },
+            } satisfies RapidEntityFormRockConfig,
           ],
           onOk: [
             {
