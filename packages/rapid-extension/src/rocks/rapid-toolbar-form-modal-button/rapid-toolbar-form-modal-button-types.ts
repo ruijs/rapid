@@ -17,9 +17,19 @@ export interface RapidToolbarFormModalButtonConfig extends Omit<RapidToolbarButt
 
   onModalCancel: RockEventHandlerConfig;
 
+  /**
+   * @deprecated 请使用 onSubmitSuccess
+   */
   onSaveSuccess: RockEventHandlerConfig;
 
+  onSubmitSuccess: RockEventHandlerConfig;
+
+  /**
+   * @deprecated 请使用 onSubmitError
+   */
   onSaveError: RockEventHandlerConfig;
+
+  onSubmitError: RockEventHandlerConfig;
 }
 
 export interface RapidToolbarFormModalButtonRockConfig extends SimpleRockConfig, RapidToolbarFormModalButtonConfig {}

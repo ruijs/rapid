@@ -27,8 +27,14 @@ export interface RapidEntityFormConfig extends RapidFormConfig {
    */
   relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
 
+  /**
+   * @deprecated 请使用 onSubmitSuccess
+   */
   onSaveSuccess?: RockEventHandlerConfig;
 
+  /**
+   * @deprecated 请使用 onSubmitError
+   */
   onSaveError?: RockEventHandlerConfig;
 
   /**
@@ -36,10 +42,6 @@ export interface RapidEntityFormConfig extends RapidFormConfig {
    * 使用 `submitMethod` 和 `submitUrl` 替代
    */
   customRequest?: RockEventHandlerSaveRapidEntity["customRequest"];
-
-  submitMethod?: RockEventHandlerSaveRapidEntity["customRequest"]["method"];
-
-  submitUrl?: RockEventHandlerSaveRapidEntity["customRequest"]["url"];
 }
 
 export interface RapidEntityFormRockConfig extends ContainerRockConfig, RapidEntityFormConfig {}

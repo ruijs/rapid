@@ -2,6 +2,7 @@ import { handleComponentEvent, MoveStyleUtils, RockEvent, RockEventHandler, type
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./RapidToolbarFormModalButtonMeta";
 import type { RapidToolbarFormModalButtonRockConfig } from "./rapid-toolbar-form-modal-button-types";
+import { RapidFormRockConfig } from "../rapid-form/rapid-form-types";
 
 export default {
   onInit(context, props) {},
@@ -38,10 +39,10 @@ export default {
     const formRockId = `${props.$id}-form`;
     let modalBody: RockConfig | RockConfig[] = null;
     if (props.form) {
-      const formRockConfig: RockConfig = {
+      const formRockConfig: RapidFormRockConfig = {
         $id: formRockId,
-        ...props.form,
-        onFormSubmit: [
+        ...(props.form as RapidFormRockConfig),
+        beforeSubmit: [
           {
             $action: "setVars",
             vars: {
@@ -49,7 +50,7 @@ export default {
             },
           },
         ],
-        onSaveSuccess: [
+        onSubmitSuccess: [
           {
             $action: "setVars",
             vars: {
@@ -57,18 +58,18 @@ export default {
               "modal-open": false,
             },
           },
-          ...((props.form.onSaveSuccess as RockEventHandler[]) || []),
-          ...((props.onSaveSuccess as RockEventHandler[]) || []),
+          ...(((props.form.onSubmitSuccess || props.form.onSaveSuccess) as RockEventHandler[]) || []),
+          ...(((props.onSubmitSuccess || props.onSaveSuccess) as RockEventHandler[]) || []),
         ],
-        onSaveError: [
+        onSubmitError: [
           {
             $action: "setVars",
             vars: {
               "modal-saving": false,
             },
           },
-          ...((props.form.onSaveError as RockEventHandler[]) || []),
-          ...((props.onSaveError as RockEventHandler[]) || []),
+          ...(((props.form.onSubmitError || props.form.onSaveError) as RockEventHandler[]) || []),
+          ...(((props.onSubmitError || props.onSaveError) as RockEventHandler[]) || []),
         ],
       };
       modalBody = formRockConfig;

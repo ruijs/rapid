@@ -1,4 +1,4 @@
-import type { RockConfig, RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
+import type { HttpRequestOptions, RockConfig, RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
 import { RapidTableActionConfig } from "../rapid-table-action/rapid-table-action-types";
 
 export interface RapidFormModalRecordActionConfig extends RapidTableActionConfig {
@@ -13,7 +13,12 @@ export interface RapidFormModalRecordActionConfig extends RapidTableActionConfig
 
   errorMessage?: string;
 
+  /**
+   * @deprecated 请使用 onSubmit
+   */
   onFormSubmit: RockEventHandlerConfig;
+
+  onSubmit: RockEventHandlerConfig;
 
   resetFormOnModalOpen?: boolean;
 }

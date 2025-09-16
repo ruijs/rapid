@@ -1,4 +1,4 @@
-import { ContainerRockConfig, RockEventHandlerConfig, RockExpsConfig } from "@ruiapp/move-style";
+import { ContainerRockConfig, HttpRequestOptions, RockEventHandlerConfig, RockExpsConfig } from "@ruiapp/move-style";
 import { RapidFormItemConfig } from "../rapid-form-item/rapid-form-item-types";
 import { RapidFormSubmitOptions } from "../../types/rapid-action-types";
 
@@ -68,9 +68,23 @@ export type RapidFormConfig = {
    */
   defaultFormFields?: Record<string, any>;
 
+  /**
+   * @deprecated 请使用 onSubmit
+   */
   onFinish?: RockEventHandlerConfig;
 
+  /**
+   * @deprecated 请使用 onSubmit
+   */
   onFormSubmit?: RockEventHandlerConfig;
+
+  beforeSubmit?: RockEventHandlerConfig;
+
+  onSubmit?: RockEventHandlerConfig;
+
+  onSubmitSuccess?: RockEventHandlerConfig;
+
+  onSubmitError?: RockEventHandlerConfig;
 
   onFormRefresh?: RockEventHandlerConfig;
 
@@ -103,6 +117,20 @@ export type RapidFormConfig = {
    * ```
    */
   fieldNameOfFormDataInSubmitData?: string;
+
+  submitMethod?: HttpRequestOptions["method"];
+
+  submitUrl?: string;
+
+  /**
+   * 表单提交成功后的提示消息
+   */
+  successMessage?: string;
+
+  /**
+   * 表单提交失败后的提示消息
+   */
+  errorMessage?: string;
 };
 
 /**
@@ -137,17 +165,31 @@ export type RapidFormAction = {
   /**
    * 请求方法，设置后会覆盖表单的请求方法
    */
-  requestMethod?: RapidFormSubmitOptions["requestMethod"];
+  submitMethod?: RapidFormSubmitOptions["submitMethod"];
 
   /**
    * 请求地址，设置后覆盖表单的请求地址
    */
-  requestUrl?: RapidFormSubmitOptions["requestUrl"];
+  submitUrl?: RapidFormSubmitOptions["submitUrl"];
 
   /**
    * 表单固定字段。当操作类型为submit时，将会合并到表单数据中一起提交。
    */
   fixedFields?: RapidFormSubmitOptions["fixedFields"];
+
+  /**
+   * 操作成功后的提示消息。当`actionType`为`submit`时，将会覆盖表单的`successMessage`配置。
+   */
+  successMessage?: string;
+
+  /**
+   * 操作失败后的提示消息。当`actionType`为`submit`时，将会覆盖表单的`errorMessage`配置。
+   */
+  errorMessage?: string;
+
+  onSucess?: RockEventHandlerConfig;
+
+  onError?: RockEventHandlerConfig;
 
   $exps?: RockExpsConfig;
 };
@@ -161,3 +203,8 @@ export type RapidFormActionType =
   | "reset"; // 重置
 
 export interface RapidFormRockConfig extends ContainerRockConfig, RapidFormConfig {}
+
+export interface RapidFormState {
+  form: any;
+  submitOptions?: RapidFormSubmitOptions;
+}

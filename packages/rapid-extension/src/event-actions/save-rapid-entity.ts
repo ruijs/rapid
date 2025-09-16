@@ -1,4 +1,12 @@
-import { handleComponentEvent, type EventAction, type Framework, type Page, type RockEventHandlerConfig, type Scope } from "@ruiapp/move-style";
+import {
+  handleComponentEvent,
+  HttpRequestOptions,
+  type EventAction,
+  type Framework,
+  type Page,
+  type RockEventHandlerConfig,
+  type Scope,
+} from "@ruiapp/move-style";
 import { getRapidApi } from "../rapidApi";
 import { AxiosResponse } from "axios";
 import { RapidFormSubmitOptions } from "../types/rapid-action-types";
@@ -8,8 +16,8 @@ export interface RockEventHandlerSaveRapidEntity {
   entityNamespace: string;
   entityPluralCode: string;
   customRequest?: {
-    url: string;
-    method?: "patch" | "post" | "put";
+    url: HttpRequestOptions["url"];
+    method?: HttpRequestOptions["method"];
   };
   entityId?: string | number;
   fixedFields?: Record<string, any>;
@@ -26,19 +34,19 @@ export async function saveRapidEntity(
   eventHandler: RockEventHandlerSaveRapidEntity,
   eventArgs: any,
 ) {
-  const entity = eventArgs[0];
-  const submitOptions = eventArgs[1] as RapidFormSubmitOptions;
+  const submitData = eventArgs[0];
+  const submitOptions = eventArgs[1] as RapidFormSubmitOptions | undefined;
   const rapidApi = getRapidApi();
   const { entityId, onSuccess, onError } = eventHandler;
   let { customRequest } = eventHandler;
   try {
     let res: AxiosResponse<any, any>;
-    const requestData = Object.assign({}, entity, eventHandler.fixedFields);
+    const requestData = Object.assign({}, submitData, eventHandler.fixedFields);
 
-    if (submitOptions && submitOptions.requestUrl) {
+    if (submitOptions && submitOptions.submitUrl) {
       customRequest = {
-        method: submitOptions.requestMethod as any,
-        url: submitOptions.requestUrl,
+        method: submitOptions.submitMethod as any,
+        url: submitOptions.submitUrl,
       };
     }
 
@@ -68,11 +76,11 @@ export async function saveRapidEntity(
 
     if (isSuccessfull) {
       if (onSuccess) {
-        await handleComponentEvent("onSuccess", framework, page, scope, sender, onSuccess, [res.data]);
+        await handleComponentEvent("onSuccess", framework, page, scope, sender, onSuccess, [res.data, submitData, submitOptions]);
       }
     } else {
       if (onError) {
-        await handleComponentEvent("onError", framework, page, scope, sender, onError, [err]);
+        await handleComponentEvent("onError", framework, page, scope, sender, onError, [err, submitData, submitOptions]);
       }
     }
 
