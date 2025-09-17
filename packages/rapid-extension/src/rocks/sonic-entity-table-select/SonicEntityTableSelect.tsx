@@ -348,10 +348,11 @@ interface IRequestState {
 
 function useRequest(context: RockInstanceContext, props: SonicEntityTableSelectRockConfig, entity: RapidEntity) {
   const [state, setState] = useMergeState<IRequestState>({});
+  const { scope } = context;
 
   useEffect(() => {
     const listDataSourceCode = props.listDataSourceCode;
-    const store = context.scope.getStore(listDataSourceCode);
+    const store = scope.getStore(listDataSourceCode);
     if (store) {
       return;
     }
@@ -378,8 +379,8 @@ function useRequest(context: RockInstanceContext, props: SonicEntityTableSelectR
       $exps: requestParams.$exps,
     };
 
-    context.scope.addStore(listDataStoreConfig);
-  }, []);
+    scope.addStore(listDataStoreConfig);
+  }, [scope]);
 
   const request = async (params: any) => {
     if (state.loading) {
