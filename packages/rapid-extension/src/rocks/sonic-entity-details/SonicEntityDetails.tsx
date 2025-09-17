@@ -30,7 +30,7 @@ export default {
         entityId: props.entityId,
         entityIdExpression: props.$exps?.entityId,
         dataSourceCode: props.dataSourceCode,
-        items: props.descriptionItems || props.items,
+        items: [...(props.descriptionItems || props.items), ...(props.formItems || props.form?.items || [])],
         extraProperties: [titlePropertyCode, props.subTitlePropertyCode, props.statePropertyCode, ...(props.extraProperties || [])],
         keepNonPropertyFields: props.keepNonPropertyFields,
         queryProperties: props.queryProperties,
@@ -97,25 +97,38 @@ export default {
       }
     }
 
-    const descriptionsRockConfig: RockConfig = {
-      $id: `${props.$id}-descriptions`,
-      $type: "rapidEntityDescriptions",
-      entityCode: props.entityCode,
-      dataSource,
-      bordered: props.descriptionBordered,
-      size: props.descriptionSize,
-      layout: props.descriptionLayout,
-      colon: props.descriptionColon,
-      column: props.descriptionColumn || props.column,
-      items: props.descriptionItems || props.items,
-    };
+    let itemsRockConfig: RockConfig;
+    if (props.mode === "edit") {
+      itemsRockConfig = {
+        entityCode: props.entityCode,
+        dataSource,
+        column: props.formColumn,
+        items: props.formItems,
+        ...props.form,
+        $type: "rapidEntityForm",
+        $id: `${props.$id}-form`,
+      };
+    } else {
+      itemsRockConfig = {
+        $id: `${props.$id}-descriptions`,
+        $type: "rapidEntityDescriptions",
+        entityCode: props.entityCode,
+        dataSource,
+        bordered: props.descriptionBordered,
+        size: props.descriptionSize,
+        layout: props.descriptionLayout,
+        colon: props.descriptionColon,
+        column: props.descriptionColumn || props.column,
+        items: props.descriptionItems || props.items,
+      };
+    }
 
     let rockConfig: RockConfig;
     if (props.hideHeader) {
       rockConfig = {
         $id: `${props.$id}-internal-withoutHeader`,
         $type: "box",
-        children: [descriptionsRockConfig, props.footer],
+        children: [itemsRockConfig, props.footer],
       };
     } else {
       rockConfig = {
@@ -126,7 +139,7 @@ export default {
         tags: stateRockConfig,
         extra: props.actions,
         footer: props.footer,
-        children: descriptionsRockConfig,
+        children: itemsRockConfig,
       };
     }
     return renderRock({ context, rockConfig });
