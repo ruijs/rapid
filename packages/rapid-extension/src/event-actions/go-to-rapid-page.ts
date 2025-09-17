@@ -1,20 +1,23 @@
-import type { EventAction, Framework, Page, Scope } from "@ruiapp/move-style";
+import type { EventAction, RockEvent } from "@ruiapp/move-style";
+import { stringifyQuery } from "@ruiapp/move-style";
 
 export interface RockEventHandlerGoToRapidPage {
   $action: "goToPage";
   pageCode: string;
+  query: Record<string, any>;
 }
 
-export async function goToPage(
-  eventName: string,
-  framework: Framework,
-  page: Page,
-  scope: Scope,
-  sender: any,
-  eventHandler: RockEventHandlerGoToRapidPage,
-  eventArgs: any,
-) {
-  location.href = `/pages/${eventHandler.pageCode}`;
+export async function goToPage(event: RockEvent, handler: RockEventHandlerGoToRapidPage) {
+  const { framework } = event;
+  const { pageCode, query } = handler;
+  const pageBaseUrl = (framework.getExpressionVars().$pageBaseUrl as string) || "/pages";
+
+  let url = `${pageBaseUrl}/${pageCode}`;
+  if (query && Object.keys(query).length > 0) {
+    url += "?" + stringifyQuery(query);
+  }
+
+  location.href = url;
 }
 
 export default {
