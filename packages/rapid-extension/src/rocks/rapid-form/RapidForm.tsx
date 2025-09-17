@@ -117,7 +117,7 @@ export default {
                 fixedFields: formAction.fixedFields,
                 successMessage: formAction.successMessage,
                 errorMessage: formAction.errorMessage,
-                onSucess: formAction.onSucess,
+                onSuccess: formAction.onSuccess,
                 onError: formAction.onError,
               } satisfies RapidFormSubmitOptions,
             });
@@ -256,7 +256,7 @@ export default {
               const successMessage = submitOptions?.successMessage || props.successMessage || getExtensionLocaleStringResource(framework, "saveSuccess");
               const errorMessage = submitOptions?.errorMessage || props.errorMessage || getExtensionLocaleStringResource(framework, "saveError");
 
-              const onSubmitSuccess = submitOptions?.onSucess || props.onSubmitSuccess;
+              const onSubmitSuccess = submitOptions?.onSuccess || props.onSubmitSuccess;
               const onSubmitError = submitOptions?.onError || props.onSubmitError;
 
               onSubmit = {

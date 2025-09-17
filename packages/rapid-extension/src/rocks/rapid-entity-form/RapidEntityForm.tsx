@@ -419,7 +419,7 @@ export default {
               const successMessage = submitOptions?.successMessage || props.successMessage || getExtensionLocaleStringResource(framework, "saveSuccess");
               message.success(successMessage);
 
-              const onSubmitSuccess = submitOptions?.onSucess || props.onSubmitSuccess || props.onSaveSuccess;
+              const onSubmitSuccess = submitOptions?.onSuccess || props.onSubmitSuccess || props.onSaveSuccess;
 
               if (onSubmitSuccess) {
                 await handleComponentEvent("onSubmitSuccess", event.framework, event.page as any, event.scope, event.sender, onSubmitSuccess, [responseData]);
