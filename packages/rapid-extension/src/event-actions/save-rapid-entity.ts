@@ -10,6 +10,7 @@ import {
 import { getRapidApi } from "../rapidApi";
 import { AxiosResponse } from "axios";
 import { RapidFormSubmitOptions } from "../types/rapid-action-types";
+import { merge } from "lodash";
 
 export interface RockEventHandlerSaveRapidEntity {
   $action: "saveRapidEntity";
@@ -41,7 +42,7 @@ export async function saveRapidEntity(
   let { customRequest } = eventHandler;
   try {
     let res: AxiosResponse<any, any>;
-    const requestData = Object.assign({}, submitData, eventHandler.fixedFields);
+    const requestData = merge(submitData, eventHandler.fixedFields);
 
     if (submitOptions && submitOptions.submitUrl) {
       customRequest = {

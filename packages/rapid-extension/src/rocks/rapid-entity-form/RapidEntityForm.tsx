@@ -3,7 +3,7 @@ import { Framework, handleComponentEvent, MoveStyleUtils } from "@ruiapp/move-st
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityFormMeta from "./RapidEntityFormMeta";
 import type { RapidEntityFormRockConfig } from "./rapid-entity-form-types";
-import { filter, get, isUndefined, map, merge, uniq } from "lodash";
+import { filter, get, isUndefined, map, merge, set, uniq } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import type { RapidDataDictionary, RapidDataDictionaryEntry, RapidEntity, RapidField, RapidFieldType } from "../../types/rapid-entity-types";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
@@ -393,13 +393,24 @@ export default {
       };
     }
 
+    const { entityId, fieldNameOfFormDataInSubmitData } = props;
+    const fixedFields = {};
+    if (entityId) {
+      let entityIdFieldName = "id";
+      if (fieldNameOfFormDataInSubmitData) {
+        entityIdFieldName = `${fieldNameOfFormDataInSubmitData}.id`;
+      }
+      set(fixedFields, entityIdFieldName, entityId);
+    }
+
     const onSubmit: RockEventHandler[] = [
       {
         $action: "saveRapidEntity",
         entityNamespace: mainEntity.namespace,
         entityPluralCode: mainEntity.pluralCode,
         customRequest,
-        entityId: props.entityId,
+        entityId,
+        fixedFields,
         onSuccess: [
           {
             $action: "script",
@@ -408,7 +419,7 @@ export default {
               const successMessage = submitOptions?.successMessage || props.successMessage || getExtensionLocaleStringResource(framework, "saveSuccess");
               message.success(successMessage);
 
-              const onSubmitSuccess = submitOptions?.onSucess || props.onSubmitSuccess || props.onSaveSuccess;
+              const onSubmitSuccess = submitOptions?.onSuccess || props.onSubmitSuccess || props.onSaveSuccess;
 
               if (onSubmitSuccess) {
                 await handleComponentEvent("onSubmitSuccess", event.framework, event.page as any, event.scope, event.sender, onSubmitSuccess, [responseData]);
@@ -432,7 +443,7 @@ export default {
             },
           },
         ],
-      },
+      } satisfies RockEventHandlerSaveRapidEntity,
     ];
 
     const rockConfig: RapidFormRockConfig = {

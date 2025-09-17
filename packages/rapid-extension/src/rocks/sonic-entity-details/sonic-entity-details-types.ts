@@ -2,8 +2,11 @@ import type { RockConfig, SimpleRockConfig } from "@ruiapp/move-style";
 import { RapidDescriptionsItemConfig } from "../rapid-entity-descriptions/rapid-entity-descriptions-types";
 import { FindEntityFindRelationEntitiesOptions } from "../../types/rapid-entity-types";
 import { CSSProperties } from "react";
+import { RapidEntityFormConfig } from "../rapid-entity-form/rapid-entity-form-types";
 
 export interface SonicEntityDetailsConfig {
+  mode?: "view" | "edit";
+
   entityCode: string;
 
   entityId?: string;
@@ -105,6 +108,12 @@ export interface SonicEntityDetailsConfig {
    * 是否隐藏头部（标题、状态、操作项等）
    */
   hideHeader?: boolean;
+
+  formColumn?: number;
+
+  formItems?: RapidEntityFormConfig["items"];
+
+  form?: Partial<RapidEntityFormConfig>;
 }
 
 export interface SonicEntityDetailsRockConfig extends SimpleRockConfig, SonicEntityDetailsConfig {}

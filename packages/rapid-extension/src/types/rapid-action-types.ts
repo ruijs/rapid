@@ -197,7 +197,7 @@ export type RapidFormSubmitOptions = {
    */
   errorMessage?: string;
 
-  onSucess?: RockEventHandlerConfig;
+  onSuccess?: RockEventHandlerConfig;
 
   onError?: RockEventHandlerConfig;
 };

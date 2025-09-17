@@ -187,7 +187,7 @@ export type RapidFormAction = {
    */
   errorMessage?: string;
 
-  onSucess?: RockEventHandlerConfig;
+  onSuccess?: RockEventHandlerConfig;
 
   onError?: RockEventHandlerConfig;
 
