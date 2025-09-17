@@ -16,9 +16,9 @@ export interface RapidFormModalRecordActionConfig extends RapidTableActionConfig
   /**
    * @deprecated 请使用 onSubmit
    */
-  onFormSubmit: RockEventHandlerConfig;
+  onFormSubmit?: RockEventHandlerConfig;
 
-  onSubmit: RockEventHandlerConfig;
+  onSubmit?: RockEventHandlerConfig;
 
   resetFormOnModalOpen?: boolean;
 }
