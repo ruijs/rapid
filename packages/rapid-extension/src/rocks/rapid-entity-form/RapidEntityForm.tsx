@@ -124,6 +124,7 @@ function generateDataFormItemForOptionProperty(
     wrapperCol: formItemConfig.wrapperCol,
     labelCol: formItemConfig.labelCol,
     rules: formItemConfig.rules,
+    formControlType: formItemConfig.formControlType,
     formControlProps,
     rendererProps,
     storeDependencies: formItemConfig.storeDependencies,
