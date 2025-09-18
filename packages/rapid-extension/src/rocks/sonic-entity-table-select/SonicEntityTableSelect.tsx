@@ -258,7 +258,7 @@ export default {
         placeholder={placeholder || getExtensionLocaleStringResource(framework, "pleaseSelect")}
         value={current}
         mode={isMultiple ? "multiple" : undefined}
-        open={currentState.visible}
+        open={currentState.visible && !props.readOnly}
         onChange={(v) => {
           const arrs = isArray(v) ? v : v != null ? [v] : [];
           const selectedRecords = arrs?.map((k) => currentState.selectedRecordMap[k]);

@@ -103,6 +103,8 @@ export type RapidFormItemConfig = {
    */
   rendererProps?: Record<string, any>;
 
+  rendererValuePropName?: string;
+
   /**
    * 表单项唯一性字段
    */
