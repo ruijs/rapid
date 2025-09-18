@@ -28,6 +28,10 @@ interface ICurrentState {
   reloadKey?: string | number;
 }
 
+function getListDataSourceCode(props) {
+  return props.listDataSourceCode || `${props.$id}-list`;
+}
+
 export default {
   onReceiveMessage(message, state, props) {
     if (message.name === "refreshData") {
@@ -57,7 +61,6 @@ export default {
       listTextFormat,
       pageSize = 20,
       columns = [{ title: defaultDisplayTitle, code: defaultDisplayField, width: 120 }],
-      listDataSourceCode,
       listFilterFields = [defaultDisplayField],
       filterDisabled,
       allowClear,
@@ -65,6 +68,7 @@ export default {
       placeholder,
       tableHeight = 400,
     } = props;
+    const listDataSourceCode = getListDataSourceCode(props);
 
     let { dropdownMatchSelectWidth } = props;
     if (isUndefined(dropdownMatchSelectWidth)) {
@@ -351,7 +355,7 @@ function useRequest(context: RockInstanceContext, props: SonicEntityTableSelectR
   const { scope } = context;
 
   useEffect(() => {
-    const listDataSourceCode = props.listDataSourceCode;
+    const listDataSourceCode = getListDataSourceCode(props);
     const store = scope.getStore(listDataSourceCode);
     if (store) {
       return;
@@ -402,13 +406,14 @@ function useRequest(context: RockInstanceContext, props: SonicEntityTableSelectR
 
     setState({ loading: true });
     try {
-      const store: EntityStore = context.scope.getStore(props.listDataSourceCode);
+      const listDataSourceCode = getListDataSourceCode(props);
+      const store: EntityStore = context.scope.getStore(listDataSourceCode);
 
       store.updateConfig({
         fixedFilters: configParams.fixedFilters,
       });
 
-      await context.scope.loadStoreData(props.listDataSourceCode, {
+      await context.scope.loadStoreData(listDataSourceCode, {
         ...omit(configParams, "fixedFilters"),
         ...params,
       });
