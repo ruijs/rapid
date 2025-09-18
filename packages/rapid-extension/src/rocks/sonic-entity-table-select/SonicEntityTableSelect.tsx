@@ -228,7 +228,7 @@ export default {
         if (isExisted) {
           keys = keys.filter((k) => k !== recordValue);
         } else {
-          keys = [recordValue, ...keys];
+          keys = [...keys, recordValue];
         }
 
         s.selectedRecordMap[recordValue] = record;
@@ -253,6 +253,11 @@ export default {
 
     const data = context.scope.getStore(listDataSourceCode)?.data;
 
+    let removeIcon = null;
+    if (props.readOnly) {
+      removeIcon = <EmptyRemoveIcon />;
+    }
+
     return (
       <Select
         allowClear={allowClear}
@@ -262,6 +267,7 @@ export default {
         placeholder={placeholder || getExtensionLocaleStringResource(framework, "pleaseSelect")}
         value={current}
         mode={isMultiple ? "multiple" : undefined}
+        removeIcon={removeIcon}
         open={currentState.visible && !props.readOnly}
         onChange={(v) => {
           const arrs = isArray(v) ? v : v != null ? [v] : [];
@@ -345,6 +351,10 @@ export default {
 
   ...SonicEntityTableSelectMeta,
 } as Rock;
+
+function EmptyRemoveIcon() {
+  return null;
+}
 
 interface IRequestState {
   loading?: boolean;
