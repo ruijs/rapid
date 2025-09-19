@@ -147,7 +147,7 @@ export default {
       set(entityListRockConfig, "$exps.convertListToTree", get(props, "$exps.convertListToTree"));
     }
 
-    const toolboxEnabled = !props.toolbox?.disabled;
+    const toolboxEnabled = !(props.hideToolbox || props.toolbox?.disabled);
     let toolboxRockConfig: RockConfig | null = null;
 
     if (toolboxEnabled) {
