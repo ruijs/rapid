@@ -147,8 +147,10 @@ export default {
       return;
     }
 
+    const storeScope = props.useStoreInPageScope ? context.page.scope : context.scope;
     const dataSourceCode = props.dataSourceCode || "list";
-    if (!context.scope.stores[dataSourceCode]) {
+
+    if (!storeScope.stores[dataSourceCode]) {
       const { columns, pageSize } = props;
       const properties: string[] = uniq(
         props.queryProperties || [
@@ -190,7 +192,7 @@ export default {
         }
       }
 
-      context.scope.addStore(listDataStoreConfig);
+      storeScope.addStore(listDataStoreConfig);
     }
   },
 
@@ -290,21 +292,23 @@ export default {
     }
 
     const dataSourceTotal = (props.dataSource || []).length;
+    const storeScopeVarExp = props.useStoreInPageScope ? "$page.scope" : "$scope";
+    const scopeVarExp = "$scope";
     let tableExps: Record<string, string> = {
       pagination:
         props.pageSize > 0
-          ? `{pageSize: ${props.pageSize}, current: $scope.vars["${`stores-${dataSourceCode}-pageNum`}"], total: ${dataSourceTotal} }`
+          ? `{pageSize: ${props.pageSize}, current: ${storeScopeVarExp}.vars["${`stores-${dataSourceCode}-pageNum`}"], total: ${dataSourceTotal} }`
           : "false",
     };
 
     if (props.dataSourceType !== "dataSource") {
       tableExps = {
-        dataSource: `$scope.stores.${dataSourceCode}?.data?.list`,
+        dataSource: `${storeScopeVarExp}.stores.${dataSourceCode}?.data?.list`,
         pagination:
           props.pageSize > 0
             ? `{pageSize: ${
                 props.pageSize
-              }, current: $scope.vars["${`stores-${dataSourceCode}-pageNum`}"], total: $scope.stores.${dataSourceCode}?.data?.total}`
+              }, current: ${storeScopeVarExp}.vars["${`stores-${dataSourceCode}-pageNum`}"], total: ${storeScopeVarExp}.stores.${dataSourceCode}?.data?.total}`
             : "false",
       };
     }
@@ -325,7 +329,7 @@ export default {
         ...tableExps,
         ...(selectionMode !== "none"
           ? {
-              "rowSelection.selectedRowKeys": `$scope.vars['${props.$id}-selectedIds']`,
+              "rowSelection.selectedRowKeys": `${scopeVarExp}.vars['${props.$id}-selectedIds']`,
             }
           : {}),
       },
@@ -351,6 +355,7 @@ export default {
               $action: "script",
               script: async (event: RockEvent) => {
                 const { framework, page, scope } = event;
+                const storeScope = props.useStoreInPageScope ? page.scope : scope;
                 let nextSelectedIds = [];
                 let nextSelectedRecords = [];
                 const { record } = event.args[0];
@@ -388,7 +393,8 @@ export default {
           $action: "script",
           script: async (event: RockEvent) => {
             const [pagination] = event.args;
-            event.scope.setVars({
+            const storeScope = props.useStoreInPageScope ? page.scope : event.scope;
+            storeScope.setVars({
               [`stores-${dataSourceCode}-pageNum`]: pagination.current,
             });
 
@@ -401,7 +407,7 @@ export default {
               RapidEntityListFilterCache.set(props.filterCacheName, { pageNum: pagination.current || 1 });
             }
 
-            const store: EntityStore = event.scope.stores[dataSourceCode] as any;
+            const store: EntityStore = storeScope.stores[dataSourceCode] as any;
             store.setPagination({
               limit: props.pageSize,
               offset: ((pagination.current || 1) - 1) * props.pageSize,
