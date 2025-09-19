@@ -13,6 +13,7 @@ export interface SonicEntityListConfig extends RapidEntityListConfig {
   footer?: RockChildrenConfig;
   stores?: StoreConfig[];
   toolbox?: IRapidEntityListToolboxConfig;
+  hideToolbox?: boolean;
   actionSubscriptions?: SonicEntityListActionSubscriptionConfig[];
 }
 

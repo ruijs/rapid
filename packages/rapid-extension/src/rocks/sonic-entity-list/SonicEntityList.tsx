@@ -147,7 +147,7 @@ export default {
       set(entityListRockConfig, "$exps.convertListToTree", get(props, "$exps.convertListToTree"));
     }
 
-    const toolboxEnabled = !props.toolbox?.disabled;
+    const toolboxEnabled = !(props.hideToolbox || props.toolbox?.disabled);
     let toolboxRockConfig: RockConfig | null = null;
 
     if (toolboxEnabled) {
@@ -199,6 +199,8 @@ export default {
       }
     }
 
+    const scopeVarExp = props.useStoreInPageScope ? "$page.scope" : "$scope";
+
     let toolbarExtraActions: RockConfig[] = props.extraActions || [];
     if (props.searchForm) {
       toolbarExtraActions = [
@@ -224,7 +226,7 @@ export default {
               $action: "script",
               script: (event: RockEvent) => {
                 event.scope.setVars({
-                  searchBoxVisible: !event.scope.vars["searchBoxVisible"],
+                  searchBoxVisible: event.scope.vars[`${props.$id}-searchBoxVisible`],
                 });
               },
             },
@@ -256,9 +258,10 @@ export default {
             {
               $action: "script",
               script: async (event: RockEvent) => {
-                const store: EntityStore = event.scope.getStore(dataSourceCode);
+                const storeScope = props.useStoreInPageScope ? event.page.scope : event.scope;
+                const store: EntityStore = storeScope.getStore(dataSourceCode);
                 // 设置搜索变量
-                event.scope.setVars({
+                storeScope.setVars({
                   [`stores-${dataSourceCode}-pageNum`]: 1,
                 });
 
@@ -554,6 +557,7 @@ export default {
             {
               $action: "script",
               script: async (event) => {
+                const storeScope = props.useStoreInPageScope ? event.page.scope : event.scope;
                 const recordAction: RapidUpdateRecordActionOptions = event.args[0];
                 let { confirmTitle, confirmText, recordId, entity } = recordAction;
                 if (confirmText) {
@@ -566,7 +570,7 @@ export default {
                       (async () => {
                         try {
                           await rapidApi.patch(`${mainEntity.namespace}/${mainEntity.pluralCode}/${recordId}`, entity);
-                          event.scope.loadStoreData(dataSourceCode, null);
+                          storeScope.loadStoreData(dataSourceCode, null);
                         } catch (err: any) {
                           message.error(getExtensionLocaleStringResource(framework, "updateError", { message: err.message }));
                         }
@@ -576,7 +580,7 @@ export default {
                 } else {
                   try {
                     await rapidApi.patch(`${mainEntity.namespace}/${mainEntity.pluralCode}/${recordId}`, entity);
-                    event.scope.loadStoreData(dataSourceCode, null);
+                    storeScope.loadStoreData(dataSourceCode, null);
                   } catch (err: any) {
                     message.error(getExtensionLocaleStringResource(framework, "updateError", { message: err.message }));
                   }
@@ -591,6 +595,7 @@ export default {
             {
               $action: "script",
               script: async (event) => {
+                const storeScope = props.useStoreInPageScope ? event.page.scope : event.scope;
                 const recordAction: RapidDeleteRecordActionOptions = event.args[0];
                 let { confirmTitle, confirmText, recordId } = recordAction;
                 if (!confirmText) {
@@ -610,7 +615,7 @@ export default {
                       try {
                         await rapidApi.delete(`${mainEntity.namespace}/${mainEntity.pluralCode}/${recordId}`);
                         message.info(getExtensionLocaleStringResource(framework, "deleteSuccess"));
-                        event.scope.loadStoreData(dataSourceCode, null);
+                        storeScope.loadStoreData(dataSourceCode, null);
                       } catch (err: any) {
                         message.error(getExtensionLocaleStringResource(framework, "deleteError", { message: err.message }));
                       }
