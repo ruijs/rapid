@@ -28,6 +28,10 @@ interface ICurrentState {
   reloadKey?: string | number;
 }
 
+function getListDataSourceCode(props) {
+  return props.listDataSourceCode || `${props.$id}-list`;
+}
+
 export default {
   onReceiveMessage(message, state, props) {
     if (message.name === "refreshData") {
@@ -57,7 +61,6 @@ export default {
       listTextFormat,
       pageSize = 20,
       columns = [{ title: defaultDisplayTitle, code: defaultDisplayField, width: 120 }],
-      listDataSourceCode,
       listFilterFields = [defaultDisplayField],
       filterDisabled,
       allowClear,
@@ -65,6 +68,7 @@ export default {
       placeholder,
       tableHeight = 400,
     } = props;
+    const listDataSourceCode = getListDataSourceCode(props);
 
     let { dropdownMatchSelectWidth } = props;
     if (isUndefined(dropdownMatchSelectWidth)) {
@@ -224,7 +228,7 @@ export default {
         if (isExisted) {
           keys = keys.filter((k) => k !== recordValue);
         } else {
-          keys = [recordValue, ...keys];
+          keys = [...keys, recordValue];
         }
 
         s.selectedRecordMap[recordValue] = record;
@@ -249,6 +253,11 @@ export default {
 
     const data = context.scope.getStore(listDataSourceCode)?.data;
 
+    let removeIcon = null;
+    if (props.readOnly) {
+      removeIcon = <EmptyRemoveIcon />;
+    }
+
     return (
       <Select
         allowClear={allowClear}
@@ -258,7 +267,8 @@ export default {
         placeholder={placeholder || getExtensionLocaleStringResource(framework, "pleaseSelect")}
         value={current}
         mode={isMultiple ? "multiple" : undefined}
-        open={currentState.visible}
+        removeIcon={removeIcon}
+        open={currentState.visible && !props.readOnly}
         onChange={(v) => {
           const arrs = isArray(v) ? v : v != null ? [v] : [];
           const selectedRecords = arrs?.map((k) => currentState.selectedRecordMap[k]);
@@ -342,6 +352,10 @@ export default {
   ...SonicEntityTableSelectMeta,
 } as Rock;
 
+function EmptyRemoveIcon() {
+  return null;
+}
+
 interface IRequestState {
   loading?: boolean;
 }
@@ -351,7 +365,7 @@ function useRequest(context: RockInstanceContext, props: SonicEntityTableSelectR
   const { scope } = context;
 
   useEffect(() => {
-    const listDataSourceCode = props.listDataSourceCode;
+    const listDataSourceCode = getListDataSourceCode(props);
     const store = scope.getStore(listDataSourceCode);
     if (store) {
       return;
@@ -402,13 +416,14 @@ function useRequest(context: RockInstanceContext, props: SonicEntityTableSelectR
 
     setState({ loading: true });
     try {
-      const store: EntityStore = context.scope.getStore(props.listDataSourceCode);
+      const listDataSourceCode = getListDataSourceCode(props);
+      const store: EntityStore = context.scope.getStore(listDataSourceCode);
 
       store.updateConfig({
         fixedFilters: configParams.fixedFilters,
       });
 
-      await context.scope.loadStoreData(props.listDataSourceCode, {
+      await context.scope.loadStoreData(listDataSourceCode, {
         ...omit(configParams, "fixedFilters"),
         ...params,
       });

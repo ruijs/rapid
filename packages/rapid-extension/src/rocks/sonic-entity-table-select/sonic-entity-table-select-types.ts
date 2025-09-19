@@ -8,6 +8,11 @@ export interface SonicEntityTableSelectRockConfig extends SimpleRockConfig {
   placeholder?: string;
   allowClear?: boolean;
   disabled?: boolean;
+
+  /**
+   * 是否只读
+   */
+  readOnly?: boolean;
   pageSize?: number;
   mode?: "multiple" | "single";
 

@@ -89,15 +89,16 @@ export default {
     const isMountedRef = useRef<boolean>(false);
 
     const mode = props.mode || "input";
-    let inputRockType = null;
+    let formControlType = null;
     let formItemValuePropName: string = "value";
+    let formItemTrigger: string = "onChange";
     let childRock: RockConfig = null;
     if (mode === "input") {
-      inputRockType = props.formControlType || formItemTypeToControlRockTypeMap[props.type] || "antdInput";
+      formControlType = props.formControlType || formItemTypeToControlRockTypeMap[props.type] || "antdInput";
       const defaultFormControlProps = cloneDeep(defaultControlPropsOfFormItemType[props.type]);
       childRock = {
         $id: `${props.$id}-input`,
-        $type: inputRockType,
+        $type: formControlType,
         placeholder: props.placeholder,
         ...defaultFormControlProps,
         ...props.formControlProps,
@@ -110,16 +111,18 @@ export default {
         childRock.mode = "multiple";
       }
 
-      formItemValuePropName = props.formControlValuePropName || (inputRockType && valuePropNameOfFormInput[inputRockType]) || "value";
+      formItemValuePropName = props.formControlValuePropName || (formControlType && valuePropNameOfFormInput[formControlType]) || "value";
     } else {
       let rendererType = props.rendererType;
+      let defaultRendererProps = {};
       if (!rendererType) {
-        rendererType = RapidExtensionSetting.getDefaultRendererTypeOfFieldType(props.valueFieldType);
         if (props.valueFieldType === "relation[]") {
           rendererType = "rapidArrayRenderer";
+        } else {
+          rendererType = RapidExtensionSetting.getDefaultRendererTypeOfFieldType(props.valueFieldType);
+          defaultRendererProps = RapidExtensionSetting.getDefaultRendererProps(props.valueFieldType, rendererType);
         }
       }
-      const defaultRendererProps = RapidExtensionSetting.getDefaultRendererProps(props.valueFieldType, rendererType);
 
       childRock = {
         $id: `${props.$id}-display`,
@@ -127,7 +130,11 @@ export default {
         ...defaultRendererProps,
         ...props.rendererProps,
         form: props.form,
+        readOnly: true,
       };
+
+      formItemValuePropName = props.rendererValuePropName || (rendererType && valuePropNameOfFormInput[rendererType]) || "value";
+      formItemTrigger = "__doNotChange";
     }
 
     const dependencies = (props.storeDependencies || []).map((key) => props.form.getFieldValue(key));
@@ -149,6 +156,7 @@ export default {
       label: props.label,
       hidden: props.hidden,
       valuePropName: formItemValuePropName,
+      trigger: formItemTrigger,
       form: props.form,
       children: childRock,
       rules: props.rules,

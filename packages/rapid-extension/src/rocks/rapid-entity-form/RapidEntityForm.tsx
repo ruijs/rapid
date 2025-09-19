@@ -124,6 +124,7 @@ function generateDataFormItemForOptionProperty(
     wrapperCol: formItemConfig.wrapperCol,
     labelCol: formItemConfig.labelCol,
     rules: formItemConfig.rules,
+    formControlType: formItemConfig.formControlType,
     formControlProps,
     rendererProps,
     storeDependencies: formItemConfig.storeDependencies,
@@ -134,12 +135,12 @@ function generateDataFormItemForOptionProperty(
   return formItem;
 }
 
-export function generateDataFormItemForRelationProperty(option: GenerateEntityFormItemOption, formItemRequired: boolean) {
+export function generateDataFormItemForRelationProperty(props: RapidEntityFormRockConfig, option: GenerateEntityFormItemOption, formItemRequired: boolean) {
   const { formItemConfig, rpdField } = option;
 
   let listDataSourceCode = formItemConfig.formControlProps?.listDataSourceCode;
   if (!listDataSourceCode) {
-    listDataSourceCode = `dataFormItemList-${formItemConfig.code}`;
+    listDataSourceCode = `${props.$id}-${formItemConfig.code}-list`;
   }
 
   let fieldTypeRelatedRendererProps: any = {};
@@ -191,7 +192,7 @@ export function generateDataFormItemForRelationProperty(option: GenerateEntityFo
   return formItem;
 }
 
-function generateDataFormItem(framework: Framework, logger: RuiRockLogger, entityFormProps: any, option: GenerateEntityFormItemOption) {
+function generateDataFormItem(framework: Framework, logger: RuiRockLogger, props: any, option: GenerateEntityFormItemOption) {
   const { formItemConfig, rpdField } = option;
 
   let valueFieldType = formItemConfig.valueFieldType || rpdField?.type || "text";
@@ -207,7 +208,7 @@ function generateDataFormItem(framework: Framework, logger: RuiRockLogger, entit
   if (valueFieldType === "option" || valueFieldType === "option[]") {
     return generateDataFormItemForOptionProperty(framework, option, valueFieldType, formItemRequired);
   } else if (valueFieldType === "relation" || valueFieldType === "relation[]") {
-    return generateDataFormItemForRelationProperty(option, formItemRequired);
+    return generateDataFormItemForRelationProperty(props, option, formItemRequired);
   }
 
   let formItemType = decideFormItemType(formItemConfig, rpdField);
