@@ -29,6 +29,8 @@ export { default as RapidExtensionSetting } from "./RapidExtensionSetting";
 
 export { EntityStoreConfig, EntityStore } from "./stores/entity-store";
 
+export { default as rapid } from "./exp-vars/rapid-exp-var";
+
 export * from "./components";
 export { default as AntdVirtualTable } from "./rocks/rapid-table/VirtualTable";
 
