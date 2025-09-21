@@ -137,9 +137,14 @@ export default {
       formItemTrigger = "__doNotChange";
     }
 
+    // TODO: 此处应该是用来实现表单选项联动的，但是`storeDependencies`属性和`reload`消息名意义都不是很明确，应优化。
     const dependencies = (props.storeDependencies || []).map((key) => props.form.getFieldValue(key));
     useEffect(() => {
-      if (isMountedRef.current) {
+      if (props.mode == "display") {
+        return;
+      }
+
+      if (isMountedRef.current && dependencies.length) {
         context.page.sendComponentMessage(`${props.$id}-input`, {
           name: "reload",
         });
