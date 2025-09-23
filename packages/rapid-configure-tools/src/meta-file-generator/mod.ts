@@ -4,6 +4,11 @@ import { generateModelCodes, generateDictionaryCodes } from "./generators/model-
 import { generateSdRpdModelTypes } from "./generators/model-types-generator";
 import { generateSdRpdModelLocales } from "./generators/model-locales-generator";
 
+export * from "./generators/model-index-generator";
+export * from "./generators/model-codes-generator";
+export * from "./generators/model-types-generator";
+export * from "./generators/model-locales-generator";
+
 export interface FileGenerateOption {
   declarationsDirectory: string;
 }

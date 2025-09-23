@@ -1,7 +1,7 @@
 import type { RapidEntity } from "@ruiapp/rapid-extension";
 import type { AxiosInstance } from "axios";
 import { omit } from "lodash";
-import { detectChangedFields } from "./ObjectChangesDetector";
+import { detectChangedFields } from "../utils/ObjectChangesDetector";
 import type { RapidModel, CreateRapidModelInput, IRapidModelUpdater, UpdateRapidModelInput } from "./types";
 
 export function newModelUpdater(rapidConfigApi: AxiosInstance) {
