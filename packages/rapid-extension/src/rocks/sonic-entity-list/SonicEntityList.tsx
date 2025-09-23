@@ -199,8 +199,6 @@ export default {
       }
     }
 
-    const scopeVarExp = props.useStoreInPageScope ? "$page.scope" : "$scope";
-
     let toolbarExtraActions: RockConfig[] = props.extraActions || [];
     if (props.searchForm) {
       toolbarExtraActions = [

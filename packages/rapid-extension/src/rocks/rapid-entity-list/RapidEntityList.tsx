@@ -202,7 +202,8 @@ export default {
         return;
       }
 
-      rockInstance._scope.stores[props.dataSourceCode]?.loadData();
+      const scope = props.useStoreInPageScope ? rockInstance._context.page.scope : rockInstance._scope;
+      scope.stores[props.dataSourceCode]?.loadData();
     }
   },
 
