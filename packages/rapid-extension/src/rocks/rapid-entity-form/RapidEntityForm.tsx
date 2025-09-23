@@ -106,9 +106,13 @@ function generateDataFormItemForOptionProperty(
     ...formItemConfig.formControlProps,
   };
 
-  let rendererProps: RapidOptionFieldRendererConfig = {
-    dictionaryCode: dataDictionaryCode,
-  };
+  let rendererType = formItemConfig.rendererType;
+
+  let rendererProps =
+    formItemConfig.rendererProps ||
+    ({
+      dictionaryCode: dataDictionaryCode,
+    } as RapidOptionFieldRendererConfig);
 
   let formItemType = decideFormItemType(formItemConfig, rpdField);
 
@@ -126,6 +130,7 @@ function generateDataFormItemForOptionProperty(
     rules: formItemConfig.rules,
     formControlType: formItemConfig.formControlType,
     formControlProps,
+    rendererType,
     rendererProps,
     storeDependencies: formItemConfig.storeDependencies,
     $exps: formItemConfig.$exps,
