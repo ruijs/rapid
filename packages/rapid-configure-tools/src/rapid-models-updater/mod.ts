@@ -11,6 +11,9 @@ import { newPropertyUpdater } from "./PropertyUpdater";
 import type { RapidDataDictionary, RapidEntity, RapidPage } from "@ruiapp/rapid-extension";
 import { newPageUpdater } from "./PageUpdater";
 
+export { default as AppUpdater } from "./AppUpdater";
+export * from "./types";
+
 export interface RapidModelsUpdateOptions {
   appDataDirLocation: string;
   rapidApiUrl: string;
