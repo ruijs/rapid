@@ -1,6 +1,6 @@
 import type { FindEntityOptions, RapidPage } from "@ruiapp/rapid-extension";
 import type { AxiosInstance } from "axios";
-import { detectChangedFields } from "./ObjectChangesDetector";
+import { detectChangedFields } from "../utils/ObjectChangesDetector";
 import type { CreateRapidPageInput, IRapidModelUpdater, UpdateRapidPageInput, RapidPageEntity } from "./types";
 
 function convertInputToEntity(input: RapidPage) {

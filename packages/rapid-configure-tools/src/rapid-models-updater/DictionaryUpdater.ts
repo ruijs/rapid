@@ -1,7 +1,7 @@
 import type { RapidDataDictionary } from "@ruiapp/rapid-extension";
 import type { AxiosInstance } from "axios";
 import { pick } from "lodash";
-import { detectChangedFields } from "./ObjectChangesDetector";
+import { detectChangedFields } from "../utils/ObjectChangesDetector";
 import type { RapidDataDictionaryWithId, CreateDataDictionaryInput, IRapidModelUpdater, UpdateDataDictionaryInput } from "./types";
 
 export function newDictionaryUpdater(rapidConfigApi: AxiosInstance) {

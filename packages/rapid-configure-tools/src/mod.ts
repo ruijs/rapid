@@ -3,3 +3,6 @@ export * from "./meta-file-generator/mod";
 
 export { default as RapidModelsUpdater } from "./rapid-models-updater/mod";
 export * from "./rapid-models-updater/mod";
+
+export * from "./utils/ObjectChangesDetector";
+export * from "./utils/array-utils";
