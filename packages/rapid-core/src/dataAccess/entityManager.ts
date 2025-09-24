@@ -59,6 +59,7 @@ import { newEntityOperationError } from "~/utilities/errorUtility";
 import { getNowStringWithTimezone } from "~/utilities/timeUtility";
 import { RouteContext } from "~/core/routeContext";
 import { validateEntity } from "./entityValidator";
+import { pgPropertyTypeColumnMap } from "./columnTypeMapper";
 
 export type FindOneRelationEntitiesOptions = {
   server: IRpdServer;
@@ -611,7 +612,11 @@ async function convertEntityFiltersToRowFilters(
         }
       }
 
-      // TODO: do not use `any` here
+      let itemType: string | undefined;
+      if (filter.operator === "in" || filter.operator === "notIn") {
+        itemType = filter.itemType || pgPropertyTypeColumnMap[property.type];
+      }
+
       replacedFilters.push({
         operator: filter.operator,
         field: {
@@ -619,7 +624,7 @@ async function convertEntityFiltersToRowFilters(
           tableName: property && property.isBaseProperty ? baseModel.tableName : model.tableName,
         },
         value: filterValue,
-        itemType: (filter as any).itemType,
+        itemType,
       } as any);
     }
   }
