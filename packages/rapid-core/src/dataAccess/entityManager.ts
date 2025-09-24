@@ -208,8 +208,8 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     }
   });
 
-  // if `keepNonPropertyFields` is true and `properties` are not specified, then select relation columns automatically.
-  if (options.keepNonPropertyFields && (!options.properties || !options.properties.length)) {
+  // if `keepNonPropertyFields` is true, then select relation columns automatically.
+  if (options.keepNonPropertyFields) {
     const oneRelationPropertiesWithNoLinkTable = getEntityPropertiesIncludingBase(server, model).filter(
       (property) => property.relation === "one" && !property.linkTableName,
     );
@@ -289,11 +289,11 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
                 return find(relationLinks, (link: any) => {
                   return link[relationProperty.selfIdColumnName!] == row["id"] && link[relationProperty.targetIdColumnName!] == targetEntity["id"];
                 });
-              }).map((targetEntity) => mapDbRowToEntity(server, relationModel, targetEntity, options.keepNonPropertyFields));
+              });
             } else {
               row[relationProperty.code] = filter(relationLinks, (link: any) => {
                 return link[relationProperty.selfIdColumnName!] == row["id"];
-              }).map((link) => mapDbRowToEntity(server, relationModel, link.targetEntity, options.keepNonPropertyFields));
+              }).map((link) => link.targetEntity);
             }
           });
         }
@@ -332,17 +332,12 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
           if (isManyRelation) {
             row[relationProperty.code] = filter(relatedEntities, (relatedEntity: any) => {
               return relatedEntity[relationProperty.selfIdColumnName!] == row.id;
-            }).map((item) => mapDbRowToEntity(server, targetModel!, item, options.keepNonPropertyFields));
+            });
           } else {
-            row[relationProperty.code] = mapDbRowToEntity(
-              server,
-              targetModel!,
-              find(relatedEntities, (relatedEntity: any) => {
-                // TODO: id property code should be configurable.
-                return relatedEntity["id"] == row[relationProperty.targetIdColumnName!];
-              }),
-              options.keepNonPropertyFields,
-            );
+            row[relationProperty.code] = find(relatedEntities, (relatedEntity: any) => {
+              // TODO: id property code should be configurable.
+              return relatedEntity["id"] == row[relationProperty.targetIdColumnName!];
+            });
           }
         });
       }
