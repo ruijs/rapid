@@ -614,7 +614,7 @@ async function convertEntityFiltersToRowFilters(
 
       let itemType: string | undefined;
       if (filter.operator === "in" || filter.operator === "notIn") {
-        itemType = filter.itemType || pgPropertyTypeColumnMap[property.type];
+        itemType = filter.itemType || (property && pgPropertyTypeColumnMap[property.type]);
       }
 
       replacedFilters.push({
