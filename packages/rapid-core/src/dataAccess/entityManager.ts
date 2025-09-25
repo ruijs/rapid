@@ -362,12 +362,15 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
 }
 
 async function findEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, options: FindEntityOptions) {
-  const entities = await findEntities(server, dataAccessor, {
-    ...options,
-    ...{
+  if (options.pagination) {
+    options.pagination.limit = 1;
+  } else {
+    options.pagination = {
+      offset: 0,
       limit: 1,
-    },
-  });
+    };
+  }
+  const entities = await findEntities(server, dataAccessor, options);
   return first(entities);
 }
 
