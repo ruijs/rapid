@@ -224,7 +224,7 @@ export default {
               $action: "script",
               script: (event: RockEvent) => {
                 event.scope.setVars({
-                  searchBoxVisible: event.scope.vars[`${props.$id}-searchBoxVisible`],
+                  searchBoxVisible: !event.scope.vars[`${props.$id}-searchBoxVisible`],
                 });
               },
             },
