@@ -131,6 +131,17 @@ export default {
         children: [itemsRockConfig, props.footer],
       };
     } else {
+      rockConfig = {
+        $id: `${props.$id}-internal-withHeader`,
+        $type: "antdPageHeader",
+        title,
+        subTitle,
+        tags: stateRockConfig,
+        extra: props.actions,
+        footer: props.footer,
+        children: itemsRockConfig,
+      };
+
       let onBack: any;
       if (props.showBackButton) {
         if (history.length) {
@@ -144,17 +155,9 @@ export default {
         }
       }
 
-      rockConfig = {
-        $id: `${props.$id}-internal-withHeader`,
-        $type: "antdPageHeader",
-        title,
-        subTitle,
-        tags: stateRockConfig,
-        extra: props.actions,
-        footer: props.footer,
-        children: itemsRockConfig,
-        onBack,
-      };
+      if (onBack) {
+        rockConfig.onBack = onBack;
+      }
     }
     return renderRock({ context, rockConfig });
   },
