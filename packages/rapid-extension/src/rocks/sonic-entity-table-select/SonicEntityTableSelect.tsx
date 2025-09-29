@@ -253,7 +253,7 @@ export default {
 
     const data = context.scope.getStore(listDataSourceCode)?.data;
 
-    let removeIcon = null;
+    let removeIcon = undefined;
     if (props.readOnly) {
       removeIcon = <EmptyRemoveIcon />;
     }
