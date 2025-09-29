@@ -131,6 +131,19 @@ export default {
         children: [itemsRockConfig, props.footer],
       };
     } else {
+      let onBack: any;
+      if (props.showBackButton) {
+        if (history.length) {
+          onBack = () => {
+            history.back();
+          };
+        } else if (props.backUrl) {
+          onBack = () => {
+            location.href = props.backUrl!;
+          };
+        }
+      }
+
       rockConfig = {
         $id: `${props.$id}-internal-withHeader`,
         $type: "antdPageHeader",
@@ -140,6 +153,7 @@ export default {
         extra: props.actions,
         footer: props.footer,
         children: itemsRockConfig,
+        onBack,
       };
     }
     return renderRock({ context, rockConfig });

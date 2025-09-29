@@ -109,6 +109,17 @@ export interface SonicEntityDetailsConfig {
    */
   hideHeader?: boolean;
 
+  /**
+   * 是否显示返回按钮，默认根据浏览器历史记录自动判断
+   */
+  showBackButton?: boolean;
+
+  /**
+   * 当没有浏览器历史记录时，设置返回按钮的跳转链接。
+   * 当设置showBackButton为true时，建议同时设置backUrl。
+   */
+  backUrl?: string;
+
   formColumn?: number;
 
   formItems?: RapidEntityFormConfig["items"];
