@@ -214,7 +214,7 @@ export default {
     );
     const columnsTotalWidth = calculateColumnsTotalWidth(columns);
 
-    const current = isMultiple ? selectedKeys : selectedKeys[0];
+    const current = isMultiple ? selectedKeys : last(selectedKeys);
 
     const onSelectRows = (records: any[]) => {
       let keys = selectedKeys || [];
@@ -243,12 +243,12 @@ export default {
 
       setCurrentState(s);
 
-      eventHandlers.onChange?.(isMultiple ? keys : keys[0]);
+      eventHandlers.onChange?.(isMultiple ? keys : last(keys));
 
       const selectedRecords = keys.map((k) => s.selectedRecordMap[k]);
       const validRecords = filter(records, (record) => s.selectedRecordMap[get(record, listValueFieldName)] != null);
 
-      eventHandlers.onSelectedRecord?.(isMultiple ? validRecords : validRecords[0], selectedRecords, s);
+      eventHandlers.onSelectedRecord?.(isMultiple ? validRecords : last(validRecords), selectedRecords, s);
     };
 
     const data = context.scope.getStore(listDataSourceCode)?.data;
