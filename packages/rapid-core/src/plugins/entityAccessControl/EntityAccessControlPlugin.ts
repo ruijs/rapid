@@ -132,11 +132,20 @@ class EntityAccessControlPlugin implements RapidPlugin {
     // Check permission
     const { routerContext } = handlerContext;
     const { routeConfig } = routerContext;
-    for (const actionConfig of routeConfig.actions) {
-      const permissionCheck = actionConfig.config?.permissionCheck;
-      if (permissionCheck) {
-        if (!isAccessAllowed(permissionCheck, routerContext.state.allowedActions || [])) {
-          throw new Error(`Your action of '${actionConfig.code}' is not permitted.`);
+    if (routeConfig.permissionCheck) {
+      if (!isAccessAllowed(routeConfig.permissionCheck, routerContext.state.allowedActions || [])) {
+        throw new Error(`Your request to route '${routeConfig.code}' is not permitted.`);
+      }
+    }
+
+    const actions = routeConfig.actions;
+    if (actions) {
+      for (const actionConfig of routeConfig.actions) {
+        const permissionCheck = actionConfig.config?.permissionCheck;
+        if (permissionCheck) {
+          if (!isAccessAllowed(permissionCheck, routerContext.state.allowedActions || [])) {
+            throw new Error(`Your action of '${actionConfig.code}' is not permitted.`);
+          }
         }
       }
     }

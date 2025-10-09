@@ -586,6 +586,7 @@ export interface RpdRoute {
   type: "RESTful";
   method: RpdHttpMethod;
   endpoint: string;
+  permissionCheck?: PermissionPolicy;
   actions?: RpdRouteActionConfig[];
   handler?: string | ((ctx: ActionHandlerContext) => Promise<void>);
 }
