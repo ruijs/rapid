@@ -59,7 +59,7 @@ export default {
 
     const checkboxList = useMemo(() => {
       if (groupByFieldName) {
-        return (groupItems || []).map((group, index) => {
+        return map(groupItems, (group, index) => {
           const groupValue = get(group, groupValueFieldName) || index;
           const itemsInGroup = filter(listItems, (item) => get(item, groupByFieldName) === groupValue);
 
@@ -119,7 +119,7 @@ function CheckboxList(props: CheckboxListProps) {
   const direction = props.direction || "horizontal";
   return (
     <div style={props.itemListStyle} className={props.itemListClassName}>
-      {itemList.map((item, index) => {
+      {map(itemList, (item, index) => {
         const option = getCheckboxOption({
           item,
           listTextFormat: props.listTextFormat,
