@@ -649,6 +649,7 @@ async function findManyRelationLinksViaLinkTable(options: FindManyRelationEntiti
   });
 
   const findEntityOptions: FindEntityOptions = {
+    routeContext,
     filters: [
       {
         field: "id",
@@ -692,12 +693,13 @@ async function findManyRelationLinksViaLinkTable(options: FindManyRelationEntiti
 }
 
 async function findManyRelatedEntitiesViaIdPropertyCode(options: FindManyRelationEntitiesOptions) {
-  const { server, relationProperty, mainEntityIds, selectRelationOptions } = options;
+  const { server, routeContext, relationProperty, mainEntityIds, selectRelationOptions } = options;
   const dataAccessor = server.getDataAccessor({
     singularCode: relationProperty.targetSingularCode as string,
   });
 
   const findEntityOptions: FindEntityOptions = {
+    routeContext,
     filters: [
       {
         field: relationProperty.selfIdColumnName,
@@ -741,13 +743,14 @@ async function findManyRelatedEntitiesViaIdPropertyCode(options: FindManyRelatio
 }
 
 async function findOneRelatedEntitiesViaIdPropertyCode(options: FindOneRelationEntitiesOptions) {
-  const { server, relationProperty, relationEntityIds, selectRelationOptions } = options;
+  const { server, routeContext, relationProperty, relationEntityIds, selectRelationOptions } = options;
 
   const dataAccessor = server.getDataAccessor({
     singularCode: relationProperty.targetSingularCode as string,
   });
 
   const findEntityOptions: FindEntityOptions = {
+    routeContext,
     filters: [
       {
         field: "id",
