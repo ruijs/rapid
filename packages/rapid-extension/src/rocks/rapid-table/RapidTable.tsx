@@ -128,7 +128,8 @@ export default {
     const tableRef = useRef<any>(null);
     const [tableHeight, setTableHeight] = useState<number | undefined>(undefined);
 
-    const viewPortHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    const { window, document } = global;
+    const viewPortHeight = window?.innerHeight || document?.documentElement.clientHeight || document?.body.clientHeight;
     useEffect(() => {
       if (tableRef.current && props.tableAutoHeight) {
         setTableHeight(tableRef.current?.offsetHeight);
