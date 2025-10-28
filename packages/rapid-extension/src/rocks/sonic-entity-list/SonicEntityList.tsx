@@ -491,12 +491,14 @@ export default {
       $type: "scope",
       initialVars: scopeInitVars,
       stores: props.stores,
-      children: {
-        $type: "box",
-        className: "sonic-entity-list",
-        children: childrenConfig,
-        style: props.style,
-      },
+      children: [
+        {
+          $type: "box",
+          className: "sonic-entity-list",
+          children: childrenConfig,
+          style: props.style,
+        },
+      ],
       eventSubscriptions: [
         {
           eventName: "onRefreshButtonClick",
