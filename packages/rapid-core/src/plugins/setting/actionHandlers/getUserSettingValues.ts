@@ -9,8 +9,8 @@ export interface GetUserSettingValuesOptions {
 export const code = "getUserSettingValues";
 
 export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: GetUserSettingValuesOptions) {
-  const { server, routerContext } = ctx;
-  const userId = routerContext.state.userId;
+  const { server, routerContext: routeContext } = ctx;
+  const userId = routeContext.state.userId;
   if (!userId) {
     ctx.status = 401;
     ctx.output = {
@@ -32,7 +32,7 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
   }
 
   const settingService = server.getService<SettingService>("settingService");
-  const settingValues = await settingService.getUserSettingValues(userId, input.groupCode);
+  const settingValues = await settingService.getUserSettingValues(routeContext, userId, input.groupCode);
 
   ctx.output = settingValues;
 }

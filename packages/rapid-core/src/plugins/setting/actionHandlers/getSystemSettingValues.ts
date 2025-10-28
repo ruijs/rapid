@@ -9,8 +9,8 @@ export interface GetSystemSettingValuesOptions {
 export const code = "getSystemSettingValues";
 
 export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, options: GetSystemSettingValuesOptions) {
-  const { server, routerContext } = ctx;
-  const { response } = routerContext;
+  const { server, routerContext: routeContext } = ctx;
+  const { response } = routeContext;
 
   const input: GetSystemSettingValuesInput = ctx.input;
 
@@ -24,7 +24,7 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
 
   const settingService = server.getService<SettingService>("settingService");
 
-  const settingValues = await settingService.getSystemSettingValues(input.groupCode);
+  const settingValues = await settingService.getSystemSettingValues(routeContext, input.groupCode);
 
   ctx.output = settingValues;
 }

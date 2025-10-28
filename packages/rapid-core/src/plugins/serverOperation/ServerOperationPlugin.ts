@@ -62,13 +62,14 @@ class ServerOperationPlugin implements RapidPlugin {
   async configureRoutes(server: IRpdServer, applicationConfig: RpdApplicationConfig): Promise<any> {
     const routes: RpdRoute[] = [];
     for (const operation of this.#operations) {
+      const path = operation.path || `/app/${operation.code}`;
       routes.push({
         namespace: "app",
         name: `app.operations.${operation.code}`,
         code: `app.operations.${operation.code}`,
         type: "RESTful",
         method: operation.method,
-        endpoint: `/app/${operation.code}`,
+        endpoint: path,
         actions: [
           {
             code: "runServerOperation",

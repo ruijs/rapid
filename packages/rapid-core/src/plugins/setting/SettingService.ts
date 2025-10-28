@@ -1,6 +1,7 @@
 import { IRpdServer } from "~/core/server";
 import EntityManager from "~/dataAccess/entityManager";
 import { SystemSettingItem, UserSettingItem } from "./SettingPluginTypes";
+import { RouteContext } from "~/core/routeContext";
 
 export interface GetSystemSettingValuesInput {
   groupCode: string;
@@ -28,8 +29,9 @@ export default class SettingService {
   }
 
   //#region System Setting
-  async getSystemSettingItems(groupCode: string): Promise<SystemSettingItem[]> {
+  async getSystemSettingItems(routeContext: RouteContext, groupCode: string): Promise<SystemSettingItem[]> {
     return await this.#systemSettingItemManager.findEntities({
+      routeContext,
       filters: [
         {
           operator: "eq",
@@ -40,8 +42,8 @@ export default class SettingService {
     });
   }
 
-  async getSystemSettingValues(groupCode: string): Promise<Record<string, any>> {
-    const settingItems = await this.getSystemSettingItems(groupCode);
+  async getSystemSettingValues(routeContext: RouteContext, groupCode: string): Promise<Record<string, any>> {
+    const settingItems = await this.getSystemSettingItems(routeContext, groupCode);
 
     return settingItems.reduce<Record<string, any>>((settingValues, settingItem) => {
       settingValues[settingItem.itemCode] = settingItem.value;
@@ -49,8 +51,9 @@ export default class SettingService {
     }, {});
   }
 
-  async getSystemSettingValue(groupCode: string, itemCode: string): Promise<any> {
+  async getSystemSettingValue(routeContext: RouteContext, groupCode: string, itemCode: string): Promise<any> {
     const settingItem = await this.#systemSettingItemManager.findEntity({
+      routeContext,
       filters: [
         {
           operator: "eq",
@@ -68,8 +71,9 @@ export default class SettingService {
     return settingItem ? settingItem.value : null;
   }
 
-  async setSystemSettingValue(groupCode: string, itemCode: string, value: any) {
+  async setSystemSettingValue(routeContext: RouteContext, groupCode: string, itemCode: string, value: any) {
     const settingItem = await this.#systemSettingItemManager.findEntity({
+      routeContext,
       filters: [
         {
           operator: "eq",
@@ -87,6 +91,7 @@ export default class SettingService {
     if (settingItem) {
       if (settingItem.value !== value) {
         await this.#systemSettingItemManager.updateEntityById({
+          routeContext,
           id: settingItem.id,
           entityToSave: {
             value,
@@ -95,6 +100,7 @@ export default class SettingService {
       }
     } else {
       await this.#systemSettingItemManager.createEntity({
+        routeContext,
         entity: {
           groupCode,
           itemCode,
@@ -104,17 +110,18 @@ export default class SettingService {
     }
   }
 
-  async setSystemSettingValues(groupCode: string, settingValues: Record<string, any>) {
+  async setSystemSettingValues(routeContext: RouteContext, groupCode: string, settingValues: Record<string, any>) {
     for (const itemCode in settingValues) {
       const value = settingValues[itemCode];
-      await this.setSystemSettingValue(groupCode, itemCode, value);
+      await this.setSystemSettingValue(routeContext, groupCode, itemCode, value);
     }
   }
   //#endregion
 
   //#region User Setting
-  async getUserSettingItems(ownerId: number, groupCode: string): Promise<UserSettingItem[]> {
+  async getUserSettingItems(routeContext: RouteContext, ownerId: number, groupCode: string): Promise<UserSettingItem[]> {
     return await this.#userSettingItemManager.findEntities({
+      routeContext,
       filters: [
         {
           operator: "eq",
@@ -130,8 +137,8 @@ export default class SettingService {
     });
   }
 
-  async getUserSettingValues(ownerId: number, groupCode: string): Promise<Record<string, any>> {
-    const settingItems = await this.getUserSettingItems(ownerId, groupCode);
+  async getUserSettingValues(routeContext: RouteContext, ownerId: number, groupCode: string): Promise<Record<string, any>> {
+    const settingItems = await this.getUserSettingItems(routeContext, ownerId, groupCode);
 
     return settingItems.reduce<Record<string, any>>((settingValues, settingItem) => {
       settingValues[settingItem.itemCode] = settingItem.value;
@@ -139,8 +146,9 @@ export default class SettingService {
     }, {});
   }
 
-  async getUserSettingValue(ownerId: number, groupCode: string, itemCode: string): Promise<any> {
+  async getUserSettingValue(routeContext: RouteContext, ownerId: number, groupCode: string, itemCode: string): Promise<any> {
     const settingItem = await this.#systemSettingItemManager.findEntity({
+      routeContext,
       filters: [
         {
           operator: "eq",
@@ -163,8 +171,9 @@ export default class SettingService {
     return settingItem ? settingItem.value : null;
   }
 
-  async setUserSettingValue(ownerId: number, groupCode: string, itemCode: string, value: any) {
+  async setUserSettingValue(routeContext: RouteContext, ownerId: number, groupCode: string, itemCode: string, value: any) {
     const settingItem = await this.#userSettingItemManager.findEntity({
+      routeContext,
       filters: [
         {
           operator: "eq",
@@ -203,10 +212,10 @@ export default class SettingService {
     }
   }
 
-  async setUserSettingValues(ownerId: number, groupCode: string, settingValues: Record<string, any>) {
+  async setUserSettingValues(routeContext: RouteContext, ownerId: number, groupCode: string, settingValues: Record<string, any>) {
     for (const itemCode in settingValues) {
       const value = settingValues[itemCode];
-      await this.setUserSettingValue(ownerId, groupCode, itemCode, value);
+      await this.setUserSettingValue(routeContext, ownerId, groupCode, itemCode, value);
     }
   }
   //#endregion
