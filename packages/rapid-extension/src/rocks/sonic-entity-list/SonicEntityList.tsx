@@ -117,9 +117,10 @@ export default {
     const dataSourceCode = props.dataSourceCode || "list";
     const pageSize = get(props, "pageSize", DEFAULT_PAGE_SIZE);
     let entityListRockConfig: RapidEntityListRockConfig = {
-      ...(omit(MoveStyleUtils.omitSystemRockConfigFields(props), ["newForm", "editForm"]) as RapidEntityListConfig),
+      ...(omit(MoveStyleUtils.omitSystemRockConfigFields(props), ["newForm", "editForm", "style"]) as RapidEntityListConfig),
       dataSourceCode,
       pageSize,
+      autoHeight: true,
       $type: "rapidEntityList",
       $id: `${props.$id}-rapidEntityList`,
     };
@@ -491,7 +492,12 @@ export default {
       $type: "scope",
       initialVars: scopeInitVars,
       stores: props.stores,
-      children: childrenConfig,
+      children: {
+        $type: "box",
+        className: "sonic-entity-list",
+        children: childrenConfig,
+        style: props.style,
+      },
       eventSubscriptions: [
         {
           eventName: "onRefreshButtonClick",

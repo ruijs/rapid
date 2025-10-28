@@ -334,6 +334,7 @@ export default {
             }
           : {}),
       },
+      autoHeight: props.autoHeight,
       size: "small",
       rowKey: "id",
       rowSelection,
