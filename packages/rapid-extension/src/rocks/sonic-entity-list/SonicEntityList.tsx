@@ -120,7 +120,6 @@ export default {
       ...(omit(MoveStyleUtils.omitSystemRockConfigFields(props), ["newForm", "editForm", "style"]) as RapidEntityListConfig),
       dataSourceCode,
       pageSize,
-      autoHeight: true,
       $type: "rapidEntityList",
       $id: `${props.$id}-rapidEntityList`,
     };
