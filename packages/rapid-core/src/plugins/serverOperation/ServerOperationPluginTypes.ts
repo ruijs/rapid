@@ -6,6 +6,11 @@ export interface ServerOperation {
   code: string;
   description?: string;
   method: RpdHttpMethod;
+
+  /**
+   * 接口路径，默认值为 `/app/{code}`
+   */
+  path?: string;
   permissionCheck?: PermissionCheckPolicy;
   handler: (ctx: ActionHandlerContext) => Promise<void>;
 }
