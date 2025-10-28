@@ -7,6 +7,7 @@ import { extractCertLicense } from "./helpers/certHelper";
 import dayjs from "dayjs";
 import { get, isString } from "lodash";
 import { isNullOrUndefinedOrEmpty } from "~/utilities/typeUtility";
+import { RouteContext } from "~/core/routeContext";
 
 export interface GetSystemSettingValuesInput {
   groupCode: string;
@@ -35,8 +36,10 @@ export default class LicenseService {
   }
 
   async loadLicense(): Promise<void> {
+    const routeContext = new RouteContext(this.#server, null);
+
     const settingService = this.#server.getService<SettingService>("settingService");
-    const licenseSettings = await settingService.getSystemSettingValues("license");
+    const licenseSettings = await settingService.getSystemSettingValues(routeContext, "license");
     const { deployId, cert: certText } = licenseSettings as LicenseSettings;
 
     if (!deployId || !certText) {
@@ -64,8 +67,9 @@ export default class LicenseService {
   }
 
   async updateLicense(certText: string) {
+    const routeContext = new RouteContext(this.#server, null);
     const settingService = this.#server.getService<SettingService>("settingService");
-    const deployId: string = await settingService.getSystemSettingValue("license", "deployId");
+    const deployId: string = await settingService.getSystemSettingValue(routeContext, "license", "deployId");
 
     let license: RpdLicense;
     try {
@@ -75,7 +79,7 @@ export default class LicenseService {
       throw new Error("Parse license failed.");
     }
 
-    await settingService.setSystemSettingValue("license", "cert", certText);
+    await settingService.setSystemSettingValue(routeContext, "license", "cert", certText);
     this.#license = license;
     return license;
   }
