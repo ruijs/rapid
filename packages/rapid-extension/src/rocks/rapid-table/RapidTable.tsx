@@ -6,7 +6,7 @@ import { filter, get, isFunction, isNumber, isString, map, merge, omit, reduce, 
 import RapidTableMeta from "./RapidTableMeta";
 import { RapidTableRockConfig } from "./rapid-table-types";
 import { parseRockExpressionFunc } from "../../utils/parse-utility";
-import { memo } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import VirtualTable from "./VirtualTable";
 import { RapidTableColumnConfig, RapidTableColumnRockConfig } from "../rapid-table-column/rapid-table-column-types";
 import { roundWithPrecision } from "../../utils/number-utility";
@@ -125,6 +125,16 @@ export default {
   Renderer(context, props: RapidTableRockConfig) {
     const { framework, logger, page, scope } = context;
 
+    const tableRef = useRef<any>(null);
+    const [tableHeight, setTableHeight] = useState<number | undefined>(undefined);
+
+    const viewPortHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    useEffect(() => {
+      if (tableRef.current && props.autoHeight) {
+        setTableHeight(tableRef.current?.offsetHeight);
+      }
+    }, [tableRef.current, viewPortHeight]);
+
     const columns = filter(props.columns, (column) => !column._hidden);
 
     const tableColumns = map(columns, (column) => convertRapidTableColumnToAntdTableColumn(logger, framework, context, column));
@@ -181,7 +191,7 @@ export default {
       columns: tableColumns,
       scroll: {
         x: columnsTotalWidth,
-        y: props.height,
+        y: props.height || tableHeight,
       },
     };
 
@@ -234,7 +244,7 @@ export default {
       return <VirtualTable {...antdProps} onRow={onRow} />;
     }
 
-    return <Table className="rapid-table" {...antdProps} onRow={onRow}></Table>;
+    return <Table ref={tableRef} className="rapid-table" {...antdProps} onRow={onRow}></Table>;
   },
 
   ...RapidTableMeta,
