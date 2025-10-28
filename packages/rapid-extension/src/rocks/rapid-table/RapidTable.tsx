@@ -130,7 +130,7 @@ export default {
 
     const viewPortHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
     useEffect(() => {
-      if (tableRef.current && props.autoHeight) {
+      if (tableRef.current && props.tableAutoHeight) {
         setTableHeight(tableRef.current?.offsetHeight);
       }
     }, [tableRef.current, viewPortHeight]);

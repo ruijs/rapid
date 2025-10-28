@@ -115,6 +115,11 @@ export interface RapidEntityListConfig {
   tableProps?: Record<string, any>;
 
   /**
+   * 自动设置表格高度
+   */
+  tableAutoHeight?: boolean;
+
+  /**
    * 是否在点击行时选中
    */
   selectOnClickRow?: boolean;
