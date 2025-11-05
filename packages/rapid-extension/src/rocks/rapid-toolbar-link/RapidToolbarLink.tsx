@@ -16,6 +16,7 @@ export default {
       icon: props.icon ? { $type: "antdIcon", name: props.icon } : null,
       size: props.size,
       href: props.url,
+      target: props.target,
       children: {
         $type: "htmlElement",
         htmlTag: "span",
