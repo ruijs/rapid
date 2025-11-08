@@ -1,5 +1,6 @@
 import { isArray, isObject } from "lodash";
 import { HttpStatus, ResponseData } from "./http-types";
+import { Cookie, setCookie } from "~/deno-std/http/cookie";
 
 export const GlobalResponse = global.Response;
 
@@ -65,6 +66,10 @@ export class RapidResponse {
       headers: this.headers,
       status: this.status,
     });
+  }
+
+  setCookie(cookie: Cookie) {
+    setCookie(this.headers, cookie);
   }
 
   getResponse() {
