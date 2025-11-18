@@ -37,7 +37,7 @@ export interface RapidEntityListConfig {
   /**
    * 是否使用页面级的数据源。
    * 默认使用最近的scope中的数据源。
-   * 当使用页面级数据源时，应指定`dataSourceCode`已避免数据冲突。
+   * 当使用页面级数据源时，应指定`dataSourceCode`以避免数据冲突。
    */
   useStoreInPageScope?: boolean;
 
