@@ -90,6 +90,9 @@ export type RapidFormConfig = {
 
   onValuesChange?: RockEventHandlerConfig;
 
+  fieldNameOfFormDataInDataSource?: string;
+
+  // TODO: defaultFormFields直接配置成表单项可用的数据格式即可，为什么还要经过这个formDataAdapter的预处理？
   /**
    * 对defaultFormFields或者数据源中的数据进行预处理的函数。
    * 可在函数中使用以下变量：

@@ -173,19 +173,19 @@ export default {
       if (props.dataSourceCode && !props.disabledLoadStore) {
         values = {
           ...props.defaultFormFields,
-          ...get(scope.stores[props.dataSourceCode], "data.list[0]"),
+          ...(props.fieldNameOfFormDataInDataSource ? get(dataSource, props.fieldNameOfFormDataInDataSource) : dataSource),
         };
       } else {
         values = props.defaultFormFields;
       }
 
       if (typeof props.formDataAdapter === "string" && trim(props.formDataAdapter)) {
-        const adapter = parseRockExpressionFunc(props.formDataAdapter, { data: values, form: state.form }, context);
-        values = adapter();
+        const formDataAdapter = parseRockExpressionFunc(props.formDataAdapter, { data: values, form: state.form }, context);
+        values = formDataAdapter();
       }
 
       return values || {};
-    }, [props.defaultFormFields, props.disabledLoadStore, dataSource]);
+    }, [props.defaultFormFields, props.disabledLoadStore, props.fieldNameOfFormDataInDataSource, dataSource]);
 
     useEffect(() => {
       state.form.setFieldsValue(initialValues);

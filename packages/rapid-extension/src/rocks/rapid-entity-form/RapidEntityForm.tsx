@@ -462,6 +462,7 @@ export default {
       actions: formConfig.actions,
       actionsLayout: formConfig.actionsLayout,
       defaultFormFields: formConfig.defaultFormFields,
+      fieldNameOfFormDataInDataSource: formConfig.fieldNameOfFormDataInDataSource,
       formDataAdapter: formConfig.formDataAdapter,
       onSubmit: formConfig.mode === "view" ? null : onSubmit,
       onFormRefresh: formConfig.onFormRefresh,
