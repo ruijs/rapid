@@ -23,6 +23,7 @@ import RapidJsonFormInput from "./rapid-json-form-input/RapidJsonFormInput";
 import RapidJsonRenderer from "./rapid-json-renderer/RapidJsonRenderer";
 import RapidLinkRenderer from "./rapid-link-renderer/RapidLinkRenderer";
 import RapidModalRecordAction from "./rapid-modal-record-action/RapidModalRecordAction";
+import RapidMultilineTextRenderer from "./rapid-multiline-text-renderer/RapidMultilineTextRenderer";
 import RapidNumberRenderer from "./rapid-number-renderer/RapidNumberRenderer";
 import RapidObjectRenderer from "./rapid-object-renderer/RapidObjectRenderer";
 import RapidOptionFieldRenderer from "./rapid-option-field-renderer/RapidOptionFieldRenderer";
@@ -94,6 +95,7 @@ export default [
   RapidJsonRenderer,
   RapidLinkRenderer,
   RapidModalRecordAction,
+  RapidMultilineTextRenderer,
   RapidNumberRenderer,
   RapidObjectRenderer,
   RapidOptionFieldRenderer,
