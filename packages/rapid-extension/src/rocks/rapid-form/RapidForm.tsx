@@ -149,9 +149,8 @@ export default {
               $id: `${props.$id}-actions-wrap-form-item`,
               $type: "antdFormItem",
               style: {
-                textAlign: props.actionsAlign || "left",
+                textAlign: props.actionsAlign || (isHorizonLayout ? "center" : "left"),
               },
-              wrapperCol: isHorizonLayout ? { offset: 8 } : null,
               ...props.actionsLayout,
               children:
                 formActionRocks.length == 1
@@ -201,8 +200,8 @@ export default {
       $id: `${props.$id}-antdForm`,
       $type: "antdForm",
       form: state.form,
-      labelCol: isHorizonLayout ? { span: 8 } : null,
-      wrapperCol: isHorizonLayout ? { span: 16 } : null,
+      labelCol: isHorizonLayout ? props.labelCol || { span: 8 } : null,
+      wrapperCol: isHorizonLayout ? props.wrapperCol || { span: 16 } : null,
       layout: props.layout,
       requiredMark: props.requiredMark,
       initialValues,

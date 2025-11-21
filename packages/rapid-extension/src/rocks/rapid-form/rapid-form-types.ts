@@ -41,6 +41,16 @@ export type RapidFormConfig = {
   items: RapidFormItemConfig[];
 
   /**
+   * 表单项标签布局
+   */
+  labelCol?: { span?: number; offset?: number; flex?: string | number };
+
+  /**
+   * 表单控件布局
+   */
+  wrapperCol?: { span?: number; offset?: number; flex?: string | number };
+
+  /**
    * 表单操作配置。如：提交、重置、取消等
    */
   actions?: RapidFormAction[];
@@ -49,14 +59,15 @@ export type RapidFormConfig = {
    * 表单操作布局
    */
   actionsLayout?: {
-    labelCol?: { span?: number; offset?: number };
-    wrapperCol?: { span?: number; offset?: number };
+    labelCol?: { span?: number; offset?: number; flex?: string | number };
+
+    wrapperCol?: { span?: number; offset?: number; flex?: string | number };
   };
 
   /**
    * 操作按钮对齐方式
    */
-  actionsAlign?: "left" | "right" | "center";
+  actionsAlign?: "center" | "left" | "right";
 
   /**
    * 表单固定字段，用于数据提交
