@@ -109,8 +109,8 @@ export type RapidFormItemConfig = {
    * 表单项唯一性字段
    */
   uniqueKey?: string;
-  labelCol?: { span?: number; offset?: number };
-  wrapperCol?: { span?: number; offset?: number };
+  labelCol?: { span?: number; offset?: number; flex?: string | number };
+  wrapperCol?: { span?: number; offset?: number; flex?: string | number };
   /**
    * 依赖form字段, 依赖字段变更触发表单项reload store
    */
