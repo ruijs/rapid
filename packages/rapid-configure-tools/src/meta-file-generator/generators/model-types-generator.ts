@@ -80,7 +80,7 @@ function generateEntityTypes(metaDir: string) {
   const referencedDictionaryCodes = [];
   for (const entity of entities) {
     for (const field of entity.fields) {
-      if (field.type === "option" && field.dataDictionary) {
+      if ((field.type === "option" || field.type === "option[]") && field.dataDictionary) {
         referencedDictionaryCodes.push(field.dataDictionary);
       }
     }
