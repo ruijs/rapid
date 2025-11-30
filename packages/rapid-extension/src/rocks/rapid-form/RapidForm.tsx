@@ -166,10 +166,10 @@ export default {
       ],
     };
 
-    const dataSource = props.dataSourceCode && get(scope.stores[props.dataSourceCode], "data.list[0]");
+    const dataSource = props.dataSource || (props.dataSourceCode && get(scope.stores[props.dataSourceCode], "data.list[0]"));
     const initialValues = useMemo(() => {
       let values;
-      if (props.dataSourceCode && !props.disabledLoadStore) {
+      if (dataSource || (props.dataSourceCode && !props.disabledLoadStore)) {
         values = {
           ...props.defaultFormFields,
           ...(props.fieldNameOfFormDataInDataSource ? get(dataSource, props.fieldNameOfFormDataInDataSource) : dataSource),

@@ -474,6 +474,7 @@ export default {
       items: formItems,
       disabledLoadStore: formConfig.disabledLoadStore,
       dataSourceCode: formConfig.mode === "new" ? null : !props.disabledLoadStore ? props.dataSourceCode || "detail" : null,
+      dataSource: props.dataSource,
       fixedFields: formConfig.fixedFields,
       fieldNameOfFormDataInSubmitData: formConfig.fieldNameOfFormDataInSubmitData,
     };

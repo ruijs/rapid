@@ -4,9 +4,14 @@ import { RapidFormSubmitOptions } from "../../types/rapid-action-types";
 
 export type RapidFormConfig = {
   /**
-   * 数据源编号：当disabledLoadStore为true时，忽略当前字段配置
+   * 数据源编号：当dataSource不为null或者disabledLoadStore为true时，忽略当前字段配置
    */
   dataSourceCode?: string | null;
+
+  /**
+   * 数据源。
+   */
+  dataSource?: Record<string, any>;
 
   /**
    * 禁用store后，dataSourceCode不起作用
