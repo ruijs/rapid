@@ -108,14 +108,15 @@ export class EntityStore implements IStore<EntityStoreConfig> {
     }
 
     const expressions = this.#config.$exps;
+    const fixedFilters = cloneDeep(this.#config.fixedFilters);
     const config: Partial<EntityStoreConfig> = {
-      fixedFilters: cloneDeep(this.#config.fixedFilters),
       filters: cloneDeep(this.#config.filters),
       orderBy: cloneDeep(this.#config.orderBy),
       properties: cloneDeep(this.#config.properties),
       relations: cloneDeep(this.#config.relations),
       pagination: cloneDeep(this.#config.pagination),
       keepNonPropertyFields: this.#config.keepNonPropertyFields,
+      includingSoftDeleted: this.#config.includingSoftDeleted,
     };
 
     if (expressions) {
@@ -136,34 +137,30 @@ export class EntityStore implements IStore<EntityStoreConfig> {
       return;
     }
 
+    if (input) {
+      Object.assign(config!, input);
+    }
+
+    if (fixedFilters && fixedFilters.length) {
+      if (!config.filters || !config.filters.length) {
+        config.filters = fixedFilters;
+      } else {
+        config.filters = [
+          {
+            operator: "and",
+            filters: [...fixedFilters, ...config.filters],
+          },
+        ];
+      }
+    }
+
     const apiBaseUrl = rapidAppDefinition.getApiBaseUrl();
 
     const requestOptions: HttpRequestOptions<FindEntityOptions> = {
       method: "POST",
       url: `${apiBaseUrl}/${entityModel.namespace}/${entityModel.pluralCode}/operations/find`,
-      data: {
-        filters: config.filters,
-        orderBy: config.orderBy,
-        properties: config.properties,
-        relations: config.relations,
-        pagination: config.pagination,
-        keepNonPropertyFields: config.keepNonPropertyFields,
-      },
+      data: config,
     };
-
-    if (input) {
-      Object.assign(requestOptions.data!, input);
-    }
-
-    const { fixedFilters } = config;
-    if (fixedFilters && fixedFilters.length) {
-      requestOptions.data!.filters = [
-        {
-          operator: "and",
-          filters: [...fixedFilters, ...(requestOptions.data!.filters! || [])],
-        },
-      ];
-    }
 
     const response = await MoveStyleUtils.request(requestOptions);
     // TODO: should deal with response.statusCode

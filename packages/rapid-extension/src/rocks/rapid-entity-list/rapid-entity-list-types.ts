@@ -84,6 +84,10 @@ export interface RapidEntityListConfig {
    */
   relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
 
+  keepNonPropertyFields?: boolean;
+
+  includingSoftDeleted?: boolean;
+
   /**
    * 针对记录的操作
    */
