@@ -248,7 +248,11 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     });
   }
 
-  const rowFilters = await convertEntityFiltersToRowFilters(routeContext, server, model, baseModel, options.filters);
+  let entityFilters = options.filters;
+  if (!options.includingSoftDeleted) {
+    entityFilters = tryAddUndeletedEntityFilter(model, baseModel, entityFilters);
+  }
+  const rowFilters = await convertEntityFiltersToRowFilters(routeContext, server, model, baseModel, entityFilters);
   const findRowOptions: FindRowOptions = {
     filters: rowFilters,
     orderBy: convertEntityOrderByToRowOrderBy(server, model, baseModel, options.orderBy),
@@ -391,6 +395,34 @@ async function findById(server: IRpdServer, dataAccessor: IRpdDataAccessor, opti
   });
 }
 
+const UNDELETED_ENTITY_FILTER_OPTIONS: EntityFilterOptions = {
+  operator: "null",
+  field: "deletedAt",
+};
+
+function tryAddUndeletedEntityFilter(model: RpdDataModel, baseModel: RpdDataModel, filters: EntityFilterOptions[] | undefined) {
+  let isEntitySoftDeleteEnabled = baseModel ? baseModel.softDelete : model.softDelete;
+  if (!isEntitySoftDeleteEnabled) {
+    return filters;
+  }
+
+  if (!filters || !filters.length) {
+    filters = [UNDELETED_ENTITY_FILTER_OPTIONS];
+  } else if (filters.length === 1 && filters[0].operator === "and") {
+    let andFilters = filters[0].filters;
+    if (!andFilters || !andFilters.length) {
+      andFilters = [UNDELETED_ENTITY_FILTER_OPTIONS];
+    } else {
+      andFilters = [UNDELETED_ENTITY_FILTER_OPTIONS, ...andFilters];
+    }
+    filters[0].filters = andFilters;
+  } else {
+    filters = [UNDELETED_ENTITY_FILTER_OPTIONS, ...filters];
+  }
+
+  return filters;
+}
+
 async function convertEntityFiltersToRowFilters(
   routeContext: RouteContext,
   server: IRpdServer,
@@ -421,9 +453,24 @@ async function convertEntityFiltersToRowFilters(
         );
       }
 
-      const relatedEntityFilters = filter.filters;
+      let relatedEntityFilters = filter.filters;
       if (!relatedEntityFilters || !relatedEntityFilters.length) {
         throw new Error(`Invalid filters. 'filters' must be provided on filter with 'existence' operator.`);
+      }
+
+      const relatedEntityDataAccessor = server.getDataAccessor({
+        singularCode: relationProperty.targetSingularCode as string,
+      });
+      const relatedModel = relatedEntityDataAccessor.getModel();
+      let relatedBaseModel: RpdDataModel;
+      if (relatedModel.base) {
+        relatedBaseModel = server.getModel({
+          singularCode: relatedModel.base,
+        });
+      }
+
+      if (!filter.includingSoftDeleted) {
+        relatedEntityFilters = tryAddUndeletedEntityFilter(relatedModel, relatedBaseModel, relatedEntityFilters);
       }
 
       if (relationProperty.relation === "one") {
@@ -453,19 +500,9 @@ async function convertEntityFiltersToRowFilters(
           }
         }
 
-        const dataAccessor = server.getDataAccessor({
-          singularCode: relationProperty.targetSingularCode as string,
-        });
-        const relatedModel = dataAccessor.getModel();
-        let relatedBaseModel: RpdDataModel;
-        if (relatedModel.base) {
-          relatedBaseModel = server.getModel({
-            singularCode: relatedModel.base,
-          });
-        }
-        const rows = await dataAccessor.find(
+        const rows = await relatedEntityDataAccessor.find(
           {
-            filters: await convertEntityFiltersToRowFilters(routeContext, server, relatedModel, relatedBaseModel, filter.filters),
+            filters: await convertEntityFiltersToRowFilters(routeContext, server, relatedModel, relatedBaseModel, relatedEntityFilters),
             fields: [
               {
                 name: "id",
@@ -490,19 +527,9 @@ async function convertEntityFiltersToRowFilters(
           throw new Error(`Invalid filters. 'selfIdColumnName' of property '${relationProperty.code}' was not configured`);
         }
 
-        const targetEntityDataAccessor = server.getDataAccessor({
-          singularCode: relationProperty.targetSingularCode as string,
-        });
-        const relatedModel = targetEntityDataAccessor.getModel();
-        let relatedBaseModel: RpdDataModel;
-        if (relatedModel.base) {
-          relatedBaseModel = server.getModel({
-            singularCode: relatedModel.base,
-          });
-        }
-        const targetEntities = await targetEntityDataAccessor.find(
+        const targetEntities = await relatedEntityDataAccessor.find(
           {
-            filters: await convertEntityFiltersToRowFilters(routeContext, server, relatedModel, relatedBaseModel, filter.filters),
+            filters: await convertEntityFiltersToRowFilters(routeContext, server, relatedModel, relatedBaseModel, relatedEntityFilters),
             fields: [
               {
                 name: relationProperty.selfIdColumnName,
@@ -534,19 +561,9 @@ async function convertEntityFiltersToRowFilters(
         // 1. find target entities
         // 2. find links
         // 3. convert to 'in' filter
-        const targetEntityDataAccessor = server.getDataAccessor({
-          singularCode: relationProperty.targetSingularCode as string,
-        });
-        const relatedModel = targetEntityDataAccessor.getModel();
-        let relatedBaseModel: RpdDataModel;
-        if (relatedModel.base) {
-          relatedBaseModel = server.getModel({
-            singularCode: relatedModel.base,
-          });
-        }
-        const targetEntities = await targetEntityDataAccessor.find(
+        const targetEntities = await relatedEntityDataAccessor.find(
           {
-            filters: await convertEntityFiltersToRowFilters(routeContext, server, relatedModel, relatedBaseModel, filter.filters),
+            filters: await convertEntityFiltersToRowFilters(routeContext, server, relatedModel, relatedBaseModel, relatedEntityFilters),
             fields: [
               {
                 name: "id",
@@ -683,6 +700,9 @@ async function findManyRelationLinksViaLinkTable(options: FindManyRelationEntiti
       if (!isUndefined(selectRelationOptions.keepNonPropertyFields)) {
         findEntityOptions.keepNonPropertyFields = selectRelationOptions.keepNonPropertyFields;
       }
+      if (!isUndefined(selectRelationOptions.includingSoftDeleted)) {
+        findEntityOptions.includingSoftDeleted = selectRelationOptions.includingSoftDeleted;
+      }
     }
   }
 
@@ -739,6 +759,9 @@ async function findManyRelatedEntitiesViaIdPropertyCode(options: FindManyRelatio
       if (!isUndefined(selectRelationOptions.keepNonPropertyFields)) {
         findEntityOptions.keepNonPropertyFields = selectRelationOptions.keepNonPropertyFields;
       }
+      if (!isUndefined(selectRelationOptions.includingSoftDeleted)) {
+        findEntityOptions.includingSoftDeleted = selectRelationOptions.includingSoftDeleted;
+      }
     }
   }
 
@@ -771,6 +794,12 @@ async function findOneRelatedEntitiesViaIdPropertyCode(options: FindOneRelationE
       }
       if (selectRelationOptions.relations) {
         findEntityOptions.relations = selectRelationOptions.relations;
+      }
+      if (!isUndefined(selectRelationOptions.keepNonPropertyFields)) {
+        findEntityOptions.keepNonPropertyFields = selectRelationOptions.keepNonPropertyFields;
+      }
+      if (!isUndefined(selectRelationOptions.includingSoftDeleted)) {
+        findEntityOptions.includingSoftDeleted = selectRelationOptions.includingSoftDeleted;
       }
     }
   }

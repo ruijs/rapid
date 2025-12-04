@@ -460,6 +460,7 @@ export interface FindEntityOptions {
   properties?: string[] | Record<string, any> | null;
   relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
   keepNonPropertyFields?: boolean | null;
+  includingSoftDeleted?: boolean | null;
 }
 
 export type FindEntityFindRelationEntitiesOptions = FindEntityFindOneRelationEntitiesOptions | FindEntityFindManyRelationEntitiesOptions;
@@ -470,6 +471,7 @@ export type FindEntityFindOneRelationEntitiesOptions =
       properties?: string[];
       relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
       keepNonPropertyFields?: boolean;
+      includingSoftDeleted?: boolean;
     };
 
 export type FindEntityFindManyRelationEntitiesOptions =
@@ -481,6 +483,7 @@ export type FindEntityFindManyRelationEntitiesOptions =
       orderBy?: FindEntityOrderByOptions[];
       pagination?: FindEntityPaginationOptions;
       keepNonPropertyFields?: boolean;
+      includingSoftDeleted?: boolean;
     };
 
 export interface FindEntityRelationalFilterOptions {

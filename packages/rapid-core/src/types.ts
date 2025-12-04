@@ -681,6 +681,10 @@ export interface FindEntityOptions {
   relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
   extraColumnsToSelect?: ColumnSelectOptions[];
   keepNonPropertyFields?: boolean;
+  /**
+   * 是否包含已经软删除的实体
+   */
+  includingSoftDeleted?: boolean;
 }
 
 export interface FindEntityByIdOptions {
@@ -725,6 +729,7 @@ export interface FindEntityExistenceFilterOptions {
   field: string;
   operator: EntityFilterExistenceOperators;
   filters: EntityFilterOptions[];
+  includingSoftDeleted?: boolean;
 }
 
 export interface FindEntityPaginationOptions {
@@ -741,6 +746,7 @@ export type FindEntityFindOneRelationEntitiesOptions =
       properties?: string[];
       relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
       keepNonPropertyFields?: boolean;
+      includingSoftDeleted?: boolean;
     };
 
 export type FindEntityFindManyRelationEntitiesOptions =
@@ -752,6 +758,7 @@ export type FindEntityFindManyRelationEntitiesOptions =
       orderBy?: FindEntityOrderByOptions[];
       pagination?: FindEntityPaginationOptions;
       keepNonPropertyFields?: boolean;
+      includingSoftDeleted?: boolean;
     };
 
 export interface FindEntityOrderByOptions {

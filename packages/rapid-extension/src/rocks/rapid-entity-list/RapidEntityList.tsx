@@ -168,6 +168,7 @@ export default {
         entityModel: mainEntity,
         fixedFilters: props.fixedFilters,
         keepNonPropertyFields: props.keepNonPropertyFields,
+        includingSoftDeleted: props.includingSoftDeleted,
         properties,
         relations: props.relations,
         orderBy: props.orderBy ||
