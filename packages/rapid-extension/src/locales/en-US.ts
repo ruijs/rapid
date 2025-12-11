@@ -26,6 +26,7 @@ const resource: LocaleResource = {
     saveSuccess: "Save success.",
     search: "Search",
     selectEntityModalTitle: "Select {{entityName}}",
+    updateSuccess: "Update success.",
     updateError: "Failed to update: {{message}}",
     uploadButtonText: "Select file",
   },

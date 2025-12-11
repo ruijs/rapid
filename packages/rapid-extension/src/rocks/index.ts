@@ -40,6 +40,7 @@ import RapidToolbarButton from "./rapid-toolbar-button/RapidToolbarButton";
 import RapidToolbarFormModalButton from "./rapid-toolbar-form-modal-button/RapidToolbarFormModalButton";
 import RapidToolbarLink from "./rapid-toolbar-link/RapidToolbarLink";
 import RapidToolbarPageLink from "./rapid-toolbar-page-link/RapidToolbarPageLink";
+import RapidToolbarUpdateEntityButton from "./rapid-toolbar-update-entity-button/RapidToolbarUpdateEntityButton";
 import RapidToolbar from "./rapid-toolbar/RapidToolbar";
 import RapidTreeSelect from "./rapid-tree-select/RapidTreeSelect";
 import RapidUploaderFormInput from "./rapid-uploader-form-input/RapidUploaderFormInput";
@@ -116,6 +117,7 @@ export default [
   RapidToolbarModalButton,
   RapidToolbarLink,
   RapidToolbarPageLink,
+  RapidToolbarUpdateEntityButton,
   RapidTreeSelect,
   RapidUploaderFormInput,
   SonicEntityDetails,

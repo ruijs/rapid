@@ -1,5 +1,5 @@
 import { handleComponentEvent, Rock, RockConfig, RockEvent } from "@ruiapp/move-style";
-import RapidToolbarMeta from "./RapidToolbarButtonMeta";
+import RapidToolbarButtonMeta from "./RapidToolbarButtonMeta";
 import { renderRock } from "@ruiapp/react-renderer";
 import { RapidToolbarButtonRockConfig } from "./rapid-toolbar-button-types";
 import { Modal } from "antd";
@@ -32,7 +32,7 @@ export default {
       },
     };
 
-    if (props.actionType === "pageLink") {
+    if ((props.actionType as any) === "pageLink") {
       buttonRockConfig.href = `/pages/${props.pageCode}`;
     } else if (props.actionType === "link") {
       buttonRockConfig.href = props.url;
@@ -75,5 +75,5 @@ export default {
     return renderRock({ context, rockConfig: toolTipRockConfig || buttonRockConfig });
   },
 
-  ...RapidToolbarMeta,
+  ...RapidToolbarButtonMeta,
 } as Rock;

@@ -26,6 +26,7 @@ const resource: LocaleResource = {
     saveSuccess: "保存成功。",
     search: "搜索",
     selectEntityModalTitle: "选择{{entityName}}",
+    updateSuccess: "更新成功。",
     updateError: "更新失败：{{message}}",
     uploadButtonText: "选择文件",
   },
