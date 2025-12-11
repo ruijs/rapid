@@ -425,11 +425,11 @@ importers:
         specifier: ~1.19.3
         version: 1.19.3
       '@ruiapp/move-style':
-        specifier: ^0.4.21
-        version: 0.4.21(@ruiapp/log@0.1.0(dayjs@1.11.10)(winston@3.11.0))(lodash@4.17.21)
+        specifier: ^0.4.22
+        version: 0.4.22(@ruiapp/log@0.1.0(dayjs@1.11.10)(winston@3.11.0))(lodash@4.17.21)
       '@ruiapp/react-renderer':
         specifier: ^0.4.4
-        version: 0.4.4(@ruiapp/move-style@0.4.21(@ruiapp/log@0.1.0(dayjs@1.11.10)(winston@3.11.0))(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 0.4.4(@ruiapp/move-style@0.4.22(@ruiapp/log@0.1.0(dayjs@1.11.10)(winston@3.11.0))(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       axios:
         specifier: ^1.1.2
         version: 1.6.7
@@ -2683,6 +2683,12 @@ packages:
 
   '@ruiapp/move-style@0.4.21':
     resolution: {integrity: sha512-OahaqIF26CE95kKHUhSKohPE/HAanswAqBsjCzKJASW0irbi2xoiW20w3Z4xCPkZtuavaIiepXWIjrnOyTjnIQ==}
+    peerDependencies:
+      '@ruiapp/log': ^0.1.0
+      lodash: ^4.17.21
+
+  '@ruiapp/move-style@0.4.22':
+    resolution: {integrity: sha512-333q6BLD/ixjn6t6aYbk2mqnNNtdFoy26SsmR7tOkUps8J5xM25vEIHnL1I2+jKu2kIb1Kkj7gUDWIUKnd7//g==}
     peerDependencies:
       '@ruiapp/log': ^0.1.0
       lodash: ^4.17.21
@@ -11601,9 +11607,25 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
+  '@ruiapp/move-style@0.4.22(@ruiapp/log@0.1.0(dayjs@1.11.10)(winston@3.11.0))(lodash@4.17.21)':
+    dependencies:
+      '@ruiapp/log': 0.1.0(dayjs@1.11.10)(winston@3.11.0)
+      axios: 1.6.8
+      events: 3.3.0
+      lodash: 4.17.21
+      qs: 6.12.1
+    transitivePeerDependencies:
+      - debug
+
   '@ruiapp/react-renderer@0.4.4(@ruiapp/move-style@0.4.21(@ruiapp/log@0.1.0(dayjs@1.11.10)(winston@3.11.0))(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@ruiapp/move-style': 0.4.21(@ruiapp/log@0.1.0(dayjs@1.11.10)(winston@3.11.0))(lodash@4.17.21)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+
+  '@ruiapp/react-renderer@0.4.4(@ruiapp/move-style@0.4.22(@ruiapp/log@0.1.0(dayjs@1.11.10)(winston@3.11.0))(lodash@4.17.21))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+    dependencies:
+      '@ruiapp/move-style': 0.4.22(@ruiapp/log@0.1.0(dayjs@1.11.10)(winston@3.11.0))(lodash@4.17.21)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
