@@ -50,15 +50,11 @@ export type RapidActionBase = {
   onAction?: RockEventHandlerConfig;
 };
 
-export type RapidActionButtonBase = RapidActionBase & {
+export type RapidToolbarActionBase = RapidActionBase & {
   actionStyle?: "default" | "primary" | "dashed" | "text" | "link";
   danger?: boolean;
   ghost?: boolean;
   size?: "small" | "middle" | "large";
-};
-
-export type RapidActionButton = RapidActionButtonBase & {
-  actionType: "button";
 };
 
 export type RapidRecordAction<TBlock> =

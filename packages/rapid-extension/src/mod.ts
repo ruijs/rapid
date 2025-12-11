@@ -74,6 +74,7 @@ export * from "./rocks/rapid-toolbar/rapid-toolbar-types";
 export * from "./rocks/rapid-toolbar-button/rapid-toolbar-button-types";
 export * from "./rocks/rapid-toolbar-link/rapid-toolbar-link-types";
 export * from "./rocks/rapid-toolbar-page-link/rapid-toolbar-page-link-types";
+export * from "./rocks/rapid-toolbar-update-entity-button/rapid-toolbar-update-entity-button-types";
 export * from "./rocks/rapid-uploader-form-input/rapid-uploader-form-input-types";
 export * from "./rocks/rapid-time-picker/rapid-time-picker-types";
 export * from "./rocks/rapid-tree-select/rapid-tree-select-types";

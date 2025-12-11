@@ -131,6 +131,8 @@ export default {
         children: [itemsRockConfig, props.footer],
       };
     } else {
+      setDefaultEntityPropsToActionRocks(props.actions, props.entityCode, props.entityId);
+
       rockConfig = {
         $id: `${props.$id}-internal-withHeader`,
         $type: "antdPageHeader",
@@ -164,3 +166,18 @@ export default {
 
   ...SonicEntityDetailsMeta,
 } as Rock<SonicEntityDetailsRockConfig>;
+
+function setDefaultEntityPropsToActionRocks(actionRocks: RockConfig[], entityCode?: string, entityId?: string) {
+  if (!actionRocks) {
+    return;
+  }
+
+  for (const actionRock of actionRocks) {
+    if (!actionRock.entityCode) {
+      actionRock.entityCode = entityCode;
+    }
+    if (!actionRock.entityId) {
+      actionRock.entityId = entityId;
+    }
+  }
+}
