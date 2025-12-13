@@ -54,6 +54,7 @@ export function autoConfigureRapidField(sourceField: RapidField): RapidField {
     i18n: sourceField.i18n,
     locales: sourceField.locales,
     deprecated: sourceField.deprecated,
+    deprecationDescription: sourceField.deprecationDescription,
   };
   return field;
 }
@@ -76,8 +77,10 @@ export function autoConfigureRapidEntity(sourceEntity: RapidEntity, entityDefini
   const tableName = sourceEntity.tableName || pluralCode;
   let entity: RapidEntity = {
     ...(pick(sourceEntity, [
+      "namespace",
       "code",
       "name",
+      "dbSchema",
       "description",
       "base",
       "derivedType",
@@ -89,14 +92,13 @@ export function autoConfigureRapidEntity(sourceEntity: RapidEntity, entityDefini
       "softDelete",
       "i18n",
       "locales",
+      "deprecated",
+      "deprecationDescription",
     ]) as any),
 
-    namespace: sourceEntity.namespace,
     singularCode,
     pluralCode,
-    dbSchema: sourceEntity.dbSchema,
     tableName,
-    deprecated: sourceEntity.deprecated,
 
     fields: autoConfigureRapidFields(sourceEntity, entityDefinitions),
   };

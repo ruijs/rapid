@@ -53,6 +53,11 @@ export type RapidDataDictionary = {
    * Indicates whether the data dictionary is deprecated.
    */
   deprecated?: boolean;
+
+  /**
+   * Deprecation description.
+   */
+  deprecationDescription?: string;
 };
 
 /**
@@ -108,6 +113,11 @@ export type RapidDataDictionaryEntry = {
    * Indicates whether the data dictionary entry is deprecated.
    */
   deprecated?: boolean;
+
+  /**
+   * Deprecation description.
+   */
+  deprecationDescription?: string;
 };
 
 export type RapidDataDictionaryLocale = {
@@ -222,6 +232,11 @@ export type RapidEntity<TEntitySingularCodes extends string = string, TDictionar
   deprecated?: boolean;
 
   /**
+   * Deprecation description.
+   */
+  deprecationDescription?: string;
+
+  /**
    * 实体字段
    */
   fields: RapidField<TEntitySingularCodes, TDictionaryCodes>[];
@@ -296,6 +311,11 @@ export type RapidField<TEntitySingularCodes extends string = string, TDictionary
    * Indicates whether the field is deprecated.
    */
   deprecated?: boolean;
+
+  /**
+   * Deprecation description.
+   */
+  deprecationDescription?: string;
 
   /**
    * 必需填写
