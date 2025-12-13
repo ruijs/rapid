@@ -54,6 +54,9 @@ function generateDictionaryTypes(metaDir: string) {
   for (const dictionary of dictionaries) {
     codes.push(`/**`);
     codes.push(` * ${dictionary.name}`);
+    if (dictionary.deprecated) {
+      codes.push(` * @deprecated ${dictionary.deprecationDescription || ""}`);
+    }
     codes.push(` */`);
     if (!dictionary.entries) {
       codes.push(`export type ${dictionary.code} = any;`);
@@ -107,6 +110,9 @@ function generateEntityTypes(metaDir: string) {
     for (const field of entity.fields) {
       codes.push(`  /**`);
       codes.push(`   * ${field.name}`);
+      if (field.deprecated) {
+        codes.push(`   * @deprecated ${field.deprecationDescription || ""}`);
+      }
       codes.push(`   */`);
       codes.push(`  ${field.code}${field.required ? "" : "?"}: ${convertSdRpdFieldTypeToTypeScriptType(field, entities)};`);
     }
