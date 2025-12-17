@@ -38,6 +38,7 @@ import { FacilityFactory } from "./core/facility";
 import { CronJobConfiguration } from "./types/cron-job-types";
 import coreRoutes from "./core/routes";
 import { interpreteConfigExpressions } from "./core/ExpressionInterpreter";
+import ifActionHandler from "./core/actionHandlers/ifActionHandler";
 
 export interface InitServerOptions {
   logger: Logger;
@@ -336,6 +337,10 @@ export class RapidServer implements IRpdServer {
 
   async start() {
     this.#logger.info("Starting rapid server...");
+
+    // register core action handlers
+    this.registerActionHandler(null, ifActionHandler);
+
     const pluginManager = this.#pluginManager;
     await pluginManager.loadPlugins(this.#plugins);
 
@@ -477,9 +482,10 @@ export class RapidServer implements IRpdServer {
   }
 
   async runActionHandlers(handlerContext: ActionHandlerContext, actions: RpdRouteActionConfig[]) {
-    if (!actions) {
+    if (!actions || !actions.length) {
       return;
     }
+
     for (const action of actions) {
       const actionCode = action.code;
       interpreteConfigExpressions(action.config, handlerContext.vars);
@@ -490,9 +496,7 @@ export class RapidServer implements IRpdServer {
       }
 
       await this.beforeRunActionHandler(handlerContext, action);
-
-      const result = await handler(handlerContext, action.config);
-      handlerContext.results.push(result);
+      await handler(handlerContext, action.config);
     }
   }
 
