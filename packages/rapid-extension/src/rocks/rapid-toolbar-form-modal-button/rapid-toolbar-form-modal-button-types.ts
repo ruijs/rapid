@@ -5,31 +5,31 @@ export interface RapidToolbarFormModalButtonConfig extends Omit<RapidToolbarButt
   /**
    * 模态框的标题
    */
-  modalTitle: string;
+  modalTitle?: string;
 
   modalBody?: RockChildrenConfig;
 
-  form: RockConfig;
+  form?: RockConfig;
 
-  onModalOpen: RockEventHandlerConfig;
+  onModalOpen?: RockEventHandlerConfig;
 
-  onModalOk: RockEventHandlerConfig;
+  onModalOk?: RockEventHandlerConfig;
 
-  onModalCancel: RockEventHandlerConfig;
+  onModalCancel?: RockEventHandlerConfig;
 
   /**
    * @deprecated 请使用 onSubmitSuccess
    */
-  onSaveSuccess: RockEventHandlerConfig;
+  onSaveSuccess?: RockEventHandlerConfig;
 
-  onSubmitSuccess: RockEventHandlerConfig;
+  onSubmitSuccess?: RockEventHandlerConfig;
 
   /**
    * @deprecated 请使用 onSubmitError
    */
-  onSaveError: RockEventHandlerConfig;
+  onSaveError?: RockEventHandlerConfig;
 
-  onSubmitError: RockEventHandlerConfig;
+  onSubmitError?: RockEventHandlerConfig;
 }
 
 export interface RapidToolbarFormModalButtonRockConfig extends SimpleRockConfig, RapidToolbarFormModalButtonConfig {}
