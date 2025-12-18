@@ -177,6 +177,11 @@ export type RapidFormAction = {
   actionProps?: any;
 
   /**
+   * 是否隐藏
+   */
+  hidden?: boolean;
+
+  /**
    * 动作数据，提交时会合并到表单数据中
    */
   actionData?: Record<string, any>;

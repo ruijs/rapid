@@ -1,4 +1,4 @@
-import { Rock, RockConfig, RockEvent, RockEventHandler, RockEventHandlerScript, handleComponentEvent } from "@ruiapp/move-style";
+import { Rock, RockConfig, RockConfigBase, RockEvent, RockEventHandlerScript, handleComponentEvent } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidFormMeta from "./RapidFormMeta";
 import type { RapidFormRockConfig, RapidFormState } from "./rapid-form-types";
@@ -123,6 +123,7 @@ export default {
             });
           }
         },
+        _hidden: formAction.hidden,
       };
       if (formAction.actionType === "submit") {
         formActionRock.type = formAction.buttonType || "primary";
