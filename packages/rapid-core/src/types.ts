@@ -844,14 +844,18 @@ export interface RemoveEntityRelationsOptions {
 }
 
 export type EntityWatcherType =
+  | EntityWatcher<"entity.beforeCreate">
   | EntityWatcher<"entity.create">
+  | EntityWatcher<"entity.beforeUpdate">
   | EntityWatcher<"entity.update">
+  | EntityWatcher<"entity.beforeDelete">
   | EntityWatcher<"entity.delete">
   | EntityWatcher<"entity.addRelations">
   | EntityWatcher<"entity.removeRelations">
+  | EntityWatcher<"entity.beforeResponse">
   | EntityWatcher<any>;
 
-export interface EntityWatcher<TEventName extends keyof RpdServerEventTypes = any> {
+export interface EntityWatcher<TEventName extends keyof RpdServerEventTypes> {
   eventName: TEventName;
   modelSingularCode: string;
   handler: EntityWatchHandler<TEventName>;
