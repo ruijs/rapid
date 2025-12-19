@@ -98,6 +98,11 @@ export default {
 
     const formActionRocks: RockConfig[] = [];
     each(props.actions, (formAction, index) => {
+      if ((formAction as RockConfig).$type) {
+        formActionRocks.push(formAction as RockConfig);
+        return;
+      }
+
       page.interpreteComponentProperties(null, formAction as any, {});
 
       const formActionRock: RockConfig = {
