@@ -5,6 +5,7 @@ import type { RapidFormModalRecordActionRockConfig } from "./rapid-form-modal-re
 import { cloneDeep, set } from "lodash";
 import { message } from "antd";
 import { RapidFormRockConfig } from "../rapid-form/rapid-form-types";
+import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
 
 export default {
   onInit(context, props) {},
@@ -12,6 +13,7 @@ export default {
   onReceiveMessage(message, state, props) {},
 
   Renderer(context, props) {
+    const { framework } = context;
     const { resetFormOnModalOpen } = props;
 
     // TODO: need a better implementation. a component should not care about whether it's in a slot.
@@ -93,6 +95,8 @@ export default {
         confirmLoading: "!!$scope.vars['modal-saving']",
       },
       children: formRockConfig,
+      okText: getExtensionLocaleStringResource(framework, "ok"),
+      cancelText: getExtensionLocaleStringResource(framework, "cancel"),
       onOk: [
         {
           $action: "sendComponentMessage",
