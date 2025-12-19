@@ -1,4 +1,4 @@
-import { ContainerRockConfig, HttpRequestOptions, RockEventHandlerConfig, RockExpsConfig } from "@ruiapp/move-style";
+import { ContainerRockConfig, HttpRequestOptions, RockConfig, RockEventHandlerConfig, RockExpsConfig } from "@ruiapp/move-style";
 import { RapidFormItemConfig } from "../rapid-form-item/rapid-form-item-types";
 import { RapidFormSubmitOptions } from "../../types/rapid-action-types";
 
@@ -155,7 +155,9 @@ export type RapidFormConfig = {
 /**
  * 表单动作
  */
-export type RapidFormAction = {
+export type RapidFormAction = RockConfig | RapidFormActionConfig;
+
+export type RapidFormActionConfig = {
   /**
    * 操作类型
    */
