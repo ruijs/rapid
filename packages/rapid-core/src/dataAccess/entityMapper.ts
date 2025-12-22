@@ -83,7 +83,7 @@ export function mapEntityToDbRow(server: IRpdServer, model: RpdDataModel, entity
   }
 
   const propertyNames = Object.keys(entity);
-  propertyNames.forEach((propertyName) => {
+  for (const propertyName of propertyNames) {
     let columnName = propertyName;
     const property = getEntityPropertyByCode(server, model, propertyName);
     if (property) {
@@ -105,7 +105,7 @@ export function mapEntityToDbRow(server: IRpdServer, model: RpdDataModel, entity
         }
       }
     }
-  });
+  }
 
   return result;
 }
