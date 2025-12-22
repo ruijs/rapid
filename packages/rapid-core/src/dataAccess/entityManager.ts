@@ -829,6 +829,14 @@ async function createEntity(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     entity.createdAt = getNowStringWithTimezone();
   }
 
+  let baseModel: RpdDataModel | undefined;
+  if (model.base) {
+    baseModel = server.getModel({
+      singularCode: model.base,
+    });
+    entity[baseModel.derivedTypePropertyCode] = model.derivedType;
+  }
+
   await server.beforeCreateEntity(model, options);
 
   await server.emitEvent({
