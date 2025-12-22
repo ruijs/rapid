@@ -1871,13 +1871,13 @@ export default class EntityManager<TEntity = any> {
   async addRelations(options: AddEntityRelationsOptions, plugin?: RapidPlugin): Promise<void> {
     const server = this.#server;
     const model = this.getModel();
-    const { id, property, relations, routeContext } = options;
+    const { id: selfId, property, relations, routeContext } = options;
     const entity = await this.findById({
-      id,
+      id: selfId,
       routeContext,
     });
     if (!entity) {
-      throw new Error(`${model.namespace}.${model.singularCode}  with id "${id}" was not found.`);
+      throw new Error(`${model.namespace}.${model.singularCode}  with id "${selfId}" was not found.`);
     }
 
     const relationProperty = getEntityPropertyByCode(server, model, property);
@@ -1901,8 +1901,19 @@ export default class EntityManager<TEntity = any> {
         FROM ${queryBuilder.quoteTable({ schema: relationProperty.linkSchema, tableName: relationProperty.linkTableName })}
         WHERE ${queryBuilder.quoteObject(relationProperty.selfIdColumnName!)}=$1 AND ${queryBuilder.quoteObject(relationProperty.targetIdColumnName!)}=$2
       )`;
-        const params = [id, relation.id];
+
+        const targetId = relation[relationProperty.targetIdColumnName!] || relation.id;
+        const params = [selfId, targetId];
         await server.queryDatabaseObject(command, params, routeContext?.getDbTransactionClient());
+      }
+    } else {
+      const targetEntityManager = server.getEntityManager(relationProperty.targetSingularCode);
+      for (const relation of relations) {
+        relation[relationProperty.selfIdColumnName!] = selfId;
+        await targetEntityManager.createEntity({
+          routeContext,
+          entity: relation,
+        });
       }
     }
 
