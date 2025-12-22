@@ -3,6 +3,7 @@ import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./RapidToolbarFormModalButtonMeta";
 import type { RapidToolbarFormModalButtonRockConfig } from "./rapid-toolbar-form-modal-button-types";
 import { RapidFormRockConfig } from "../rapid-form/rapid-form-types";
+import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
 
 export default {
   onInit(context, props) {},
@@ -10,6 +11,7 @@ export default {
   onReceiveMessage(message, state, props) {},
 
   Renderer(context, props) {
+    const { framework } = context;
     const { onAction } = props;
     const buttonRockConfig: RockConfig = {
       ...MoveStyleUtils.omitSystemRockConfigFields(props),
@@ -86,6 +88,8 @@ export default {
         confirmLoading: "!!$scope.vars['modal-saving']",
       },
       children: modalBody,
+      okText: getExtensionLocaleStringResource(framework, "ok"),
+      cancelText: getExtensionLocaleStringResource(framework, "cancel"),
       onOk: [
         {
           $action: "handleEvent",
