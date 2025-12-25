@@ -9,6 +9,19 @@ export function initRapidApi() {
     baseURL: apiBaseUrl,
     validateStatus: null,
   });
+
+  rapidApi.interceptors.response.use((response) => {
+    if (response.status >= 400) {
+      const responseData = response.data;
+      const message = responseData?.error?.message || responseData?.message || response.statusText;
+      const code = responseData?.error?.code || responseData?.code || response.status;
+      const error: any = new Error(message);
+      error.code = code;
+      error.response = response;
+      throw error;
+    }
+    return response;
+  });
 }
 
 export function getRapidApi() {
