@@ -34,7 +34,7 @@ export default {
 
     if ((props.actionType as any) === "pageLink") {
       buttonRockConfig.href = `/pages/${props.pageCode}`;
-    } else if (props.actionType === "link") {
+    } else if (props.url) {
       buttonRockConfig.href = props.url;
     }
 
