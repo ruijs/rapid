@@ -72,6 +72,7 @@ export * from "./rocks/rapid-table-action/rapid-table-action-types";
 export * from "./rocks/rapid-table-column/rapid-table-column-types";
 export * from "./rocks/rapid-toolbar/rapid-toolbar-types";
 export * from "./rocks/rapid-toolbar-button/rapid-toolbar-button-types";
+export * from "./rocks/rapid-toolbar-http-request-button/rapid-toolbar-http-request-button-types";
 export * from "./rocks/rapid-toolbar-form-modal-button/rapid-toolbar-form-modal-button-types";
 export * from "./rocks/rapid-toolbar-link/rapid-toolbar-link-types";
 export * from "./rocks/rapid-toolbar-page-link/rapid-toolbar-page-link-types";
