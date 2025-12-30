@@ -16,7 +16,7 @@ const resource: LocaleResource = {
     new: "สร้างใหม่",
     newModalTitle: "สร้างใหม่{{entityName}}",
     ok: "ตกลง",
-    operateFailed: "ดำเนินการไม่สำเร็จ.",
+    operateError: "ดำเนินการไม่สำเร็จ.",
     operateSuccess: "ดำเนินการสำเร็จ",
     operations: "การดำเนินการ",
     pleaseSelect: "กรุณาเลือก",
