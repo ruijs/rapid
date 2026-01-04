@@ -3,7 +3,7 @@ import RapidToolbarHttpRequestButtonMeta from "./RapidToolbarHttpRequestButtonMe
 import { renderRock } from "@ruiapp/react-renderer";
 import { RapidToolbarHttpRequestButtonRockConfig } from "./rapid-toolbar-http-request-button-types";
 import { omit, pick } from "lodash";
-import { getExtensionLocaleStringResource } from "../../mod";
+import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
 
 export default {
   $type: "rapidToolbarHttpRequestButton",

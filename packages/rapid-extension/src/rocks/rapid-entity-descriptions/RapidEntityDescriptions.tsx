@@ -200,8 +200,8 @@ export default {
           children: {
             $id: `${itemRockId}-display`,
             $type: descriptionItem.rendererType,
-            ...descriptionItem.rendererProps,
             value: descriptionItem.value,
+            ...descriptionItem.rendererProps,
           },
         };
 
