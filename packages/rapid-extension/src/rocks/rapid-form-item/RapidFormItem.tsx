@@ -45,6 +45,10 @@ const defaultUploadProps = {
 };
 
 const defaultControlPropsOfFormItemType: Partial<Record<RapidFormItemType, Record<string, any>>> = {
+  textarea: {
+    rows: 3,
+  },
+
   datetime: {
     showTime: true,
   },
