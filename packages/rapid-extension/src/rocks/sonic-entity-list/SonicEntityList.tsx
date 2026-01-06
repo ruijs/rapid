@@ -70,8 +70,16 @@ export default {
       },
     };
   },
-  onReceiveMessage(message, state, props) {
+  onReceiveMessage(message, state, props, instance) {
     if (message.name === "refreshView") {
+      const page = instance._context.page;
+      const storeScope = props.useStoreInPageScope ? page.scope : instance._scope;
+      const dataSourceCode = props.dataSourceCode || "list";
+      // 设置搜索变量
+      storeScope.setVars({
+        [`stores-${dataSourceCode}-pageNum`]: 1,
+      });
+
       message.page.sendComponentMessage(`${props.$id}-rapidEntityList`, {
         name: "refreshView",
       });
