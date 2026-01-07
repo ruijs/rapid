@@ -9,7 +9,7 @@ export default {
   Renderer(context, props: RapidTreeSelectConfig) {
     const { scope } = context;
     let dataList = props.listDataSource?.data?.list;
-    if (props.listDataSourceCode) {
+    if (!dataList && props.listDataSourceCode) {
       dataList = scope.stores[props.listDataSourceCode]?.data?.list;
     }
 
