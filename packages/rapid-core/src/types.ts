@@ -600,6 +600,7 @@ export interface RpdRoute {
   type: "RESTful";
   method: RpdHttpMethod;
   endpoint: string;
+  executeInDbTransaction?: boolean;
   actions?: RpdRouteActionConfig[];
   handler?: string | ((ctx: ActionHandlerContext) => Promise<void>);
 }
