@@ -472,7 +472,7 @@ export class RapidServer implements IRpdServer {
       response.json(
         {
           error: {
-            message: "No route handler was found to handle this request.",
+            message: `No route handler was found to handle this request. ${rapidRequest.method} ${rapidRequest.url}`,
           },
         },
         404,
