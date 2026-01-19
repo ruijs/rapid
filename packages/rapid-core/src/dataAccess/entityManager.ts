@@ -401,7 +401,7 @@ const UNDELETED_ENTITY_FILTER_OPTIONS: EntityFilterOptions = {
 };
 
 function tryAddUndeletedEntityFilter(model: RpdDataModel, baseModel: RpdDataModel, filters: EntityFilterOptions[] | undefined) {
-  let isEntitySoftDeleteEnabled = baseModel ? baseModel.softDelete : model.softDelete;
+  let isEntitySoftDeleteEnabled = baseModel ? (baseModel.softDelete || model.softDelete) : model.softDelete;
   if (!isEntitySoftDeleteEnabled) {
     return filters;
   }
@@ -1639,6 +1639,12 @@ async function deleteEntityById(
   }
 
   const model = dataAccessor.getModel();
+  let baseModel: RpdDataModel | undefined;
+  if (model.base) {
+    baseModel = server.getModel({
+      singularCode: model.base,
+    });
+  }
   if (model.derivedTypePropertyCode) {
     // TODO: should be allowed.
     throw newEntityOperationError("Delete base entity directly is not allowed.");
@@ -1656,7 +1662,8 @@ async function deleteEntityById(
     return;
   }
 
-  if (model.softDelete) {
+  const isEntitySoftDeleteEnabled = model.base ? (baseModel.softDelete || model.softDelete) : model.softDelete;
+  if (isEntitySoftDeleteEnabled) {
     if (entity.deletedAt) {
       return;
     }
@@ -1673,16 +1680,19 @@ async function deleteEntityById(
     routeContext,
   });
 
-  if (model.softDelete) {
+  if (isEntitySoftDeleteEnabled) {
     const currentUserId = routeContext?.state?.userId;
-    await dataAccessor.updateById(
-      id,
-      {
-        deleted_at: getNowStringWithTimezone(),
-        deleter_id: currentUserId,
-      },
-      routeContext?.getDbTransactionClient(),
-    );
+    const updateFields = {
+      deleted_at: getNowStringWithTimezone(),
+      deleter_id: currentUserId,
+    };
+
+    const softDeleteDataAccessor = model.base
+      ? server.getDataAccessor({
+          singularCode: model.base,
+        })
+      : dataAccessor;
+    await softDeleteDataAccessor.updateById(id, updateFields, routeContext?.getDbTransactionClient());
   } else {
     const relationPropertiesWithDeletingReaction = getEntityPropertiesIncludingBase(server, model, (property) => {
       return isRelationProperty(property) && property.entityDeletingReaction && property.entityDeletingReaction !== "doNothing";
