@@ -22,3 +22,8 @@
 .rapid-page-section + .rapid-page-section {
   margin-top: 16px;
 }
+
+.rapid-page-section-actions {
+  display: flex;
+  gap: 8px;
+}
