@@ -32,10 +32,16 @@ async function executeHandlerOfActions(server: IRpdServer, routeConfig: RpdRoute
       }
 
       await server.beforeRunActionHandler(handlerContext, actionConfig);
-
-      const result = handler(handlerContext, actionConfig.config);
-      if (result instanceof Promise) {
-        await result;
+      let err: any;
+      try {
+        const result = handler(handlerContext, actionConfig.config);
+        if (result instanceof Promise) {
+          await result;
+        }
+      } catch (error) {
+        err = error;
+      } finally {
+        await server.afterRunActionHandler(handlerContext, actionConfig, err);
       }
     }
   }
