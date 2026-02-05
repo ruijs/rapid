@@ -171,6 +171,15 @@ class PluginManager {
     }
   }
 
+  /** 在执行 action handler 后调用。 */
+  async afterRunActionHandler(handlerContext: ActionHandlerContext, actionConfig: RpdRouteActionConfig, error?: Error) {
+    for (const plugin of this.#plugins) {
+      if (plugin.afterRunActionHandler) {
+        await plugin.afterRunActionHandler(this.#server, handlerContext, actionConfig, error);
+      }
+    }
+  }
+
   /** 在创建实体前调用。 */
   async beforeCreateEntity(model: RpdDataModel, options: CreateEntityOptions) {
     for (const plugin of this.#plugins) {

@@ -494,9 +494,15 @@ export class RapidServer implements IRpdServer {
       if (!handler) {
         throw new Error("Unknown handler: " + actionCode);
       }
-
+      let err: any;
       await this.beforeRunActionHandler(handlerContext, action);
-      await handler(handlerContext, action.config);
+      try {
+        await handler(handlerContext, action.config);
+      } catch (error) {
+        err = error;
+      } finally {
+        await this.afterRunActionHandler(handlerContext, action);
+      }
     }
   }
 
@@ -506,6 +512,10 @@ export class RapidServer implements IRpdServer {
 
   async beforeRunActionHandler(handlerContext: ActionHandlerContext, actionConfig: RpdRouteActionConfig) {
     await this.#pluginManager.beforeRunActionHandler(handlerContext, actionConfig);
+  }
+
+  async afterRunActionHandler(handlerContext: ActionHandlerContext, actionConfig: RpdRouteActionConfig, error?: Error) {
+    await this.#pluginManager.afterRunActionHandler(handlerContext, actionConfig, error);
   }
 
   async beforeCreateEntity(model: RpdDataModel, options: CreateEntityOptions) {
