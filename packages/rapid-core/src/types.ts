@@ -172,6 +172,7 @@ export interface RpdEntityAddRelationsEventPayload {
   entity: any;
   property: string;
   relations: any[];
+  relationTargetEntities: any[];
 }
 
 export interface RpdEntityRemoveRelationsEventPayload {
@@ -181,6 +182,7 @@ export interface RpdEntityRemoveRelationsEventPayload {
   entity: any;
   property: string;
   relations: any[];
+  relationTargetEntities: any[];
 }
 
 export interface RpdEntityBeforeResponseEventPayload {

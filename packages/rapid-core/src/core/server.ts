@@ -57,6 +57,7 @@ export interface IRpdServer {
   runActionHandlers(handlerContext: ActionHandlerContext, actions: RpdRouteActionConfig[]): Promise<void>;
   beforeRunRouteActions(handlerContext: ActionHandlerContext): Promise<void>;
   beforeRunActionHandler(handlerContext: ActionHandlerContext, actionConfig: RpdRouteActionConfig): Promise<void>;
+  afterRunActionHandler(handlerContext: ActionHandlerContext, actionConfig: RpdRouteActionConfig, error?: Error): Promise<void>;
   beforeCreateEntity(model: RpdDataModel, options: CreateEntityOptions): Promise<void>;
   beforeUpdateEntity(model: RpdDataModel, options: UpdateEntityByIdOptions, currentEntity: any): Promise<void>;
 
@@ -151,6 +152,8 @@ export interface RapidPlugin {
   beforeRunRouteActions?: (server: IRpdServer, handlerContext: ActionHandlerContext) => Promise<any>;
   /** 在执行 action hanlder 前调用。 */
   beforeRunActionHandler?: (server: IRpdServer, handlerContext: ActionHandlerContext, actionConfig: RpdRouteActionConfig) => Promise<any>;
+  /** 在执行 action handler 后调用。 */
+  afterRunActionHandler?: (server: IRpdServer, handlerContext: ActionHandlerContext, actionConfig: RpdRouteActionConfig, error?: Error) => Promise<any>;
   /** 在创建实体前调用。 */
   beforeCreateEntity?: (server: IRpdServer, model: RpdDataModel, options: CreateEntityOptions) => Promise<any>;
   /** 在更新实体前调用。 */
