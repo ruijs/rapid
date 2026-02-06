@@ -9,7 +9,7 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
   await runCollectionEntityActionHandler(ctx, options, code, true, true, async (entityManager, input: AddEntityRelationsOptions): Promise<any> => {
     const { routerContext: routeContext } = ctx;
     input.routeContext = routeContext;
-    await entityManager.addRelations(input, plugin);
-    return {};
+    const result = await entityManager.addRelations(input, plugin);
+    return result;
   });
 }

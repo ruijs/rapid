@@ -30,16 +30,18 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
         routeContext: routeContext,
         filters,
       });
+      const outputs = [];
       for (const entity of entities) {
-        await entityManager.deleteById(
+        const output = await entityManager.deleteById(
           {
             routeContext,
             id: entity.id,
           },
           plugin,
         );
+        outputs.push(output);
       }
-      return {};
+      return outputs;
     },
   );
 }
