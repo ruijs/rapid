@@ -500,6 +500,7 @@ export class RapidServer implements IRpdServer {
         await handler(handlerContext, action.config);
       } catch (error) {
         err = error;
+        throw error;
       } finally {
         await this.afterRunActionHandler(handlerContext, action);
       }

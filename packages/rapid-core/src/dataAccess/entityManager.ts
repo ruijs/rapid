@@ -401,7 +401,7 @@ const UNDELETED_ENTITY_FILTER_OPTIONS: EntityFilterOptions = {
 };
 
 function tryAddUndeletedEntityFilter(model: RpdDataModel, baseModel: RpdDataModel, filters: EntityFilterOptions[] | undefined) {
-  let isEntitySoftDeleteEnabled = baseModel ? (baseModel.softDelete || model.softDelete) : model.softDelete;
+  let isEntitySoftDeleteEnabled = baseModel ? baseModel.softDelete || model.softDelete : model.softDelete;
   if (!isEntitySoftDeleteEnabled) {
     return filters;
   }
@@ -1630,7 +1630,7 @@ async function deleteEntityById(
   dataAccessor: IRpdDataAccessor,
   options: DeleteEntityByIdOptions | string | number,
   plugin?: RapidPlugin,
-): Promise<void> {
+): Promise<any> {
   // options is id
   if (!isObject(options)) {
     options = {
@@ -1662,7 +1662,7 @@ async function deleteEntityById(
     return;
   }
 
-  const isEntitySoftDeleteEnabled = model.base ? (baseModel.softDelete || model.softDelete) : model.softDelete;
+  const isEntitySoftDeleteEnabled = model.base ? baseModel.softDelete || model.softDelete : model.softDelete;
   if (isEntitySoftDeleteEnabled) {
     if (entity.deletedAt) {
       return;
@@ -1826,6 +1826,7 @@ async function deleteEntityById(
     sender: plugin,
     routeContext,
   });
+  return entity;
 }
 
 export default class EntityManager<TEntity = any> {
@@ -1882,11 +1883,11 @@ export default class EntityManager<TEntity = any> {
     return await this.#dataAccessor.count(countRowOptions, routeContext?.getDbTransactionClient());
   }
 
-  async deleteById(options: DeleteEntityByIdOptions | string | number, plugin?: RapidPlugin): Promise<void> {
+  async deleteById(options: DeleteEntityByIdOptions | string | number, plugin?: RapidPlugin): Promise<TEntity> {
     return await deleteEntityById(this.#server, this.#dataAccessor, options, plugin);
   }
 
-  async addRelations(options: AddEntityRelationsOptions, plugin?: RapidPlugin): Promise<void> {
+  async addRelations(options: AddEntityRelationsOptions, plugin?: RapidPlugin): Promise<any> {
     const server = this.#server;
     const model = this.getModel();
     const { id: selfId, property, relations, routeContext } = options;
@@ -1908,6 +1909,8 @@ export default class EntityManager<TEntity = any> {
     }
 
     const { queryBuilder } = server;
+    const targetEntityManager = server.getEntityManager(relationProperty.targetSingularCode);
+    const relationTargetEntities = [];
     if (relationProperty.linkTableName) {
       for (const relation of relations) {
         const command = `INSERT INTO ${queryBuilder.quoteTable({
@@ -1922,16 +1925,23 @@ export default class EntityManager<TEntity = any> {
 
         const targetId = relation[relationProperty.targetIdColumnName!] || relation.id;
         const params = [selfId, targetId];
-        await server.queryDatabaseObject(command, params, routeContext?.getDbTransactionClient());
+        const result = await server.queryDatabaseObject(command, params, routeContext?.getDbTransactionClient());
+        if (result?.length > 0) {
+          const targetEntity = await targetEntityManager.findById({
+            routeContext,
+            id: targetId,
+          });
+          relationTargetEntities.push(targetEntity);
+        }
       }
     } else {
-      const targetEntityManager = server.getEntityManager(relationProperty.targetSingularCode);
       for (const relation of relations) {
         relation[relationProperty.selfIdColumnName!] = selfId;
-        await targetEntityManager.createEntity({
+        const targetEntity = await targetEntityManager.createEntity({
           routeContext,
           entity: relation,
         });
+        relationTargetEntities.push(targetEntity);
       }
     }
 
@@ -1943,13 +1953,21 @@ export default class EntityManager<TEntity = any> {
         entity,
         property,
         relations,
+        relationTargetEntities,
       },
       sender: plugin,
       routeContext: options.routeContext,
     });
+
+    return {
+      entity,
+      property,
+      relations,
+      relationTargetEntities,
+    };
   }
 
-  async removeRelations(options: RemoveEntityRelationsOptions, plugin?: RapidPlugin): Promise<void> {
+  async removeRelations(options: RemoveEntityRelationsOptions, plugin?: RapidPlugin): Promise<any> {
     const server = this.#server;
     const model = this.getModel();
     const { id, property, relations, routeContext } = options;
@@ -1971,12 +1989,21 @@ export default class EntityManager<TEntity = any> {
     }
 
     const { queryBuilder } = server;
+    const targetEntityManager = server.getEntityManager(relationProperty.targetSingularCode);
+    const relationTargetEntities = [];
     if (relationProperty.linkTableName) {
       for (const relation of relations) {
         const command = `DELETE FROM ${queryBuilder.quoteTable({ schema: relationProperty.linkSchema, tableName: relationProperty.linkTableName })}
     WHERE ${queryBuilder.quoteObject(relationProperty.selfIdColumnName!)}=$1 AND ${queryBuilder.quoteObject(relationProperty.targetIdColumnName!)}=$2;`;
         const params = [id, relation.id];
-        await server.queryDatabaseObject(command, params, routeContext?.getDbTransactionClient());
+        const result = await server.queryDatabaseObject(command, params, routeContext?.getDbTransactionClient());
+        if (result?.length > 0) {
+          const targetEntity = await targetEntityManager.findById({
+            routeContext,
+            id: relation.id,
+          });
+          relationTargetEntities.push(targetEntity);
+        }
       }
     }
 
@@ -1988,9 +2015,17 @@ export default class EntityManager<TEntity = any> {
         entity,
         property,
         relations,
+        relationTargetEntities,
       },
       sender: plugin,
       routeContext: options.routeContext,
     });
+
+    return {
+      entity,
+      property,
+      relations,
+      relationTargetEntities,
+    };
   }
 }

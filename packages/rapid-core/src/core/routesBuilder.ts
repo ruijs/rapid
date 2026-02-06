@@ -40,6 +40,7 @@ async function executeHandlerOfActions(server: IRpdServer, routeConfig: RpdRoute
         }
       } catch (error) {
         err = error;
+        throw error;
       } finally {
         await server.afterRunActionHandler(handlerContext, actionConfig, err);
       }
