@@ -170,6 +170,18 @@ async function findEntities(server: IRpdServer, dataAccessor: IRpdDataAccessor, 
     );
   }
 
+  const isEntitySoftDeleteEnabled = baseModel ? baseModel.softDelete || model.softDelete : model.softDelete;
+  if (options.includingSoftDeleted && isEntitySoftDeleteEnabled) {
+    const deletedAtProp = getEntityPropertyByCode(server, model, "deletedAt");
+    if (deletedAtProp && !find(propertiesToSelect, (p) => p.code === "deletedAt")) {
+      propertiesToSelect.push(deletedAtProp);
+    }
+    const deletedByProp = getEntityPropertyByCode(server, model, "deletedBy");
+    if (deletedByProp && !find(propertiesToSelect, (p) => p.code === "deletedBy")) {
+      propertiesToSelect.push(deletedByProp);
+    }
+  }
+
   const columnsToSelect: ColumnSelectOptions[] = [];
 
   const relationPropertiesToSelect: RpdDataModelProperty[] = [];
@@ -678,6 +690,7 @@ async function findManyRelationLinksViaLinkTable(options: FindManyRelationEntiti
       },
     ],
     keepNonPropertyFields: true,
+    includingSoftDeleted: true,
   };
 
   if (selectRelationOptions) {
@@ -737,6 +750,7 @@ async function findManyRelatedEntitiesViaIdPropertyCode(options: FindManyRelatio
     ],
     extraColumnsToSelect: [relationProperty.selfIdColumnName],
     keepNonPropertyFields: true,
+    includingSoftDeleted: true,
   };
 
   if (selectRelationOptions) {
@@ -785,6 +799,7 @@ async function findOneRelatedEntitiesViaIdPropertyCode(options: FindOneRelationE
       },
     ],
     keepNonPropertyFields: true,
+    includingSoftDeleted: true,
   };
 
   if (selectRelationOptions) {
