@@ -1,5 +1,5 @@
 import { SimpleRockConfig } from "@ruiapp/move-style";
-import { EntityFilterOptions, FindEntityFindRelationEntitiesOptions, FindEntityOrderByOptions } from "../../types/rapid-entity-types";
+import { EntityFilterOptions, FindEntityFindRelationEntitiesOptions, FindEntityOrderByOptions } from "@ruiapp/rapid-common";
 import { RapidTableSelectConfigBase, RapidTableSelectRequestConfig } from "../rapid-table-select/rapid-table-select-types";
 
 export interface RapidEntityTableSelectConfig extends RapidTableSelectConfigBase {

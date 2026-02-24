@@ -1,5 +1,5 @@
 import { Framework } from "@ruiapp/move-style";
-import { RapidDataDictionary, RapidDataDictionaryEntry, RapidEntity, RapidField } from "../types/rapid-entity-types";
+import type { RapidDataDictionary, RapidDataDictionaryEntry, RapidEntity, RapidField } from "@ruiapp/rapid-common";
 
 export function hasMetaLocaleStringResource(framework: Framework, stringResourceName: string) {
   return framework.hasLocaleStringResource("meta", stringResourceName);

@@ -1,7 +1,7 @@
 import fs from "fs";
 import { each, map, snakeCase } from "lodash";
 import path from "path";
-import type { RapidDataDictionary, RapidEntity } from "@ruiapp/rapid-extension";
+import type { RapidDataDictionary, RapidEntity } from "@ruiapp/rapid-common";
 
 function generateEntitySingularCodes(modelsDir: string, metaDir: string, codes: string[]) {
   const entities = require(path.join(metaDir, "entity-models")).default;

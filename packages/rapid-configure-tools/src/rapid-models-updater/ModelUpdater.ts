@@ -1,4 +1,4 @@
-import type { RapidEntity } from "@ruiapp/rapid-extension";
+import type { RapidEntity } from "@ruiapp/rapid-common";
 import type { AxiosInstance } from "axios";
 import { omit } from "lodash";
 import { detectChangedFields } from "../utils/ObjectChangesDetector";

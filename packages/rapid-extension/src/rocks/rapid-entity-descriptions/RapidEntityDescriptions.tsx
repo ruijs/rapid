@@ -4,7 +4,7 @@ import RapidEntityDescriptionsMeta from "./RapidEntityDescriptionsMeta";
 import type { RapidDescriptionsItemConfig, RapidEntityDescriptionsRockConfig } from "./rapid-entity-descriptions-types";
 import { get, isUndefined, omit } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
-import type { RapidDataDictionary, RapidDataDictionaryEntry, RapidEntity, RapidField, RapidFieldType } from "../../types/rapid-entity-types";
+import type { RapidDataDictionary, RapidDataDictionaryEntry, RapidEntity, RapidField, RapidFieldType } from "@ruiapp/rapid-common";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import { RapidOptionFieldRendererConfig } from "../rapid-option-field-renderer/rapid-option-field-renderer-types";
 import RapidExtensionSetting from "../../RapidExtensionSetting";

@@ -1,6 +1,6 @@
 import type { FunctionMeta } from "@ruiapp/move-style";
 import { forEach, isArray, isEmpty, isNull, isString, isUndefined, map } from "lodash";
-import { SearchFormFilterConfiguration } from "../types/rapid-entity-types";
+import { SearchFormFilterConfiguration } from "../types/rapid-search-form-types";
 import moment from "moment";
 import { FilterFieldConfig } from "../mod";
 

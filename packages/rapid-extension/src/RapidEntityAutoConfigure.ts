@@ -1,6 +1,6 @@
 import { pick, map, defaultTo, snakeCase, find } from "lodash";
 import pluralize from "pluralize";
-import { RapidEntity, RapidField, RapidFieldType } from "./types/rapid-entity-types";
+import { RapidEntity, RapidField, RapidFieldType } from "@ruiapp/rapid-common";
 import { getEntityOwnPropertyByCode } from "./helpers/metaHelper";
 
 export function getRapidFieldRelation(fieldType: RapidFieldType): RapidField["relation"] {

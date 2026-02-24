@@ -1,5 +1,5 @@
 import { find } from "lodash";
-import type { RapidDataDictionary, RapidEntity } from "./types/rapid-entity-types";
+import type { RapidDataDictionary, RapidEntity } from "@ruiapp/rapid-common";
 
 export interface AppDefinition {
   entities: RapidEntity[];

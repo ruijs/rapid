@@ -1,5 +1,5 @@
 import { SimpleRockConfig } from "@ruiapp/move-style";
-import { RapidFieldType } from "../../types/rapid-entity-types";
+import { RapidFieldType } from "@ruiapp/rapid-common";
 
 export interface RapidDescriptionsRockConfig extends SimpleRockConfig {
   value: Record<string, any> | null | undefined;

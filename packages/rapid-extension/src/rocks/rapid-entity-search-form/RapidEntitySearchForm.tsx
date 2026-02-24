@@ -5,14 +5,8 @@ import RapidEntitySearchFormMeta from "./RapidEntitySearchFormMeta";
 import type { RapidEntitySearchFormConfig, RapidEntitySearchFormRockConfig } from "./rapid-entity-search-form-types";
 import { assign, each, filter, get, isUndefined, map, merge, omit, set, uniq } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
-import type {
-  RapidDataDictionary,
-  RapidDataDictionaryEntry,
-  RapidEntity,
-  RapidField,
-  RapidFieldType,
-  SearchFormFilterConfiguration,
-} from "../../types/rapid-entity-types";
+import type { RapidDataDictionary, RapidDataDictionaryEntry, RapidEntity, RapidField, RapidFieldType } from "@ruiapp/rapid-common";
+import type { SearchFormFilterConfiguration } from "~/types/rapid-search-form-types";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import type { RapidFormItemConfig, RapidFormItemType, RapidSearchFormItemConfig } from "../rapid-form-item/rapid-form-item-types";
 import type { RapidFormAction, RapidFormRockConfig } from "../rapid-form/rapid-form-types";
