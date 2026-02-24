@@ -1,4 +1,4 @@
-import type { RapidField } from "@ruiapp/rapid-extension";
+import type { RapidField } from "@ruiapp/rapid-common";
 import type { AxiosInstance } from "axios";
 import { detectChangedFields } from "../utils/ObjectChangesDetector";
 import type { RapidModel, RapidProperty, CreateRapidPropertyInput, IRapidModelUpdater, UpdateRapidPropertyInput } from "./types";

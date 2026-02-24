@@ -1,4 +1,4 @@
-import type { RapidDataDictionaryEntry } from "@ruiapp/rapid-extension";
+import type { RapidDataDictionaryEntry } from "@ruiapp/rapid-common";
 import type { AxiosInstance } from "axios";
 import { detectChangedFields } from "../utils/ObjectChangesDetector";
 import type {

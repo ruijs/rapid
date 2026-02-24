@@ -1,5 +1,5 @@
 import { merge } from "lodash";
-import { RapidFieldType } from "./types/rapid-entity-types";
+import { RapidFieldType } from "@ruiapp/rapid-common";
 import { RapidPropertyDisplayType } from "./rapid-types";
 
 const displayTypeToDisplayRockTypeMap: Record<Exclude<RapidPropertyDisplayType, "custom">, string> = {

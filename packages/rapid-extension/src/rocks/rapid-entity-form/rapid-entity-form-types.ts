@@ -1,6 +1,6 @@
 import type { ContainerRockConfig, RockEventHandlerConfig } from "@ruiapp/move-style";
 import { RapidFormConfig } from "../rapid-form/rapid-form-types";
-import { FindEntityFindRelationEntitiesOptions } from "../../types/rapid-entity-types";
+import { FindEntityFindRelationEntitiesOptions } from "@ruiapp/rapid-common";
 import { RockEventHandlerSaveRapidEntity } from "../../event-actions/save-rapid-entity";
 
 export interface RapidEntityFormConfig extends RapidFormConfig {

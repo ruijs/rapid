@@ -15,7 +15,7 @@ import { differenceBy, find, get, isArray, isEmpty, isNumber, keyBy, omit, pick,
 import type { RapidEntityListConfig, RapidEntityListRockConfig } from "../rapid-entity-list/rapid-entity-list-types";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
-import { RapidEntity } from "../../types/rapid-entity-types";
+import { RapidEntity } from "@ruiapp/rapid-common";
 import { RapidDeleteRecordActionOptions, RapidUpdateRecordActionOptions } from "../../types/rapid-action-types";
 import { EntityStore, RapidEntityFormRockConfig, RapidTableColumnConfig, RapidToolbarRockConfig } from "../../mod";
 import { useState } from "react";

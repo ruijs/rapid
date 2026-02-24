@@ -14,7 +14,7 @@ import type { RapidEntityListRockConfig, RapidEntityListState } from "./rapid-en
 import { filter, findIndex, forEach, isArray, isEmpty, map, merge, reject, set, trim, uniq } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
-import type { RapidEntity, RapidField } from "../../types/rapid-entity-types";
+import type { RapidEntity, RapidField } from "@ruiapp/rapid-common";
 import type { EntityStore, EntityStoreConfig } from "../../stores/entity-store";
 import RapidExtensionSetting from "../../RapidExtensionSetting";
 import { RapidEntityListFilterCache } from "../rapid-entity-search-form/RapidEntitySearchForm";

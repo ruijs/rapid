@@ -12,7 +12,7 @@ import {
 } from "@ruiapp/move-style";
 import { cloneDeep, find, set } from "lodash";
 import rapidAppDefinition from "../rapidAppDefinition";
-import type { FindEntityOptions, RapidEntity } from "../types/rapid-entity-types";
+import type { FindEntityOptions, RapidEntity } from "@ruiapp/rapid-common";
 
 export interface EntityStoreConfig extends StoreConfigBase, FindEntityOptions {
   type: "entityStore";

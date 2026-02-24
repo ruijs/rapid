@@ -1,7 +1,7 @@
 import fs from "fs";
 import { uniq, find } from "lodash";
 import path from "path";
-import type { RapidDataDictionary, RapidEntity, RapidField } from "@ruiapp/rapid-extension";
+import type { RapidDataDictionary, RapidEntity, RapidField } from "@ruiapp/rapid-common";
 
 function convertSdRpdFieldTypeToTypeScriptType(field: RapidField, entities: RapidEntity[]) {
   const { type, dataDictionary, targetSingularCode, relation } = field;

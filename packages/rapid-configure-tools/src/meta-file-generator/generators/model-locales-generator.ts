@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import type { RapidDataDictionary, RapidEntity, RapidField } from "@ruiapp/rapid-extension";
+import type { RapidDataDictionary, RapidEntity, RapidField } from "@ruiapp/rapid-common";
 
 function generateDictionaryLocales(metaDir: string) {
   const dictionaries: RapidDataDictionary[] = require(path.join(metaDir, "data-dictionary-models")).default;

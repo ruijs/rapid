@@ -1,4 +1,5 @@
-import type { RapidDataDictionary, RapidDataDictionaryEntry, RapidEntity, RapidField, RapidPage } from "@ruiapp/rapid-extension";
+import type { RapidDataDictionary, RapidDataDictionaryEntry, RapidEntity, RapidField } from "@ruiapp/rapid-common";
+import type { RapidPage } from "@ruiapp/rapid-extension";
 
 export type IRapidModelUpdater<TEntity, TInput, TMainEntity = any> =
   | IRapidModelUpdaterBatchGetMode<TEntity, TInput, TMainEntity>

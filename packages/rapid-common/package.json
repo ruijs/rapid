@@ -1,8 +1,9 @@
 {
-  "name": "@ruiapp/rapid-configure-tools",
-  "version": "0.7.0",
+  "name": "@ruiapp/rapid-common",
+  "version": "0.1.0",
   "description": "",
-  "main": "dist/mod.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "rimraf dist && rollup --config",
     "dev": "rollup --config",
@@ -12,22 +13,25 @@
   "author": "Fossil",
   "license": "MIT",
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
     "@types/lodash": "^4.14.186",
-    "@types/node": "^20.10.4",
+    "@types/node": "^22.7.4",
+    "dayjs": "^1.11.7",
+    "lodash": "^4.17.21",
+    "postcss-import": "^16.1.0",
     "rimraf": "^3.0.2",
     "rollup": "^2.79.1",
+    "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-tsconfig-paths": "^1.5.2",
     "rollup-plugin-typescript2": "^0.34.1",
     "typescript": "^4.8.4"
   },
   "peerDependencies": {
-    "@ruiapp/rapid-common": "workspace:^",
-    "@ruiapp/rapid-core": "workspace:^",
-    "@ruiapp/rapid-extension": "workspace:^",
+    "@types/node": "^22.7.4",
     "axios": "^1.1.2",
-    "axios-cookiejar-support": "^4.0.7",
-    "lodash": "^4.17.21",
-    "tough-cookie": "^4.1.3"
+    "dayjs": "^1.11.7",
+    "lodash": "^4.17.21"
   },
   "dependencies": {}
 }

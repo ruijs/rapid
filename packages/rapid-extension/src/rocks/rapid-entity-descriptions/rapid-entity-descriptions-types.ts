@@ -1,7 +1,7 @@
 import type { RockExpsConfig, RockI18nConfig, RockLocalesConfig, SimpleRockConfig } from "@ruiapp/move-style";
-import { FindEntityFindRelationEntitiesOptions, RapidFieldType } from "../../types/rapid-entity-types";
+import { FindEntityFindRelationEntitiesOptions, RapidFieldType } from "@ruiapp/rapid-common";
 import { CSSProperties } from "react";
-import { RapidPropertyDisplayType } from "../../types/rapid-extension-types";
+import { RapidPropertyDisplayType } from "~/types/rapid-extension-types";
 
 export interface RapidEntityDescriptionsConfig extends SimpleRockConfig {
   entityCode: string;

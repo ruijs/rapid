@@ -1,6 +1,6 @@
 {
   "name": "@ruiapp/rapid-extension",
-  "version": "0.9.14",
+  "version": "0.10.0",
   "description": "",
   "main": "dist/mod.js",
   "types": "dist/mod.d.ts",
@@ -37,6 +37,7 @@
   },
   "peerDependencies": {
     "@ant-design/icons": "^4.7.0",
+    "@ruiapp/rapid-common": "workspace:^",
     "@remix-run/node": "~1.19.3",
     "@ruiapp/move-style": "^0.4.22",
     "@ruiapp/react-renderer": "^0.4.4",

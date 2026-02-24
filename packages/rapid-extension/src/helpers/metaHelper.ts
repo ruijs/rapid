@@ -1,5 +1,5 @@
 import { cloneDeep, find } from "lodash";
-import { RapidEntity, RapidField } from "../types/rapid-entity-types";
+import { RapidEntity, RapidField } from "@ruiapp/rapid-common";
 import { AppDefinition } from "../rapidAppDefinition";
 
 export function isRelationProperty(property: RapidField) {

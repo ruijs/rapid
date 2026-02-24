@@ -1,5 +1,5 @@
 import type { RockConfig, RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
-import type { EntityFilterFieldOperators, EntityFilterOptions, FindEntityOrderByOptions } from "../../types/rapid-entity-types";
+import type { EntityFilterFieldOperators, EntityFilterOptions, FindEntityOrderByOptions } from "@ruiapp/rapid-common";
 import type { RapidToolbarButtonConfig } from "../rapid-toolbar-button/rapid-toolbar-button-types";
 import type { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
 import { IRapidEntityListToolboxConfig } from "../rapid-entity-list-toolbox/RapidEntityListToolbox";
