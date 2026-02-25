@@ -46,6 +46,8 @@ export function newModelUpdater(rapidConfigApi: AxiosInstance) {
         "indexes",
         "permissionPolicies",
         "softDelete",
+        "enableEventLog",
+        "eventTypePolicy",
         "locales",
         "deprecated",
       ]);

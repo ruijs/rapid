@@ -252,6 +252,15 @@ export type RapidEntity<TEntitySingularCodes extends string = string, TDictionar
   softDelete?: boolean;
 
   /**
+   * 是否启用事件日志
+   */
+  enableEventLog?: boolean;
+  /**
+   * 事件类型
+   */
+  eventTypePolicy?: RapidEntityEventTypePolicy;
+
+  /**
    * 多语言配置
    */
   i18n?: Record<string, string>;
@@ -278,6 +287,30 @@ export interface RapidEntityPermissionPolicies {
 export interface PermissionPolicy {
   any?: string[];
   all?: string[];
+}
+
+export interface RapidEntityEventTypePolicy {
+  /**
+   * 区分事件类型属性code
+   */
+  propertyCode?: string;
+  /**
+   * 属性值事件类型
+   */
+  eventTypes?: {
+    /**
+     * 属性值
+     */
+    propertyValue: string;
+    /**
+     * 事件code前缀 默认取 propertyValue 的值
+     */
+    eventTypeCodePrefix?: string;
+    /**
+     * 属性值名称 区分定义事件类型名称
+     */
+    name: string;
+  }[];
 }
 
 /**
