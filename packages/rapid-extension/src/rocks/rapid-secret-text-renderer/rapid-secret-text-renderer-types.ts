@@ -1,7 +1,7 @@
 import { SimpleRockConfig } from "@ruiapp/move-style";
 import { CSSProperties } from "react";
 
-export interface RapidSecretTextRendererProps extends SimpleRockConfig {
+export interface RapidSecretTextRendererProps {
   value: string | null | undefined;
   canViewOrigin?: boolean;
   canCopy?: boolean;
@@ -12,3 +12,5 @@ export interface RapidSecretTextRendererProps extends SimpleRockConfig {
   tooltipCopy?: string;
   messageCopySuccess?: string;
 }
+
+export interface RapidSecretTextRendererRockConfig extends SimpleRockConfig, RapidSecretTextRendererProps {}
