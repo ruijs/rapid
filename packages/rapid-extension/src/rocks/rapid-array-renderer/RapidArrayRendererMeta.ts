@@ -1,12 +1,34 @@
-import { RockMeta } from "@ruiapp/move-style";
+import type { RockMeta } from "@ruiapp/move-style";
 
 export default {
   $type: "rapidArrayRenderer",
 
   slots: {
-    itemRenderer: {
-      allowMultiComponents: true,
-      required: true,
+    separator: {
+      allowMultiComponents: false,
+      required: false,
+      toRenderProp: true,
+    },
+    listContainer: {
+      allowMultiComponents: false,
+      required: false,
+      toRenderProp: true,
+      argumentsToProps: true,
+      argumentNames: ["children"],
+    },
+    itemContainer: {
+      allowMultiComponents: false,
+      required: false,
+      toRenderProp: true,
+      argumentsToProps: true,
+      argumentNames: ["children", "value", "index"],
+    },
+    item: {
+      allowMultiComponents: false,
+      required: false,
+      toRenderProp: true,
+      argumentsToProps: true,
+      argumentNames: ["value", "index"],
     },
   },
 

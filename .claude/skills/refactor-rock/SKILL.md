@@ -363,7 +363,117 @@ export default {
    - 仅用于渲染 antd 组件或自定义 React 组件的场景
    - 纯渲染函数（返回字符串等）不需要使用
 
-4. **修复问题**:
+4. **Slots 处理**:
+
+   当组件需要配置 slots（如 itemRenderer、separator 等）时，需要区分 Props 和 RockConfig 中的类型定义：
+
+   - **{RockName}Props 中的 slot**: 应为 renderProp 函数类型，使用 `ReactNode` 作为返回值
+   - **{RockName}RockConfig 中的 slot**: 应为 `RockConfig` 或 `ContainerRockConfig` 类型
+   - **Meta 文件**: 需要配置 `toRenderProp: true` 和 `argumentNames`
+
+   ```typescript
+   // rapid-array-renderer-types.ts
+   import type { ContainerRockConfig, RockConfig, RockInstance, SimpleRockConfig } from "@ruiapp/move-style";
+   import type { ReactNode } from "react";
+
+   export interface RapidArrayRendererProps extends RockInstance {
+     value?: any[] | null;
+     // Props 中的 slot 是函数类型
+     item?: (value: any, index: number) => ReactNode;
+     separator?: () => ReactNode;
+     listContainer?: (children: ReactNode[]) => ReactNode;
+     itemContainer?: (children: ReactNode, value: any, index: number) => ReactNode;
+   }
+
+   export interface RapidArrayRendererRockConfig
+     extends SimpleRockConfig,
+       Omit<RapidArrayRendererProps, "item" | "separator" | "listContainer" | "itemContainer"> {
+     // RockConfig 中的 slot 是 RockConfig 类型
+     item?: RockConfig;
+     separator?: RockConfig;
+     listContainer?: ContainerRockConfig;
+     itemContainer?: ContainerRockConfig;
+   }
+   ```
+
+   ```typescript
+   // RapidArrayRendererMeta.ts
+   export default {
+     $type: "rapidArrayRenderer",
+     slots: {
+       separator: {
+         allowMultiComponents: false,
+         required: false,
+         toRenderProp: true, // 转换为 renderProp 函数
+       },
+       item: {
+         allowMultiComponents: false,
+         required: false,
+         toRenderProp: true,
+         argumentsToProps: true,
+         argumentNames: ["value", "index"], // 函数参数名
+       },
+       itemContainer: {
+         allowMultiComponents: false,
+         required: false,
+         toRenderProp: true,
+         argumentsToProps: true,
+         argumentNames: ["children", "value", "index"],
+       },
+       listContainer: {
+         allowMultiComponents: false,
+         required: false,
+         toRenderProp: true,
+         argumentsToProps: true,
+         argumentNames: ["children"],
+       },
+     },
+     // ...
+   } as RockMeta;
+   ```
+
+   ```typescript
+   // RapidArrayRenderer.tsx
+   export function RapidArrayRenderer(props: RapidArrayRendererProps) {
+     const { value, item, separator, noSeparator, listContainer, itemContainer } = props;
+
+     if (!value || value.length === 0) {
+       return null;
+     }
+
+     const items: ReactElement[] = [];
+
+     for (let i = 0; i < value.length; i++) {
+       const itemValue = value[i];
+
+       // 渲染分隔符
+       if (!noSeparator && i > 0) {
+         if (separator) {
+           items.push(<Fragment key={`sep-${i}`}>{separator()}</Fragment>);
+         }
+       }
+
+       // 渲染项目 - 直接调用 slot 函数
+       let itemElement = item(itemValue, i);
+
+       // 使用 itemContainer 包裹
+       if (itemContainer) {
+         itemElement = itemContainer(itemElement, itemValue, i);
+       }
+
+       items.push(<Fragment key={i}>{itemElement}</Fragment>);
+     }
+
+     // 使用 listContainer 包裹整个列表
+     if (listContainer) {
+       return listContainer(items);
+     }
+
+     return <>{items}</>;
+   }
+   ```
+
+5. **修复问题**:
    - 检查并修复拼写错误（如 `formatedValue` → `formattedValue`）
    - 确保导入的 Meta 类型和文件名一致
 
