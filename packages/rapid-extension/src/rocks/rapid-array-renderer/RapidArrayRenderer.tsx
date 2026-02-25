@@ -5,17 +5,17 @@ import { RapidArrayRendererProps, RapidArrayRendererRockConfig } from "./rapid-a
 import { map } from "lodash";
 import { genRockRenderer } from "@ruiapp/react-renderer";
 import { Divider } from "antd";
-import { Fragment, ReactNode } from "react";
+import { Fragment, ReactElement, ReactNode } from "react";
 
 export function configRapidArrayRenderer(config: RapidArrayRendererRockConfig): RapidArrayRendererRockConfig {
   return config;
 }
 
-export function RapidArrayRenderer(props: RapidArrayRendererProps) {
+export function RapidArrayRenderer(props: RapidArrayRendererProps): ReactElement | null {
   const { value, format, item, separator, noSeparator, listContainer, itemContainer, defaultText } = props;
 
   if (!value || value.length === 0) {
-    return defaultText || "";
+    return <>{defaultText || ""}</>;
   }
 
   if (item) {
@@ -47,14 +47,18 @@ export function RapidArrayRenderer(props: RapidArrayRendererProps) {
 
     // 使用 listContainer 包裹整个列表（如果提供）
     if (listContainer) {
-      return listContainer(items);
+      return <>{listContainer(items)}</>;
     }
 
     return <>{items}</>;
   } else if (format) {
-    return map(value, (item) => {
-      return MoveStyleUtils.fulfillVariablesInString(format, item);
-    }).join(", ");
+    return (
+      <>
+        {map(value, (item) => {
+          return MoveStyleUtils.fulfillVariablesInString(format, item);
+        }).join(", ")}
+      </>
+    );
   }
 
   return null;

@@ -1,7 +1,7 @@
 import type { ContainerRockConfig, RockConfig, RockInstance, SimpleRockConfig } from "@ruiapp/move-style";
 import type { ReactNode } from "react";
 
-export interface RapidArrayRendererProps extends RockInstance {
+export interface RapidArrayRendererProps {
   value?: any[] | null;
   defaultText?: string;
   format?: string;
