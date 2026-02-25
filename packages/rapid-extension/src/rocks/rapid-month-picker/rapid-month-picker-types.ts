@@ -1,5 +1,8 @@
 import type { SimpleRockConfig } from "@ruiapp/move-style";
 
-export type RapidMonthPickerConfig = {};
+export interface RapidMonthPickerProps {
+  value?: string | moment.Moment | null;
+  onChange?(value: string | null): void;
+}
 
-export interface RapidMonthPickerRockConfig extends SimpleRockConfig, RapidMonthPickerConfig {}
+export interface RapidMonthPickerRockConfig extends SimpleRockConfig, RapidMonthPickerProps {}
