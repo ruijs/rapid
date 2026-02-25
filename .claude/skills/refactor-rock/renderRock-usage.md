@@ -36,12 +36,12 @@ function renderRock(options: RenderRockOptions): React.ReactElement | null;
 
 #### 参数类型 RenderRockOptions
 
-| 参数 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| `context` | RockInstanceContext | 是 | 渲染上下文，包含 framework、page、scope 等 |
-| `rockConfig` | RockConfig | 是 | 组件的声明式配置对象 |
-| `expVars` | `Record<string, any>` | 否 | 表达式变量，用于 `$exps` 表达式求值 |
-| `fixedProps` | `any` | 否 | 固定属性，会被合并到 rockConfig 上（常用于传递 `$slot` 数据） |
+| 参数         | 类型                  | 必填 | 说明                                                          |
+| ------------ | --------------------- | ---- | ------------------------------------------------------------- |
+| `context`    | RockInstanceContext   | 是   | 渲染上下文，包含 framework、page、scope 等                    |
+| `rockConfig` | RockConfig            | 是   | 组件的声明式配置对象                                          |
+| `expVars`    | `Record<string, any>` | 否   | 表达式变量，用于 `$exps` 表达式求值                           |
+| `fixedProps` | `any`                 | 否   | 固定属性，会被合并到 rockConfig 上（常用于传递 `$slot` 数据） |
 
 #### 执行流程
 
@@ -97,7 +97,9 @@ export default {
         label: "点击我",
         onClick: {
           $action: "script",
-          script: () => { console.log("clicked"); },
+          script: () => {
+            console.log("clicked");
+          },
         },
       },
     });
@@ -105,8 +107,7 @@ export default {
 } as Rock;
 ```
 
-> [!IMPORTANT]
-> `rockConfig` 中的 `$id` 必须在整个 Page 范围内唯一。建议使用父组件的 `props.$id` 作为前缀来生成子组件 ID。
+> [!IMPORTANT] > `rockConfig` 中的 `$id` 必须在整个 Page 范围内唯一。建议使用父组件的 `props.$id` 作为前缀来生成子组件 ID。
 
 #### 渲染带有丰富属性的组件
 
@@ -158,12 +159,12 @@ function renderRockChildren(options: RenderRockChildrenOptions): React.ReactElem
 
 #### 参数类型 RenderRockChildrenOptions
 
-| 参数 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| `context` | RockInstanceContext | 是 | 渲染上下文 |
-| `rockChildrenConfig` | RockChildrenConfig | 是 | 子组件配置，类型为 `RockConfig \| RockConfig[] \| null` |
-| `expVars` | `Record<string, any>` | 否 | 表达式变量 |
-| `fixedProps` | `any` | 否 | 固定属性 |
+| 参数                 | 类型                  | 必填 | 说明                                                    |
+| -------------------- | --------------------- | ---- | ------------------------------------------------------- |
+| `context`            | RockInstanceContext   | 是   | 渲染上下文                                              |
+| `rockChildrenConfig` | RockChildrenConfig    | 是   | 子组件配置，类型为 `RockConfig \| RockConfig[] \| null` |
+| `expVars`            | `Record<string, any>` | 否   | 表达式变量                                              |
+| `fixedProps`         | `any`                 | 否   | 固定属性                                                |
 
 #### 内部逻辑
 
@@ -246,14 +247,14 @@ function renderRockSlot(options: RenderRockSlotOptions): React.ReactElement | Re
 
 #### 参数类型
 
-| 参数 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| `context` | RockInstanceContext | 是 | 渲染上下文 |
-| `slot` | RockChildrenConfig | 是 | Slot 内的组件配置 |
-| `rockType` | `string` | 是 | 所属 Rock 的类型名 |
-| `slotPropName` | `string` | 是 | Slot 的属性名称 |
-| `args` | `any[]` | 是 | 传给 Slot 的参数（用于 `argumentsToProps` 映射） |
-| `fixedProps` | `any` | 否 | 固定属性 |
+| 参数           | 类型                | 必填 | 说明                                             |
+| -------------- | ------------------- | ---- | ------------------------------------------------ |
+| `context`      | RockInstanceContext | 是   | 渲染上下文                                       |
+| `slot`         | RockChildrenConfig  | 是   | Slot 内的组件配置                                |
+| `rockType`     | `string`            | 是   | 所属 Rock 的类型名                               |
+| `slotPropName` | `string`            | 是   | Slot 的属性名称                                  |
+| `args`         | `any[]`             | 是   | 传给 Slot 的参数（用于 `argumentsToProps` 映射） |
+| `fixedProps`   | `any`               | 否   | 固定属性                                         |
 
 #### 使用示例
 
@@ -286,13 +287,13 @@ function toRenderRockSlot(options: GenerateRockSlotRendererOptions): ((...args: 
 
 #### 参数类型
 
-| 参数 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| `context` | RockInstanceContext | 是 | 渲染上下文 |
-| `slot` | RockChildrenConfig | 是 | Slot 内的组件配置 |
-| `rockType` | `string` | 是 | 所属 Rock 的类型名 |
-| `slotPropName` | `string` | 是 | Slot 的属性名称 |
-| `fixedProps` | `any` | 否 | 固定属性 |
+| 参数           | 类型                | 必填 | 说明               |
+| -------------- | ------------------- | ---- | ------------------ |
+| `context`      | RockInstanceContext | 是   | 渲染上下文         |
+| `slot`         | RockChildrenConfig  | 是   | Slot 内的组件配置  |
+| `rockType`     | `string`            | 是   | 所属 Rock 的类型名 |
+| `slotPropName` | `string`            | 是   | Slot 的属性名称    |
+| `fixedProps`   | `any`               | 否   | 固定属性           |
 
 ---
 
@@ -304,9 +305,9 @@ function toRenderRockSlot(options: GenerateRockSlotRendererOptions): ((...args: 
 
 ```typescript
 type RockInstanceContext = {
-  framework: Framework;  // 框架实例，提供组件注册、日志等能力
-  page: Page;            // 当前页面实例
-  scope: Scope;          // 当前作用域
+  framework: Framework; // 框架实例，提供组件注册、日志等能力
+  page: Page; // 当前页面实例
+  scope: Scope; // 当前作用域
   component?: RockInstance; // 宿主组件实例（声明式组件中可用）
   logger: RuiRockLogger; // Rock 专用日志器
 };
@@ -318,13 +319,13 @@ type RockInstanceContext = {
 
 ```typescript
 type RockConfigBase = {
-  $id?: string;            // 组件唯一标识
-  $type: string;           // 组件类型名（对应 Rock 的 $type）
-  $version?: string;       // 版本号
-  $name?: string;          // 组件名称
-  $description?: string;   // 描述信息
-  $exps?: RockExpsConfig;  // 表达式配置，动态计算属性值
-  _hidden?: boolean;       // 是否隐藏组件
+  $id?: string; // 组件唯一标识
+  $type: string; // 组件类型名（对应 Rock 的 $type）
+  $version?: string; // 版本号
+  $name?: string; // 组件名称
+  $description?: string; // 描述信息
+  $exps?: RockExpsConfig; // 表达式配置，动态计算属性值
+  _hidden?: boolean; // 是否隐藏组件
 };
 ```
 
@@ -360,13 +361,13 @@ Renderer: (context, props) => {
 
 ## 使用模式总结
 
-| 场景 | 推荐函数 | 说明 |
-|------|----------|------|
-| 渲染单个子组件 | renderRock | 传入完整的 RockConfig |
-| 渲染 `children` 属性 | renderRockChildren | 处理数组和单个配置 |
-| 渲染具名 Slot | renderRockSlot | 需要指定 `rockType` 和 `slotPropName` |
-| 生成 render prop 回调 | toRenderRockSlot | 返回函数而非直接渲染 |
-| 在 JSX 中混合原生元素 | renderRockChildren | 作为原生元素的 children |
+| 场景                  | 推荐函数           | 说明                                  |
+| --------------------- | ------------------ | ------------------------------------- |
+| 渲染单个子组件        | renderRock         | 传入完整的 RockConfig                 |
+| 渲染 `children` 属性  | renderRockChildren | 处理数组和单个配置                    |
+| 渲染具名 Slot         | renderRockSlot     | 需要指定 `rockType` 和 `slotPropName` |
+| 生成 render prop 回调 | toRenderRockSlot   | 返回函数而非直接渲染                  |
+| 在 JSX 中混合原生元素 | renderRockChildren | 作为原生元素的 children               |
 
 ---
 
@@ -411,10 +412,12 @@ export default {
 ## 注意事项
 
 > [!WARNING]
+>
 > - `rockConfig.$id` 在同一 Page 内必须唯一，否则会导致组件状态混乱。
 > - renderRock 返回 `null` 的情况：传入 `null`/`undefined`，或组件设置了 `_hidden: true`。
 > - 如果 `$type` 对应的 Rock 未在 Framework 中注册，会抛出 `unknownComponentType` 错误。
 
 > [!TIP]
+>
 > - 在容器类组件中，记得通过 `fixedProps` 传递 `$slot` 数据，确保子组件可以访问 Slot 上下文。
 > - 使用 `$exps` 配合 `expVars` 可以实现属性的动态绑定，例如 `$exps: { "title": "$scope.vars.pageTitle" }`。
