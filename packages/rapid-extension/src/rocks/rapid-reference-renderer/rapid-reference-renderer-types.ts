@@ -1,11 +1,14 @@
 import { RockConfig, RockInstance, SimpleRockConfig } from "@ruiapp/move-style";
+import { ReactElement } from "react";
 
 export interface RapidReferenceRendererProps extends RockInstance {
   value?: any;
   list?: Record<string, any>[];
   valueFieldName: string;
   textFieldName: string;
-  itemRenderer?: RockConfig;
+  itemRenderer?: (value: any) => ReactElement;
 }
 
-export interface RapidReferenceRendererRockConfig extends SimpleRockConfig, RapidReferenceRendererProps {}
+export interface RapidReferenceRendererRockConfig extends SimpleRockConfig, Omit<RapidReferenceRendererProps, "itemRenderer"> {
+  itemRenderer?: RockConfig;
+}

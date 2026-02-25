@@ -3,6 +3,16 @@ import { RockMeta } from "@ruiapp/move-style";
 export default {
   $type: "rapidReferenceRenderer",
 
+  slots: {
+    itemRenderer: {
+      allowMultiComponents: false,
+      required: false,
+      toRenderProp: true,
+      argumentsToProps: true,
+      argumentNames: ["value"],
+    },
+  },
+
   propertyPanels: [
     {
       $type: "componentPropPanel",

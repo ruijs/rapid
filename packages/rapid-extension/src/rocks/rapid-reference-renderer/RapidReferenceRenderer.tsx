@@ -19,19 +19,13 @@ export function RapidReferenceRenderer(props: RapidReferenceRendererProps) {
   }
 
   if (itemRenderer) {
-    const rockConfig = {
-      ...itemRenderer,
-      value: item,
-      $id: `${$id}-rdr`,
-    } as RockConfig;
-
-    return renderRock({ context, rockConfig });
+    return itemRenderer(item);
   }
 
   return "" + item[textFieldName];
 }
 
 export default {
-  Renderer: genRockRenderer(RapidReferenceRendererMeta.$type, RapidReferenceRenderer),
+  Renderer: genRockRenderer(RapidReferenceRendererMeta.$type, RapidReferenceRenderer, true),
   ...RapidReferenceRendererMeta,
 } as Rock<RapidReferenceRendererRockConfig>;
