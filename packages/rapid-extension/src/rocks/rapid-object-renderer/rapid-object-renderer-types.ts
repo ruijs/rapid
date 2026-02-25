@@ -1,6 +1,6 @@
 import { SimpleRockConfig } from "@ruiapp/move-style";
 
-export interface RapidObjectRendererRockConfig extends SimpleRockConfig {
+export interface RapidObjectRendererProps {
   value: Record<string, any> | null | undefined;
 
   defaultText?: string;
@@ -9,6 +9,8 @@ export interface RapidObjectRendererRockConfig extends SimpleRockConfig {
 
   items?: RapidPropertyRenderConfig[];
 }
+
+export interface RapidObjectRendererRockConfig extends SimpleRockConfig, RapidObjectRendererProps {}
 
 export interface RapidPropertyRenderConfig {
   /**
