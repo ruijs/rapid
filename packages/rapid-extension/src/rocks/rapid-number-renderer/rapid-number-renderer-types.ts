@@ -1,8 +1,7 @@
 import { SimpleRockConfig } from "@ruiapp/move-style";
 
-export interface RapidNumberRendererRockConfig extends SimpleRockConfig {
+export interface RapidNumberRendererProps {
   value: string | number | null | undefined;
-
   defaultText?: string;
 
   /**
@@ -25,3 +24,5 @@ export interface RapidNumberRendererRockConfig extends SimpleRockConfig {
    */
   conversionCoefficient?: number;
 }
+
+export interface RapidNumberRendererRockConfig extends SimpleRockConfig, RapidNumberRendererProps {}

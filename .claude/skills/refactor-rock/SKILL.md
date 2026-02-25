@@ -370,3 +370,12 @@ export default {
 2. 分析当前 rock 组件的结构
 3. 按照上述规则进行重构
 4. 保存修改后的文件
+
+## 再次强调
+
+- 在理解原 `Rock.Renderer` 方法的功能后，再抽取并导出同名的 React 组件，使用 JSX 语法。
+- 新组件应直接接收 `{RockName}Props` 类型，不包含 `context` 参数
+- 新组件的功能和原 `Rock.Renderer` 方法保持一致
+- 如果原代码使用 `renderRock` 渲染 `antdTag`、`antdButton` 等 Rock，应改为直接导入并使用 Ant Design 的 `Tag`、`Button` 等组件
+- 只有当组件必须嵌套其他动态 Rock 配置时，才考虑保留 `renderRock` 调用
+- 利用 `genRockRenderer` 自动生成 Rock.Renderer
