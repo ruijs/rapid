@@ -154,6 +154,21 @@ export default {
           defaultValue: "false",
         },
         {
+          name: "enableEventLog",
+          code: "enableEventLog",
+          columnName: "enable_event_log",
+          type: "boolean",
+          required: true,
+          defaultValue: "false",
+        },
+        {
+          name: "eventTypePolicy",
+          code: "eventTypePolicy",
+          columnName: "event_type_policy",
+          type: "json",
+          required: false,
+        },
+        {
           name: "defaultOrderBy",
           code: "defaultOrderBy",
           columnName: "default_order_by",

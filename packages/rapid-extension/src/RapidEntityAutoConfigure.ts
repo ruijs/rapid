@@ -90,6 +90,8 @@ export function autoConfigureRapidEntity(sourceEntity: RapidEntity, entityDefini
       "indexes",
       "permissionPolicies",
       "softDelete",
+      "enableEventLog",
+      "eventTypePolicy",
       "i18n",
       "locales",
       "deprecated",
