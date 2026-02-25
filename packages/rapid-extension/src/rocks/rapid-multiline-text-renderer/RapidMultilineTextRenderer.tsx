@@ -1,21 +1,20 @@
-import { Rock, SimpleRockConfig } from "@ruiapp/move-style";
-import RapidBoolRendererMeta from "./RapidMultilineTextRendererMeta";
+import { Rock } from "@ruiapp/move-style";
+import RapidMultilineTextRendererMeta from "./RapidMultilineTextRendererMeta";
+import { genRockRenderer } from "@ruiapp/react-renderer";
+import { RapidMultilineTextRendererProps, RapidMultilineTextRendererRockConfig } from "./rapid-multiline-text-renderer-types";
 
-export interface RapidMultilineTextRendererProps extends SimpleRockConfig {
-  value: string | null | undefined;
-  defaultText?: string;
+export function configRapidMultilineTextRenderer(config: RapidMultilineTextRendererRockConfig): RapidMultilineTextRendererRockConfig {
+  return config;
+}
+
+export function RapidMultilineTextRenderer(props: RapidMultilineTextRendererProps) {
+  let { value, defaultText } = props;
+  value ??= defaultText;
+
+  return <pre>{value}</pre>;
 }
 
 export default {
-  $type: "rapidMultilineTextRenderer",
-
-  Renderer(context, props: RapidMultilineTextRendererProps) {
-    const { framework } = context;
-    let { value, defaultText } = props;
-    value ??= defaultText;
-
-    return <pre>{value}</pre>;
-  },
-
-  ...RapidBoolRendererMeta,
-} as Rock;
+  Renderer: genRockRenderer(RapidMultilineTextRendererMeta.$type, RapidMultilineTextRenderer),
+  ...RapidMultilineTextRendererMeta,
+} as Rock<RapidMultilineTextRendererRockConfig>;
