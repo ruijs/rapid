@@ -1,80 +1,84 @@
-import { MoveStyleUtils, Rock } from "@ruiapp/move-style";
+import { MoveStyleUtils, Rock, RockInstance } from "@ruiapp/move-style";
 import { Radio, Space } from "antd";
-import { RapidRadioListFormInputRockConfig } from "./rapid-radio-list-form-input-types";
-import RapidCheckboxListFormInputMeta from "./RapidRadioListFormInputMeta";
+import { RapidRadioListFormInputProps, RapidRadioListFormInputRockConfig } from "./rapid-radio-list-form-input-types";
+import RapidRadioListFormInputMeta from "./RapidRadioListFormInputMeta";
+import { genRockRenderer } from "@ruiapp/react-renderer";
 import { get, isObject, map } from "lodash";
 import type { RadioGroupProps } from "antd/lib/radio";
 import { useMemo } from "react";
 
-export default {
-  $type: "rapidRadioListFormInput",
+export function configRapidRadioListFormInput(config: RapidRadioListFormInputRockConfig): RapidRadioListFormInputRockConfig {
+  return config;
+}
 
-  Renderer(context, props: RapidRadioListFormInputRockConfig) {
-    const { scope } = context;
+export function RapidRadioListFormInput(props: RapidRadioListFormInputProps) {
+  const { _context: context } = props as any as RockInstance;
+  const { scope } = context;
+  const { listTextFormat, direction = "horizontal" } = props;
 
-    const { listTextFormat } = props;
+  let listItems = [];
+  if (props.listDataSourceCode) {
+    listItems = scope.stores[props.listDataSourceCode]?.data?.list;
+  } else {
+    listItems = props.listItems || props.listDataSource?.data?.list || [];
+  }
 
-    let listItems = [];
-    if (props.listDataSourceCode) {
-      listItems = scope.stores[props.listDataSourceCode]?.data?.list;
+  const listTextFieldName = props.listTextFieldName || "name";
+  const listValueFieldName = props.listValueFieldName || "id";
+
+  function getRadioOption(item: any): { label: string; value: string } {
+    let label: string;
+    if (listTextFormat) {
+      label = MoveStyleUtils.fulfillVariablesInString(listTextFormat, item);
     } else {
-      listItems = props.listItems || props.listDataSource?.data?.list;
+      label = get(item, listTextFieldName);
     }
+    const value = get(item, listValueFieldName);
 
-    const listTextFieldName = props.listTextFieldName || "name";
-    const listValueFieldName = props.listValueFieldName || "id";
-
-    function getCheckboxOption(item: any): { label: string; value: string } {
-      let label: string;
-      if (listTextFormat) {
-        label = MoveStyleUtils.fulfillVariablesInString(listTextFormat, item);
-      } else {
-        label = get(item, listTextFieldName);
-      }
-      const value = get(item, listValueFieldName);
-
-      return {
-        label,
-        value,
-      };
-    }
-
-    let selectedValue: string[];
-    if (props.valueFieldName) {
-      selectedValue = map(props.value, (item) => {
-        if (isObject(item)) {
-          return get(item, props.valueFieldName);
-        }
-        return item;
-      });
-    } else {
-      selectedValue = props.value;
-    }
-
-    const antdProps: RadioGroupProps = {
-      disabled: props.disabled,
-      value: selectedValue,
-      onChange: props.onChange,
-      style: { width: "100%" },
+    return {
+      label,
+      value,
     };
+  }
 
-    const radioList = useMemo(() => {
-      return (
-        <Space direction={props.direction || "horizontal"}>
-          {listItems.map((item, index) => {
-            const option = getCheckboxOption(item);
-            return (
-              <Radio key={index} value={option.value}>
-                {option.label}
-              </Radio>
-            );
-          })}
-        </Space>
-      );
-    }, [listItems]);
+  let selectedValue: string | string[];
+  if (props.valueFieldName) {
+    selectedValue = map(props.value, (item) => {
+      if (isObject(item)) {
+        return get(item, props.valueFieldName);
+      }
+      return item;
+    });
+  } else {
+    selectedValue = props.value;
+  }
 
-    return <Radio.Group {...antdProps}>{radioList}</Radio.Group>;
-  },
+  const antdProps: RadioGroupProps = {
+    disabled: props.disabled,
+    value: selectedValue,
+    onChange: props.onChange,
+    style: { width: "100%" },
+  };
 
-  ...RapidCheckboxListFormInputMeta,
-} as Rock;
+  const radioList = useMemo(() => {
+    return (
+      <Space direction={direction}>
+        {listItems.map((item, index) => {
+          const option = getRadioOption(item);
+          return (
+            <Radio key={index} value={option.value}>
+              {option.label}
+            </Radio>
+          );
+        })}
+      </Space>
+    );
+  }, [listItems, direction]);
+
+  return <Radio.Group {...antdProps}>{radioList}</Radio.Group>;
+}
+
+export default {
+  Renderer: genRockRenderer(RapidRadioListFormInputMeta.$type, RapidRadioListFormInput),
+  ...RapidRadioListFormInputMeta,
+} as Rock<RapidRadioListFormInputRockConfig>;

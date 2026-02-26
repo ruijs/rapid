@@ -1,6 +1,8 @@
 import type { SimpleRockConfig } from "@ruiapp/move-style";
 
-export interface RapidRadioListFormInputConfig {
+export const ROCK_TYPE = "rapidRadioListFormInput" as const;
+
+export interface RapidRadioListFormInputProps {
   /**
    * 是否禁用
    */
@@ -54,6 +56,13 @@ export interface RapidRadioListFormInputConfig {
    * 单选框的排列方向
    */
   direction: "horizontal" | "vertical";
+
+  /**
+   * 值改变时的回调函数
+   */
+  onChange?(value: any): void;
 }
 
-export type RapidRadioListFormInputRockConfig = SimpleRockConfig & RapidRadioListFormInputConfig;
+export interface RapidRadioListFormInputRockConfig extends SimpleRockConfig, RapidRadioListFormInputProps {
+  $type: typeof ROCK_TYPE;
+}
