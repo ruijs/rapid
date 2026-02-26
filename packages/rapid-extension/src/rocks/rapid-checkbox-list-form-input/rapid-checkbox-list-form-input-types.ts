@@ -1,7 +1,9 @@
-import type { SimpleRockConfig } from "@ruiapp/move-style";
+import type { RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
 import { CSSProperties } from "react";
 
-export interface RapidCheckboxListFormInputConfig {
+export const ROCK_TYPE = "rapidCheckboxListFormInput" as const;
+
+export interface RapidCheckboxListFormInputProps {
   /**
    * 是否禁用
    */
@@ -11,6 +13,11 @@ export interface RapidCheckboxListFormInputConfig {
    * 值
    */
   value?: any;
+
+  /**
+   * 值变更回调
+   */
+  onChange?(value: any): void;
 
   /**
    * 值的字段名
@@ -142,4 +149,8 @@ export interface RapidCheckboxListFormInputConfig {
   direction?: "horizontal" | "vertical";
 }
 
-export type RapidCheckboxListFormInputRockConfig = SimpleRockConfig & RapidCheckboxListFormInputConfig;
+export interface RapidCheckboxListFormInputRockConfig extends SimpleRockConfig, Omit<RapidCheckboxListFormInputProps, "onChange"> {
+  $type: typeof ROCK_TYPE;
+
+  onChange?: RockEventHandlerConfig;
+}

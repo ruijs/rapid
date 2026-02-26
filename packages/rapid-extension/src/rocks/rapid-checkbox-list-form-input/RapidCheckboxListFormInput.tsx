@@ -1,107 +1,154 @@
-import { MoveStyleUtils, Rock } from "@ruiapp/move-style";
-import { Checkbox, Space } from "antd";
-import { RapidCheckboxListFormInputRockConfig } from "./rapid-checkbox-list-form-input-types";
+import { MoveStyleUtils, Rock, RockInstance } from "@ruiapp/move-style";
+import { Checkbox } from "antd";
+import { RapidCheckboxListFormInputProps, RapidCheckboxListFormInputRockConfig } from "./rapid-checkbox-list-form-input-types";
 import RapidCheckboxListFormInputMeta from "./RapidCheckboxListFormInputMeta";
 import { filter, get, isObject, map } from "lodash";
 import type { CheckboxGroupProps, CheckboxOptionType } from "antd/lib/checkbox";
 import { CSSProperties, useMemo } from "react";
+import { genRockRenderer } from "@ruiapp/react-renderer";
 
 import "./RapidCheckboxListFormInput.css";
-import { cx } from "../../utils/classname-utility";
 
-export default {
-  $type: "rapidCheckboxListFormInput",
+export function configRapidCheckboxListFormInput(config: RapidCheckboxListFormInputRockConfig): RapidCheckboxListFormInputRockConfig {
+  return config;
+}
 
-  Renderer(context, props: RapidCheckboxListFormInputRockConfig) {
-    const { scope } = context;
+export function RapidCheckboxListFormInput(props: RapidCheckboxListFormInputProps) {
+  const { _context: context } = props as any as RockInstance;
+  const { scope } = context;
+  const {
+    groupByFieldName,
+    listTextFormat,
+    groupDataSourceCode,
+    groupsDataSourceCode,
+    groupItems: propGroupItems,
+    groupDataSource,
+    groupsDataSource,
+    listDataSourceCode,
+    listItems: propListItems,
+    listDataSource,
+    listTextFieldName: propListTextFieldName,
+    listValueFieldName: propListValueFieldName,
+    listDisabledFieldName: propListDisabledFieldName,
+    groupTextFieldName: propGroupTextFieldName,
+    groupValueFieldName: propGroupValueFieldName,
+    valueFieldName,
+    value,
+    disabled,
+    onChange,
+    groupStyle,
+    groupClassName,
+    groupTitleStyle,
+    groupTitleClassName,
+    itemListStyle,
+    itemListClassName,
+    direction,
+  } = props;
 
-    const { groupByFieldName, listTextFormat } = props;
+  let groupItems = [];
+  if (groupDataSourceCode || groupsDataSourceCode) {
+    groupItems = scope.stores[groupDataSourceCode || groupsDataSourceCode]?.data?.list;
+  } else {
+    groupItems = propGroupItems || groupDataSource?.data?.list || groupsDataSource?.data?.list;
+  }
 
-    let groupItems = [];
-    if (props.groupDataSourceCode || props.groupsDataSourceCode) {
-      groupItems = scope.stores[props.groupDataSourceCode || props.groupsDataSourceCode]?.data?.list;
-    } else {
-      groupItems = props.groupItems || props.groupDataSource?.data?.list || props.groupsDataSource?.data?.list;
-    }
+  let listItems = [];
+  if (listDataSourceCode) {
+    listItems = scope.stores[listDataSourceCode]?.data?.list;
+  } else {
+    listItems = propListItems || listDataSource?.data?.list;
+  }
 
-    let listItems = [];
-    if (props.listDataSourceCode) {
-      listItems = scope.stores[props.listDataSourceCode]?.data?.list;
-    } else {
-      listItems = props.listItems || props.listDataSource?.data?.list;
-    }
+  const listTextFieldName = propListTextFieldName || "name";
+  const listValueFieldName = propListValueFieldName || "id";
+  const listDisabledFieldName = propListDisabledFieldName || "disabled";
 
-    const listTextFieldName = props.listTextFieldName || "name";
-    const listValueFieldName = props.listValueFieldName || "id";
-    const listDisabledFieldName = props.listDisabledFieldName || "disabled";
+  const groupTextFieldName = propGroupTextFieldName || "name";
+  const groupValueFieldName = propGroupValueFieldName || "id";
 
-    const groupTextFieldName = props.groupTextFieldName || "name";
-    const groupValueFieldName = props.groupValueFieldName || "id";
+  let selectedValue: string[];
+  if (valueFieldName) {
+    selectedValue = map(value, (item) => {
+      if (isObject(item)) {
+        return get(item, valueFieldName);
+      }
+      return item;
+    });
+  } else {
+    selectedValue = value;
+  }
 
-    let selectedValue: string[];
-    if (props.valueFieldName) {
-      selectedValue = map(props.value, (item) => {
-        if (isObject(item)) {
-          return get(item, props.valueFieldName);
-        }
-        return item;
+  const antdProps: CheckboxGroupProps = {
+    disabled: disabled,
+    value: selectedValue,
+    onChange: onChange,
+    style: { width: "100%" },
+  };
+
+  const checkboxList = useMemo(() => {
+    if (groupByFieldName) {
+      return map(groupItems, (group, index) => {
+        const groupValue = get(group, groupValueFieldName) || index;
+        const itemsInGroup = filter(listItems, (item) => get(item, groupByFieldName) === groupValue);
+
+        return (
+          <div key={groupValue} style={{ marginBottom: "15px", ...groupStyle }} className={groupClassName}>
+            <h4 style={{ fontWeight: "bold", ...groupTitleStyle }} className={groupTitleClassName}>
+              {get(group, groupTextFieldName, "")}
+            </h4>
+            <CheckboxList
+              itemList={itemsInGroup}
+              itemListStyle={itemListStyle}
+              itemListClassName={itemListClassName}
+              direction={direction}
+              listTextFormat={listTextFormat}
+              listTextFieldName={listTextFieldName}
+              listValueFieldName={listValueFieldName}
+              listDisabledFieldName={listDisabledFieldName}
+            />
+          </div>
+        );
       });
     } else {
-      selectedValue = props.value;
+      return (
+        <CheckboxList
+          itemList={listItems}
+          itemListStyle={itemListStyle}
+          itemListClassName={itemListClassName}
+          direction={direction}
+          listTextFormat={listTextFormat}
+          listTextFieldName={listTextFieldName}
+          listValueFieldName={listValueFieldName}
+          listDisabledFieldName={listDisabledFieldName}
+        />
+      );
     }
+  }, [
+    groupItems,
+    listItems,
+    groupByFieldName,
+    groupValueFieldName,
+    groupTextFieldName,
+    listTextFormat,
+    listTextFieldName,
+    listValueFieldName,
+    listDisabledFieldName,
+    groupStyle,
+    groupClassName,
+    groupTitleStyle,
+    groupTitleClassName,
+    itemListStyle,
+    itemListClassName,
+    direction,
+  ]);
 
-    const antdProps: CheckboxGroupProps = {
-      disabled: props.disabled,
-      value: selectedValue,
-      onChange: props.onChange,
-      style: { width: "100%" },
-    };
+  return <Checkbox.Group {...antdProps}>{checkboxList}</Checkbox.Group>;
+}
 
-    const checkboxList = useMemo(() => {
-      if (groupByFieldName) {
-        return map(groupItems, (group, index) => {
-          const groupValue = get(group, groupValueFieldName) || index;
-          const itemsInGroup = filter(listItems, (item) => get(item, groupByFieldName) === groupValue);
-
-          return (
-            <div key={groupValue} style={{ marginBottom: "15px", ...props.groupStyle }} className={props.groupClassName}>
-              <h4 style={{ fontWeight: "bold", ...props.groupTitleStyle }} className={props.groupTitleClassName}>
-                {get(group, groupTextFieldName, "")}
-              </h4>
-              <CheckboxList
-                itemList={itemsInGroup}
-                itemListStyle={props.itemListStyle}
-                itemListClassName={props.itemListClassName}
-                direction={props.direction}
-                listTextFormat={listTextFormat}
-                listTextFieldName={listTextFieldName}
-                listValueFieldName={listValueFieldName}
-                listDisabledFieldName={listDisabledFieldName}
-              />
-            </div>
-          );
-        });
-      } else {
-        return (
-          <CheckboxList
-            itemList={listItems}
-            itemListStyle={props.itemListStyle}
-            itemListClassName={props.itemListClassName}
-            direction={props.direction}
-            listTextFormat={listTextFormat}
-            listTextFieldName={listTextFieldName}
-            listValueFieldName={listValueFieldName}
-            listDisabledFieldName={listDisabledFieldName}
-          />
-        );
-      }
-    }, [groupItems, listItems, groupByFieldName]);
-
-    return <Checkbox.Group {...antdProps}>{checkboxList}</Checkbox.Group>;
-  },
-
+export default {
+  Renderer: genRockRenderer(RapidCheckboxListFormInputMeta.$type, RapidCheckboxListFormInput),
   ...RapidCheckboxListFormInputMeta,
-} as Rock;
+} as Rock<RapidCheckboxListFormInputRockConfig>;
 
 interface CheckboxListProps {
   itemList: any[];
