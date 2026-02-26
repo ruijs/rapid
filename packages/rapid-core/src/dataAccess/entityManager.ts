@@ -1892,8 +1892,12 @@ export default class EntityManager<TEntity = any> {
         singularCode: model.base,
       });
     }
+    let entityFilters = options.filters;
+    if (!options.includingSoftDeleted) {
+      entityFilters = tryAddUndeletedEntityFilter(model, baseModel, entityFilters);
+    }
     const countRowOptions: CountRowOptions = {
-      filters: await convertEntityFiltersToRowFilters(routeContext, this.#server, model, baseModel, options.filters),
+      filters: await convertEntityFiltersToRowFilters(routeContext, this.#server, model, baseModel, entityFilters),
     };
     return await this.#dataAccessor.count(countRowOptions, routeContext?.getDbTransactionClient());
   }
