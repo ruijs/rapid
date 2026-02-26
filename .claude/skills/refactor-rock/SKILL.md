@@ -40,6 +40,53 @@ export interface RapidDatePickerProps {
 export interface RapidDatePickerRockConfig extends SimpleRockConfig, RapidDatePickerProps {}
 ```
 
+#### 1.1 ROCK_TYPE 常量定义
+
+为避免 `$type` 字符串在多个文件中重复定义，应在 types 文件中定义 `ROCK_TYPE` 常量，并在 `RockConfig` 接口和 Meta 文件中引用：
+
+```typescript
+// rapid-uploader-form-input-types.ts
+import type { SimpleRockConfig } from "@ruiapp/move-style";
+import type { UploadProps } from "antd";
+
+// 定义 ROCK_TYPE 常量
+export const ROCK_TYPE = "rapidUploaderFormInput" as const;
+
+export type RapidFileInfo = {
+  key: string;
+  name: string;
+  size: number;
+  type: string;
+};
+
+export interface RapidUploaderFormInputProps {
+  value?: RapidFileInfo | RapidFileInfo[] | null;
+  buttonText?: string;
+  uploadProps?: UploadProps;
+  multiple?: boolean;
+  onUploaded?(value: RapidFileInfo): void;
+  onChange?(value: RapidFileInfo | RapidFileInfo[] | null): void;
+}
+
+export interface RapidUploaderFormInputRockConfig extends SimpleRockConfig, RapidUploaderFormInputProps {
+  // 使用 typeof ROCK_TYPE 确保类型安全
+  $type: typeof ROCK_TYPE;
+}
+```
+
+```typescript
+// RapidUploaderFormInputMeta.ts
+import { RockMeta } from "@ruiapp/move-style";
+import { ROCK_TYPE } from "./rapid-uploader-form-input-types";
+
+export default {
+  // 引用 ROCK_TYPE 常量，避免硬编码字符串
+  $type: ROCK_TYPE,
+
+  propertyPanels: [],
+} as RockMeta;
+```
+
 对于继承其他 renderer 类型的情况：
 
 ```typescript
@@ -349,6 +396,7 @@ export default {
    - RockConfig 类型: `{RockName}RockConfig`
    - config 函数: `config{RockName}`
    - React 组件: `{RockName}`
+   - ROCK_TYPE 常量: `ROCK_TYPE` (定义在 types 文件中，统一使用此名称)
 
 2. **类型继承**:
 
@@ -471,7 +519,14 @@ export default {
    }
    ```
 
-5. **修复问题**:
+5. **ROCK_TYPE 常量**:
+
+   - 在 types 文件中定义 `export const ROCK_TYPE = "rockName" as const;`
+   - `RockConfig` 接口中使用 `$type: typeof ROCK_TYPE;`
+   - Meta 文件中引用 `ROCK_TYPE` 常量而非硬编码字符串
+   - 优点：单一来源、类型安全、避免重复、便于重构
+
+6. **修复问题**:
    - 检查并修复拼写错误（如 `formatedValue` → `formattedValue`）
    - 确保导入的 Meta 类型和文件名一致
 

@@ -1,13 +1,7 @@
 import type { SimpleRockConfig } from "@ruiapp/move-style";
 import type { UploadProps } from "antd";
 
-export type RapidUploaderFormInputConfig = {
-  buttonText?: string;
-
-  uploadProps: UploadProps;
-
-  multiple?: boolean;
-};
+export const ROCK_TYPE = "rapidUploaderFormInput" as const;
 
 export type RapidFileInfo = {
   key: string;
@@ -16,4 +10,15 @@ export type RapidFileInfo = {
   type: string;
 };
 
-export interface RapidUploaderFormInputRockConfig extends SimpleRockConfig, RapidUploaderFormInputConfig {}
+export interface RapidUploaderFormInputProps {
+  value?: RapidFileInfo | RapidFileInfo[] | null;
+  buttonText?: string;
+  uploadProps?: UploadProps;
+  multiple?: boolean;
+  onUploaded?(value: RapidFileInfo): void;
+  onChange?(value: RapidFileInfo | RapidFileInfo[] | null): void;
+}
+
+export interface RapidUploaderFormInputRockConfig extends SimpleRockConfig, RapidUploaderFormInputProps {
+  $type: typeof ROCK_TYPE;
+}

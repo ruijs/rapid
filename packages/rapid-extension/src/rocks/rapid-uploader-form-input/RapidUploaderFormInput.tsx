@@ -1,98 +1,95 @@
-import { Rock, RockConfig, handleComponentEvent } from "@ruiapp/move-style";
-import RapidToolbarLinkMeta from "./RapidUploaderFormInputMeta";
-import { renderRock } from "@ruiapp/react-renderer";
-import { RapidFileInfo, RapidUploaderFormInputRockConfig } from "./rapid-uploader-form-input-types";
+import { Rock, RockInstance } from "@ruiapp/move-style";
+import RapidUploaderFormInputMeta from "./RapidUploaderFormInputMeta";
+import { genRockRenderer } from "@ruiapp/react-renderer";
+import { RapidFileInfo, RapidUploaderFormInputProps, RapidUploaderFormInputRockConfig } from "./rapid-uploader-form-input-types";
 import { Button, Upload, UploadFile, UploadProps } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import { isArray, isString, remove, set } from "lodash";
+import { isArray, set } from "lodash";
 import { useCallback, useMemo } from "react";
-import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
+import { getExtensionLocaleStringResource } from "~/helpers/i18nHelper";
 
-export default {
-  $type: "rapidUploaderFormInput",
+export function configRapidUploaderFormInput(config: RapidUploaderFormInputRockConfig): RapidUploaderFormInputRockConfig {
+  return config;
+}
 
-  Renderer(context, props) {
-    const { framework } = context;
-    const onUploadChange = useCallback<UploadProps["onChange"]>(
-      (info) => {
-        const file = info.file;
-        if (file) {
-          if (file.status === "done") {
-            const rpdFileInfo: RapidFileInfo = {
-              name: file.name,
-              key: file.response.fileKey,
-              size: file.size,
-              type: file.type,
-            };
-            if (props.onUploaded) {
-              const eventArgs = [rpdFileInfo];
-              handleComponentEvent("onUploaded", context.framework, context.page, context.scope, props, props.onUploaded, eventArgs);
+export function RapidUploaderFormInput(props: RapidUploaderFormInputProps) {
+  const { _context: context } = props as any as RockInstance;
+  const { framework } = context;
+  const onUploadChange = useCallback<UploadProps["onChange"]>(
+    (info) => {
+      const file = info.file;
+      if (file) {
+        if (file.status === "done") {
+          const rpdFileInfo: RapidFileInfo = {
+            name: file.name,
+            key: file.response.fileKey,
+            size: file.size,
+            type: file.type,
+          };
+
+          props.onUploaded?.(rpdFileInfo);
+          let value: RapidFileInfo | RapidFileInfo[] | null = props.value || null;
+          if (props.multiple) {
+            if (isArray(value)) {
+              value = [...value, rpdFileInfo];
+            } else if (value) {
+              value = [value, rpdFileInfo];
             } else {
-              let value: RapidFileInfo | RapidFileInfo[] | undefined = props.value;
-              if (props.multiple) {
-                if (isArray(value)) {
-                  (value as RapidFileInfo[]).push(rpdFileInfo);
-                } else if (value) {
-                  value = [value, rpdFileInfo];
-                } else {
-                  value = [rpdFileInfo];
-                }
-              } else {
-                value = rpdFileInfo;
-              }
-              props.onChange?.(value);
+              value = [rpdFileInfo];
             }
+          } else {
+            value = rpdFileInfo;
           }
+          props.onChange?.(value);
         }
-      },
-      [props.value, props.onChange],
-    );
+      }
+    },
+    [props.value, props.onChange, props.multiple],
+  );
 
-    const onRemoveFile = useCallback<UploadProps["onRemove"]>(
-      (file) => {
-        let { value } = props;
-        if (!value) {
-          return;
-        }
-
-        if (isArray(value)) {
-          const fileKey = file.uid;
-          remove(value, (item) => item.key === fileKey);
-        } else {
-          value = null;
-        }
-
-        props.onChange?.(value);
-      },
-      [props.value, props.onChange],
-    );
-
-    const defaultFileList = useMemo(() => {
-      const { value } = props;
+  const onRemoveFile = useCallback<UploadProps["onRemove"]>(
+    (file) => {
+      let { value } = props;
       if (!value) {
-        return null;
+        return;
       }
+
       if (isArray(value)) {
-        return value.map(convertRpdFileInfoToAntdFileInfo);
+        const fileKey = file.uid;
+        value = value.filter((item) => item.key !== fileKey);
+      } else {
+        value = null;
       }
 
-      return [convertRpdFileInfoToAntdFileInfo(value)];
-    }, [props.value]);
+      props.onChange?.(value);
+    },
+    [props.value, props.onChange],
+  );
 
-    const buttonText = props.buttonText || getExtensionLocaleStringResource(framework, "uploadButtonText");
-    if (!props.multiple) {
-      set(props, "uploadProps.maxCount", 1);
+  const defaultFileList = useMemo(() => {
+    const { value } = props;
+    if (!value) {
+      return undefined;
+    }
+    if (isArray(value)) {
+      return value.map(convertRpdFileInfoToAntdFileInfo);
     }
 
-    return (
-      <Upload {...props.uploadProps} defaultFileList={defaultFileList} onChange={onUploadChange} onRemove={onRemoveFile}>
-        <Button icon={<UploadOutlined />}>{buttonText.toString()}</Button>
-      </Upload>
-    );
-  },
+    return [convertRpdFileInfoToAntdFileInfo(value)];
+  }, [props.value]);
 
-  ...RapidToolbarLinkMeta,
-} as Rock<RapidUploaderFormInputRockConfig>;
+  const buttonText = props.buttonText || getExtensionLocaleStringResource(framework, "uploadButtonText");
+  const uploadProps = { ...props.uploadProps };
+  if (!props.multiple) {
+    set(uploadProps, "maxCount", 1);
+  }
+
+  return (
+    <Upload {...uploadProps} defaultFileList={defaultFileList} onChange={onUploadChange} onRemove={onRemoveFile}>
+      <Button icon={<UploadOutlined />}>{buttonText}</Button>
+    </Upload>
+  );
+}
 
 function convertRpdFileInfoToAntdFileInfo(source: RapidFileInfo): UploadFile {
   return {
@@ -102,3 +99,8 @@ function convertRpdFileInfoToAntdFileInfo(source: RapidFileInfo): UploadFile {
     type: source.type,
   };
 }
+
+export default {
+  Renderer: genRockRenderer(RapidUploaderFormInputMeta.$type, RapidUploaderFormInput),
+  ...RapidUploaderFormInputMeta,
+} as Rock<RapidUploaderFormInputRockConfig>;
