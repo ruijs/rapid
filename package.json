@@ -16,6 +16,12 @@
     "@changesets/cli": "^2.27.7",
     "husky": "^9.1.7",
     "lerna": "^5.5.4",
+    "lint-staged": "^16.2.7",
     "prettier": "2.8.8"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,css,scss,md,yml,yaml}": [
+      "prettier --write"
+    ]
   }
 }
