@@ -1,8 +1,8 @@
 import { RockMeta } from "@ruiapp/move-style";
-import { ROCK_TYPE } from "./rapid-descriptions-renderer-types";
+import { RAPID_DESCRIPTIONS_RENDERER_ROCK_TYPE } from "./rapid-descriptions-renderer-types";
 
 export default {
-  $type: ROCK_TYPE,
+  $type: RAPID_DESCRIPTIONS_RENDERER_ROCK_TYPE,
 
   slots: {
     extra: {

@@ -40,9 +40,9 @@ export interface RapidDatePickerProps {
 export interface RapidDatePickerRockConfig extends SimpleRockConfig, RapidDatePickerProps {}
 ```
 
-#### 1.1 ROCK_TYPE 常量定义
+#### 1.1 {ROCK_NAME}\_ROCK_TYPE 常量定义
 
-为避免 `$type` 字符串在多个文件中重复定义，应在 types 文件中定义 `ROCK_TYPE` 常量，并在 `RockConfig` 接口和 Meta 文件中引用：
+为避免 `$type` 字符串在多个文件中重复定义，应在 types 文件中定义 `{ROCK_NAME}_ROCK_TYPE` 常量，并在 `RockConfig` 接口和 Meta 文件中引用：
 
 ```typescript
 // rapid-uploader-form-input-types.ts
@@ -50,7 +50,7 @@ import type { SimpleRockConfig } from "@ruiapp/move-style";
 import type { UploadProps } from "antd";
 
 // 定义 ROCK_TYPE 常量
-export const ROCK_TYPE = "rapidUploaderFormInput" as const;
+export const RAPID_UPLOADER_FORM_INPUT_ROCK_TYPE = "rapidUploaderFormInput" as const;
 
 export type RapidFileInfo = {
   key: string;
@@ -70,18 +70,18 @@ export interface RapidUploaderFormInputProps {
 
 export interface RapidUploaderFormInputRockConfig extends SimpleRockConfig, RapidUploaderFormInputProps {
   // 使用 typeof ROCK_TYPE 确保类型安全
-  $type: typeof ROCK_TYPE;
+  $type: typeof RAPID_UPLOADER_FORM_INPUT_ROCK_TYPE;
 }
 ```
 
 ```typescript
 // RapidUploaderFormInputMeta.ts
 import { RockMeta } from "@ruiapp/move-style";
-import { ROCK_TYPE } from "./rapid-uploader-form-input-types";
+import { RAPID_UPLOADER_FORM_INPUT_ROCK_TYPE } from "./rapid-uploader-form-input-types";
 
 export default {
-  // 引用 ROCK_TYPE 常量，避免硬编码字符串
-  $type: ROCK_TYPE,
+  // 引用 RAPID_UPLOADER_FORM_INPUT_ROCK_TYPE 常量，避免硬编码字符串
+  $type: RAPID_UPLOADER_FORM_INPUT_ROCK_TYPE,
 
   propertyPanels: [],
 } as RockMeta;
@@ -396,7 +396,7 @@ export default {
    - RockConfig 类型: `{RockName}RockConfig`
    - config 函数: `config{RockName}`
    - React 组件: `{RockName}`
-   - ROCK_TYPE 常量: `ROCK_TYPE` (定义在 types 文件中，统一使用此名称)
+   - {ROCK_NAME}\_ROCK_TYPE 常量: `{ROCK_NAME}_ROCK_TYPE` (定义在 types 文件中，统一使用此名称)
 
 2. **类型继承**:
 
@@ -519,11 +519,11 @@ export default {
    }
    ```
 
-5. **ROCK_TYPE 常量**:
+5. **{ROCK_NAME}\_ROCK_TYPE 常量**:
 
-   - 在 types 文件中定义 `export const ROCK_TYPE = "rockName" as const;`
-   - `RockConfig` 接口中使用 `$type: typeof ROCK_TYPE;`
-   - Meta 文件中引用 `ROCK_TYPE` 常量而非硬编码字符串
+   - 在 types 文件中定义 `export const {ROCK_NAME}_ROCK_TYPE = "rockName" as const;`
+   - `{RockName}RockConfig` 接口中使用 `$type: typeof {ROCK_NAME}_ROCK_TYPE;`
+   - Meta 文件中引用 `{ROCK_NAME}_ROCK_TYPE` 常量而非硬编码字符串
    - 优点：单一来源、类型安全、避免重复、便于重构
 
 6. **修复问题**:

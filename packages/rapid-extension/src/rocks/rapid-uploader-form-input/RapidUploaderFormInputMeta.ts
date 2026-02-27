@@ -1,8 +1,8 @@
 import { RockMeta } from "@ruiapp/move-style";
-import { ROCK_TYPE } from "./rapid-uploader-form-input-types";
+import { RAPID_UPLOADER_FORM_INPUT_ROCK_TYPE } from "./rapid-uploader-form-input-types";
 
 export default {
-  $type: ROCK_TYPE,
+  $type: RAPID_UPLOADER_FORM_INPUT_ROCK_TYPE,
 
   propertyPanels: [],
 } as RockMeta;

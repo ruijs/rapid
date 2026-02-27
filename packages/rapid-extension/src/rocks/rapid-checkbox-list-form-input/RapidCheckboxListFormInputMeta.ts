@@ -1,8 +1,8 @@
 import { RockMeta } from "@ruiapp/move-style";
-import { ROCK_TYPE } from "./rapid-checkbox-list-form-input-types";
+import { RAPID_CHECKBOX_LIST_FORM_INPUT_ROCK_TYPE } from "./rapid-checkbox-list-form-input-types";
 
 export default {
-  $type: ROCK_TYPE,
+  $type: RAPID_CHECKBOX_LIST_FORM_INPUT_ROCK_TYPE,
 
   slots: {},
 

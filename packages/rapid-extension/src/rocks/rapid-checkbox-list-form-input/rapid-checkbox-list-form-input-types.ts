@@ -1,7 +1,7 @@
 import type { RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
 import { CSSProperties } from "react";
 
-export const ROCK_TYPE = "rapidCheckboxListFormInput" as const;
+export const RAPID_CHECKBOX_LIST_FORM_INPUT_ROCK_TYPE = "rapidCheckboxListFormInput" as const;
 
 export interface RapidCheckboxListFormInputProps {
   /**
@@ -150,7 +150,7 @@ export interface RapidCheckboxListFormInputProps {
 }
 
 export interface RapidCheckboxListFormInputRockConfig extends SimpleRockConfig, Omit<RapidCheckboxListFormInputProps, "onChange"> {
-  $type: typeof ROCK_TYPE;
+  $type: typeof RAPID_CHECKBOX_LIST_FORM_INPUT_ROCK_TYPE;
 
   onChange?: RockEventHandlerConfig;
 }

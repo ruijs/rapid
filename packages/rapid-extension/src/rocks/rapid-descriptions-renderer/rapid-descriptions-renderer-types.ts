@@ -2,7 +2,7 @@ import { RockConfig, SimpleRockConfig } from "@ruiapp/move-style";
 import { RapidFieldType } from "@ruiapp/rapid-common";
 import { ReactNode } from "react";
 
-export const ROCK_TYPE = "rapidDescriptionsRenderer" as const;
+export const RAPID_DESCRIPTIONS_RENDERER_ROCK_TYPE = "rapidDescriptionsRenderer" as const;
 
 export interface RapidDescriptionsItemRenderConfig {
   /**
@@ -150,7 +150,7 @@ export interface RapidDescriptionsRendererProps {
 }
 
 export interface RapidDescriptionsRendererRockConfig extends SimpleRockConfig, Omit<RapidDescriptionsRendererProps, "extra"> {
-  $type: typeof ROCK_TYPE;
+  $type: typeof RAPID_DESCRIPTIONS_RENDERER_ROCK_TYPE;
 
   /**
    * 额外内容

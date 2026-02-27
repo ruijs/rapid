@@ -1,6 +1,6 @@
 import type { SimpleRockConfig } from "@ruiapp/move-style";
 
-export const ROCK_TYPE = "rapidRadioListFormInput" as const;
+export const RAPID_RADIO_LIST_FORM_INPUT_ROCK_TYPE = "rapidRadioListFormInput" as const;
 
 export interface RapidRadioListFormInputProps {
   /**
@@ -64,5 +64,5 @@ export interface RapidRadioListFormInputProps {
 }
 
 export interface RapidRadioListFormInputRockConfig extends SimpleRockConfig, RapidRadioListFormInputProps {
-  $type: typeof ROCK_TYPE;
+  $type: typeof RAPID_RADIO_LIST_FORM_INPUT_ROCK_TYPE;
 }

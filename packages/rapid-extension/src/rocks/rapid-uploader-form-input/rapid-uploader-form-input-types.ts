@@ -1,7 +1,7 @@
 import type { SimpleRockConfig } from "@ruiapp/move-style";
 import type { UploadProps } from "antd";
 
-export const ROCK_TYPE = "rapidUploaderFormInput" as const;
+export const RAPID_UPLOADER_FORM_INPUT_ROCK_TYPE = "rapidUploaderFormInput" as const;
 
 export type RapidFileInfo = {
   key: string;
@@ -20,5 +20,5 @@ export interface RapidUploaderFormInputProps {
 }
 
 export interface RapidUploaderFormInputRockConfig extends SimpleRockConfig, RapidUploaderFormInputProps {
-  $type: typeof ROCK_TYPE;
+  $type: typeof RAPID_UPLOADER_FORM_INPUT_ROCK_TYPE;
 }
