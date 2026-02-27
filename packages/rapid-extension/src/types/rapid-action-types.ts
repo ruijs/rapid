@@ -46,8 +46,6 @@ export type RapidActionBase = {
    * 记录Id
    */
   recordId?: string;
-
-  onAction?: RockEventHandlerConfig;
 };
 
 export type RapidToolbarActionBase = RapidActionBase & {

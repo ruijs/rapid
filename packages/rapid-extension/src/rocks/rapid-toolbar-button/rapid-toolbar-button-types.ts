@@ -1,7 +1,9 @@
-import type { SimpleRockConfig } from "@ruiapp/move-style";
+import type { RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
 import { RapidToolbarActionBase } from "../../types/rapid-action-types";
 
-export interface RapidToolbarButtonConfig extends RapidToolbarActionBase {
+export const RAPID_TOOLBAR_BUTTON_ROCK_TYPE = "rapidToolbarButton" as const;
+
+export interface RapidToolbarButtonProps extends RapidToolbarActionBase {
   actionType?: "button" | "link";
   url?: string;
 
@@ -9,6 +11,12 @@ export interface RapidToolbarButtonConfig extends RapidToolbarActionBase {
    * @deprecated
    */
   pageCode?: string;
+
+  onAction?: () => void;
 }
 
-export interface RapidToolbarButtonRockConfig extends SimpleRockConfig, RapidToolbarButtonConfig {}
+export interface RapidToolbarButtonRockConfig extends SimpleRockConfig, Omit<RapidToolbarButtonProps, "onAction"> {
+  $type: typeof RAPID_TOOLBAR_BUTTON_ROCK_TYPE;
+
+  onAction?: RockEventHandlerConfig;
+}

@@ -1,79 +1,94 @@
-import { handleComponentEvent, Rock, RockConfig, RockEvent } from "@ruiapp/move-style";
+import { handleComponentEvent, Rock, RockInstance } from "@ruiapp/move-style";
+import { Button, Modal, Tooltip } from "antd";
 import RapidToolbarButtonMeta from "./RapidToolbarButtonMeta";
-import { renderRock } from "@ruiapp/react-renderer";
-import { RapidToolbarButtonRockConfig } from "./rapid-toolbar-button-types";
-import { Modal } from "antd";
+import { genRockRenderer } from "@ruiapp/react-renderer";
+import { RapidToolbarButtonProps, RapidToolbarButtonRockConfig } from "./rapid-toolbar-button-types";
 import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
+import AntdIcon from "../../components/antd-icon/AntdIcon";
+
+export function configRapidToolbarButton(config: RapidToolbarButtonRockConfig): RapidToolbarButtonRockConfig {
+  return config;
+}
+
+export function RapidToolbarButton(props: RapidToolbarButtonProps) {
+  const { _context: context } = props as any as RockInstance;
+  const { framework } = context;
+  const {
+    onAction,
+    confirmTitle,
+    confirmText,
+    tooltipTitle,
+    tooltipColor,
+    text,
+    icon,
+    actionStyle,
+    danger,
+    ghost,
+    size,
+    disabled,
+    actionEventName = "onClick",
+    actionType,
+    // @ts-ignore - deprecated property
+    pageCode,
+    url,
+  } = props;
+
+  let href: string | undefined;
+  if ((actionType as any) === "pageLink") {
+    href = `/pages/${pageCode}`;
+  } else if (url) {
+    href = url;
+  }
+
+  const handleClick = () => {
+    if (!onAction) return;
+
+    if (confirmText) {
+      Modal.confirm({
+        title: confirmTitle,
+        content: confirmText,
+        okText: getExtensionLocaleStringResource(framework, "ok"),
+        cancelText: getExtensionLocaleStringResource(framework, "cancel"),
+        onOk: async () => {
+          onAction?.();
+        },
+      });
+    } else {
+      onAction?.();
+    }
+  };
+
+  const buttonProps: Record<string, any> = {
+    type: actionStyle,
+    danger: !!danger,
+    ghost: !!ghost,
+    size,
+    disabled,
+    href,
+  };
+
+  if (onAction) {
+    buttonProps[actionEventName] = handleClick;
+  }
+
+  const buttonElement = (
+    <Button {...buttonProps} icon={icon ? <AntdIcon name={icon} /> : undefined}>
+      <span>{text}</span>
+    </Button>
+  );
+
+  if (tooltipTitle) {
+    return (
+      <Tooltip title={tooltipTitle} color={tooltipColor}>
+        {buttonElement}
+      </Tooltip>
+    );
+  }
+
+  return buttonElement;
+}
 
 export default {
-  $type: "rapidToolbarButton",
-
-  Renderer(context, props: RapidToolbarButtonRockConfig) {
-    const { framework } = context;
-    const { onAction, confirmTitle, confirmText, tooltipTitle, tooltipColor } = props;
-    const actionEventName = props.actionEventName || "onClick";
-
-    const buttonRockConfig: RockConfig = {
-      $id: `${props.$id}-button`,
-      $type: "antdButton",
-      type: props.actionStyle,
-      danger: !!props.danger,
-      ghost: !!props.ghost,
-      icon: props.icon ? { $type: "antdIcon", name: props.icon } : null,
-      size: props.size,
-      disabled: props.disabled,
-      children: {
-        $type: "htmlElement",
-        htmlTag: "span",
-        children: {
-          $type: "text",
-          text: props.text,
-        },
-      },
-    };
-
-    if ((props.actionType as any) === "pageLink") {
-      buttonRockConfig.href = `/pages/${props.pageCode}`;
-    } else if (props.url) {
-      buttonRockConfig.href = props.url;
-    }
-
-    if (onAction) {
-      buttonRockConfig[actionEventName] = [
-        {
-          $action: "script",
-          script: (event: RockEvent) => {
-            if (confirmText) {
-              Modal.confirm({
-                title: confirmTitle,
-                content: confirmText,
-                okText: getExtensionLocaleStringResource(framework, "ok"),
-                cancelText: getExtensionLocaleStringResource(framework, "cancel"),
-                onOk: async () => {
-                  handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, []);
-                },
-              });
-            } else {
-              handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, []);
-            }
-          },
-        },
-      ];
-    }
-
-    let toolTipRockConfig: RockConfig | null = null;
-    if (tooltipTitle) {
-      toolTipRockConfig = {
-        $id: `${props.$id}-tooltip`,
-        $type: "antdTooltip",
-        title: tooltipTitle,
-        color: tooltipColor,
-        children: buttonRockConfig,
-      };
-    }
-
-    return renderRock({ context, rockConfig: toolTipRockConfig || buttonRockConfig });
-  },
-
+  Renderer: genRockRenderer(RapidToolbarButtonMeta.$type, RapidToolbarButton),
   ...RapidToolbarButtonMeta,
-} as Rock;
+} as Rock<RapidToolbarButtonRockConfig>;
