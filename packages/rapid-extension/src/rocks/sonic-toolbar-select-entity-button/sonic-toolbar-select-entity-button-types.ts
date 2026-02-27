@@ -1,10 +1,10 @@
 import type { RockConfig, RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
 import type { EntityFilterFieldOperators, EntityFilterOptions, FindEntityOrderByOptions } from "@ruiapp/rapid-common";
-import type { RapidToolbarButtonConfig } from "../rapid-toolbar-button/rapid-toolbar-button-types";
+import type { RapidToolbarButtonProps } from "../rapid-toolbar-button/rapid-toolbar-button-types";
 import type { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
 import { IRapidEntityListToolboxConfig } from "../rapid-entity-list-toolbox/RapidEntityListToolbox";
 
-export interface SonicToolbarSelectEntityButtonConfig extends Omit<RapidToolbarButtonConfig, "actionEventName"> {
+export interface SonicToolbarSelectEntityButtonConfig extends Omit<RapidToolbarButtonProps, "actionEventName"> {
   /**
    * 实体类型
    */

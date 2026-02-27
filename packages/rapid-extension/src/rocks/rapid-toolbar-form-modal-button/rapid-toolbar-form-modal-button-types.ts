@@ -1,7 +1,7 @@
 import type { RockChildrenConfig, RockConfig, RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
-import { RapidToolbarButtonConfig } from "../rapid-toolbar-button/rapid-toolbar-button-types";
+import { RapidToolbarButtonProps } from "../rapid-toolbar-button/rapid-toolbar-button-types";
 
-export interface RapidToolbarFormModalButtonConfig extends Omit<RapidToolbarButtonConfig, "actionEventName"> {
+export interface RapidToolbarFormModalButtonConfig extends Omit<RapidToolbarButtonProps, "actionEventName"> {
   /**
    * 模态框的标题
    */

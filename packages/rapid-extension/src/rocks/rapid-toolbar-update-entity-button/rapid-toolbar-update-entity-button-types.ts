@@ -1,7 +1,7 @@
 import type { RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
-import { RapidToolbarButtonConfig } from "../rapid-toolbar-button/rapid-toolbar-button-types";
+import { RapidToolbarButtonProps } from "../rapid-toolbar-button/rapid-toolbar-button-types";
 
-export interface RapidToolbarUpdateEntityButtonConfig extends RapidToolbarButtonConfig {
+export interface RapidToolbarUpdateEntityButtonConfig extends RapidToolbarButtonProps {
   actionType?: "button";
   entity?: Record<string, any>;
   entityId?: number;
