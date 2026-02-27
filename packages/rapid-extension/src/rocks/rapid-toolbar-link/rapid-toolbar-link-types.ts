@@ -1,9 +1,27 @@
-import type { SimpleRockConfig } from "@ruiapp/move-style";
-import type { RapidToolbarActionBase } from "../../types/rapid-action-types";
+import type { RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
 
-export type RapidToolbarLinkConfig = RapidToolbarActionBase & {
+export const RAPID_TOOLBAR_LINK_ROCK_TYPE = "rapidToolbarLink" as const;
+
+export interface RapidToolbarLinkProps {
+  code?: string;
+  icon?: string;
+  text?: string;
+  disabled?: boolean;
+  tooltipTitle?: string;
+  tooltipColor?: string;
+  actionEventName?: string;
+  confirmTitle?: string;
+  confirmText?: string;
+  recordId?: string;
+  onAction?: RockEventHandlerConfig;
+  actionStyle?: "default" | "primary" | "dashed" | "text" | "link";
+  danger?: boolean;
+  ghost?: boolean;
+  size?: "small" | "middle" | "large";
   url: string;
   target?: string;
-};
+}
 
-export interface RapidToolbarLinkRockConfig extends SimpleRockConfig, RapidToolbarLinkConfig {}
+export interface RapidToolbarLinkRockConfig extends SimpleRockConfig, RapidToolbarLinkProps {
+  $type: typeof RAPID_TOOLBAR_LINK_ROCK_TYPE;
+}
