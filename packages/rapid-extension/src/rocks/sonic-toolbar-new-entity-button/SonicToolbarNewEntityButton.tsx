@@ -1,30 +1,43 @@
-import { MoveStyleUtils, type Rock, type RockConfig } from "@ruiapp/move-style";
-import { renderRock } from "@ruiapp/react-renderer";
-import RapidEntityListMeta from "./SonicToolbarNewEntityButtonMeta";
-import type { SonicToolbarNewEntityButtonRockConfig } from "./sonic-toolbar-new-entity-button-types";
+import type { Rock, RockInstance } from "@ruiapp/move-style";
+import { fireEvent } from "@ruiapp/move-style";
+import SonicToolbarNewEntityButtonMeta from "./SonicToolbarNewEntityButtonMeta";
+import { genRockRenderer } from "@ruiapp/react-renderer";
+import { SonicToolbarNewEntityButtonProps, SonicToolbarNewEntityButtonRockConfig } from "./sonic-toolbar-new-entity-button-types";
+import { RapidToolbarButton } from "../rapid-toolbar-button/RapidToolbarButton";
 import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
 
-export default {
-  onInit(context, props) {},
+export function configSonicToolbarNewEntityButton(config: SonicToolbarNewEntityButtonRockConfig): SonicToolbarNewEntityButtonRockConfig {
+  return config;
+}
 
-  onReceiveMessage(message, state, props) {},
+export function SonicToolbarNewEntityButton(props: SonicToolbarNewEntityButtonProps) {
+  const { _context: context } = props as any as RockInstance;
+  const { framework, page, scope } = context;
 
-  Renderer(context, props) {
-    const { framework } = context;
-    const rockConfig: RockConfig = {
-      ...MoveStyleUtils.omitSystemRockConfigFields(props),
-      $type: "rapidToolbarButton",
-      text: props.text || getExtensionLocaleStringResource(framework, "new"),
-      onAction: [
+  const handleAction = async () => {
+    await fireEvent({
+      eventName: "onAction",
+      framework,
+      page,
+      scope,
+      sender: props,
+      senderCategory: "component",
+      eventHandlers: [
         {
           $action: "notifyEvent",
           eventName: "onNewEntityButtonClick",
         },
       ],
-    };
+      eventArgs: [],
+    });
+  };
 
-    return renderRock({ context, rockConfig });
-  },
+  return (
+    <RapidToolbarButton {...props} text={props.text || getExtensionLocaleStringResource(framework, "new")} actionEventName="onClick" onAction={handleAction} />
+  );
+}
 
-  ...RapidEntityListMeta,
+export default {
+  Renderer: genRockRenderer(SonicToolbarNewEntityButtonMeta.$type, SonicToolbarNewEntityButton),
+  ...SonicToolbarNewEntityButtonMeta,
 } as Rock<SonicToolbarNewEntityButtonRockConfig>;

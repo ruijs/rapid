@@ -526,7 +526,100 @@ export default {
    - Meta 文件中引用 `{ROCK_NAME}_ROCK_TYPE` 常量而非硬编码字符串
    - 优点：单一来源、类型安全、避免重复、便于重构
 
-6. **修复问题**:
+6. **在 React 组件中触发 RockEvent**:
+
+   当需要在 React 组件中触发 Rock 事件（如通知事件、调用其他组件的动作等），使用 `fireEvent` 函数：
+
+   ```typescript
+   // 从 @ruiapp/move-style 导入 fireEvent
+   import { fireEvent } from "@ruiapp/move-style";
+
+   // 在 React 组件中获取 context
+   export function MyRockComponent(props: MyRockComponentProps) {
+     const { _context: context } = props as any as RockInstance;
+     const { framework, page, scope } = context;
+
+     const handleClick = async () => {
+       // 使用 fireEvent 触发事件
+       await fireEvent({
+         eventName: "onAction", // 事件名称
+         framework, // 框架实例
+         page, // 页面实例
+         scope, // 作用域实例
+         sender: props, // 发送者（当前组件）
+         senderCategory: "component", // 发送者类别
+         eventHandlers: [
+           // 事件处理器配置数组
+           {
+             $action: "notifyEvent",
+             eventName: "onNewEntityButtonClick",
+           },
+         ],
+         eventArgs: [], // 事件参数
+       });
+     };
+
+     return <Button onClick={handleClick}>点击</Button>;
+   }
+   ```
+
+   **常见的事件处理器类型**:
+
+   - `notifyEvent`: 通知作用域中的事件监听器
+   - `sendComponentMessage`: 向指定组件发送消息
+   - `setComponentProperty`: 设置组件属性
+   - `script`: 执行脚本
+
+   **完整示例 - SonicToolbarNewEntityButton**:
+
+   ```typescript
+   import type { Rock, RockInstance } from "@ruiapp/move-style";
+   import { fireEvent } from "@ruiapp/move-style";
+   import SonicToolbarNewEntityButtonMeta from "./SonicToolbarNewEntityButtonMeta";
+   import { genRockRenderer } from "@ruiapp/react-renderer";
+   import { SonicToolbarNewEntityButtonProps, SonicToolbarNewEntityButtonRockConfig } from "./sonic-toolbar-new-entity-button-types";
+   import { RapidToolbarButton } from "../rapid-toolbar-button/RapidToolbarButton";
+   import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
+
+   export function SonicToolbarNewEntityButton(props: SonicToolbarNewEntityButtonProps) {
+     const { _context: context } = props as any as RockInstance;
+     const { framework, page, scope } = context;
+
+     const handleAction = async () => {
+       await fireEvent({
+         eventName: "onAction",
+         framework,
+         page,
+         scope,
+         sender: props,
+         senderCategory: "component",
+         eventHandlers: [
+           {
+             $action: "notifyEvent",
+             eventName: "onNewEntityButtonClick",
+           },
+         ],
+         eventArgs: [],
+       });
+     };
+
+     return (
+       <RapidToolbarButton
+         {...props}
+         text={props.text || getExtensionLocaleStringResource(framework, "new")}
+         actionEventName="onClick"
+         onAction={handleAction}
+       />
+     );
+   }
+
+   export default {
+     Renderer: genRockRenderer(SonicToolbarNewEntityButtonMeta.$type, SonicToolbarNewEntityButton),
+     ...SonicToolbarNewEntityButtonMeta,
+   } as Rock<SonicToolbarNewEntityButtonRockConfig>;
+   ```
+
+7. **修复问题**:
    - 检查并修复拼写错误（如 `formatedValue` → `formattedValue`）
    - 确保导入的 Meta 类型和文件名一致
 
