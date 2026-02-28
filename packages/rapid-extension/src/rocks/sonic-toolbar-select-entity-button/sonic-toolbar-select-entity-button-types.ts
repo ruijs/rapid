@@ -4,7 +4,9 @@ import type { RapidToolbarButtonProps } from "../rapid-toolbar-button/rapid-tool
 import type { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
 import { IRapidEntityListToolboxConfig } from "../rapid-entity-list-toolbox/RapidEntityListToolbox";
 
-export interface SonicToolbarSelectEntityButtonConfig extends Omit<RapidToolbarButtonProps, "actionEventName"> {
+export const SONIC_TOOLBAR_SELECT_ENTITY_BUTTON_ROCK_TYPE = "sonicToolbarSelectEntityButton" as const;
+
+export interface SonicToolbarSelectEntityButtonProps extends Omit<RapidToolbarButtonProps, "actionEventName"> {
   /**
    * 实体类型
    */
@@ -60,7 +62,11 @@ export interface SonicToolbarSelectEntityButtonConfig extends Omit<RapidToolbarB
    */
   selectOnClickRow?: boolean;
 
-  onSelected?: RockEventHandlerConfig;
+  onSelected?: (args: { selectedIds: any[]; selectedRecords: any[] }) => Promise<void> | void;
 }
 
-export interface SonicToolbarSelectEntityButtonRockConfig extends SimpleRockConfig, SonicToolbarSelectEntityButtonConfig {}
+export interface SonicToolbarSelectEntityButtonRockConfig extends SimpleRockConfig, Omit<SonicToolbarSelectEntityButtonProps, "onSelected"> {
+  $type: typeof SONIC_TOOLBAR_SELECT_ENTITY_BUTTON_ROCK_TYPE;
+
+  onSelected?: RockEventHandlerConfig;
+}
