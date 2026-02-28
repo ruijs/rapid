@@ -10,7 +10,7 @@ import type { SearchFormFilterConfiguration } from "~/types/rapid-search-form-ty
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import type { RapidFormItemConfig, RapidFormItemType, RapidSearchFormItemConfig } from "../rapid-form-item/rapid-form-item-types";
 import type { RapidFormAction, RapidFormRockConfig } from "../rapid-form/rapid-form-types";
-import type { RapidSelectConfig } from "../rapid-select/rapid-select-types";
+import type { RapidSelectRockConfig } from "../rapid-select/rapid-select-types";
 import { RapidOptionFieldRendererConfig } from "../rapid-option-field-renderer/rapid-option-field-renderer-types";
 import { searchParamsToFilters } from "../../functions/searchParamsToFilters";
 import { RapidEntityTableSelectRockConfig } from "../rapid-entity-table-select/rapid-entity-table-select-types";
@@ -81,7 +81,7 @@ function generateSearchFormItemForOptionProperty(framework: Framework, option: G
   const { filterMode } = formItemConfig;
   const isMultiple = formItemConfig.multipleValues || filterMode === "in" || filterMode === "overlap";
 
-  let formControlProps: Partial<RapidSelectConfig> = {
+  let formControlProps: Partial<RapidSelectRockConfig> = {
     allowClear: !formItemConfig.required,
     placeholder: formItemConfig.placeholder,
     mode: isMultiple ? "multiple" : undefined,

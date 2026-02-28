@@ -1,9 +1,8 @@
-import type { RockEventHandler, RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
+import type { RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
 
-/**
- * 下拉选择组件
- */
-export interface RapidSelectConfig extends SimpleRockConfig {
+export const RAPID_SELECT_ROCK_TYPE = "rapidSelect" as const;
+
+export interface RapidSelectProps {
   /**
    * 是否支持清除
    */
@@ -22,6 +21,10 @@ export interface RapidSelectConfig extends SimpleRockConfig {
 
   value?: any;
 
+  /**
+   * 值字段名
+   * 当 value 为对象时，指定取值的字段名
+   */
   valueFieldName?: string;
 
   /**
@@ -77,4 +80,15 @@ export interface RapidSelectConfig extends SimpleRockConfig {
    * 需要过滤掉的列表项的值
    */
   listRejectItemValues?: (string | number)[];
+
+  /**
+   * 选择变更事件
+   */
+  onChange?: (value: any, option: any | any[]) => void;
+}
+
+export interface RapidSelectRockConfig extends SimpleRockConfig, Omit<RapidSelectProps, "onChange"> {
+  $type: typeof RAPID_SELECT_ROCK_TYPE;
+
+  onChange?: RockEventHandlerConfig;
 }

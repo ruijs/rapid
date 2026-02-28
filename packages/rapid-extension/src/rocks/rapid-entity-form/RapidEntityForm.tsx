@@ -10,7 +10,7 @@ import { generateRockConfigOfError } from "../../rock-generators/generateRockCon
 import type { EntityStoreConfig } from "../../stores/entity-store";
 import type { RapidFormItemConfig, RapidFormItemType } from "../rapid-form-item/rapid-form-item-types";
 import type { RapidFormRockConfig } from "../rapid-form/rapid-form-types";
-import type { RapidSelectConfig } from "../rapid-select/rapid-select-types";
+import type { RapidSelectRockConfig } from "../rapid-select/rapid-select-types";
 import { RapidOptionFieldRendererConfig } from "../rapid-option-field-renderer/rapid-option-field-renderer-types";
 import { message } from "antd";
 import { RapidEntityTableSelectRockConfig } from "../rapid-entity-table-select/rapid-entity-table-select-types";
@@ -97,7 +97,7 @@ function generateDataFormItemForOptionProperty(
     });
   }
 
-  let formControlProps: Partial<RapidSelectConfig> = {
+  let formControlProps: Partial<RapidSelectRockConfig> = {
     allowClear: !formItemConfig.required,
     placeholder: formItemConfig.placeholder,
     listItems: dictionaryEntries,
