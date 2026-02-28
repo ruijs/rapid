@@ -6,3 +6,4 @@ build/
 .claude/*
 !.claude/skills/
 .agents/
+.trae/

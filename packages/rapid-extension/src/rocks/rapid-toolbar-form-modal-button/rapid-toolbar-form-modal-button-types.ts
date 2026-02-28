@@ -1,7 +1,9 @@
 import type { RockChildrenConfig, RockConfig, RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
 import { RapidToolbarButtonProps } from "../rapid-toolbar-button/rapid-toolbar-button-types";
 
-export interface RapidToolbarFormModalButtonConfig extends Omit<RapidToolbarButtonProps, "actionEventName"> {
+export const RAPID_TOOLBAR_FORM_MODAL_BUTTON_ROCK_TYPE = "rapidToolbarFormModalButton" as const;
+
+export interface RapidToolbarFormModalButtonProps extends Omit<RapidToolbarButtonProps, "actionEventName"> {
   /**
    * 模态框的标题
    */
@@ -11,11 +13,11 @@ export interface RapidToolbarFormModalButtonConfig extends Omit<RapidToolbarButt
 
   form?: RockConfig;
 
-  onModalOpen?: RockEventHandlerConfig;
+  onModalOpen?: () => Promise<void> | void;
 
-  onModalOk?: RockEventHandlerConfig;
+  onModalOk?: () => Promise<void> | void;
 
-  onModalCancel?: RockEventHandlerConfig;
+  onModalCancel?: () => Promise<void> | void;
 
   /**
    * @deprecated 请使用 onSubmitSuccess
@@ -32,4 +34,14 @@ export interface RapidToolbarFormModalButtonConfig extends Omit<RapidToolbarButt
   onSubmitError?: RockEventHandlerConfig;
 }
 
-export interface RapidToolbarFormModalButtonRockConfig extends SimpleRockConfig, RapidToolbarFormModalButtonConfig {}
+export interface RapidToolbarFormModalButtonRockConfig
+  extends SimpleRockConfig,
+    Omit<RapidToolbarFormModalButtonProps, "onModalOpen" | "onModalOk" | "onModalCancel"> {
+  $type: typeof RAPID_TOOLBAR_FORM_MODAL_BUTTON_ROCK_TYPE;
+
+  onModalOpen?: RockEventHandlerConfig;
+
+  onModalOk?: RockEventHandlerConfig;
+
+  onModalCancel?: RockEventHandlerConfig;
+}

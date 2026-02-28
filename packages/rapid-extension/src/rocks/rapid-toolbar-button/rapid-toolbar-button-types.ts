@@ -12,7 +12,7 @@ export interface RapidToolbarButtonProps extends RapidToolbarActionBase {
    */
   pageCode?: string;
 
-  onAction?: () => void;
+  onAction?: () => Promise<void> | void;
 }
 
 export interface RapidToolbarButtonRockConfig extends SimpleRockConfig, Omit<RapidToolbarButtonProps, "onAction"> {
