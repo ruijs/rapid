@@ -9,10 +9,12 @@ export interface RapidToolbarUpdateEntityButtonProps extends RapidToolbarButtonP
   entityCode?: string;
   successMessage?: string;
   errorMessage?: string;
-  onSuccess?: RockEventHandlerConfig;
-  onError?: RockEventHandlerConfig;
+  onSuccess?: () => Promise<void> | void;
+  onError?: () => Promise<void> | void;
 }
 
-export interface RapidToolbarUpdateEntityButtonRockConfig extends SimpleRockConfig, RapidToolbarUpdateEntityButtonProps {
+export interface RapidToolbarUpdateEntityButtonRockConfig extends SimpleRockConfig, Omit<RapidToolbarUpdateEntityButtonProps, "onSuccess" | "onError"> {
   $type: typeof RAPID_TOOLBAR_UPDATE_ENTITY_BUTTON_ROCK_TYPE;
+  onSuccess?: RockEventHandlerConfig;
+  onError?: RockEventHandlerConfig;
 }

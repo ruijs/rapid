@@ -15,7 +15,7 @@ export function configRapidToolbarUpdateEntityButton(config: RapidToolbarUpdateE
 
 export function RapidToolbarUpdateEntityButton(props: RapidToolbarUpdateEntityButtonProps) {
   const { _context: context } = props as any as RockInstance;
-  const { framework, page, scope } = context;
+  const { framework } = context;
 
   const handleAction = async () => {
     const entities = rapidAppDefinition.getEntities();
@@ -40,15 +40,7 @@ export function RapidToolbarUpdateEntityButton(props: RapidToolbarUpdateEntityBu
       await wait(1000);
 
       if (props.onSuccess) {
-        await fireEvent({
-          framework,
-          page,
-          scope,
-          sender: props as any,
-          eventName: "onSuccess",
-          eventHandlers: props.onSuccess,
-          eventArgs: [],
-        });
+        props.onSuccess();
       }
     } catch (err: any) {
       const errorMessage = props.errorMessage
@@ -58,15 +50,7 @@ export function RapidToolbarUpdateEntityButton(props: RapidToolbarUpdateEntityBu
       await wait(1000);
 
       if (props.onError) {
-        await fireEvent({
-          framework,
-          page,
-          scope,
-          sender: props as any,
-          eventName: "onError",
-          eventHandlers: props.onError,
-          eventArgs: [],
-        });
+        props.onError();
       }
     }
   };
