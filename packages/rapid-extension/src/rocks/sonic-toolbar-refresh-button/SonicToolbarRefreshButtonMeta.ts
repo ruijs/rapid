@@ -1,7 +1,8 @@
 import type { RockMeta } from "@ruiapp/move-style";
+import { SONIC_TOOLBAR_REFRESH_BUTTON_ROCK_TYPE } from "./sonic-toolbar-refresh-button-types";
 
 export default {
-  $type: "sonicToolbarRefreshButton",
+  $type: SONIC_TOOLBAR_REFRESH_BUTTON_ROCK_TYPE,
 
   slots: {},
 
