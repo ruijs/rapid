@@ -468,6 +468,7 @@ export default {
       defaultFormFields: formConfig.defaultFormFields,
       fieldNameOfFormDataInDataSource: formConfig.fieldNameOfFormDataInDataSource,
       formDataAdapter: formConfig.formDataAdapter,
+      beforeSubmit: formConfig.beforeSubmit,
       onSubmit: formConfig.mode === "view" ? null : onSubmit,
       onFormRefresh: formConfig.onFormRefresh,
       onValuesChange: formConfig.onValuesChange,
