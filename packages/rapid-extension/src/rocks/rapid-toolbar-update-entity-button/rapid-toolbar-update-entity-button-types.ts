@@ -1,8 +1,9 @@
 import type { RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
 import { RapidToolbarButtonProps } from "../rapid-toolbar-button/rapid-toolbar-button-types";
 
-export interface RapidToolbarUpdateEntityButtonConfig extends RapidToolbarButtonProps {
-  actionType?: "button";
+export const RAPID_TOOLBAR_UPDATE_ENTITY_BUTTON_ROCK_TYPE = "rapidToolbarUpdateEntityButton" as const;
+
+export interface RapidToolbarUpdateEntityButtonProps extends RapidToolbarButtonProps {
   entity?: Record<string, any>;
   entityId?: number;
   entityCode?: string;
@@ -12,4 +13,6 @@ export interface RapidToolbarUpdateEntityButtonConfig extends RapidToolbarButton
   onError?: RockEventHandlerConfig;
 }
 
-export interface RapidToolbarUpdateEntityButtonRockConfig extends SimpleRockConfig, RapidToolbarUpdateEntityButtonConfig {}
+export interface RapidToolbarUpdateEntityButtonRockConfig extends SimpleRockConfig, RapidToolbarUpdateEntityButtonProps {
+  $type: typeof RAPID_TOOLBAR_UPDATE_ENTITY_BUTTON_ROCK_TYPE;
+}
