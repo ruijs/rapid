@@ -1,77 +1,84 @@
-import { MoveStyleUtils, type Rock, type RockConfig } from "@ruiapp/move-style";
-import { renderRock } from "@ruiapp/react-renderer";
-import RapidEntityListMeta from "./RapidToolbarModalButtonMeta";
-import type { RapidToolbarModalButtonRockConfig } from "./rapid-toolbar-modal-button-types";
+import { fireEvent, type Rock, type RockInstance } from "@ruiapp/move-style";
+import { genRockRenderer, renderRock, renderRockChildren } from "@ruiapp/react-renderer";
+import { Modal } from "antd";
+import { useState } from "react";
+import { RapidToolbarButton } from "../rapid-toolbar-button/RapidToolbarButton";
+import RapidToolbarModalButtonMeta from "./RapidToolbarModalButtonMeta";
+import type { RapidToolbarModalButtonProps, RapidToolbarModalButtonRockConfig } from "./rapid-toolbar-modal-button-types";
+import { omit } from "lodash";
+
+export function configRapidToolbarModalButton(config: RapidToolbarModalButtonRockConfig): RapidToolbarModalButtonRockConfig {
+  return config;
+}
+
+export function RapidToolbarModalButton(props: RapidToolbarModalButtonProps) {
+  const { _context: context } = props as any as RockInstance;
+  const { framework, page, scope } = context;
+  const { modalTitle, modalBody, onModalOpen, onModalOk, onModalCancel, text, ...restProps } = props;
+
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleOpen = async () => {
+    setModalOpen(true);
+    if (onModalOpen) {
+      await fireEvent({
+        eventName: "onModalOpen",
+        framework,
+        page,
+        scope,
+        sender: props,
+        senderCategory: "component",
+        eventHandlers: onModalOpen,
+        eventArgs: [],
+      });
+    }
+  };
+
+  const handleOk = async () => {
+    if (onModalOk) {
+      await fireEvent({
+        eventName: "onModalOk",
+        framework,
+        page,
+        scope,
+        sender: props,
+        senderCategory: "component",
+        eventHandlers: onModalOk,
+        eventArgs: [],
+      });
+    }
+    setModalOpen(false);
+  };
+
+  const handleCancel = async () => {
+    if (onModalCancel) {
+      await fireEvent({
+        eventName: "onModalCancel",
+        framework,
+        page,
+        scope,
+        sender: props,
+        senderCategory: "component",
+        eventHandlers: onModalCancel,
+        eventArgs: [],
+      });
+    }
+    setModalOpen(false);
+  };
+
+  const btnProps = omit(restProps, ["$id", "_state", "_scope", "_initialized"]);
+
+  return (
+    <>
+      <RapidToolbarButton {...btnProps} text={text} onAction={handleOpen} />
+      <Modal title={modalTitle || text} open={modalOpen} onOk={handleOk} onCancel={handleCancel}>
+        {renderRockChildren({ context, rockChildrenConfig: modalBody })}
+      </Modal>
+    </>
+  );
+}
 
 export default {
-  onInit(context, props) {},
-
-  onReceiveMessage(message, state, props) {},
-
-  Renderer(context, props) {
-    const buttonRockConfig: RockConfig = {
-      ...MoveStyleUtils.omitSystemRockConfigFields(props),
-      $id: `${props.$id}-btn`,
-      $type: "rapidToolbarButton",
-      onAction: [
-        {
-          $action: "setVars",
-          vars: {
-            "modal-open": true,
-          },
-        },
-        {
-          $action: "handleEvent",
-          eventName: "onModalOpen",
-          handlers: props.onModalOpen,
-        },
-      ],
-    };
-
-    const modalRockConfig: RockConfig = {
-      $type: "antdModal",
-      $id: `${props.$id}-modal`,
-      title: props.modalTitle || props.text,
-      $exps: {
-        open: "!!$scope.vars['modal-open']",
-      },
-      children: props.modalBody,
-      onOk: [
-        {
-          $action: "handleEvent",
-          eventName: "onModalOk",
-          handlers: props.onModalOk,
-        },
-        {
-          $action: "setVars",
-          vars: {
-            "modal-open": false,
-          },
-        },
-      ],
-      onCancel: [
-        {
-          $action: "handleEvent",
-          eventName: "onModalCancel",
-          handlers: props.onModalCancel,
-        },
-        {
-          $action: "setVars",
-          vars: {
-            "modal-open": false,
-          },
-        },
-      ],
-    };
-
-    const rockConfig: RockConfig = {
-      $type: "scope",
-      $id: `${props.$id}-scope`,
-      children: [buttonRockConfig, modalRockConfig],
-    };
-
-    return renderRock({ context, rockConfig: rockConfig });
-  },
-
-  ...RapidEntityListMeta,
+  Renderer: genRockRenderer(RapidToolbarModalButtonMeta.$type, RapidToolbarModalButton),
+  ...RapidToolbarModalButtonMeta,
 } as Rock<RapidToolbarModalButtonRockConfig>;

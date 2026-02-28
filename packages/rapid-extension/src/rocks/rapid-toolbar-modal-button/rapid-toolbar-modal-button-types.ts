@@ -1,7 +1,9 @@
 import type { RockChildrenConfig, RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
 import { RapidToolbarButtonProps } from "../rapid-toolbar-button/rapid-toolbar-button-types";
 
-export interface RapidToolbarModalButtonConfig extends Omit<RapidToolbarButtonProps, "actionEventName"> {
+export const RAPID_TOOLBAR_MODAL_BUTTON_ROCK_TYPE = "rapidToolbarModalButton" as const;
+
+export interface RapidToolbarModalButtonProps extends Omit<RapidToolbarButtonProps, "actionEventName"> {
   /**
    * 模态框的标题
    */
@@ -9,11 +11,13 @@ export interface RapidToolbarModalButtonConfig extends Omit<RapidToolbarButtonPr
 
   modalBody: RockChildrenConfig;
 
-  onModalOpen: RockEventHandlerConfig;
+  onModalOpen?: RockEventHandlerConfig;
 
-  onModalOk: RockEventHandlerConfig;
+  onModalOk?: RockEventHandlerConfig;
 
-  onModalCancel: RockEventHandlerConfig;
+  onModalCancel?: RockEventHandlerConfig;
 }
 
-export interface RapidToolbarModalButtonRockConfig extends SimpleRockConfig, RapidToolbarModalButtonConfig {}
+export interface RapidToolbarModalButtonRockConfig extends SimpleRockConfig, RapidToolbarModalButtonProps {
+  $type: typeof RAPID_TOOLBAR_MODAL_BUTTON_ROCK_TYPE;
+}
