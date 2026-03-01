@@ -1,54 +1,66 @@
-import { HttpRequestOptions, omitSystemRockConfigFields, Rock, RockConfig } from "@ruiapp/move-style";
+import { fireEvent, HttpRequestOptions, Rock, RockInstance } from "@ruiapp/move-style";
 import RapidToolbarHttpRequestButtonMeta from "./RapidToolbarHttpRequestButtonMeta";
-import { renderRock } from "@ruiapp/react-renderer";
-import { RapidToolbarHttpRequestButtonRockConfig } from "./rapid-toolbar-http-request-button-types";
+import { genRockRenderer } from "@ruiapp/react-renderer";
+import { RapidToolbarHttpRequestButtonProps, RapidToolbarHttpRequestButtonRockConfig } from "./rapid-toolbar-http-request-button-types";
 import { omit, pick } from "lodash";
 import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
+import { RapidToolbarButton } from "../rapid-toolbar-button/RapidToolbarButton";
 
-export default {
-  $type: "rapidToolbarHttpRequestButton",
+export function configRapidToolbarHttpRequestButton(config: RapidToolbarHttpRequestButtonRockConfig): RapidToolbarHttpRequestButtonRockConfig {
+  return config;
+}
 
-  Renderer(context, props: RapidToolbarHttpRequestButtonRockConfig) {
-    const { framework } = context;
-    const httpRequestPropNames: (keyof HttpRequestOptions)[] = ["method", "url", "urlParams", "query", "data", "headers", "onError", "onSuccess"];
-    const httpRequestProps = pick(props, httpRequestPropNames);
-    const buttonProps = omit(omitSystemRockConfigFields(props), httpRequestPropNames);
+export function RapidToolbarHttpRequestButton(props: RapidToolbarHttpRequestButtonProps) {
+  const { _context: context } = props as any as RockInstance;
+  const { framework, page, scope } = context;
 
-    if (!httpRequestProps.onSuccess) {
-      httpRequestProps.onSuccess = [
-        {
-          $action: "antdToast",
-          type: "info",
-          content: getExtensionLocaleStringResource(framework, "operateSuccess"),
+  const httpRequestPropNames: (keyof HttpRequestOptions)[] = ["method", "url", "urlParams", "query", "data", "headers", "onError", "onSuccess"];
+  const httpRequestProps = pick(props, httpRequestPropNames);
+  const buttonProps = omit(props, httpRequestPropNames);
+
+  if (!httpRequestProps.onSuccess) {
+    httpRequestProps.onSuccess = [
+      {
+        $action: "antdToast",
+        type: "info",
+        content: getExtensionLocaleStringResource(framework, "operateSuccess"),
+      },
+    ];
+  }
+  if (!httpRequestProps.onError) {
+    httpRequestProps.onError = [
+      {
+        $action: "antdToast",
+        type: "error",
+        $exps: {
+          content: `'${getExtensionLocaleStringResource(framework, "operateError")} ' + $event.args[0].message`,
         },
-      ];
-    }
-    if (!httpRequestProps.onError) {
-      httpRequestProps.onError = [
-        {
-          $action: "antdToast",
-          type: "error",
-          $exps: {
-            content: `'${getExtensionLocaleStringResource(framework, "operateError")} ' + $event.args[0].message`,
-          },
-        },
-      ];
-    }
+      },
+    ];
+  }
 
-    const rockConfig: RockConfig = {
-      $id: `${props.$id}-rpdBtn`,
-      $type: "rapidToolbarButton",
-      ...buttonProps,
-      onAction: [
+  const handleAction = async () => {
+    await fireEvent({
+      eventName: "onAction",
+      framework,
+      page,
+      scope,
+      sender: props,
+      senderCategory: "component",
+      eventHandlers: [
         {
           $action: "sendHttpRequest",
           ...httpRequestProps,
         },
       ],
-    };
+      eventArgs: [],
+    });
+  };
 
-    return renderRock({ context, rockConfig });
-  },
+  return <RapidToolbarButton {...buttonProps} onAction={handleAction} />;
+}
 
+export default {
+  Renderer: genRockRenderer(RapidToolbarHttpRequestButtonMeta.$type, RapidToolbarHttpRequestButton),
   ...RapidToolbarHttpRequestButtonMeta,
-} as Rock;
+} as Rock<RapidToolbarHttpRequestButtonRockConfig>;
