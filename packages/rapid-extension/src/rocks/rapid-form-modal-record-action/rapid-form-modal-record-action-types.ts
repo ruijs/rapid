@@ -1,7 +1,7 @@
 import type { HttpRequestOptions, RockConfig, RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
-import { RapidTableActionConfig } from "../rapid-table-action/rapid-table-action-types";
+import { RapidTableActionProps } from "../rapid-table-action/rapid-table-action-types";
 
-export interface RapidFormModalRecordActionConfig extends RapidTableActionConfig {
+export interface RapidFormModalRecordActionConfig extends RapidTableActionProps {
   /**
    * 模态框的标题
    */

@@ -56,7 +56,7 @@ function renderActionWithSpecifiedForm(context: RockInstanceContext, props: Soni
 
   const onSubmitSuccess = form.onSubmitSuccess || form.onSaveSuccess;
   const onSubmitError = form.onSubmitError || form.onSaveError;
-  const rockConfig: RapidTableActionRockConfig = {
+  const rockConfig: SonicRecordActionEditEntityRockConfig = {
     ...(MoveStyleUtils.omitSystemRockConfigFields(props) as SonicRecordActionEditEntityConfig),
     $id: `${props.$id}-action`,
     $type: "rapidFormModalRecordAction",

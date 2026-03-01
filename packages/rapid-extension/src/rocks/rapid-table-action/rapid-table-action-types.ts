@@ -1,9 +1,18 @@
-import type { SimpleRockConfig } from "@ruiapp/move-style";
+import type { RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
 import type { RapidRecordActionBase } from "../../types/rapid-action-types";
 
-export interface RapidTableActionConfig extends RapidRecordActionBase {}
+export const RAPID_TABLE_ACTION_ROCK_TYPE = "rapidTableAction" as const;
 
-export interface RapidTableActionRockConfig extends SimpleRockConfig, RapidTableActionConfig {
+export interface RapidTableActionProps extends Omit<RapidRecordActionBase, "$type" | "onAction"> {
   disabledTooltipText?: string;
   disabled?: boolean;
+  url?: string;
+
+  onAction?: (args: { record: Record<string, any>; recordId: string }) => Promise<void> | void;
+}
+
+export interface RapidTableActionRockConfig extends SimpleRockConfig, Omit<RapidTableActionProps, "onAction"> {
+  $type: typeof RAPID_TABLE_ACTION_ROCK_TYPE;
+
+  onAction?: RockEventHandlerConfig;
 }

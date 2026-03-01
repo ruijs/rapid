@@ -1,84 +1,69 @@
-import { Rock, RockConfig, RockEvent, handleComponentEvent } from "@ruiapp/move-style";
-import RapidToolbarMeta from "./RapidTableActionMeta";
-import { renderRock } from "@ruiapp/react-renderer";
-import { RapidTableActionRockConfig } from "./rapid-table-action-types";
-import { Modal } from "antd";
-
-import "./style.css";
+import { Rock, RockInstance, fireEvent } from "@ruiapp/move-style";
+import RapidTableActionMeta from "./RapidTableActionMeta";
+import { genRockRenderer } from "@ruiapp/react-renderer";
+import { RapidTableActionProps, RapidTableActionRockConfig } from "./rapid-table-action-types";
+import { Modal, Tooltip } from "antd";
 import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
+import "./style.css";
+import React from "react";
 
-export default {
-  $type: "rapidTableAction",
+export function configRapidTableAction(config: RapidTableActionRockConfig): RapidTableActionRockConfig {
+  return config;
+}
 
-  Renderer(context, props) {
-    const { framework } = context;
-    const { record, recordId, actionText, confirmTitle, confirmText, onAction, disabled, disabledTooltipText, url } = props;
-    let rockConfig: RockConfig = {
-      $id: `${props.$id}-anchor`,
-      $type: "anchor",
-      className: "rui-table-action-link",
-      "data-record-id": recordId,
-      children: {
-        $type: "text",
-        text: actionText,
-      },
+export function RapidTableAction(props: RapidTableActionProps) {
+  const { record, recordId, actionText, confirmTitle, confirmText, onAction, disabled, disabledTooltipText, url } = props;
+  const { _context: context } = props as any as RockInstance;
+  const { framework } = context;
+
+  if (disabled) {
+    const spanContent = (
+      <span className="rui-table-action-link rui-table-action-link--disabled" data-record-id={recordId}>
+        {actionText}
+      </span>
+    );
+
+    if (disabledTooltipText) {
+      return (
+        <Tooltip title={disabledTooltipText} color="rgba(0,0,0,0.5)">
+          {spanContent}
+        </Tooltip>
+      );
+    }
+    return spanContent;
+  }
+
+  const handleAction = (event: React.MouseEvent) => {
+    if (!onAction) {
+      return;
+    }
+
+    const runAction = async () => {
+      await onAction({ record, recordId });
     };
 
-    if (url) {
-      rockConfig.href = url;
+    if (confirmText) {
+      event.preventDefault();
+      Modal.confirm({
+        title: confirmTitle,
+        content: confirmText,
+        okText: getExtensionLocaleStringResource(framework, "ok"),
+        cancelText: getExtensionLocaleStringResource(framework, "cancel"),
+        onOk: runAction,
+      });
+    } else {
+      runAction();
     }
+  };
 
-    if (disabled) {
-      rockConfig = {
-        $id: `${props.$id}-tooltip`,
-        $type: "antdTooltip",
-        title: disabledTooltipText,
-        color: "rgba(0,0,0,0.5)",
-        children: {
-          $id: `${props.$id}-anchor`,
-          $type: "htmlElement",
-          htmlTag: "span",
-          attributes: {
-            className: "rui-table-action-link rui-table-action-link--disabled",
-            "data-record-id": recordId,
-          },
-          children: {
-            $type: "text",
-            text: actionText,
-          },
-        },
-      };
+  return (
+    <a href={url} className="rui-table-action-link" data-record-id={recordId} onClick={handleAction}>
+      {actionText}
+    </a>
+  );
+}
 
-      if (!disabledTooltipText) {
-        rockConfig.open = false;
-      }
-    }
-
-    if (onAction && !disabled) {
-      rockConfig.onClick = [
-        {
-          $action: "script",
-          script: (event: RockEvent) => {
-            if (confirmText) {
-              Modal.confirm({
-                title: confirmTitle,
-                content: confirmText,
-                okText: getExtensionLocaleStringResource(framework, "ok"),
-                cancelText: getExtensionLocaleStringResource(framework, "cancel"),
-                onOk: async () => {
-                  handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, [{ record, recordId }]);
-                },
-              });
-            } else {
-              handleComponentEvent("onAction", event.framework, event.page as any, event.scope, event.sender, onAction, [{ record, recordId }]);
-            }
-          },
-        },
-      ];
-    }
-
-    return renderRock({ context, rockConfig });
-  },
-
-  ...RapidToolbarMeta,
+export default {
+  Renderer: genRockRenderer(RapidTableActionMeta.$type, RapidTableAction),
+  ...RapidTableActionMeta,
 } as Rock<RapidTableActionRockConfig>;
