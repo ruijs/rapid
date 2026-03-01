@@ -102,29 +102,6 @@ export default {
       return;
     }
 
-    for (const descriptionItem of props.items) {
-      const field = rapidAppDefinition.getEntityFieldByCode(mainEntity, descriptionItem.code);
-      if (field) {
-        // 使用字段名称作为表单项的标签
-        if (isUndefined(descriptionItem.label)) {
-          descriptionItem.label = field?.name;
-        }
-
-        if (!descriptionItem.valueFieldType) {
-          descriptionItem.valueFieldType = field.type;
-        }
-      }
-
-      // 推断渲染器类型
-      if (!descriptionItem.rendererType) {
-        if (descriptionItem.valueFieldType) {
-          descriptionItem.rendererType = RapidExtensionSetting.getDefaultRendererTypeOfFieldType(descriptionItem.valueFieldType);
-        } else {
-          descriptionItem.rendererType = RapidExtensionSetting.getDefaultRendererTypeOfDisplayType(descriptionItem.type);
-        }
-      }
-    }
-
     if (props.entityId || props.$exps?.entityId) {
       const detailDataStoreConfig = generateEntityDetailStoreConfig({
         entityModel: mainEntity,
@@ -150,6 +127,29 @@ export default {
     if (!mainEntity) {
       const errorRockConfig = generateRockConfigOfError(new Error(`Entitiy with code '${mainEntityCode}' not found.`));
       return renderRock({ context, rockConfig: errorRockConfig });
+    }
+
+    for (const descriptionItem of props.items) {
+      const field = rapidAppDefinition.getEntityFieldByCode(mainEntity, descriptionItem.code);
+      if (field) {
+        // 使用字段名称作为表单项的标签
+        if (isUndefined(descriptionItem.label)) {
+          descriptionItem.label = field?.name;
+        }
+
+        if (!descriptionItem.valueFieldType) {
+          descriptionItem.valueFieldType = field.type;
+        }
+      }
+
+      // 推断渲染器类型
+      if (!descriptionItem.rendererType) {
+        if (descriptionItem.valueFieldType) {
+          descriptionItem.rendererType = RapidExtensionSetting.getDefaultRendererTypeOfFieldType(descriptionItem.valueFieldType);
+        } else {
+          descriptionItem.rendererType = RapidExtensionSetting.getDefaultRendererTypeOfDisplayType(descriptionItem.type);
+        }
+      }
     }
 
     const descriptionItems: RockConfig[] = [];
