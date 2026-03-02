@@ -1,8 +1,10 @@
-import { ContainerRockConfig, HttpRequestOptions, RockConfig, RockEventHandlerConfig, RockExpsConfig } from "@ruiapp/move-style";
+import { SimpleRockConfig, HttpRequestOptions, RockConfig, RockEventHandlerConfig, RockExpsConfig } from "@ruiapp/move-style";
 import { RapidFormItemConfig } from "../rapid-form-item/rapid-form-item-types";
 import { RapidFormSubmitOptions } from "../../types/rapid-action-types";
 
-export type RapidFormConfig = {
+export const RAPID_FORM_ROCK_TYPE = "rapidForm" as const;
+
+export type RapidFormProps = {
   /**
    * 数据源编号：当dataSource不为null或者disabledLoadStore为true时，忽略当前字段配置
    */
@@ -228,7 +230,9 @@ export type RapidFormActionType =
   | "submit" // 提交
   | "reset"; // 重置
 
-export interface RapidFormRockConfig extends ContainerRockConfig, RapidFormConfig {}
+export interface RapidFormRockConfig extends SimpleRockConfig, RapidFormProps {
+  $type: typeof RAPID_FORM_ROCK_TYPE;
+}
 
 export interface RapidFormState {
   form: any;

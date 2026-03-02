@@ -1,7 +1,8 @@
 import { RockMeta } from "@ruiapp/move-style";
+import { RAPID_FORM_ROCK_TYPE } from "./rapid-form-types";
 
 export default {
-  $type: "rapidForm",
+  $type: RAPID_FORM_ROCK_TYPE,
 
   slots: {},
 
@@ -41,6 +42,7 @@ export default {
           $type: "switchPropSetter",
           label: "bordered",
           propName: "bordered",
+          options: [],
         },
 
         {
