@@ -1,13 +1,4 @@
-import {
-  MoveStyleUtils,
-  RockChildrenConfig,
-  RockEvent,
-  RockEventHandler,
-  RockPageEventSubscriptionConfig,
-  type Rock,
-  type RockConfig,
-  type Framework,
-} from "@ruiapp/move-style";
+import { MoveStyleUtils, RockChildrenConfig, RockEvent, RockPageEventSubscriptionConfig, type Rock, type RockConfig, type Framework } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./SonicEntityListMeta";
 import type { SonicEntityListRockConfig } from "./sonic-entity-list-types";

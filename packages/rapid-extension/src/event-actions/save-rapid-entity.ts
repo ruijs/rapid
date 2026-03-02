@@ -1,6 +1,6 @@
 import {
   handleComponentEvent,
-  HttpRequestOptions,
+  type HttpRequestOptions,
   type EventAction,
   type Framework,
   type Page,

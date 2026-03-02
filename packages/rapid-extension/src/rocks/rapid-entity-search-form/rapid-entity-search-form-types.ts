@@ -1,8 +1,8 @@
 import type { ContainerRockConfig, RockEventHandlerConfig } from "@ruiapp/move-style";
-import { RapidFormConfig } from "../rapid-form/rapid-form-types";
+import { RapidFormProps } from "../rapid-form/rapid-form-types";
 import { RapidFormItemConfig, RapidSearchFormItemConfig } from "../rapid-form-item/rapid-form-item-types";
 
-export interface RapidEntitySearchFormConfig extends RapidFormConfig {
+export interface RapidEntitySearchFormConfig extends RapidFormProps {
   entityCode: string;
 
   /**
