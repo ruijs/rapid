@@ -1,16 +1,21 @@
-import { RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
+import { RockEventHandlerConfig, SimpleRockConfig, RockConfig } from "@ruiapp/move-style";
 import { SizeType } from "antd/lib/config-provider/SizeContext";
 import { RapidTableColumnRockConfig } from "../rapid-table-column/rapid-table-column-types";
 
-export type RapidTableConfig = {
-  size: SizeType;
+export const RAPID_TABLE_ROCK_TYPE = "rapidTable" as const;
+
+export type RapidTableProps = {
+  size?: SizeType;
   height?: string | number;
-  bordered: boolean;
+  tableAutoHeight?: boolean;
+  bordered?: boolean;
   showHeader?: boolean;
-  rowKey?: string;
-  dataSource: any;
+  rowKey?: string | ((record: any) => string);
+  dataSource?: any[];
   columns: RapidTableColumnRockConfig[];
-  onChange?: RockEventHandlerConfig;
+  pagination?: any;
+  expandedRow?: RockConfig;
+  onRowClick?: RockEventHandlerConfig;
 
   /**
    * 是否将列表转换成树结构
@@ -37,4 +42,6 @@ export type RapidTableConfig = {
   virtual?: boolean;
 };
 
-export interface RapidTableRockConfig extends SimpleRockConfig, RapidTableConfig {}
+export interface RapidTableRockConfig extends SimpleRockConfig, RapidTableProps {
+  $type: typeof RAPID_TABLE_ROCK_TYPE;
+}

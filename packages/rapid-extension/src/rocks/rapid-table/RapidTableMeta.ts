@@ -1,7 +1,8 @@
 import { RockMeta } from "@ruiapp/move-style";
+import { RAPID_TABLE_ROCK_TYPE } from "./rapid-table-types";
 
 export default {
-  $type: "rapidTable",
+  $type: RAPID_TABLE_ROCK_TYPE,
 
   props: {
     rowKey: {
@@ -10,19 +11,7 @@ export default {
     },
   },
 
-  slots: {
-    columns: {
-      allowMultiComponents: true,
-      required: true,
-    },
-
-    rowSelection: {
-      allowMultiComponents: false,
-      required: false,
-      withAdapter: true,
-      adapterSlots: ["columnTitle"],
-    },
-  },
+  slots: {},
 
   propertyPanels: [
     {

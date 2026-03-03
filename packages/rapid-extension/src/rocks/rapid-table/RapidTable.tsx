@@ -1,10 +1,10 @@
-import { Framework, MoveStyleUtils, Rock, RockInstanceContext, RuiRockLogger, handleComponentEvent } from "@ruiapp/move-style";
-import { toRenderRockSlot, convertToEventHandlers, convertToSlotProps, renderRock, renderRockSlot } from "@ruiapp/react-renderer";
+import { Framework, MoveStyleUtils, Rock, RockInstanceContext, RuiRockLogger, RockInstance, fireEvent } from "@ruiapp/move-style";
+import { toRenderRockSlot, convertToEventHandlers, convertToSlotProps, renderRock, genRockRenderer } from "@ruiapp/react-renderer";
 import { Table, TableProps } from "antd";
 import { ColumnType } from "antd/lib/table/interface";
-import { filter, get, isFunction, isNumber, isString, map, merge, omit, reduce, some, sum, trim } from "lodash";
+import { filter, get, isFunction, isString, map, merge, omit, reduce, some, sum, trim } from "lodash";
 import RapidTableMeta from "./RapidTableMeta";
-import { RapidTableRockConfig } from "./rapid-table-types";
+import { RapidTableProps, RapidTableRockConfig, RAPID_TABLE_ROCK_TYPE } from "./rapid-table-types";
 import { parseRockExpressionFunc } from "../../utils/parse-utility";
 import { memo, useEffect, useRef, useState } from "react";
 import VirtualTable from "./VirtualTable";
@@ -121,132 +121,147 @@ export function calculateColumnsTotalWidth(columns: RapidTableColumnConfig[]) {
   );
 }
 
-export default {
-  Renderer(context, props: RapidTableRockConfig) {
-    const { framework, logger, page, scope } = context;
+export function configRapidTable(config: RapidTableRockConfig): RapidTableRockConfig {
+  return config;
+}
 
-    const tableRef = useRef<any>(null);
-    const [tableHeight, setTableHeight] = useState<number | undefined>(undefined);
+export function RapidTable(props: RapidTableProps) {
+  const { $id, _context: context } = props as any as RockInstance;
+  const { framework, logger, page, scope } = context;
 
-    const { window, document } = global;
-    const viewPortHeight = window?.innerHeight || document?.documentElement.clientHeight || document?.body.clientHeight;
-    useEffect(() => {
-      if (tableRef.current && props.tableAutoHeight) {
-        setTableHeight(tableRef.current?.offsetHeight);
-      }
-    }, [tableRef.current, viewPortHeight]);
+  const tableRef = useRef<any>(null);
+  const [tableHeight, setTableHeight] = useState<number | undefined>(undefined);
 
-    const columns = filter(props.columns, (column) => !column._hidden);
-
-    const tableColumns = map(columns, (column) => convertRapidTableColumnToAntdTableColumn(logger, framework, context, column));
-    const columnsTotalWidth = calculateColumnsTotalWidth(columns);
-
-    const eventHandlers = convertToEventHandlers({ context, rockConfig: props });
-    const slotProps = convertToSlotProps({ context, rockConfig: props, slotsMeta: RapidTableMeta.slots });
-
-    let dataSource = props.dataSource;
-    if (props.convertListToTree) {
-      dataSource = MoveStyleUtils.listToTree(props.dataSource, {
-        listIdField: props.listIdField,
-        listParentField: props.listParentField,
-        treeChildrenField: props.treeChildrenField,
-        topParentValue: props.treeTopParentValue,
-      } as any);
-    } else if (typeof props.dataSourceAdapter === "string" && trim(props.dataSourceAdapter)) {
-      const adapter = parseRockExpressionFunc(props.dataSourceAdapter, { data: dataSource }, context);
-      dataSource = adapter();
+  const { window, document } = global;
+  const viewPortHeight = window?.innerHeight || document?.documentElement.clientHeight || document?.body.clientHeight;
+  useEffect(() => {
+    if (tableRef.current && props.tableAutoHeight) {
+      setTableHeight(tableRef.current?.offsetHeight);
     }
+  }, [tableRef.current, viewPortHeight]);
 
-    let expandable: any = null;
-    if (props.expandedRow) {
-      expandable = {
-        expandedRowRender: (record, index) => {
-          const expandedRow = { ...props.expandedRow };
+  const columns = filter(props.columns, (column) => !column._hidden);
 
-          let recordKey: string;
+  const tableColumns = map(columns, (column) => convertRapidTableColumnToAntdTableColumn(logger, framework, context, column));
+  const columnsTotalWidth = calculateColumnsTotalWidth(columns);
 
-          let rowKey: any = props.rowKey || "id";
-          if (typeof rowKey === "function") {
-            recordKey = rowKey(record, index);
-          } else {
-            recordKey = get(record, rowKey);
-          }
+  const eventHandlers = convertToEventHandlers({ context, rockConfig: props as any });
+  const slotProps = convertToSlotProps({ context, rockConfig: props as any, slotsMeta: RapidTableMeta.slots });
 
-          return <ExpandedRowComponent key={recordKey} expandedRow={expandedRow} record={record} index={index} context={context} />;
-        },
-      };
-    }
+  let dataSource = props.dataSource;
+  if (props.convertListToTree) {
+    dataSource = MoveStyleUtils.listToTree(props.dataSource, {
+      listIdField: props.listIdField,
+      listParentField: props.listParentField,
+      treeChildrenField: props.treeChildrenField,
+      topParentValue: props.treeTopParentValue,
+    } as any);
+  } else if (typeof props.dataSourceAdapter === "string" && trim(props.dataSourceAdapter)) {
+    const adapter = parseRockExpressionFunc(props.dataSourceAdapter, { data: dataSource }, context);
+    dataSource = adapter();
+  }
 
-    const antdProps: TableProps<any> = {
-      ...omit(merge({ expandable }, MoveStyleUtils.omitSystemRockConfigFields(props)), "expandedRow"),
-      ...eventHandlers,
-      ...slotProps,
-      dataSource: dataSource,
-      rowKey: props.rowKey || "id",
-      pagination: props.pagination
-        ? {
-            showSizeChanger: false,
-            ...props.pagination,
-          }
-        : props.pagination,
-      columns: tableColumns,
-      scroll: {
-        x: columnsTotalWidth,
-        y: props.height || tableHeight,
+  let expandable: any = null;
+  if (props.expandedRow) {
+    expandable = {
+      expandedRowRender: (record: any, index: number) => {
+        const expandedRow = { ...props.expandedRow };
+
+        let recordKey: string;
+
+        let rowKey: any = props.rowKey || "id";
+        if (typeof rowKey === "function") {
+          recordKey = rowKey(record);
+        } else {
+          recordKey = get(record, rowKey);
+        }
+
+        return <ExpandedRowComponent key={recordKey} expandedRow={expandedRow} record={record} index={index} context={context} />;
       },
     };
+  }
 
-    let summaryRenderer: any;
-    if (dataSource && dataSource.length && some(columns, (item) => !!item.summaryMethod)) {
-      summaryRenderer = (records: any[]) => {
-        return (
-          <Table.Summary.Row>
-            {columns.map((column, index) => {
-              let summaryResult = "";
-              if (column.summaryMethod === "sum") {
-                summaryResult = roundWithPrecision(sum(map(dataSource, (record) => get(record, getColumnDataIndex(column)))) || 0, 4).toString();
-              }
+  const antdProps: TableProps<any> = {
+    ...omit(merge({ expandable }, MoveStyleUtils.omitSystemRockConfigFields(props as any)), "expandedRow"),
+    ...eventHandlers,
+    ...slotProps,
+    dataSource: dataSource,
+    rowKey: props.rowKey || "id",
+    pagination: props.pagination
+      ? {
+          showSizeChanger: false,
+          ...props.pagination,
+        }
+      : props.pagination,
+    columns: tableColumns,
+    scroll: {
+      x: columnsTotalWidth,
+      y: props.height || tableHeight,
+    },
+  };
 
-              let summaryCellContent = summaryResult;
-              if (column.summaryRendererType) {
-                summaryCellContent = renderRock({
-                  context,
-                  rockConfig: {
-                    $id: `${props.$id}-summaryContent-${index}`,
-                    $type: column.summaryRendererType,
-                    ...column.summaryRendererProps,
-                    value: summaryResult,
-                  },
-                });
-              }
-              return (
-                <Table.Summary.Cell key={index} index={index}>
-                  {summaryResult}
-                </Table.Summary.Cell>
-              );
-            })}
-          </Table.Summary.Row>
-        );
-      };
-      antdProps.summary = summaryRenderer;
-    }
+  let summaryRenderer: any;
+  if (dataSource && dataSource.length && some(columns, (item) => !!item.summaryMethod)) {
+    summaryRenderer = (records: any[]) => {
+      return (
+        <Table.Summary.Row>
+          {columns.map((column, index) => {
+            let summaryResult = "";
+            if (column.summaryMethod === "sum") {
+              summaryResult = roundWithPrecision(sum(map(dataSource, (record) => get(record, getColumnDataIndex(column)))) || 0, 4).toString();
+            }
 
-    const onRow: TableProps<any>["onRow"] = (record) => {
-      return {
-        onClick: (event) => {
-          if (props.onRowClick) {
-            handleComponentEvent("onRowClick", framework, page, scope, props, props.onRowClick, [{ record }]);
-          }
-        },
-      };
+            let summaryCellContent: React.ReactNode = summaryResult;
+            if (column.summaryRendererType) {
+              summaryCellContent = renderRock({
+                context,
+                rockConfig: {
+                  $id: `${$id}-summaryContent-${index}`,
+                  $type: column.summaryRendererType,
+                  ...column.summaryRendererProps,
+                  value: summaryResult,
+                },
+              });
+            }
+            return (
+              <Table.Summary.Cell key={index} index={index}>
+                {summaryCellContent}
+              </Table.Summary.Cell>
+            );
+          })}
+        </Table.Summary.Row>
+      );
     };
+    antdProps.summary = summaryRenderer;
+  }
 
-    if (props.virtual) {
-      return <VirtualTable {...antdProps} onRow={onRow} />;
-    }
+  const onRow: TableProps<any>["onRow"] = (record) => {
+    return {
+      onClick: (event) => {
+        if (props.onRowClick) {
+          fireEvent({
+            eventName: "onRowClick",
+            framework,
+            page,
+            scope,
+            sender: props,
+            senderCategory: "component",
+            eventHandlers: props.onRowClick,
+            eventArgs: [{ record }],
+          });
+        }
+      },
+    };
+  };
 
-    return <Table ref={tableRef} className="rapid-table" {...antdProps} onRow={onRow}></Table>;
-  },
+  if (props.virtual) {
+    return <VirtualTable {...antdProps} onRow={onRow} />;
+  }
 
+  return <Table ref={tableRef} className="rapid-table" {...antdProps} onRow={onRow}></Table>;
+}
+
+export default {
+  Renderer: genRockRenderer(RAPID_TABLE_ROCK_TYPE, RapidTable),
   ...RapidTableMeta,
-} as Rock;
+} as Rock<RapidTableRockConfig>;
