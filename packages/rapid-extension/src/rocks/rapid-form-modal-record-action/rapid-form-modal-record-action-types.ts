@@ -1,11 +1,13 @@
-import type { HttpRequestOptions, RockConfig, RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
+import type { RockConfig, RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
 import { RapidTableActionProps } from "../rapid-table-action/rapid-table-action-types";
 
-export interface RapidFormModalRecordActionConfig extends RapidTableActionProps {
+export const RAPID_FORM_MODAL_RECORD_ACTION_ROCK_TYPE = "rapidFormModalRecordAction" as const;
+
+export interface RapidFormModalRecordActionProps extends RapidTableActionProps {
   /**
    * 模态框的标题
    */
-  modalTitle: string;
+  modalTitle?: string;
 
   form: RockConfig;
 
@@ -20,7 +22,13 @@ export interface RapidFormModalRecordActionConfig extends RapidTableActionProps 
 
   onSubmit?: RockEventHandlerConfig;
 
+  onModalOpen?: RockEventHandlerConfig;
+
+  onModalCancel?: RockEventHandlerConfig;
+
   resetFormOnModalOpen?: boolean;
 }
 
-export interface RapidFormModalRecordActionRockConfig extends SimpleRockConfig, RapidFormModalRecordActionConfig {}
+export interface RapidFormModalRecordActionRockConfig extends SimpleRockConfig, RapidFormModalRecordActionProps {
+  $type: typeof RAPID_FORM_MODAL_RECORD_ACTION_ROCK_TYPE;
+}
