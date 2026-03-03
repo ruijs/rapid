@@ -1,9 +1,11 @@
 import type { RockConfig, RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
 import { EntityFilterOptions, FindEntityOrderByOptions, FindEntityFindRelationEntitiesOptions } from "@ruiapp/rapid-common";
 import { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
-import { RapidRecordAction } from "../../types/rapid-action-types";
+import { RapidTableProps } from "~/mod";
 
-export interface RapidEntityListConfig {
+export const RAPID_ENTITY_LIST_ROCK_TYPE = "rapidEntityList" as const;
+
+export interface RapidEntityListProps extends Omit<RapidTableProps, "columns"> {
   /**
    * 实体类型
    */
@@ -144,7 +146,9 @@ export interface RapidEntityListConfig {
   virtual?: boolean;
 }
 
-export interface RapidEntityListRockConfig extends SimpleRockConfig, RapidEntityListConfig {}
+export interface RapidEntityListRockConfig extends SimpleRockConfig, RapidEntityListProps {
+  $type: typeof RAPID_ENTITY_LIST_ROCK_TYPE;
+}
 
 export interface RapidEntityListState {
   selectedIds?: any[];

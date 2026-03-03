@@ -3,7 +3,7 @@ import { renderRock } from "@ruiapp/react-renderer";
 import RapidEntityListMeta from "./SonicEntityListMeta";
 import type { SonicEntityListRockConfig } from "./sonic-entity-list-types";
 import { differenceBy, find, get, isArray, isEmpty, isNumber, keyBy, omit, pick, set } from "lodash";
-import type { RapidEntityListConfig, RapidEntityListRockConfig } from "../rapid-entity-list/rapid-entity-list-types";
+import type { RapidEntityListProps, RapidEntityListRockConfig } from "../rapid-entity-list/rapid-entity-list-types";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import { RapidEntity } from "@ruiapp/rapid-common";
@@ -108,7 +108,7 @@ export default {
     const dataSourceCode = props.dataSourceCode || "list";
     const pageSize = get(props, "pageSize", DEFAULT_PAGE_SIZE);
     let entityListRockConfig: RapidEntityListRockConfig = {
-      ...(omit(MoveStyleUtils.omitSystemRockConfigFields(props), ["newForm", "editForm", "style"]) as RapidEntityListConfig),
+      ...(omit(MoveStyleUtils.omitSystemRockConfigFields(props), ["newForm", "editForm", "style"]) as RapidEntityListProps),
       dataSourceCode,
       pageSize,
       $type: "rapidEntityList",
