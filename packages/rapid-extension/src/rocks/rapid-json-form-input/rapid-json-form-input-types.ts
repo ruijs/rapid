@@ -1,8 +1,12 @@
-import type { RockEventHandler, SimpleRockConfig } from "@ruiapp/move-style";
+import type { SimpleRockConfig } from "@ruiapp/move-style";
 
-export type RapidJsonFormInputConfig = {
+export const RAPID_JSON_FORM_INPUT_ROCK_TYPE = "rapidJsonFormInput" as const;
+
+export type RapidJsonFormInputProps = {
   value?: any;
-  onChange?: RockEventHandler;
+  onChange?(value: any): void;
 };
 
-export interface RapidJsonFormInputRockConfig extends SimpleRockConfig, RapidJsonFormInputConfig {}
+export interface RapidJsonFormInputRockConfig extends SimpleRockConfig, RapidJsonFormInputProps {
+  $type: typeof RAPID_JSON_FORM_INPUT_ROCK_TYPE;
+}
