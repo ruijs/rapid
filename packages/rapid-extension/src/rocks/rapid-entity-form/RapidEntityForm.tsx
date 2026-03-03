@@ -1,11 +1,12 @@
-import type { RockEvent, Rock, RockEventHandler, RuiRockLogger, IScope, RuiEvent } from "@ruiapp/move-style";
-import { Framework, handleComponentEvent, MoveStyleUtils } from "@ruiapp/move-style";
-import { renderRock } from "@ruiapp/react-renderer";
+import type { RockEvent, Rock, RockEventHandler, RuiRockLogger, IScope, RockInstance } from "@ruiapp/move-style";
+import { Framework, fireEvent } from "@ruiapp/move-style";
+import { genRockRenderer, renderRock } from "@ruiapp/react-renderer";
 import RapidEntityFormMeta from "./RapidEntityFormMeta";
-import type { RapidEntityFormRockConfig } from "./rapid-entity-form-types";
-import { filter, get, isUndefined, map, merge, set, uniq } from "lodash";
+import type { RapidEntityFormProps, RapidEntityFormRockConfig } from "./rapid-entity-form-types";
+import { RAPID_ENTITY_FORM_ROCK_TYPE } from "./rapid-entity-form-types";
+import { isUndefined, merge, set } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
-import type { RapidDataDictionary, RapidDataDictionaryEntry, RapidEntity, RapidField, RapidFieldType } from "@ruiapp/rapid-common";
+import type { RapidDataDictionaryEntry, RapidField, RapidFieldType } from "@ruiapp/rapid-common";
 import { generateRockConfigOfError } from "../../rock-generators/generateRockConfigOfError";
 import type { EntityStoreConfig } from "../../stores/entity-store";
 import type { RapidFormItemConfig, RapidFormItemType } from "../rapid-form-item/rapid-form-item-types";
@@ -140,12 +141,13 @@ function generateDataFormItemForOptionProperty(
   return formItem;
 }
 
-export function generateDataFormItemForRelationProperty(props: RapidEntityFormRockConfig, option: GenerateEntityFormItemOption, formItemRequired: boolean) {
+export function generateDataFormItemForRelationProperty(props: RapidEntityFormProps, option: GenerateEntityFormItemOption, formItemRequired: boolean) {
+  const { $id } = props as any as RockInstance;
   const { formItemConfig, rpdField } = option;
 
   let listDataSourceCode = formItemConfig.formControlProps?.listDataSourceCode;
   if (!listDataSourceCode) {
-    listDataSourceCode = `${props.$id}-${formItemConfig.code}-list`;
+    listDataSourceCode = `${$id}-${formItemConfig.code}-list`;
   }
 
   let fieldTypeRelatedRendererProps: any = {};
@@ -197,7 +199,7 @@ export function generateDataFormItemForRelationProperty(props: RapidEntityFormRo
   return formItem;
 }
 
-function generateDataFormItem(framework: Framework, logger: RuiRockLogger, props: any, option: GenerateEntityFormItemOption) {
+function generateDataFormItem(framework: Framework, logger: RuiRockLogger, props: RapidEntityFormProps, $id: string, option: GenerateEntityFormItemOption) {
   const { formItemConfig, rpdField } = option;
 
   let valueFieldType = formItemConfig.valueFieldType || rpdField?.type || "text";
@@ -267,51 +269,187 @@ function initDataStore(props: RapidEntityFormRockConfig, scope: IScope) {
   }
 }
 
+export function configRapidEntityForm(config: RapidEntityFormRockConfig): RapidEntityFormRockConfig {
+  return config;
+}
+
+export function RapidEntityForm(props: RapidEntityFormProps) {
+  const { $id, _context: context } = props as any as RockInstance;
+  const { logger, framework } = context;
+  const formConfig = props;
+  const mainEntityCode = formConfig.entityCode;
+  const mainEntity = rapidAppDefinition.getEntityByCode(mainEntityCode);
+  if (!mainEntity) {
+    const errorRockConfig = generateRockConfigOfError(new Error(`Entitiy with code '${mainEntityCode}' not found.`));
+    return renderRock({ context, rockConfig: errorRockConfig });
+  }
+
+  if (props.lazyLoadData) {
+    initDataStore(props as any as RapidEntityFormRockConfig, context.scope);
+  }
+
+  const formItems: RapidFormItemConfig[] = [];
+
+  if (formConfig && formConfig.items) {
+    formConfig.items.forEach((formItemConfig) => {
+      const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
+      if (!rpdField) {
+        logger.warn(props, `Field with code '${formItemConfig.code}' not found.`);
+      }
+      const formItem = generateDataFormItem(framework, logger, props, $id, {
+        rpdField,
+        formItemConfig,
+      });
+
+      let formItemLabel = formItemConfig.label;
+      // 使用字段名称作为表单项的标签
+      if (isUndefined(formItemLabel)) {
+        formItemLabel = getMetaPropertyLocaleName(framework, mainEntity, rpdField);
+      }
+      formItem.label = formItemLabel;
+      // MoveStyleUtils.localizeConfigProps(framework, logger, formItemConfig);
+
+      if (formConfig.mode === "view") {
+        formItem.required = false;
+        formItem.mode = "display";
+      } else {
+        // auto config formItem.rules
+        const validationMessagesOfFieldType = validationMessagesByFieldType[formItem.valueFieldType!];
+        if (formItem.required) {
+          if (!formItem.rules || !formItem.rules.length) {
+            formItem.rules = [
+              {
+                required: true,
+                message: validationMessagesOfFieldType?.required || defaultValidationMessages.required,
+              },
+            ];
+          }
+        }
+      }
+      formItems.push(formItem as RapidFormItemConfig);
+    });
+  }
+
+  let customRequest: RockEventHandlerSaveRapidEntity["customRequest"] = null;
+  if (formConfig.customRequest) {
+    customRequest = formConfig.customRequest;
+  }
+
+  if (formConfig.submitUrl) {
+    customRequest = {
+      url: formConfig.submitUrl,
+      method: formConfig.submitMethod || "POST",
+    };
+  }
+
+  const { entityId, fieldNameOfFormDataInSubmitData } = props;
+  const fixedFields = {};
+  if (entityId) {
+    let entityIdFieldName = "id";
+    if (fieldNameOfFormDataInSubmitData) {
+      entityIdFieldName = `${fieldNameOfFormDataInSubmitData}.id`;
+    }
+    set(fixedFields, entityIdFieldName, entityId);
+  }
+
+  const onSubmit: RockEventHandler[] = [
+    {
+      $action: "saveRapidEntity",
+      entityNamespace: mainEntity.namespace,
+      entityPluralCode: mainEntity.pluralCode,
+      customRequest,
+      entityId,
+      fixedFields,
+      onSuccess: [
+        {
+          $action: "script",
+          script: async (event: RockEvent) => {
+            const [responseData, submitData, submitOptions] = event.args as [any, any, RapidFormSubmitOptions | undefined];
+            const successMessage = submitOptions?.successMessage || props.successMessage || getExtensionLocaleStringResource(framework, "saveSuccess");
+            message.success(successMessage);
+
+            const onSubmitSuccess = submitOptions?.onSuccess || props.onSubmitSuccess || props.onSaveSuccess;
+
+            if (onSubmitSuccess) {
+              await fireEvent({
+                eventName: "onSubmitSuccess",
+                framework: event.framework,
+                page: event.page,
+                scope: event.scope,
+                sender: event.sender,
+                eventHandlers: onSubmitSuccess,
+                eventArgs: [responseData, submitData, submitOptions],
+              });
+            }
+          },
+        },
+      ],
+      onError: [
+        {
+          $action: "script",
+          script: async (event: RockEvent) => {
+            const [error, submitData, submitOptions] = event.args as [any, any, RapidFormSubmitOptions | undefined];
+            const errorMessage = props.errorMessage || getExtensionLocaleStringResource(framework, "saveError");
+            message.error(`${errorMessage} ${error.message}`);
+
+            const onSubmitError = submitOptions?.onError || props.onSubmitError || props.onSaveError;
+
+            if (onSubmitError) {
+              await fireEvent({
+                eventName: "onSubmitError",
+                framework: event.framework,
+                page: event.page,
+                scope: event.scope,
+                sender: event.sender,
+                eventHandlers: onSubmitError,
+                eventArgs: [error, submitData, submitOptions],
+              });
+            }
+          },
+        },
+      ],
+    } satisfies RockEventHandlerSaveRapidEntity,
+  ];
+
+  const rockConfig: RapidFormRockConfig = {
+    $id: `${$id}-rapidForm`,
+    $type: "rapidForm",
+    size: formConfig.size,
+    layout: formConfig.layout,
+    column: formConfig.column,
+    colon: formConfig.colon,
+    labelCol: formConfig.labelCol,
+    wrapperCol: formConfig.wrapperCol,
+    actions: formConfig.actions,
+    actionsAlign: formConfig.actionsAlign,
+    actionsLayout: formConfig.actionsLayout,
+    defaultFormFields: formConfig.defaultFormFields,
+    fieldNameOfFormDataInDataSource: formConfig.fieldNameOfFormDataInDataSource,
+    formDataAdapter: formConfig.formDataAdapter,
+    beforeSubmit: formConfig.beforeSubmit,
+    onSubmit: formConfig.mode === "view" ? null : onSubmit,
+    onFormRefresh: formConfig.onFormRefresh,
+    onValuesChange: formConfig.onValuesChange,
+    items: formItems,
+    disabledLoadStore: formConfig.disabledLoadStore,
+    dataSourceCode: formConfig.mode === "new" ? null : !props.disabledLoadStore ? props.dataSourceCode || "detail" : null,
+    dataSource: props.dataSource,
+    fixedFields: formConfig.fixedFields,
+    fieldNameOfFormDataInSubmitData: formConfig.fieldNameOfFormDataInSubmitData,
+  };
+  return renderRock({ context, rockConfig });
+}
+
 export default {
+  Renderer: genRockRenderer(RAPID_ENTITY_FORM_ROCK_TYPE, RapidEntityForm),
+
   onInit(context, props) {
     if (!props.lazyLoadData) {
       initDataStore(props, context.scope);
     }
-
-    // if (props.items) {
-    //   props.items.forEach((formItemConfig) => {
-    //     const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
-    //     if (!rpdField) {
-    //       return;
-    //     }
-    //     if (rpdField.type === "relation" || rpdField.type === "relation[]") {
-    //       let listDataSourceCode = formItemConfig.formControlProps?.listDataSourceCode;
-    //       if (listDataSourceCode) {
-    //         // use specified data store.
-    //         return;
-    //       }
-    //     const listDataStoreName = `dataFormItemList-${formItemConfig.code}`;
-    //     const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
-    //     const targetEntity = rapidAppDefinition.getEntityBySingularCode(rpdField.targetSingularCode);
-    //     let { listDataFindOptions = {} } = formItemConfig;
-    //     const listDataStoreConfig: EntityStoreConfig = {
-    //       type: "entityStore",
-    //       name: listDataStoreName,
-    //       entityModel: targetEntity,
-    //       fixedFilters: listDataFindOptions.fixedFilters,
-    //       filters: listDataFindOptions.filters,
-    //       properties: listDataFindOptions.properties || [],
-    //       orderBy: listDataFindOptions.orderBy || [
-    //         {
-    //           field: "id",
-    //         },
-    //       ],
-    //       pagination: listDataFindOptions.pagination,
-    //       keepNonPropertyFields: listDataFindOptions.keepNonPropertyFields,
-    //       $exps: listDataFindOptions.$exps,
-    //     };
-    //     context.scope.addStore(listDataStoreConfig);
-    //     }
-    //   });
-    // }
   },
 
-  onReceiveMessage(message, state, props) {
+  async onReceiveMessage(message, state, props, rockInstance) {
     if (message.name === "submit") {
       message.page.sendComponentMessage(`${props.$id}-rapidForm`, {
         name: "submit",
@@ -330,156 +468,6 @@ export default {
         name: "refreshView",
       });
     }
-  },
-
-  Renderer(context, props, state) {
-    const { logger, framework } = context;
-    const formConfig = props;
-    const mainEntityCode = formConfig.entityCode;
-    const mainEntity = rapidAppDefinition.getEntityByCode(mainEntityCode);
-    if (!mainEntity) {
-      const errorRockConfig = generateRockConfigOfError(new Error(`Entitiy with code '${mainEntityCode}' not found.`));
-      return renderRock({ context, rockConfig: errorRockConfig });
-    }
-
-    if (props.lazyLoadData) {
-      initDataStore(props, context.scope);
-    }
-
-    const formItems: RapidFormItemConfig[] = [];
-
-    if (formConfig && formConfig.items) {
-      formConfig.items.forEach((formItemConfig) => {
-        const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, formItemConfig.code);
-        if (!rpdField) {
-          logger.warn(props, `Field with code '${formItemConfig.code}' not found.`);
-        }
-        const formItem = generateDataFormItem(framework, logger, props, {
-          rpdField,
-          formItemConfig,
-        });
-
-        let formItemLabel = formItemConfig.label;
-        // 使用字段名称作为表单项的标签
-        if (isUndefined(formItemLabel)) {
-          formItemLabel = getMetaPropertyLocaleName(framework, mainEntity, rpdField);
-        }
-        formItem.label = formItemLabel;
-        // MoveStyleUtils.localizeConfigProps(framework, logger, formItemConfig);
-
-        if (formConfig.mode === "view") {
-          formItem.required = false;
-          formItem.mode = "display";
-        } else {
-          // auto config formItem.rules
-          const validationMessagesOfFieldType = validationMessagesByFieldType[formItem.valueFieldType!];
-          if (formItem.required) {
-            if (!formItem.rules || !formItem.rules.length) {
-              formItem.rules = [
-                {
-                  required: true,
-                  message: validationMessagesOfFieldType?.required || defaultValidationMessages.required,
-                },
-              ];
-            }
-          }
-        }
-        formItems.push(formItem as RapidFormItemConfig);
-      });
-    }
-
-    let customRequest: RockEventHandlerSaveRapidEntity["customRequest"] = null;
-    if (formConfig.customRequest) {
-      customRequest = formConfig.customRequest;
-    }
-
-    if (formConfig.submitUrl) {
-      customRequest = {
-        url: formConfig.submitUrl,
-        method: formConfig.submitMethod || "POST",
-      };
-    }
-
-    const { entityId, fieldNameOfFormDataInSubmitData } = props;
-    const fixedFields = {};
-    if (entityId) {
-      let entityIdFieldName = "id";
-      if (fieldNameOfFormDataInSubmitData) {
-        entityIdFieldName = `${fieldNameOfFormDataInSubmitData}.id`;
-      }
-      set(fixedFields, entityIdFieldName, entityId);
-    }
-
-    const onSubmit: RockEventHandler[] = [
-      {
-        $action: "saveRapidEntity",
-        entityNamespace: mainEntity.namespace,
-        entityPluralCode: mainEntity.pluralCode,
-        customRequest,
-        entityId,
-        fixedFields,
-        onSuccess: [
-          {
-            $action: "script",
-            script: async (event: RockEvent) => {
-              const [responseData, submitData, submitOptions] = event.args as [any, any, RapidFormSubmitOptions | undefined];
-              const successMessage = submitOptions?.successMessage || props.successMessage || getExtensionLocaleStringResource(framework, "saveSuccess");
-              message.success(successMessage);
-
-              const onSubmitSuccess = submitOptions?.onSuccess || props.onSubmitSuccess || props.onSaveSuccess;
-
-              if (onSubmitSuccess) {
-                await handleComponentEvent("onSubmitSuccess", event.framework, event.page as any, event.scope, event.sender, onSubmitSuccess, [responseData]);
-              }
-            },
-          },
-        ],
-        onError: [
-          {
-            $action: "script",
-            script: async (event: RockEvent) => {
-              const [error, submitData, submitOptions] = event.args as [any, any, RapidFormSubmitOptions | undefined];
-              const errorMessage = props.errorMessage || getExtensionLocaleStringResource(framework, "saveError");
-              message.error(`${errorMessage} ${error.message}`);
-
-              const onSubmitError = submitOptions?.onError || props.onSubmitError || props.onSaveError;
-
-              if (onSubmitError) {
-                await handleComponentEvent("onSubmitError", event.framework, event.page as any, event.scope, event.sender, onSubmitError, [error]);
-              }
-            },
-          },
-        ],
-      } satisfies RockEventHandlerSaveRapidEntity,
-    ];
-
-    const rockConfig: RapidFormRockConfig = {
-      $id: `${props.$id}-rapidForm`,
-      $type: "rapidForm",
-      size: formConfig.size,
-      layout: formConfig.layout,
-      column: formConfig.column,
-      colon: formConfig.colon,
-      labelCol: formConfig.labelCol,
-      wrapperCol: formConfig.wrapperCol,
-      actions: formConfig.actions,
-      actionsAlign: formConfig.actionsAlign,
-      actionsLayout: formConfig.actionsLayout,
-      defaultFormFields: formConfig.defaultFormFields,
-      fieldNameOfFormDataInDataSource: formConfig.fieldNameOfFormDataInDataSource,
-      formDataAdapter: formConfig.formDataAdapter,
-      beforeSubmit: formConfig.beforeSubmit,
-      onSubmit: formConfig.mode === "view" ? null : onSubmit,
-      onFormRefresh: formConfig.onFormRefresh,
-      onValuesChange: formConfig.onValuesChange,
-      items: formItems,
-      disabledLoadStore: formConfig.disabledLoadStore,
-      dataSourceCode: formConfig.mode === "new" ? null : !props.disabledLoadStore ? props.dataSourceCode || "detail" : null,
-      dataSource: props.dataSource,
-      fixedFields: formConfig.fixedFields,
-      fieldNameOfFormDataInSubmitData: formConfig.fieldNameOfFormDataInSubmitData,
-    };
-    return renderRock({ context, rockConfig });
   },
 
   ...RapidEntityFormMeta,

@@ -1,9 +1,11 @@
-import type { ContainerRockConfig, RockEventHandlerConfig } from "@ruiapp/move-style";
+import type { SimpleRockConfig, RockEventHandlerConfig } from "@ruiapp/move-style";
 import { RapidFormProps } from "../rapid-form/rapid-form-types";
 import { FindEntityFindRelationEntitiesOptions } from "@ruiapp/rapid-common";
 import { RockEventHandlerSaveRapidEntity } from "../../event-actions/save-rapid-entity";
 
-export interface RapidEntityFormConfig extends RapidFormProps {
+export const RAPID_ENTITY_FORM_ROCK_TYPE = "rapidEntityForm" as const;
+
+export interface RapidEntityFormProps extends RapidFormProps {
   mode?: "view" | "edit" | "new";
 
   entityCode: string;
@@ -44,4 +46,6 @@ export interface RapidEntityFormConfig extends RapidFormProps {
   customRequest?: RockEventHandlerSaveRapidEntity["customRequest"];
 }
 
-export interface RapidEntityFormRockConfig extends ContainerRockConfig, RapidEntityFormConfig {}
+export interface RapidEntityFormRockConfig extends SimpleRockConfig, RapidEntityFormProps {
+  $type: typeof RAPID_ENTITY_FORM_ROCK_TYPE;
+}
