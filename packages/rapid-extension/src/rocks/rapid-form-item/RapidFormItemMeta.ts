@@ -1,7 +1,8 @@
 import { RockMeta } from "@ruiapp/move-style";
+import { RAPID_FORM_ITEM_ROCK_TYPE } from "./rapid-form-item-types";
 
 export default {
-  $type: "rapidFormItem",
+  $type: RAPID_FORM_ITEM_ROCK_TYPE,
 
   propertyPanels: [
     {

@@ -1,9 +1,9 @@
-import { Rock, RockConfig } from "@ruiapp/move-style";
-import { renderRock } from "@ruiapp/react-renderer";
+import { Rock, RockConfig, RockInstance } from "@ruiapp/move-style";
+import { renderRock, genRockRenderer } from "@ruiapp/react-renderer";
 import RapidFormItemMeta from "./RapidFormItemMeta";
-import { RapidFormItemRockConfig, RapidFormItemType } from "./rapid-form-item-types";
+import { RapidFormItemProps, RapidFormItemRockConfig, RapidFormItemType } from "./rapid-form-item-types";
 import RapidExtensionSetting from "../../RapidExtensionSetting";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import { cloneDeep } from "lodash";
 
@@ -86,98 +86,108 @@ const valuePropNameOfFormInput: Record<string, string> = {
   antdUpload: "fileList",
 };
 
-export default {
-  $type: "rapidFormItem",
+export function configRapidFormItem(config: RapidFormItemRockConfig): RapidFormItemRockConfig {
+  return config;
+}
 
-  Renderer(context, props: RapidFormItemRockConfig) {
-    const isMountedRef = useRef<boolean>(false);
+export function RapidFormItem(props: RapidFormItemProps & { $id: string }) {
+  const { _context: context } = props as unknown as RockInstance;
+  const isMountedRef = useRef<boolean>(false);
 
-    const mode = props.mode || "input";
-    let formControlType = null;
-    let formItemValuePropName: string = "value";
-    let formItemTrigger: string = "onChange";
-    let childRock: RockConfig = null;
-    if (mode === "input") {
-      formControlType = props.formControlType || formItemTypeToControlRockTypeMap[props.type] || "antdInput";
-      const defaultFormControlProps = cloneDeep(defaultControlPropsOfFormItemType[props.type]);
-      childRock = {
-        $id: `${props.$id}-input`,
-        $type: formControlType,
-        placeholder: props.placeholder,
-        ...defaultFormControlProps,
-        ...props.formControlProps,
-        form: props.form,
-      };
+  const mode = props.mode || "input";
+  let formControlType = null;
+  let formItemValuePropName: string = "value";
+  let formItemTrigger: string = "onChange";
+  let childRock: RockConfig = null;
 
-      // for antdSelect
-      // TODO: may be we should remove `multipleValues` prop from RapidFormItemConfig
-      if (props.multipleValues) {
-        childRock.mode = "multiple";
-      }
+  if (mode === "input") {
+    formControlType = props.formControlType || formItemTypeToControlRockTypeMap[props.type] || "antdInput";
+    const defaultFormControlProps = cloneDeep(defaultControlPropsOfFormItemType[props.type]);
+    childRock = {
+      $id: `${props.$id}-input`,
+      $type: formControlType,
+      placeholder: props.placeholder,
+      ...defaultFormControlProps,
+      ...props.formControlProps,
+      form: props.form,
+    };
 
-      formItemValuePropName = props.formControlValuePropName || (formControlType && valuePropNameOfFormInput[formControlType]) || "value";
-    } else {
-      let rendererType = props.rendererType;
-      let defaultRendererProps = {};
-      if (!rendererType) {
-        if (props.valueFieldType === "relation[]") {
-          rendererType = "rapidArrayRenderer";
-        } else {
-          rendererType = RapidExtensionSetting.getDefaultRendererTypeOfFieldType(props.valueFieldType);
-          defaultRendererProps = RapidExtensionSetting.getDefaultRendererProps(props.valueFieldType, rendererType);
-        }
-      }
-
-      childRock = {
-        $id: `${props.$id}-display`,
-        $type: rendererType,
-        ...defaultRendererProps,
-        ...props.rendererProps,
-        form: props.form,
-        readOnly: true,
-      };
-
-      formItemValuePropName = props.rendererValuePropName || (rendererType && valuePropNameOfFormInput[rendererType]) || "value";
-      formItemTrigger = "__doNotChange";
+    // for antdSelect
+    // TODO: may be we should remove `multipleValues` prop from RapidFormItemConfig
+    if (props.multipleValues) {
+      childRock.mode = "multiple";
     }
 
-    // TODO: 此处应该是用来实现表单选项联动的，但是`storeDependencies`属性和`reload`消息名意义都不是很明确，应优化。
-    const dependencies = (props.storeDependencies || []).map((key) => props.form.getFieldValue(key));
-    useEffect(() => {
-      if (props.mode == "display") {
-        return;
+    formItemValuePropName = props.formControlValuePropName || (formControlType && valuePropNameOfFormInput[formControlType]) || "value";
+  } else {
+    let rendererType = props.rendererType;
+    let defaultRendererProps = {};
+    if (!rendererType) {
+      if (props.valueFieldType === "relation[]") {
+        rendererType = "rapidArrayRenderer";
+      } else {
+        rendererType = RapidExtensionSetting.getDefaultRendererTypeOfFieldType(props.valueFieldType);
+        defaultRendererProps = RapidExtensionSetting.getDefaultRendererProps(props.valueFieldType, rendererType);
       }
+    }
 
-      if (isMountedRef.current && dependencies.length) {
-        context.page.sendComponentMessage(`${props.$id}-input`, {
+    childRock = {
+      $id: `${props.$id}-display`,
+      $type: rendererType,
+      ...defaultRendererProps,
+      ...props.rendererProps,
+      form: props.form,
+      readOnly: true,
+    };
+
+    formItemValuePropName = props.rendererValuePropName || (rendererType && valuePropNameOfFormInput[rendererType]) || "value";
+    formItemTrigger = "__doNotChange";
+  }
+
+  // TODO: 此处应该是用来实现表单选项联动的，但是`storeDependencies`属性和`reload`消息名意义都不是很明确，应优化。
+  const dependencies = (props.storeDependencies || []).map((key) => props.form.getFieldValue(key));
+  useEffect(() => {
+    if (props.mode == "display") {
+      return;
+    }
+
+    if (isMountedRef.current && dependencies.length) {
+      const page = context.page;
+      if (page) {
+        page.sendComponentMessage(`${props.$id}-input`, {
           name: "reload",
         });
       }
+    }
 
-      isMountedRef.current = true;
-    }, dependencies);
+    isMountedRef.current = true;
+  }, dependencies);
 
-    const rockConfig: RockConfig = {
-      $id: props.$id,
-      $type: "antdFormItem",
-      required: props.required,
-      name: (props.valueFieldName || props.code)?.split("."), // TODO: should `code` be required for a search form item?
-      label: props.label,
-      hidden: props.hidden,
-      valuePropName: formItemValuePropName,
-      trigger: formItemTrigger,
-      form: props.form,
-      children: childRock,
-      rules: props.rules,
-      extra: props.extra,
-      labelAlign: props.labelAlign,
-      labelCol: props.labelCol,
-      wrapperCol: props.wrapperCol,
-      $exps: props.$exps,
-    };
+  const rockConfig: RockConfig = {
+    $id: props.$id,
+    $type: "antdFormItem",
+    required: props.required,
+    name: (props.valueFieldName || props.code)?.split("."), // TODO: should `code` be required for a search form item?
+    label: props.label,
+    hidden: props.hidden,
+    valuePropName: formItemValuePropName,
+    trigger: formItemTrigger,
+    form: props.form,
+    children: childRock,
+    rules: props.rules,
+    extra: props.extra,
+    labelAlign: props.labelAlign,
+    labelCol: props.labelCol,
+    wrapperCol: props.wrapperCol,
+    tooltip: props.tooltip,
+    $exps: props.$exps,
+  };
 
-    return renderRock({ context, rockConfig });
-  },
+  // 使用 renderRock 渲染 antdFormItem，因为它包含动态的 children
+  return renderRock({ context, rockConfig });
+}
 
+export default {
+  Renderer: genRockRenderer(RapidFormItemMeta.$type, RapidFormItem),
   ...RapidFormItemMeta,
-} as Rock;
+} as Rock<RapidFormItemRockConfig>;

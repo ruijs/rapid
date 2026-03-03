@@ -1,11 +1,14 @@
+import type { ReactNode } from "react";
 import { RockI18nConfig, RockLocalesConfig, RockPropExpressions, SimpleRockConfig } from "@ruiapp/move-style";
 import { FindEntityOptions, RapidFieldType, RapidSearchFormItemFilterMode } from "../../rapid-types";
 import { FormItemProps } from "antd";
 
+export const RAPID_FORM_ITEM_ROCK_TYPE = "rapidFormItem" as const;
+
 /**
  * 表单项
  */
-export type RapidFormItemConfig = {
+export interface RapidFormItemProps {
   /**
    * 表单项类型
    */
@@ -109,8 +112,30 @@ export type RapidFormItemConfig = {
    * 表单项唯一性字段
    */
   uniqueKey?: string;
+
+  /**
+   * 表单实例
+   */
+  form?: any;
+
   labelCol?: { span?: number; offset?: number; flex?: string | number };
   wrapperCol?: { span?: number; offset?: number; flex?: string | number };
+
+  /**
+   * 标签对齐方式
+   */
+  labelAlign?: "left" | "right";
+
+  /**
+   * 额外的提示信息
+   */
+  extra?: ReactNode;
+
+  /**
+   * 配置提示信息
+   */
+  tooltip?: ReactNode;
+
   /**
    * 依赖form字段, 依赖字段变更触发表单项reload store
    */
@@ -120,7 +145,7 @@ export type RapidFormItemConfig = {
   $i18n?: RockI18nConfig;
 
   $locales?: RockLocalesConfig;
-};
+}
 
 export interface FilterFieldConfig {
   field: string;
@@ -165,6 +190,8 @@ export type RapidSearchFormItemConfig = {
   filters?: FilterFieldConfig[];
 };
 
+export type RapidFormItemConfig = RapidFormItemProps;
+
 export type RapidFormItemType =
   | "auto"
   | "box"
@@ -195,4 +222,6 @@ export type RapidFormItemType =
   | "imageList"
   | "custom";
 
-export interface RapidFormItemRockConfig extends SimpleRockConfig, RapidFormItemConfig {}
+export interface RapidFormItemRockConfig extends SimpleRockConfig, RapidFormItemProps {
+  $type: typeof RAPID_FORM_ITEM_ROCK_TYPE;
+}
