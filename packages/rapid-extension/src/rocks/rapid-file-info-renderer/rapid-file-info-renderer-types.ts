@@ -1,12 +1,15 @@
 import { SimpleRockConfig } from "@ruiapp/move-style";
 import { RapidFileInfo } from "../rapid-uploader-form-input/rapid-uploader-form-input-types";
 
-export interface RapidFileInfoRendererRockConfig extends SimpleRockConfig {
-  value: RapidFileInfo | RapidFileInfo[] | null | undefined;
+export const RAPID_FILE_INFO_RENDERER_ROCK_TYPE = "rapidFileInfoRenderer" as const;
 
+export interface RapidFileInfoRendererProps {
+  value?: RapidFileInfo | RapidFileInfo[] | null;
   showFileSize?: boolean;
-
   fileSizeDecimalPlaces?: number;
-
   arrayRendererProps?: any;
+}
+
+export interface RapidFileInfoRendererRockConfig extends SimpleRockConfig, RapidFileInfoRendererProps {
+  $type: typeof RAPID_FILE_INFO_RENDERER_ROCK_TYPE;
 }
