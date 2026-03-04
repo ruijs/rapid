@@ -1,7 +1,8 @@
 import type { RockMeta } from "@ruiapp/move-style";
+import { RAPID_TABLE_SELECT_ROCK_TYPE } from "./rapid-table-select-types";
 
 export default {
-  $type: "rapidTableSelect",
+  $type: RAPID_TABLE_SELECT_ROCK_TYPE,
 
   slots: {},
 

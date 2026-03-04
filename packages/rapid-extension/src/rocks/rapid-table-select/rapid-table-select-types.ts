@@ -3,7 +3,19 @@ import { FindEntityOptions } from "../../rapid-types";
 import { FilterFieldConfig } from "../rapid-form-item/rapid-form-item-types";
 import { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
 
-export interface RapidTableSelectConfigBase {
+export const RAPID_TABLE_SELECT_ROCK_TYPE = "rapidTableSelect" as const;
+
+export interface RapidTableSelectRequestConfig {
+  baseUrl?: string;
+  url: string;
+  method?: "post" | "get"; // 默认 post
+  params?: FindEntityOptions & {
+    fixedFilters?: FindEntityOptions["filters"];
+    $exps?: RockExpsConfig;
+  };
+}
+
+export interface RapidTableSelectProps {
   searchPlaceholder?: string;
   placeholder?: string;
   allowClear?: boolean;
@@ -29,7 +41,7 @@ export interface RapidTableSelectConfigBase {
   columns?: RapidTableColumnConfig[];
   dropdownMatchSelectWidth?: number;
   value?: string | string[];
-  onChange?(value: string): void;
+  onChange?(value: string | string[]): void;
   onSelectedRecord?: RockEventHandlerConfig;
 
   /**
@@ -46,30 +58,10 @@ export interface RapidTableSelectConfigBase {
    * 表格高度
    */
   tableHeight?: number;
-}
 
-export interface RapidTableSelectConfig extends RapidTableSelectConfigBase {
   requestConfig: RapidTableSelectRequestConfig;
 }
 
-export interface RapidTableSelectRockConfig extends RapidTableSelectConfig, SimpleRockConfig {
-  requestConfig: {
-    baseUrl?: string;
-    url: string;
-    method?: "post" | "get"; // 默认 post
-    params?: FindEntityOptions & {
-      fixedFilters?: FindEntityOptions["filters"];
-      $exps?: RockExpsConfig;
-    };
-  };
+export interface RapidTableSelectRockConfig extends SimpleRockConfig, RapidTableSelectProps {
+  $type: typeof RAPID_TABLE_SELECT_ROCK_TYPE;
 }
-
-export type RapidTableSelectRequestConfig = {
-  baseUrl?: string;
-  url: string;
-  method?: "post" | "get"; // 默认 post
-  params?: FindEntityOptions & {
-    fixedFilters?: FindEntityOptions["filters"];
-    $exps?: RockExpsConfig;
-  };
-};
