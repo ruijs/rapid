@@ -3,7 +3,9 @@ import { FilterFieldConfig } from "../rapid-form-item/rapid-form-item-types";
 import { RapidTableSelectRockConfig } from "../rapid-table-select/rapid-table-select-types";
 import { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
 
-export interface SonicEntityTableSelectRockConfig extends SimpleRockConfig {
+export const SONIC_ENTITY_TABLE_SELECT_ROCK_TYPE = "sonicEntityTableSelect" as const;
+
+export interface SonicEntityTableSelectProps {
   searchPlaceholder?: string;
   placeholder?: string;
   allowClear?: boolean;
@@ -38,8 +40,8 @@ export interface SonicEntityTableSelectRockConfig extends SimpleRockConfig {
   requestParams?: RapidTableSelectRockConfig["requestConfig"]["params"];
   value?: string | string[];
   bordered?: boolean;
-  onChange?(value: string): void;
-  onSelectedRecord?(record: Record<string, any>, selectedRecords: Record<string, any>[]): void;
+  onChange?(value: string | string[]): void;
+  onSelectedRecord?(record: Record<string, any> | Record<string, any>[] | null, selectedRecords: Record<string, any>[], recordMap: Record<string, any>): void;
 
   /**
    * 标签渲染器类型
@@ -55,4 +57,8 @@ export interface SonicEntityTableSelectRockConfig extends SimpleRockConfig {
    * 表格高度
    */
   tableHeight?: number;
+}
+
+export interface SonicEntityTableSelectRockConfig extends SimpleRockConfig, SonicEntityTableSelectProps {
+  $type: typeof SONIC_ENTITY_TABLE_SELECT_ROCK_TYPE;
 }

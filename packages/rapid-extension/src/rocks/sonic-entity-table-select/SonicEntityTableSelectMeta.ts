@@ -1,7 +1,8 @@
 import type { RockMeta } from "@ruiapp/move-style";
+import { SONIC_ENTITY_TABLE_SELECT_ROCK_TYPE } from "./sonic-entity-table-select-types";
 
 export default {
-  $type: "sonicEntityTableSelect",
+  $type: SONIC_ENTITY_TABLE_SELECT_ROCK_TYPE,
 
   slots: {},
 

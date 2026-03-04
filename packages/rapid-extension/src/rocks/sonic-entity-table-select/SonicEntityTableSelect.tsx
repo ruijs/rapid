@@ -1,9 +1,9 @@
-import { EventEmitter, MoveStyleUtils, type Rock, type RockInstanceContext } from "@ruiapp/move-style";
+import { EventEmitter, MoveStyleUtils, type Rock, type RockInstance, type RockInstanceContext } from "@ruiapp/move-style";
 import SonicEntityTableSelectMeta from "./SonicEntityTableSelectMeta";
-import type { SonicEntityTableSelectRockConfig } from "./sonic-entity-table-select-types";
-import { convertToEventHandlers, renderRock } from "@ruiapp/react-renderer";
-import { Table, Select, Input, TableProps, Empty, Spin } from "antd";
-import { debounce, filter, forEach, get, isArray, isFunction, isObject, isPlainObject, isString, isUndefined, last, map, omit, pick, set, split } from "lodash";
+import { type SonicEntityTableSelectProps, type SonicEntityTableSelectRockConfig } from "./sonic-entity-table-select-types";
+import { genRockRenderer, renderRock } from "@ruiapp/react-renderer";
+import { Table, Select, Input, Empty, Spin } from "antd";
+import { debounce, filter, forEach, get, isArray, isObject, isPlainObject, isString, isUndefined, last, map, omit, pick, set, split } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMergeState } from "../../hooks/use-merge-state";
 import { getRapidApi } from "../../rapidApi";
@@ -28,8 +28,320 @@ interface ICurrentState {
   reloadKey?: string | number;
 }
 
-function getListDataSourceCode(props) {
+function getListDataSourceCode(props: SonicEntityTableSelectRockConfig) {
+  // @ts-ignore
   return props.listDataSourceCode || `${props.$id}-list`;
+}
+
+export function configSonicEntityTableSelect(config: SonicEntityTableSelectRockConfig): SonicEntityTableSelectRockConfig {
+  return config;
+}
+
+export function SonicEntityTableSelect(props: SonicEntityTableSelectProps) {
+  const { $id, _context: context } = props as any as RockInstance;
+  const { framework, logger, page, scope } = context;
+
+  const entity = rapidAppDefinition.getEntityByCode(props.entityCode);
+  const displayPropertyCode = entity.displayPropertyCode || "name";
+  const displayProperty = getEntityPropertyByCode(rapidAppDefinition.getAppDefinition(), entity, displayPropertyCode);
+
+  let defaultDisplayField = "name";
+  let defaultDisplayTitle = getExtensionLocaleStringResource(framework, "name");
+  if (displayProperty) {
+    defaultDisplayField = displayProperty.code;
+    defaultDisplayTitle = displayProperty.name;
+  }
+
+  const {
+    listValueFieldName = "id",
+    listTextFieldName = defaultDisplayField,
+    listTextFormat,
+    pageSize = 20,
+    columns = [{ title: defaultDisplayTitle, code: defaultDisplayField, width: 120 }],
+    listFilterFields = [defaultDisplayField],
+    filterDisabled,
+    allowClear,
+    disabled,
+    placeholder,
+    tableHeight = 400,
+  } = props;
+  const listDataSourceCode = getListDataSourceCode({ ...props, $id } as any);
+
+  let { dropdownMatchSelectWidth } = props;
+  if (isUndefined(dropdownMatchSelectWidth)) {
+    dropdownMatchSelectWidth = 360;
+  }
+
+  const isMultiple = props.mode === "multiple";
+
+  const refreshDataRef = useRef<Function>(null);
+  const [currentState, setCurrentState] = useMergeState<ICurrentState>({ offset: 0, selectedRecordMap: {} });
+  const [debouncedKeyword, setDebouncedKeyword] = useState<string>("");
+  const debouncedCallBack = useCallback(
+    debounce((m) => setDebouncedKeyword(m), 600),
+    [],
+  );
+
+  const apiIns = useRequest(context, { ...props, $id } as any, entity);
+  const { loadSelectedRecords, loading } = useSelectedRecords(props, (records) => {
+    forEach(records, (record) => {
+      const recordValue = get(record, listValueFieldName);
+      setCurrentState((draft) => {
+        return { ...draft, selectedRecordMap: { ...draft.selectedRecordMap, [recordValue]: record } };
+      });
+    });
+  });
+
+  const loadData = () => {
+    const params: any = {
+      filters: [],
+      pagination: {
+        limit: pageSize,
+        offset: currentState.offset,
+      },
+    };
+
+    if (currentState.keyword && listFilterFields?.length) {
+      params.filters = [
+        {
+          operator: "or",
+          filters: listFilterFields.map((field) => {
+            if (isString(field)) {
+              const filterCodes = split(field, ".");
+              return parseSelectedRecordFilters(filterCodes, "contains", currentState.keyword)[0];
+            } else if (isObject(field)) {
+              return parseConfigToFilters([field], currentState.keyword)[0];
+            }
+          }),
+        },
+      ];
+    }
+
+    apiIns.request(params);
+  };
+
+  refreshDataRef.current = loadData;
+  useEffect(() => {
+    const refreshHandler = () => {
+      refreshDataRef.current?.();
+    };
+
+    bus.on(`${$id}-refresh`, refreshHandler);
+
+    return () => {
+      bus.off(`${$id}-refresh`, refreshHandler);
+    };
+  }, [$id]);
+
+  useEffect(() => {
+    const reloadHandler = () => {
+      setCurrentState({ offset: 0, reloadKey: dayjs().unix() });
+    };
+
+    bus.on(`${$id}-reload`, reloadHandler);
+
+    return () => {
+      bus.off(`${$id}-reload`, reloadHandler);
+    };
+  }, [$id, setCurrentState]);
+
+  useEffect(() => {
+    loadData();
+  }, [props.entityCode, currentState.offset, currentState.reloadKey, debouncedKeyword]);
+
+  const getLabel = (record: Record<string, any>) => {
+    if (props.labelRendererType) {
+      return renderRock({
+        context,
+        rockConfig: {
+          $type: props.labelRendererType,
+          ...props.labelRendererProps,
+          value: record,
+        },
+      });
+    }
+
+    if (!listTextFormat) {
+      return get(record, listTextFieldName);
+    }
+
+    return MoveStyleUtils.fulfillVariablesInString(listTextFormat, record);
+  };
+
+  const selectedKeys = useMemo(() => {
+    let val: any | any[] = props.value != null ? props.value : [];
+    if (!isArray(val)) {
+      val = val !== "" ? [val] : [];
+    }
+
+    return val.map((item: any) => {
+      if (isPlainObject(item)) {
+        const lastCode = last(split(listValueFieldName, "."));
+        // @ts-ignore
+        return get(item, listValueFieldName) || get(item, lastCode);
+      }
+
+      return item;
+    });
+  }, [props.value]);
+
+  useEffect(() => {
+    const keys = (selectedKeys || []).filter((key: string) => !currentState.selectedRecordMap[key]);
+    if (keys.length) {
+      loadSelectedRecords(keys);
+    }
+  }, [selectedKeys, currentState.selectedRecordMap]);
+
+  const selectOptions = useMemo(() => {
+    return Object.keys(currentState.selectedRecordMap)
+      .map((k) => {
+        const record = currentState.selectedRecordMap[k];
+        return record ? { label: getLabel(record), value: get(record, listValueFieldName) } : null;
+      })
+      .filter((record) => record != null);
+  }, [currentState.selectedRecordMap]);
+
+  const tableColumns = map(columns, (column) =>
+    convertRapidTableColumnToAntdTableColumn(logger, framework, context, {
+      $type: "rapidTableColumn",
+      ...column,
+    }),
+  );
+  const columnsTotalWidth = calculateColumnsTotalWidth(columns);
+
+  const current = isMultiple ? selectedKeys : last(selectedKeys);
+
+  const onSelectRows = (records: any[]) => {
+    let keys = selectedKeys || [];
+    let s = { ...currentState, selectedRecordMap: { ...currentState.selectedRecordMap } };
+
+    forEach(records, (record) => {
+      const recordValue = get(record, listValueFieldName);
+
+      const isExisted = keys.some((k: any) => k === recordValue);
+
+      if (isExisted) {
+        keys = keys.filter((k: any) => k !== recordValue);
+      } else {
+        keys = [...keys, recordValue];
+      }
+
+      s.selectedRecordMap[recordValue] = record;
+      if (isExisted) {
+        s.selectedRecordMap = omit(s.selectedRecordMap, recordValue);
+      }
+    });
+
+    if (!isMultiple) {
+      s.visible = false;
+    }
+
+    setCurrentState(s);
+
+    props.onChange?.(isMultiple ? keys : last(keys));
+
+    const selectedRecords = keys.map((k: string) => s.selectedRecordMap[k]);
+    const validRecords = filter(records, (record) => s.selectedRecordMap[get(record, listValueFieldName)] != null);
+
+    props.onSelectedRecord?.(isMultiple ? validRecords : last(validRecords), selectedRecords, s);
+  };
+
+  const data = context.scope.getStore(listDataSourceCode)?.data;
+
+  let removeIcon = undefined;
+  if (props.readOnly) {
+    removeIcon = <EmptyRemoveIcon />;
+  }
+
+  return (
+    <Select
+      allowClear={allowClear}
+      disabled={disabled}
+      bordered={props.bordered}
+      loading={apiIns.loading || loading}
+      placeholder={placeholder || getExtensionLocaleStringResource(framework, "pleaseSelect")}
+      value={current}
+      mode={isMultiple ? "multiple" : undefined}
+      removeIcon={removeIcon}
+      open={currentState.visible && !props.readOnly}
+      onChange={(v) => {
+        const arrs = isArray(v) ? v : v != null ? [v] : [];
+        const selectedRecords = arrs?.map((k: string) => currentState.selectedRecordMap[k]);
+
+        props.onChange?.(v);
+        props.onSelectedRecord?.(null, selectedRecords, pick(currentState.selectedRecordMap, arrs));
+      }}
+      onDropdownVisibleChange={(v) => {
+        setCurrentState({ visible: v });
+      }}
+      options={selectOptions}
+      dropdownStyle={{ padding: 0 }}
+      dropdownMatchSelectWidth={dropdownMatchSelectWidth}
+      dropdownRender={(menu) => {
+        return (
+          <>
+            {!filterDisabled && listFilterFields?.length ? (
+              <div className="pm-table-selector--toolbar">
+                <Input
+                  allowClear
+                  placeholder={props.searchPlaceholder || getExtensionLocaleStringResource(framework, "search")}
+                  value={currentState.keyword}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setCurrentState({ keyword: v, offset: 0 });
+                    debouncedCallBack(v);
+                  }}
+                />
+              </div>
+            ) : null}
+            <Spin spinning={apiIns.loading || loading || false}>
+              {!data?.list?.length ? (
+                <Empty style={{ margin: "24px 0" }} />
+              ) : (
+                <Table
+                  size="small"
+                  rowKey={(record) => get(record, listValueFieldName)}
+                  scroll={{ x: columnsTotalWidth, y: tableHeight }}
+                  columns={tableColumns}
+                  dataSource={data.list || []}
+                  rowClassName="pm-table-row"
+                  rowSelection={{
+                    fixed: true,
+                    type: isMultiple ? "checkbox" : "radio",
+                    selectedRowKeys: selectedKeys,
+                    onSelectAll(selected, selectedRows, changeRows) {
+                      onSelectRows(changeRows || []);
+                    },
+                    onSelect(record) {
+                      onSelectRows([record]);
+                    },
+                  }}
+                  onRow={(record) => {
+                    return {
+                      onClick: () => {
+                        onSelectRows([record]);
+                      },
+                    };
+                  }}
+                  pagination={{
+                    size: "small",
+                    current: currentState.offset / pageSize + 1,
+                    pageSize,
+                    total: data?.total || 0,
+                    hideOnSinglePage: true,
+                    showSizeChanger: false,
+                    onChange(page) {
+                      setCurrentState({ offset: (page - 1) * pageSize });
+                    },
+                  }}
+                />
+              )}
+            </Spin>
+          </>
+        );
+      }}
+    />
+  );
 }
 
 export default {
@@ -41,316 +353,9 @@ export default {
     }
   },
 
-  Renderer(context, props: SonicEntityTableSelectRockConfig) {
-    const { framework, logger, page } = context;
-
-    const entity = rapidAppDefinition.getEntityByCode(props.entityCode);
-    const displayPropertyCode = entity.displayPropertyCode || "name";
-    const displayProperty = getEntityPropertyByCode(rapidAppDefinition.getAppDefinition(), entity, displayPropertyCode);
-
-    let defaultDisplayField = "name";
-    let defaultDisplayTitle = getExtensionLocaleStringResource(framework, "name");
-    if (displayProperty) {
-      defaultDisplayField = displayProperty.code;
-      defaultDisplayTitle = displayProperty.name;
-    }
-
-    const {
-      listValueFieldName = "id",
-      listTextFieldName = defaultDisplayField,
-      listTextFormat,
-      pageSize = 20,
-      columns = [{ title: defaultDisplayTitle, code: defaultDisplayField, width: 120 }],
-      listFilterFields = [defaultDisplayField],
-      filterDisabled,
-      allowClear,
-      disabled,
-      placeholder,
-      tableHeight = 400,
-    } = props;
-    const listDataSourceCode = getListDataSourceCode(props);
-
-    let { dropdownMatchSelectWidth } = props;
-    if (isUndefined(dropdownMatchSelectWidth)) {
-      dropdownMatchSelectWidth = 360;
-    }
-
-    const isMultiple = props.mode === "multiple";
-
-    const refreshDataRef = useRef<Function>(null);
-    const [currentState, setCurrentState] = useMergeState<ICurrentState>({ offset: 0, selectedRecordMap: {} });
-    const [debouncedKeyword, setDebouncedKeyword] = useState<string>("");
-    const debouncedCallBack = useCallback(
-      debounce((m) => setDebouncedKeyword(m), 600),
-      [],
-    );
-
-    const apiIns = useRequest(context, props, entity);
-    const { loadSelectedRecords, loading } = useSelectedRecords(props, (records) => {
-      forEach(records, (record) => {
-        const recordValue = get(record, listValueFieldName);
-        setCurrentState((draft) => {
-          return { ...draft, selectedRecordMap: { ...draft.selectedRecordMap, [recordValue]: record } };
-        });
-      });
-    });
-
-    const loadData = () => {
-      const params: any = {
-        filters: [],
-        pagination: {
-          limit: pageSize,
-          offset: currentState.offset,
-        },
-      };
-
-      if (currentState.keyword && listFilterFields?.length) {
-        params.filters = [
-          {
-            operator: "or",
-            filters: listFilterFields.map((field) => {
-              if (isString(field)) {
-                const filterCodes = split(field, ".");
-                return parseSelectedRecordFilters(filterCodes, "contains", currentState.keyword)[0];
-              } else if (isObject(field)) {
-                return parseConfigToFilters([field], currentState.keyword)[0];
-              }
-            }),
-          },
-        ];
-      }
-
-      apiIns.request(params);
-    };
-
-    refreshDataRef.current = loadData;
-    useEffect(() => {
-      const refreshHandler = () => {
-        refreshDataRef.current?.();
-      };
-
-      bus.on(`${props.$id}-refresh`, refreshHandler);
-
-      return () => {
-        bus.off(`${props.$id}-refresh`, refreshHandler);
-      };
-    }, [props.$id]);
-
-    useEffect(() => {
-      const reloadHandler = () => {
-        setCurrentState({ offset: 0, reloadKey: dayjs().unix() });
-      };
-
-      bus.on(`${props.$id}-reload`, reloadHandler);
-
-      return () => {
-        bus.off(`${props.$id}-reload`, reloadHandler);
-      };
-    }, [props.$id, setCurrentState]);
-
-    useEffect(() => {
-      loadData();
-    }, [props.entityCode, currentState.offset, currentState.reloadKey, debouncedKeyword]);
-
-    const getLabel = (record: Record<string, any>) => {
-      if (props.labelRendererType) {
-        return renderRock({
-          context,
-          rockConfig: {
-            $type: props.labelRendererType,
-            ...props.labelRendererProps,
-            value: record,
-          },
-        });
-      }
-
-      if (!listTextFormat) {
-        return get(record, listTextFieldName);
-      }
-
-      return MoveStyleUtils.fulfillVariablesInString(listTextFormat, record);
-    };
-
-    const selectedKeys = useMemo(() => {
-      let val: any | any[] = props.value != null ? props.value : [];
-      if (!isArray(val)) {
-        val = val !== "" ? [val] : [];
-      }
-
-      return val.map((item) => {
-        if (isPlainObject(item)) {
-          const lastCode = last(split(listValueFieldName, "."));
-
-          return get(item, listValueFieldName) || get(item, lastCode);
-        }
-
-        return item;
-      });
-    }, [props.value]);
-
-    useEffect(() => {
-      const keys = (selectedKeys || []).filter((key) => !currentState.selectedRecordMap[key]);
-      if (keys.length) {
-        loadSelectedRecords(keys);
-      }
-    }, [selectedKeys, currentState.selectedRecordMap]);
-
-    const selectOptions = useMemo(() => {
-      return Object.keys(currentState.selectedRecordMap)
-        .map((k) => {
-          const record = currentState.selectedRecordMap[k];
-          return record ? { label: getLabel(record), value: get(record, listValueFieldName) } : null;
-        })
-        .filter((record) => record != null);
-    }, [currentState.selectedRecordMap]);
-
-    const eventHandlers = convertToEventHandlers({ context, rockConfig: props }) as any;
-
-    const tableColumns = map(columns, (column) =>
-      convertRapidTableColumnToAntdTableColumn(logger, framework, context, {
-        $type: "rapidTableColumn",
-        ...column,
-      }),
-    );
-    const columnsTotalWidth = calculateColumnsTotalWidth(columns);
-
-    const current = isMultiple ? selectedKeys : last(selectedKeys);
-
-    const onSelectRows = (records: any[]) => {
-      let keys = selectedKeys || [];
-      let s = { ...currentState, selectedRecordMap: { ...currentState.selectedRecordMap } };
-
-      forEach(records, (record) => {
-        const recordValue = get(record, listValueFieldName);
-
-        const isExisted = keys.some((k) => k === recordValue);
-
-        if (isExisted) {
-          keys = keys.filter((k) => k !== recordValue);
-        } else {
-          keys = [...keys, recordValue];
-        }
-
-        s.selectedRecordMap[recordValue] = record;
-        if (isExisted) {
-          s.selectedRecordMap = omit(s.selectedRecordMap, recordValue);
-        }
-      });
-
-      if (!isMultiple) {
-        s.visible = false;
-      }
-
-      setCurrentState(s);
-
-      eventHandlers.onChange?.(isMultiple ? keys : last(keys));
-
-      const selectedRecords = keys.map((k) => s.selectedRecordMap[k]);
-      const validRecords = filter(records, (record) => s.selectedRecordMap[get(record, listValueFieldName)] != null);
-
-      eventHandlers.onSelectedRecord?.(isMultiple ? validRecords : last(validRecords), selectedRecords, s);
-    };
-
-    const data = context.scope.getStore(listDataSourceCode)?.data;
-
-    let removeIcon = undefined;
-    if (props.readOnly) {
-      removeIcon = <EmptyRemoveIcon />;
-    }
-
-    return (
-      <Select
-        allowClear={allowClear}
-        disabled={disabled}
-        bordered={props.bordered}
-        loading={apiIns.loading || loading}
-        placeholder={placeholder || getExtensionLocaleStringResource(framework, "pleaseSelect")}
-        value={current}
-        mode={isMultiple ? "multiple" : undefined}
-        removeIcon={removeIcon}
-        open={currentState.visible && !props.readOnly}
-        onChange={(v) => {
-          const arrs = isArray(v) ? v : v != null ? [v] : [];
-          const selectedRecords = arrs?.map((k) => currentState.selectedRecordMap[k]);
-
-          eventHandlers.onChange?.(v);
-          eventHandlers.onSelectedRecord?.(null, selectedRecords, pick(currentState.selectedRecordMap, arrs));
-        }}
-        onDropdownVisibleChange={(v) => {
-          setCurrentState({ visible: v });
-        }}
-        options={selectOptions}
-        dropdownStyle={{ padding: 0 }}
-        dropdownMatchSelectWidth={dropdownMatchSelectWidth}
-        dropdownRender={(menu) => {
-          return (
-            <>
-              {!filterDisabled && listFilterFields?.length ? (
-                <div className="pm-table-selector--toolbar">
-                  <Input
-                    allowClear
-                    placeholder={props.searchPlaceholder || getExtensionLocaleStringResource(framework, "search")}
-                    value={currentState.keyword}
-                    onChange={(e) => {
-                      const v = e.target.value;
-                      setCurrentState({ keyword: v, offset: 0 });
-                      debouncedCallBack(v);
-                    }}
-                  />
-                </div>
-              ) : null}
-              <Spin spinning={apiIns.loading || loading || false}>
-                {!data?.list?.length ? (
-                  <Empty style={{ margin: "24px 0" }} />
-                ) : (
-                  <Table
-                    size="small"
-                    rowKey={(record) => get(record, listValueFieldName)}
-                    scroll={{ x: columnsTotalWidth, y: tableHeight }}
-                    columns={tableColumns}
-                    dataSource={data.list || []}
-                    rowClassName="pm-table-row"
-                    rowSelection={{
-                      fixed: true,
-                      type: isMultiple ? "checkbox" : "radio",
-                      selectedRowKeys: selectedKeys,
-                      onSelectAll(selected, selectedRows, changeRows) {
-                        onSelectRows(changeRows || []);
-                      },
-                      onSelect(record) {
-                        onSelectRows([record]);
-                      },
-                    }}
-                    onRow={(record) => {
-                      return {
-                        onClick: () => {
-                          onSelectRows([record]);
-                        },
-                      };
-                    }}
-                    pagination={{
-                      size: "small",
-                      current: currentState.offset / pageSize + 1,
-                      pageSize,
-                      total: data?.total || 0,
-                      hideOnSinglePage: true,
-                      showSizeChanger: false,
-                      onChange(page) {
-                        setCurrentState({ offset: (page - 1) * pageSize });
-                      },
-                    }}
-                  />
-                )}
-              </Spin>
-            </>
-          );
-        }}
-      />
-    );
-  },
-
+  Renderer: genRockRenderer(SonicEntityTableSelectMeta.$type, SonicEntityTableSelect),
   ...SonicEntityTableSelectMeta,
-} as Rock;
+} as Rock<SonicEntityTableSelectRockConfig>;
 
 function EmptyRemoveIcon() {
   return null;
@@ -435,7 +440,7 @@ function useRequest(context: RockInstanceContext, props: SonicEntityTableSelectR
   return { request, ...state };
 }
 
-function useSelectedRecords(props: SonicEntityTableSelectRockConfig, onSuccess: (records: any[]) => void) {
+function useSelectedRecords(props: SonicEntityTableSelectProps, onSuccess: (records: any[]) => void) {
   const { requestParams, listValueFieldName = "id" } = props;
   const rapidApi = getRapidApi();
   const [loading, setLoading] = useState<boolean>(false);
