@@ -38,6 +38,6 @@ export function SonicToolbarNewEntityButton(props: SonicToolbarNewEntityButtonPr
 }
 
 export default {
-  Renderer: genRockRenderer(SonicToolbarNewEntityButtonMeta.$type, SonicToolbarNewEntityButton),
+  Renderer: genRockRenderer(SonicToolbarNewEntityButtonMeta.$type, SonicToolbarNewEntityButton, true),
   ...SonicToolbarNewEntityButtonMeta,
 } as Rock<SonicToolbarNewEntityButtonRockConfig>;

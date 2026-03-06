@@ -188,6 +188,6 @@ export function RapidFormItem(props: RapidFormItemProps & { $id: string }) {
 }
 
 export default {
-  Renderer: genRockRenderer(RapidFormItemMeta.$type, RapidFormItem),
+  Renderer: genRockRenderer(RapidFormItemMeta.$type, RapidFormItem, true),
   ...RapidFormItemMeta,
 } as Rock<RapidFormItemRockConfig>;

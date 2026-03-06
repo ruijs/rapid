@@ -3,7 +3,6 @@ import { Framework, fireEvent } from "@ruiapp/move-style";
 import { genRockRenderer, renderRock } from "@ruiapp/react-renderer";
 import RapidEntityFormMeta from "./RapidEntityFormMeta";
 import type { RapidEntityFormProps, RapidEntityFormRockConfig } from "./rapid-entity-form-types";
-import { RAPID_ENTITY_FORM_ROCK_TYPE } from "./rapid-entity-form-types";
 import { isUndefined, merge, set } from "lodash";
 import rapidAppDefinition from "../../rapidAppDefinition";
 import type { RapidDataDictionaryEntry, RapidField, RapidFieldType } from "@ruiapp/rapid-common";
@@ -441,7 +440,7 @@ export function RapidEntityForm(props: RapidEntityFormProps) {
 }
 
 export default {
-  Renderer: genRockRenderer(RAPID_ENTITY_FORM_ROCK_TYPE, RapidEntityForm),
+  Renderer: genRockRenderer(RapidEntityFormMeta.$type, RapidEntityForm, true),
 
   onInit(context, props) {
     if (!props.lazyLoadData) {

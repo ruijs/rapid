@@ -47,7 +47,7 @@ export function RapidDatePicker(props: RapidDatePickerProps) {
 }
 
 export default {
-  Renderer: genRockRenderer(RapidDatePickerMeta.$type, RapidDatePicker),
+  Renderer: genRockRenderer(RapidDatePickerMeta.$type, RapidDatePicker, true),
 
   ...RapidDatePickerMeta,
 } as Rock<RapidDatePickerRockConfig>;

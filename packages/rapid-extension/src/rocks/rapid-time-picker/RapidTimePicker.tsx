@@ -36,6 +36,6 @@ export function RapidTimePicker(props: RapidTimePickerProps) {
 }
 
 export default {
-  Renderer: genRockRenderer(RapidTimePickerMeta.$type, RapidTimePicker),
+  Renderer: genRockRenderer(RapidTimePickerMeta.$type, RapidTimePicker, true),
   ...RapidTimePickerMeta,
 } as Rock<RapidTimePickerRockConfig>;

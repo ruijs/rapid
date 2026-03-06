@@ -1,7 +1,7 @@
 import { MoveStyleUtils, RockInstance, RuiEvent, fireEvent, type Rock, type RockConfig } from "@ruiapp/move-style";
 import { genRockRenderer, renderRock } from "@ruiapp/react-renderer";
 import RapidFormModalRecordActionMeta from "./RapidFormModalRecordActionMeta";
-import { RAPID_FORM_MODAL_RECORD_ACTION_ROCK_TYPE, RapidFormModalRecordActionRockConfig } from "./rapid-form-modal-record-action-types";
+import { RapidFormModalRecordActionRockConfig } from "./rapid-form-modal-record-action-types";
 import { cloneDeep } from "lodash";
 import { Modal, message } from "antd";
 import { RapidFormRockConfig } from "../rapid-form/rapid-form-types";
@@ -128,7 +128,7 @@ export function RapidFormModalRecordAction(props: RapidFormModalRecordActionRock
 }
 
 export default {
-  Renderer: genRockRenderer(RAPID_FORM_MODAL_RECORD_ACTION_ROCK_TYPE, RapidFormModalRecordAction),
+  Renderer: genRockRenderer(RapidFormModalRecordActionMeta.$type, RapidFormModalRecordAction, true),
 
   ...RapidFormModalRecordActionMeta,
 } as Rock<RapidFormModalRecordActionRockConfig>;

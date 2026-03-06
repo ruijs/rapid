@@ -146,7 +146,7 @@ export function RapidCheckboxListFormInput(props: RapidCheckboxListFormInputProp
 }
 
 export default {
-  Renderer: genRockRenderer(RapidCheckboxListFormInputMeta.$type, RapidCheckboxListFormInput),
+  Renderer: genRockRenderer(RapidCheckboxListFormInputMeta.$type, RapidCheckboxListFormInput, true),
   ...RapidCheckboxListFormInputMeta,
 } as Rock<RapidCheckboxListFormInputRockConfig>;
 

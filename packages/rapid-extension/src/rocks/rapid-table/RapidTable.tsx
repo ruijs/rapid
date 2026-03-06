@@ -262,6 +262,6 @@ export function RapidTable(props: RapidTableProps) {
 }
 
 export default {
-  Renderer: genRockRenderer(RAPID_TABLE_ROCK_TYPE, RapidTable),
+  Renderer: genRockRenderer(RAPID_TABLE_ROCK_TYPE, RapidTable, true),
   ...RapidTableMeta,
 } as Rock<RapidTableRockConfig>;

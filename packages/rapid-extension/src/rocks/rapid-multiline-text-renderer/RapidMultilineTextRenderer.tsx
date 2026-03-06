@@ -15,6 +15,6 @@ export function RapidMultilineTextRenderer(props: RapidMultilineTextRendererProp
 }
 
 export default {
-  Renderer: genRockRenderer(RapidMultilineTextRendererMeta.$type, RapidMultilineTextRenderer),
+  Renderer: genRockRenderer(RapidMultilineTextRendererMeta.$type, RapidMultilineTextRenderer, true),
   ...RapidMultilineTextRendererMeta,
 } as Rock<RapidMultilineTextRendererRockConfig>;

@@ -59,6 +59,6 @@ export function RapidToolbarUpdateEntityButton(props: RapidToolbarUpdateEntityBu
 }
 
 export default {
-  Renderer: genRockRenderer(RapidToolbarUpdateEntityButtonMeta.$type, RapidToolbarUpdateEntityButton),
+  Renderer: genRockRenderer(RapidToolbarUpdateEntityButtonMeta.$type, RapidToolbarUpdateEntityButton, true),
   ...RapidToolbarUpdateEntityButtonMeta,
 } as Rock<RapidToolbarUpdateEntityButtonRockConfig>;

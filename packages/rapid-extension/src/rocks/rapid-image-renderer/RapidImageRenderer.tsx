@@ -1,6 +1,6 @@
 import { Rock } from "@ruiapp/move-style";
 import RapidImageRendererMeta from "./RapidImageRendererMeta";
-import { RapidImageRendererProps, RapidImageRendererRockConfig, RAPID_IMAGE_RENDERER_ROCK_TYPE } from "./rapid-image-renderer-types";
+import { RapidImageRendererProps, RapidImageRendererRockConfig } from "./rapid-image-renderer-types";
 import { genRockRenderer } from "@ruiapp/react-renderer";
 import { isArray } from "lodash";
 import { Image } from "antd";
@@ -35,6 +35,6 @@ export function RapidImageRenderer(props: RapidImageRendererProps) {
 }
 
 export default {
-  Renderer: genRockRenderer(RAPID_IMAGE_RENDERER_ROCK_TYPE, RapidImageRenderer),
+  Renderer: genRockRenderer(RapidImageRendererMeta.$type, RapidImageRenderer, true),
   ...RapidImageRendererMeta,
 } as Rock<RapidImageRendererRockConfig>;

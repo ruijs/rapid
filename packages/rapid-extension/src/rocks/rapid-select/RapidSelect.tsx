@@ -103,6 +103,6 @@ export function RapidSelect(props: RapidSelectProps) {
 }
 
 export default {
-  Renderer: genRockRenderer(RapidSelectMeta.$type, RapidSelect),
+  Renderer: genRockRenderer(RapidSelectMeta.$type, RapidSelect, true),
   ...RapidSelectMeta,
 } as Rock<RapidSelectRockConfig>;

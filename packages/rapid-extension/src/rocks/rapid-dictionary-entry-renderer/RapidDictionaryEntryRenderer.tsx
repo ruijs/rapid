@@ -19,7 +19,7 @@ export function RapidDictionaryEntryRenderer(props: RapidDictionaryEntryRenderer
 }
 
 export default {
-  Renderer: genRockRenderer(RapidDictionaryEntryRendererMeta.$type, RapidDictionaryEntryRenderer),
+  Renderer: genRockRenderer(RapidDictionaryEntryRendererMeta.$type, RapidDictionaryEntryRenderer, true),
 
   ...RapidDictionaryEntryRendererMeta,
 } as Rock<RapidDictionaryEntryRendererRockConfig>;

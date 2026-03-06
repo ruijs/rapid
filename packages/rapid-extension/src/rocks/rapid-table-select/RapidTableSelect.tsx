@@ -324,7 +324,7 @@ export default {
       bus.emit(`${props.$id}-reload`);
     }
   },
-  Renderer: genRockRenderer(RapidTableSelectMeta.$type, RapidTableSelect),
+  Renderer: genRockRenderer(RapidTableSelectMeta.$type, RapidTableSelect, true),
 
   ...RapidTableSelectMeta,
 } as Rock<RapidTableSelectRockConfig>;

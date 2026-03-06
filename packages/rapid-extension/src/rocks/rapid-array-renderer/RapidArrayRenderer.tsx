@@ -65,6 +65,6 @@ export function RapidArrayRenderer(props: RapidArrayRendererProps): ReactElement
 }
 
 export default {
-  Renderer: genRockRenderer(RapidArrayRendererMeta.$type, RapidArrayRenderer),
+  Renderer: genRockRenderer(RapidArrayRendererMeta.$type, RapidArrayRenderer, true),
   ...RapidArrayRendererMeta,
 } as Rock<RapidArrayRendererRockConfig>;

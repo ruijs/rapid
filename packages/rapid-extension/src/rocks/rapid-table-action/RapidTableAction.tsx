@@ -64,6 +64,6 @@ export function RapidTableAction(props: RapidTableActionProps) {
 }
 
 export default {
-  Renderer: genRockRenderer(RapidTableActionMeta.$type, RapidTableAction),
+  Renderer: genRockRenderer(RapidTableActionMeta.$type, RapidTableAction, true),
   ...RapidTableActionMeta,
 } as Rock<RapidTableActionRockConfig>;

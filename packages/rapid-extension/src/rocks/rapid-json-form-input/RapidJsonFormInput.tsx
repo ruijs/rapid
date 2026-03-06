@@ -83,6 +83,6 @@ export function RapidJsonFormInput(props: RapidJsonFormInputProps) {
 }
 
 export default {
-  Renderer: genRockRenderer(RapidJsonFormInputMeta.$type, RapidJsonFormInput),
+  Renderer: genRockRenderer(RapidJsonFormInputMeta.$type, RapidJsonFormInput, true),
   ...RapidJsonFormInputMeta,
 } as Rock<RapidJsonFormInputRockConfig>;

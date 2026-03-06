@@ -101,6 +101,6 @@ function convertRpdFileInfoToAntdFileInfo(source: RapidFileInfo): UploadFile {
 }
 
 export default {
-  Renderer: genRockRenderer(RapidUploaderFormInputMeta.$type, RapidUploaderFormInput),
+  Renderer: genRockRenderer(RapidUploaderFormInputMeta.$type, RapidUploaderFormInput, true),
   ...RapidUploaderFormInputMeta,
 } as Rock<RapidUploaderFormInputRockConfig>;

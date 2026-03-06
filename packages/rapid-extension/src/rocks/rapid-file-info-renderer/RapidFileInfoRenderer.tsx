@@ -1,6 +1,6 @@
 import { Rock } from "@ruiapp/move-style";
 import RapidFileInfoRendererMeta from "./RapidFileInfoRendererMeta";
-import { RAPID_FILE_INFO_RENDERER_ROCK_TYPE, RapidFileInfoRendererProps, RapidFileInfoRendererRockConfig } from "./rapid-file-info-renderer-types";
+import { RapidFileInfoRendererProps, RapidFileInfoRendererRockConfig } from "./rapid-file-info-renderer-types";
 import { genRockRenderer } from "@ruiapp/react-renderer";
 import { isArray } from "lodash";
 import { RapidFileInfo } from "../rapid-uploader-form-input/rapid-uploader-form-input-types";
@@ -44,6 +44,6 @@ export function RapidFileInfoRenderer(props: RapidFileInfoRendererProps) {
 }
 
 export default {
-  Renderer: genRockRenderer(RAPID_FILE_INFO_RENDERER_ROCK_TYPE, RapidFileInfoRenderer),
+  Renderer: genRockRenderer(RapidFileInfoRendererMeta.$type, RapidFileInfoRenderer, true),
   ...RapidFileInfoRendererMeta,
 } as Rock<RapidFileInfoRendererRockConfig>;

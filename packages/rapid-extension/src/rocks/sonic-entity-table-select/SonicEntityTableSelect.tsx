@@ -353,7 +353,7 @@ export default {
     }
   },
 
-  Renderer: genRockRenderer(SonicEntityTableSelectMeta.$type, SonicEntityTableSelect),
+  Renderer: genRockRenderer(SonicEntityTableSelectMeta.$type, SonicEntityTableSelect, true),
   ...SonicEntityTableSelectMeta,
 } as Rock<SonicEntityTableSelectRockConfig>;
 

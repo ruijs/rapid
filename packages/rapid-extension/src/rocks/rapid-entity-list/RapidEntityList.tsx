@@ -435,7 +435,7 @@ export default {
 
   onReceiveMessage,
 
-  Renderer: genRockRenderer(RapidEntityListMeta.$type, RapidEntityList),
+  Renderer: genRockRenderer(RapidEntityListMeta.$type, RapidEntityList, true),
 
   ...RapidEntityListMeta,
 } as Rock<RapidEntityListRockConfig, RapidEntityListState>;

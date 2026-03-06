@@ -95,6 +95,6 @@ export function SonicToolbarSelectEntityButton(props: SonicToolbarSelectEntityBu
 }
 
 export default {
-  Renderer: genRockRenderer(SonicToolbarSelectEntityButtonMeta.$type, SonicToolbarSelectEntityButton),
+  Renderer: genRockRenderer(SonicToolbarSelectEntityButtonMeta.$type, SonicToolbarSelectEntityButton, true),
   ...SonicToolbarSelectEntityButtonMeta,
 } as Rock<SonicToolbarSelectEntityButtonRockConfig>;

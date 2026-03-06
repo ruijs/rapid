@@ -109,6 +109,6 @@ export function RapidToolbarFormModalButton(props: RapidToolbarFormModalButtonPr
 }
 
 export default {
-  Renderer: genRockRenderer(RapidToolbarFormModalButtonMeta.$type, RapidToolbarFormModalButton),
+  Renderer: genRockRenderer(RapidToolbarFormModalButtonMeta.$type, RapidToolbarFormModalButton, true),
   ...RapidToolbarFormModalButtonMeta,
 } as Rock<RapidToolbarFormModalButtonRockConfig>;

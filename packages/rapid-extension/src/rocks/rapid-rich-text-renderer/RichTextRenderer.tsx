@@ -36,6 +36,6 @@ export function RapidRichTextRenderer(props: RapidRichTextRendererProps) {
 }
 
 export default {
-  Renderer: genRockRenderer(RichTextRendererMeta.$type, RapidRichTextRenderer),
+  Renderer: genRockRenderer(RichTextRendererMeta.$type, RapidRichTextRenderer, true),
   ...RichTextRendererMeta,
 } as Rock<RichTextRendererRockConfig>;

@@ -32,6 +32,6 @@ export function RapidToolbarLink(props: RapidToolbarLinkProps) {
 }
 
 export default {
-  Renderer: genRockRenderer(RapidToolbarLinkMeta.$type, RapidToolbarLink),
+  Renderer: genRockRenderer(RapidToolbarLinkMeta.$type, RapidToolbarLink, true),
   ...RapidToolbarLinkMeta,
 } as Rock<RapidToolbarLinkRockConfig>;

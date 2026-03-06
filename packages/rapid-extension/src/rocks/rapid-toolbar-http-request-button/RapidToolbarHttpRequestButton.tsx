@@ -61,6 +61,6 @@ export function RapidToolbarHttpRequestButton(props: RapidToolbarHttpRequestButt
 }
 
 export default {
-  Renderer: genRockRenderer(RapidToolbarHttpRequestButtonMeta.$type, RapidToolbarHttpRequestButton),
+  Renderer: genRockRenderer(RapidToolbarHttpRequestButtonMeta.$type, RapidToolbarHttpRequestButton, true),
   ...RapidToolbarHttpRequestButtonMeta,
 } as Rock<RapidToolbarHttpRequestButtonRockConfig>;

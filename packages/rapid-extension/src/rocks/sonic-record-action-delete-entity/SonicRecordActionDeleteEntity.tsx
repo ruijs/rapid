@@ -39,6 +39,6 @@ export function SonicRecordActionDeleteEntity(props: SonicRecordActionDeleteEnti
 }
 
 export default {
-  Renderer: genRockRenderer(SonicRecordActionDeleteEntityMeta.$type, SonicRecordActionDeleteEntity),
+  Renderer: genRockRenderer(SonicRecordActionDeleteEntityMeta.$type, SonicRecordActionDeleteEntity, true),
   ...SonicRecordActionDeleteEntityMeta,
 } as Rock<SonicRecordActionDeleteEntityRockConfig>;

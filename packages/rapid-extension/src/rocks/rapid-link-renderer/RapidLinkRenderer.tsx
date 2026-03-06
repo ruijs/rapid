@@ -22,6 +22,6 @@ export function RapidLinkRenderer(props: RapidLinkRendererProps) {
 }
 
 export default {
-  Renderer: genRockRenderer(RapidLinkRendererMeta.$type, RapidLinkRenderer),
+  Renderer: genRockRenderer(RapidLinkRendererMeta.$type, RapidLinkRenderer, true),
   ...RapidLinkRendererMeta,
 } as Rock<RapidLinkRendererRockConfig>;

@@ -70,6 +70,6 @@ export function RapidOptionFieldRenderer(props: RapidOptionFieldRendererProps) {
 }
 
 export default {
-  Renderer: genRockRenderer(RapidOptionFieldRendererMeta.$type, RapidOptionFieldRenderer),
+  Renderer: genRockRenderer(RapidOptionFieldRendererMeta.$type, RapidOptionFieldRenderer, true),
   ...RapidOptionFieldRendererMeta,
 } as Rock<RapidOptionFieldRendererRockConfig>;

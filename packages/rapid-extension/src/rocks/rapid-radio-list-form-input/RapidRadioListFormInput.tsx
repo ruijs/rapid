@@ -79,6 +79,6 @@ export function RapidRadioListFormInput(props: RapidRadioListFormInputProps) {
 }
 
 export default {
-  Renderer: genRockRenderer(RapidRadioListFormInputMeta.$type, RapidRadioListFormInput),
+  Renderer: genRockRenderer(RapidRadioListFormInputMeta.$type, RapidRadioListFormInput, true),
   ...RapidRadioListFormInputMeta,
 } as Rock<RapidRadioListFormInputRockConfig>;

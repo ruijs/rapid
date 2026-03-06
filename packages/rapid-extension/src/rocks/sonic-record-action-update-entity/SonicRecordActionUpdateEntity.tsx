@@ -35,6 +35,6 @@ export function SonicRecordActionUpdateEntity(props: SonicRecordActionUpdateEnti
 }
 
 export default {
-  Renderer: genRockRenderer(SonicRecordActionUpdateEntityMeta.$type, SonicRecordActionUpdateEntity),
+  Renderer: genRockRenderer(SonicRecordActionUpdateEntityMeta.$type, SonicRecordActionUpdateEntity, true),
   ...SonicRecordActionUpdateEntityMeta,
 } as Rock<SonicRecordActionUpdateEntityRockConfig>;

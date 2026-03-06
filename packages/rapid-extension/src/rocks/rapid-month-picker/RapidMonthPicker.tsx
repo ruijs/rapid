@@ -36,6 +36,6 @@ export function RapidMonthPicker(props: RapidMonthPickerProps) {
 }
 
 export default {
-  Renderer: genRockRenderer(RapidMonthPickerMeta.$type, RapidMonthPicker),
+  Renderer: genRockRenderer(RapidMonthPickerMeta.$type, RapidMonthPicker, true),
   ...RapidMonthPickerMeta,
 } as Rock<RapidMonthPickerRockConfig>;

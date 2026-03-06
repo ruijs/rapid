@@ -30,6 +30,6 @@ export function SonicToolbarRefreshButton(props: SonicToolbarRefreshButtonProps)
 }
 
 export default {
-  Renderer: genRockRenderer(SonicToolbarRefreshButtonMeta.$type, SonicToolbarRefreshButton),
+  Renderer: genRockRenderer(SonicToolbarRefreshButtonMeta.$type, SonicToolbarRefreshButton, true),
   ...SonicToolbarRefreshButtonMeta,
 } as Rock<SonicToolbarRefreshButtonRockConfig>;

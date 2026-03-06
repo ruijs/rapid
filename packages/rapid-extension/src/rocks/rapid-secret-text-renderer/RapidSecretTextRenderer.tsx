@@ -65,6 +65,6 @@ export function RapidSecretTextRenderer(props: RapidSecretTextRendererProps) {
 }
 
 export default {
-  Renderer: genRockRenderer(RapidSecretTextRendererMeta.$type, RapidSecretTextRenderer),
+  Renderer: genRockRenderer(RapidSecretTextRendererMeta.$type, RapidSecretTextRenderer, true),
   ...RapidSecretTextRendererMeta,
 } as Rock<RapidSecretTextRendererRockConfig>;
