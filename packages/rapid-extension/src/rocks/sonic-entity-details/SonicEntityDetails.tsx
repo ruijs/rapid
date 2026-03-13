@@ -148,7 +148,8 @@ export default {
       if (props.showBackButton) {
         if (history.length) {
           onBack = () => {
-            history.back();
+            // history.back(); //360极速 v15.3版本有兼容性问题 tableRef.current.offsetHeight
+            history.go(-1);
           };
         } else if (props.backUrl) {
           onBack = () => {
