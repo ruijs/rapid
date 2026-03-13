@@ -1,4 +1,4 @@
-import { MoveStyleUtils, RuiEvent, handleComponentEvent, type Rock, type RockConfig } from "@ruiapp/move-style";
+import { MoveStyleUtils, RockEventHandler, RuiEvent, handleComponentEvent, type Rock, type RockConfig } from "@ruiapp/move-style";
 import { renderRock } from "@ruiapp/react-renderer";
 import RapidFormModalRecordActionMeta from "./RapidFormModalRecordActionMeta";
 import type { RapidFormModalRecordActionRockConfig } from "./rapid-form-modal-record-action-types";
@@ -21,6 +21,37 @@ export default {
     const formRockId = `${props.$id}-form-${slotIndex}`;
     const formRockConfig = cloneDeep(props.form) as RapidFormRockConfig;
     formRockConfig.$id = formRockId;
+
+    formRockConfig.beforeSubmit = [
+      {
+        $action: "setVars",
+        vars: {
+          "modal-saving": true,
+        },
+      },
+      ...(((props.form.beforeSubmit || props.form.beforeSubmit) as RockEventHandler[]) || []),
+    ];
+
+    formRockConfig.onSubmitSuccess = [
+      {
+        $action: "setVars",
+        vars: {
+          "modal-saving": false,
+          "modal-open": false,
+        },
+      },
+      ...(((props.form.onSubmitSuccess || props.form.onSaveSuccess) as RockEventHandler[]) || []),
+    ];
+
+    formRockConfig.onSubmitError = [
+      {
+        $action: "setVars",
+        vars: {
+          "modal-saving": false,
+        },
+      },
+      ...(((props.form.onSubmitError || props.form.onSaveError) as RockEventHandler[]) || []),
+    ];
 
     formRockConfig.onSubmit = [
       {
