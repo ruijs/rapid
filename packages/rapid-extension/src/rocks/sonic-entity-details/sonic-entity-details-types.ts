@@ -3,6 +3,7 @@ import { RapidDescriptionsItemConfig } from "../rapid-entity-descriptions/rapid-
 import { FindEntityFindRelationEntitiesOptions } from "../../types/rapid-entity-types";
 import { CSSProperties } from "react";
 import { RapidEntityFormConfig } from "../rapid-entity-form/rapid-entity-form-types";
+import { EventLogConfig } from "../../types/rapid-event-log-type";
 
 export interface SonicEntityDetailsConfig {
   mode?: "view" | "edit";
@@ -125,6 +126,10 @@ export interface SonicEntityDetailsConfig {
   formItems?: RapidEntityFormConfig["items"];
 
   form?: Partial<RapidEntityFormConfig>;
+  /**
+   * 事件日志配置
+   */
+  eventLog?: EventLogConfig;
 }
 
 export interface SonicEntityDetailsRockConfig extends SimpleRockConfig, SonicEntityDetailsConfig {}

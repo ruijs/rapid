@@ -136,6 +136,7 @@ export default {
         keepNonPropertyFields: props.keepNonPropertyFields,
         queryProperties: props.queryProperties,
         relations: props.relations,
+        eventLog: props.eventLog,
       });
       context.scope.addStore(detailDataStoreConfig);
     }
