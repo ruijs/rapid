@@ -50,6 +50,7 @@ export default {
 
     // 当前主要是触发 rerender
     const [currentFormData, setCurrentFormData] = useState<Record<string, any>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     if (!props.items) {
       return renderRock({
@@ -134,6 +135,8 @@ export default {
         formActionRock.type = formAction.buttonType || "primary";
         formActionRock.htmlType = "submit";
         formActionRock.form = undefined;
+        formActionRock.loading = isSubmitting;
+        formActionRock.disabled = isSubmitting;
       }
       assign(formActionRock, formAction.actionProps);
       formActionRocks.push(formActionRock);
@@ -224,73 +227,80 @@ export default {
         {
           $action: "script",
           script: async (event: RockEvent) => {
-            const submitOptions = state.submitOptions;
-            const submitUrl = submitOptions?.submitUrl || props.submitUrl;
-            let onSubmit = props.onSubmit || props.onFormSubmit || props.onFinish;
-            if (!submitUrl && !onSubmit) {
-              logger.error(props, `Failed to submit form: submitUrl or onSubmit is not configured.`);
-              return;
-            }
+            setIsSubmitting(true);
+            try {
+              const submitOptions = state.submitOptions;
+              const submitUrl = submitOptions?.submitUrl || props.submitUrl;
+              let onSubmit = props.onSubmit || props.onFormSubmit || props.onFinish;
+              if (!submitUrl && !onSubmit) {
+                logger.error(props, `Failed to submit form: submitUrl or onSubmit is not configured.`);
+                return;
+              }
 
-            let formData = Object.assign({}, omitUndefinedValues(event.args[0]));
+              let formData = Object.assign({}, omitUndefinedValues(event.args[0]));
 
-            const fixedFields = omitUndefinedValues(merge({}, props.fixedFields, submitOptions?.fixedFields));
+              const fixedFields = omitUndefinedValues(merge({}, props.fixedFields, submitOptions?.fixedFields));
 
-            if (typeof props.beforeSubmitFormDataAdapter === "string" && trim(props.beforeSubmitFormDataAdapter)) {
-              const adapter = parseRockExpressionFunc(props.beforeSubmitFormDataAdapter, { formData, fixedFields }, context);
-              formData = adapter();
-            }
+              if (typeof props.beforeSubmitFormDataAdapter === "string" && trim(props.beforeSubmitFormDataAdapter)) {
+                const adapter = parseRockExpressionFunc(props.beforeSubmitFormDataAdapter, { formData, fixedFields }, context);
+                formData = adapter();
+              }
 
-            let submitData: any;
-            if (props.fieldNameOfFormDataInSubmitData) {
-              submitData = set({}, props.fieldNameOfFormDataInSubmitData, formData);
-            } else {
-              submitData = formData;
-            }
-            submitData = merge(submitData, fixedFields);
+              let submitData: any;
+              if (props.fieldNameOfFormDataInSubmitData) {
+                submitData = set({}, props.fieldNameOfFormDataInSubmitData, formData);
+              } else {
+                submitData = formData;
+              }
+              submitData = merge(submitData, fixedFields);
 
-            if (props.beforeSubmit) {
-              await handleComponentEvent("beforeSubmit", event.framework, event.page as any, event.scope, event.sender, props.beforeSubmit, [
-                submitData,
-                submitOptions,
-              ]);
-            }
+              if (props.beforeSubmit) {
+                await handleComponentEvent("beforeSubmit", event.framework, event.page as any, event.scope, event.sender, props.beforeSubmit, [
+                  submitData,
+                  submitOptions,
+                ]);
+              }
 
-            if (!onSubmit) {
-              const submitMethod = submitOptions?.submitMethod || props.submitMethod || "POST";
-              const successMessage = submitOptions?.successMessage || props.successMessage || getExtensionLocaleStringResource(framework, "saveSuccess");
-              const errorMessage = submitOptions?.errorMessage || props.errorMessage || getExtensionLocaleStringResource(framework, "saveError");
+              if (!onSubmit) {
+                const submitMethod = submitOptions?.submitMethod || props.submitMethod || "POST";
+                const successMessage = submitOptions?.successMessage || props.successMessage || getExtensionLocaleStringResource(framework, "saveSuccess");
+                const errorMessage = submitOptions?.errorMessage || props.errorMessage || getExtensionLocaleStringResource(framework, "saveError");
 
-              const onSubmitSuccess = submitOptions?.onSuccess || props.onSubmitSuccess;
-              const onSubmitError = submitOptions?.onError || props.onSubmitError;
+                const onSubmitSuccess = submitOptions?.onSuccess || props.onSubmitSuccess;
+                const onSubmitError = submitOptions?.onError || props.onSubmitError;
 
-              onSubmit = {
-                $action: "sendHttpRequest",
-                method: submitMethod,
-                url: submitUrl,
-                data: submitData,
-                onSuccess: [
-                  {
-                    $action: "antdToast",
-                    type: "success",
-                    content: successMessage,
-                  },
-                  ...(onSubmitSuccess ? (Array.isArray(onSubmitSuccess) ? onSubmitSuccess : [onSubmitSuccess]) : []),
-                ],
-                onError: [
-                  {
-                    $action: "antdToast",
-                    type: "error",
-                    $exps: {
-                      content: `${JSON.stringify(errorMessage)}+ " " + $event.args[0].message`,
+                onSubmit = {
+                  $action: "sendHttpRequest",
+                  method: submitMethod,
+                  url: submitUrl,
+                  data: submitData,
+                  onSuccess: [
+                    {
+                      $action: "antdToast",
+                      type: "success",
+                      content: successMessage,
                     },
-                  },
-                  ...(onSubmitError ? (Array.isArray(onSubmitError) ? onSubmitError : [onSubmitError]) : []),
-                ],
-              };
-            }
+                    ...(onSubmitSuccess ? (Array.isArray(onSubmitSuccess) ? onSubmitSuccess : [onSubmitSuccess]) : []),
+                  ],
+                  onError: [
+                    {
+                      $action: "antdToast",
+                      type: "error",
+                      $exps: {
+                        content: `${JSON.stringify(errorMessage)}+ " " + $event.args[0].message`,
+                      },
+                    },
+                    ...(onSubmitError ? (Array.isArray(onSubmitError) ? onSubmitError : [onSubmitError]) : []),
+                  ],
+                };
+              }
 
-            await handleComponentEvent("onSubmit", event.framework, event.page as any, event.scope, event.sender, onSubmit, [submitData, submitOptions]);
+              await handleComponentEvent("onSubmit", event.framework, event.page as any, event.scope, event.sender, onSubmit, [submitData, submitOptions]);
+            } catch (error) {
+              logger.error(props, error);
+            } finally {
+              setIsSubmitting(false);
+            }
           },
         },
       ],
