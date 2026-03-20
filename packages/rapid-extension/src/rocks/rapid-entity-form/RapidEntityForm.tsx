@@ -262,6 +262,7 @@ function initDataStore(props: RapidEntityFormRockConfig, scope: IScope) {
       keepNonPropertyFields: props.keepNonPropertyFields,
       queryProperties: props.queryProperties,
       relations: props.relations,
+      eventLog: props.eventLog,
     });
     scope.addStore(detailDataStoreConfig);
   }

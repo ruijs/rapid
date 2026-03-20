@@ -1,5 +1,6 @@
 import { ActionHandlerContext } from "~/core/actionHandler";
 import { RpdHttpMethod } from "~/types";
+import { EventLogConfig } from "~/types/event-log-type";
 import { PermissionCheckPolicy } from "~/utilities/accessControlUtility";
 
 export interface ServerOperation {
@@ -17,6 +18,10 @@ export interface ServerOperation {
    * 是否在事务中执行
    */
   executeInDbTransaction?: boolean;
+  /**
+   * 事件日志配置
+   */
+  eventLogConfig: EventLogConfig;
   handler: (ctx: ActionHandlerContext) => Promise<void>;
 }
 
