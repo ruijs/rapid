@@ -117,6 +117,7 @@ export class EntityStore implements IStore<EntityStoreConfig> {
       pagination: cloneDeep(this.#config.pagination),
       keepNonPropertyFields: this.#config.keepNonPropertyFields,
       includingSoftDeleted: this.#config.includingSoftDeleted,
+      eventLog: this.#config.eventLog,
     };
 
     if (expressions) {
