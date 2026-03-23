@@ -262,6 +262,7 @@ function initDataStore(props: RapidEntityFormRockConfig, scope: IScope) {
       keepNonPropertyFields: props.keepNonPropertyFields,
       queryProperties: props.queryProperties,
       relations: props.relations,
+      eventLog: props.eventLog,
     });
     scope.addStore(detailDataStoreConfig);
   }
@@ -468,7 +469,10 @@ export default {
       defaultFormFields: formConfig.defaultFormFields,
       fieldNameOfFormDataInDataSource: formConfig.fieldNameOfFormDataInDataSource,
       formDataAdapter: formConfig.formDataAdapter,
+      beforeSubmit: formConfig.beforeSubmit,
       onSubmit: formConfig.mode === "view" ? null : onSubmit,
+      onSubmitSuccess: formConfig.onSubmitSuccess,
+      onSubmitError: formConfig.onSubmitError,
       onFormRefresh: formConfig.onFormRefresh,
       onValuesChange: formConfig.onValuesChange,
       items: formItems,

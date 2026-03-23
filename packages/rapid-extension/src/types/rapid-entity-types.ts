@@ -1,4 +1,5 @@
 import { FilterFieldConfig, RapidSearchFormItemConfig } from "../mod";
+import { EventLogConfig } from "./rapid-event-log-type";
 
 /**
  * 数据字典
@@ -481,6 +482,7 @@ export interface FindEntityOptions {
   relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
   keepNonPropertyFields?: boolean | null;
   includingSoftDeleted?: boolean | null;
+  eventLog?: EventLogConfig;
 }
 
 export type FindEntityFindRelationEntitiesOptions = FindEntityFindOneRelationEntitiesOptions | FindEntityFindManyRelationEntitiesOptions;

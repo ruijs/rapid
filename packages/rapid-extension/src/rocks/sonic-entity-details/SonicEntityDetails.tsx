@@ -35,6 +35,7 @@ export default {
         keepNonPropertyFields: props.keepNonPropertyFields,
         queryProperties: props.queryProperties,
         relations: props.relations,
+        eventLog: props.eventLog,
       });
       context.scope.addStore(detailDataStoreConfig);
     }
@@ -107,6 +108,7 @@ export default {
         ...props.form,
         $type: "rapidEntityForm",
         $id: `${props.$id}-form`,
+        eventLog: props.eventLog,
       };
     } else {
       itemsRockConfig = {
@@ -120,6 +122,7 @@ export default {
         colon: props.descriptionColon,
         column: props.descriptionColumn || props.column,
         items: props.descriptionItems || props.items,
+        eventLog: props.eventLog,
       };
     }
 
@@ -148,7 +151,8 @@ export default {
       if (props.showBackButton) {
         if (history.length) {
           onBack = () => {
-            history.back();
+            // history.back(); //360极速 v15.3版本有兼容性问题 tableRef.current.offsetHeight
+            history.go(-1);
           };
         } else if (props.backUrl) {
           onBack = () => {

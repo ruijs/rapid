@@ -171,6 +171,7 @@ export default {
         includingSoftDeleted: props.includingSoftDeleted,
         properties,
         relations: props.relations,
+        eventLog: props.eventLog,
         orderBy: props.orderBy ||
           mainEntity.defaultOrderBy || [
             {
