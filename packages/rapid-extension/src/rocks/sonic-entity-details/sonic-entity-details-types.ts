@@ -130,6 +130,10 @@ export interface SonicEntityDetailsConfig {
    * 事件日志配置
    */
   eventLog?: EventLogConfig;
+  /**
+   * 是否显示加载中
+   */
+  showLoading?: boolean;
 }
 
 export interface SonicEntityDetailsRockConfig extends SimpleRockConfig, SonicEntityDetailsConfig {}

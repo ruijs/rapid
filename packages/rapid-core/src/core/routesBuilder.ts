@@ -31,9 +31,9 @@ async function executeHandlerOfActions(server: IRpdServer, routeConfig: RpdRoute
         throw new Error("Unknown handler: " + actionCode);
       }
 
-      await server.beforeRunActionHandler(handlerContext, actionConfig);
       let err: any;
       try {
+        await server.beforeRunActionHandler(handlerContext, actionConfig);
         const result = handler(handlerContext, actionConfig.config);
         if (result instanceof Promise) {
           await result;

@@ -173,7 +173,9 @@ class PluginManager {
 
   /** 在执行 action handler 后调用。 */
   async afterRunActionHandler(handlerContext: ActionHandlerContext, actionConfig: RpdRouteActionConfig, error?: Error) {
-    for (const plugin of this.#plugins) {
+    //after 需要反向 plugin before after 遵循 先进后出
+    for (let i = this.#plugins?.length - 1; i >= 0; i--) {
+      const plugin = this.#plugins[i];
       if (plugin.afterRunActionHandler) {
         await plugin.afterRunActionHandler(this.#server, handlerContext, actionConfig, error);
       }
@@ -194,6 +196,15 @@ class PluginManager {
     for (const plugin of this.#plugins) {
       if (plugin.beforeUpdateEntity) {
         await plugin.beforeUpdateEntity(this.#server, model, options, currentEntity);
+      }
+    }
+  }
+
+  /** 在更新实体后调用。 */
+  async afterUpdateEntity(model: RpdDataModel, options: UpdateEntityByIdOptions, payload: any) {
+    for (const plugin of this.#plugins) {
+      if (plugin.afterUpdateEntity) {
+        await plugin.afterUpdateEntity(this.#server, model, options, payload);
       }
     }
   }

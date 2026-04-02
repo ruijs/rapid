@@ -172,7 +172,6 @@ export interface RpdEntityAddRelationsEventPayload {
   entity: any;
   property: string;
   relations: any[];
-  relationTargetEntities: any[];
 }
 
 export interface RpdEntityRemoveRelationsEventPayload {
@@ -182,7 +181,6 @@ export interface RpdEntityRemoveRelationsEventPayload {
   entity: any;
   property: string;
   relations: any[];
-  relationTargetEntities: any[];
 }
 
 export interface RpdEntityBeforeResponseEventPayload {
@@ -266,6 +264,16 @@ export interface RpdDataModel {
   softDelete?: boolean;
 
   /**
+   * 是否启用事件日志
+   */
+  enableEventLog?: boolean;
+
+  /**
+   * 事件类型策略
+   */
+  eventTypePolicy?: RapidEntityEventTypePolicy;
+
+  /**
    * 多语言配置
    */
   i18n?: Record<string, string>;
@@ -295,6 +303,34 @@ export interface RpdDataModelPermissionPolicies {
 export interface PermissionPolicy {
   any?: string[];
   all?: string[];
+}
+
+export interface RapidEntityEventTypePolicy {
+  /**
+   * 日志类型
+   */
+  logType?: string;
+  /**
+   * 区分事件类型属性code
+   */
+  propertyCode?: string;
+  /**
+   * 属性值事件类型
+   */
+  eventTypes?: {
+    /**
+     * 属性值
+     */
+    propertyValue: string;
+    /**
+     * 事件code前缀 默认取 propertyValue 的值
+     */
+    eventTypeCodePrefix?: string;
+    /**
+     * 属性值名称 区分定义事件类型名称
+     */
+    name: string;
+  }[];
 }
 
 export interface RpdDataModelProperty {
@@ -811,6 +847,14 @@ export interface UpdateEntityByIdOptions {
    * 指定需要更新关联对象的哪些属性。更新实体时，会创建关联对象，但是默认不更新关联对象的属性。
    */
   relationPropertiesToUpdate?: Record<string, UpdateRelationPropertyOptions>;
+  /**
+   * 来源 自动生成接口 api
+   */
+  source?: string;
+  /**
+   * 动作代码 路由code updateCollectionEntityById saveEntity
+   */
+  actionCode?: string;
 }
 
 export type UpdateRelationPropertyOptions =

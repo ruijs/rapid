@@ -41,6 +41,8 @@ export async function handler(plugin: RapidPlugin, ctx: ActionHandlerContext, op
     stateProperties,
     relationPropertiesToUpdate,
     routeContext,
+    source: "api",
+    actionCode: code,
   };
   ctx.output = await entityManager.updateEntityById(updateEntityByIdOptions, plugin);
 }

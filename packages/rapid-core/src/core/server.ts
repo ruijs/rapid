@@ -13,6 +13,7 @@ import {
   RpdApplicationConfig,
   RpdDataModel,
   RpdDataModelProperty,
+  RpdEntityUpdateEventPayload,
   RpdRouteActionConfig,
   RpdServerEventTypes,
   RunActionHandlersOptions,
@@ -60,6 +61,7 @@ export interface IRpdServer {
   afterRunActionHandler(handlerContext: ActionHandlerContext, actionConfig: RpdRouteActionConfig, error?: Error): Promise<void>;
   beforeCreateEntity(model: RpdDataModel, options: CreateEntityOptions): Promise<void>;
   beforeUpdateEntity(model: RpdDataModel, options: UpdateEntityByIdOptions, currentEntity: any): Promise<void>;
+  afterUpdateEntity(model: RpdDataModel, options: UpdateEntityByIdOptions, payload: RpdEntityUpdateEventPayload): Promise<void>;
 
   registerCronJob(job: CronJobConfiguration): void;
   listCronJobs(): CronJobConfiguration[];
@@ -158,4 +160,6 @@ export interface RapidPlugin {
   beforeCreateEntity?: (server: IRpdServer, model: RpdDataModel, options: CreateEntityOptions) => Promise<any>;
   /** 在更新实体前调用。 */
   beforeUpdateEntity?: (server: IRpdServer, model: RpdDataModel, options: UpdateEntityByIdOptions, currentEntity: any) => Promise<any>;
+  /** 在更新实体后调用。 */
+  afterUpdateEntity?: (server: IRpdServer, model: RpdDataModel, options: UpdateEntityByIdOptions, payload: RpdEntityUpdateEventPayload) => Promise<any>;
 }

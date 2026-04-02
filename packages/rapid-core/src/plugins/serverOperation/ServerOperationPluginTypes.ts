@@ -21,7 +21,7 @@ export interface ServerOperation {
   /**
    * 事件日志配置
    */
-  eventLogConfig: EventLogConfig;
+  eventLogConfig?: EventLogConfig;
   handler: (ctx: ActionHandlerContext) => Promise<void>;
 }
 
