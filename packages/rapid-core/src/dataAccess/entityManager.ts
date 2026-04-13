@@ -18,6 +18,7 @@ import {
   UpdateEntityByIdOptions,
   FindEntityFindOneRelationEntitiesOptions,
   FindEntityFindManyRelationEntitiesOptions,
+  UpdateRelationPropertyOptions,
 } from "~/types";
 import { isNullOrUndefined } from "~/utilities/typeUtility";
 import { mapDbRowToEntity, mapEntityToDbRow } from "./entityMapper";
@@ -1421,6 +1422,12 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
       currentTargetIds = targetRows.map((item) => item.id);
     }
 
+    const before = await findEntities(server, targetDataAccessor, {
+      routeContext,
+      filters: [{ field: "id", operator: "in", value: currentTargetIds }],
+    });
+    entity[property.code] = before;
+
     const targetIdsToRemove = currentTargetIds.filter((currentId) => !targetIdsToKeep.includes(currentId));
     if (targetIdsToRemove.length) {
       if (property.linkTableName) {
@@ -1463,14 +1470,6 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
         }
       }
     }
-
-    const before = await targetDataAccessor.find(
-      {
-        filters: [{ field: "id", operator: "in", value: currentTargetIds }],
-      },
-      routeContext?.getDbTransactionClient(),
-    );
-    entity[property.code] = before;
 
     for (const relatedEntityToBeSaved of relatedEntitiesToBeSaved) {
       let relatedEntityId: any;
@@ -1583,14 +1582,13 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     operation: options.operation,
     stateProperties: options.stateProperties,
   };
+
   await server.emitEvent({
     eventName: "entity.update",
     payload: payload,
     sender: plugin,
     routeContext: options.routeContext,
   });
-
-  await server.afterUpdateEntity(model, options, payload);
 
   return updatedEntity;
 }

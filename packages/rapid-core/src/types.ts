@@ -847,14 +847,6 @@ export interface UpdateEntityByIdOptions {
    * 指定需要更新关联对象的哪些属性。更新实体时，会创建关联对象，但是默认不更新关联对象的属性。
    */
   relationPropertiesToUpdate?: Record<string, UpdateRelationPropertyOptions>;
-  /**
-   * 来源 自动生成接口 api
-   */
-  source?: string;
-  /**
-   * 动作代码 路由code updateCollectionEntityById saveEntity
-   */
-  actionCode?: string;
 }
 
 export type UpdateRelationPropertyOptions =

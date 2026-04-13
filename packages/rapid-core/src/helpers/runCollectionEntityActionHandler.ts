@@ -24,7 +24,8 @@ export default async function runCollectionEntityActionHandler(
 
   const entityManager = server.getEntityManager(options.singularCode);
 
-  if (runInTransaction) {
+  // routeContext.getDbTransactionClient() 存在 外部已经启动事务，这里不再启动事务 事务上层方法接管
+  if (runInTransaction && !routeContext.getDbTransactionClient()) {
     let transactionDbClient: IDatabaseClient;
 
     try {

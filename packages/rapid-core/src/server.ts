@@ -496,16 +496,16 @@ export class RapidServer implements IRpdServer {
       if (!handler) {
         throw new Error("Unknown handler: " + actionCode);
       }
-      let err: any;
-      try {
-        await this.beforeRunActionHandler(handlerContext, action);
-        await handler(handlerContext, action.config);
-      } catch (error) {
-        err = error;
-        throw error;
-      } finally {
-        await this.afterRunActionHandler(handlerContext, action);
-      }
+      await handler(handlerContext, action.config);
+      // let err: any;
+      // try {
+      //   // await handler(handlerContext, action.config);
+      // } catch (error) {
+      //   err = error;
+      //   throw error;
+      // } finally {
+      //   await this.afterRunActionHandler(handlerContext, action, err);
+      // }
     }
   }
 
@@ -521,16 +521,16 @@ export class RapidServer implements IRpdServer {
     await this.#pluginManager.afterRunActionHandler(handlerContext, actionConfig, error);
   }
 
+  async aroundRunActionHandler(handlerContext: ActionHandlerContext, actionConfig: RpdRouteActionConfig, next: Next) {
+    await this.#pluginManager.aroundRunActionHandler(handlerContext, actionConfig, next);
+  }
+
   async beforeCreateEntity(model: RpdDataModel, options: CreateEntityOptions) {
     await this.#pluginManager.beforeCreateEntity(model, options);
   }
 
   async beforeUpdateEntity(model: RpdDataModel, options: UpdateEntityByIdOptions, currentEntity: any) {
     await this.#pluginManager.beforeUpdateEntity(model, options, currentEntity);
-  }
-
-  async afterUpdateEntity(model: RpdDataModel, options: UpdateEntityByIdOptions, payload: RpdEntityUpdateEventPayload) {
-    await this.#pluginManager.afterUpdateEntity(model, options, payload);
   }
 
   async #handleEntityEvent(eventName: keyof RpdServerEventTypes, sender: RapidPlugin, payload: RpdEntityCreateEventPayload, routerContext?: RouteContext) {

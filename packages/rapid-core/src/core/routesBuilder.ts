@@ -34,10 +34,18 @@ async function executeHandlerOfActions(server: IRpdServer, routeConfig: RpdRoute
       let err: any;
       try {
         await server.beforeRunActionHandler(handlerContext, actionConfig);
-        const result = handler(handlerContext, actionConfig.config);
-        if (result instanceof Promise) {
-          await result;
-        }
+        const next = async () => {
+          const result = handler(handlerContext, actionConfig.config);
+          if (result instanceof Promise) {
+            await result;
+          }
+        };
+        await server.aroundRunActionHandler(handlerContext, actionConfig, next);
+
+        // const result = handler(handlerContext, actionConfig.config);
+        // if (result instanceof Promise) {
+        //   await result;
+        // }
       } catch (error) {
         err = error;
         throw error;
