@@ -31,66 +31,77 @@ const entityOperationConfigs: {
   httpMethod: RpdHttpMethod;
   requestEndpoint: string;
   actionHandlerCode: string;
+  executeInDbTransaction?: boolean;
 }[] = [
   {
     operationCode: "createBatch",
     httpMethod: "POST",
     requestEndpoint: "/operations/create_batch",
     actionHandlerCode: "createCollectionEntitiesBatch",
+    executeInDbTransaction: true,
   },
   {
     operationCode: "find",
     httpMethod: "POST",
     requestEndpoint: "/operations/find",
     actionHandlerCode: "findCollectionEntities",
+    executeInDbTransaction: false,
   },
   {
     operationCode: "count",
     httpMethod: "POST",
     requestEndpoint: "/operations/count",
     actionHandlerCode: "countCollectionEntities",
+    executeInDbTransaction: false,
   },
   {
     operationCode: "delete",
     httpMethod: "POST",
     requestEndpoint: "/operations/delete",
     actionHandlerCode: "deleteCollectionEntities",
+    executeInDbTransaction: true,
   },
   {
     operationCode: "addRelations",
     httpMethod: "POST",
     requestEndpoint: "/operations/add_relations",
     actionHandlerCode: "addEntityRelations",
+    executeInDbTransaction: true,
   },
   {
     operationCode: "removeRelations",
     httpMethod: "POST",
     requestEndpoint: "/operations/remove_relations",
     actionHandlerCode: "removeEntityRelations",
+    executeInDbTransaction: true,
   },
   {
     operationCode: "getById",
     httpMethod: "GET",
     requestEndpoint: "/:id",
     actionHandlerCode: "findCollectionEntityById",
+    executeInDbTransaction: false,
   },
   {
     operationCode: "create",
     httpMethod: "POST",
     requestEndpoint: "",
     actionHandlerCode: "createCollectionEntity",
+    executeInDbTransaction: true,
   },
   {
     operationCode: "updateById",
     httpMethod: "PATCH",
     requestEndpoint: "/:id",
     actionHandlerCode: "updateCollectionEntityById",
+    executeInDbTransaction: true,
   },
   {
     operationCode: "deleteById",
     httpMethod: "DELETE",
     requestEndpoint: "/:id",
     actionHandlerCode: "deleteCollectionEntityById",
+    executeInDbTransaction: true,
   },
 ];
 
@@ -151,6 +162,7 @@ class DataManager implements RapidPlugin {
               config: {
                 namespace,
                 singularCode,
+                executeInDbTransaction: entityOperationConfig.executeInDbTransaction,
               } as RunEntityActionHandlerOptions,
             },
           ],

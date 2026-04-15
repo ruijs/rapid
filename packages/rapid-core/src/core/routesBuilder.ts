@@ -40,8 +40,10 @@ async function executeHandlerOfActions(server: IRpdServer, routeConfig: RpdRoute
             await result;
           }
         };
-        await server.aroundRunActionHandler(handlerContext, actionConfig, next);
 
+        await executeInRouteContext(handlerContext.routerContext, actionConfig.config.executeInDbTransaction, async () => {
+          await server.aroundRunActionHandler(handlerContext, actionConfig, next);
+        });
         // const result = handler(handlerContext, actionConfig.config);
         // if (result instanceof Promise) {
         //   await result;
