@@ -1,4 +1,3 @@
-import { FilterFieldConfig, RapidSearchFormItemConfig } from "../mod";
 import { EventLogConfig } from "./rapid-event-log-type";
 
 /**
@@ -481,26 +480,6 @@ export type RapidEntityIndexOptions =
   | FindEntitySetFilterOptions
   | FindEntityLogicalFilterOptions<RapidEntityIndexOptions>
   | FindEntityUnaryFilterOptions;
-
-export type RapidSearchFormItemFilterMode =
-  | EntityFilterRelationalOperators
-  | EntityFilterArrayOperators
-  | EntityFilterSetOperators
-  | EntityFilterRangeOperators
-  | "range" // deprecated, use between
-  | "overlap";
-
-export interface SearchFormFilterConfiguration extends RapidSearchFormItemConfig {
-  /**
-   * 变量名
-   */
-  code: string;
-
-  /**
-   * 过滤项额外配置
-   */
-  filterExtra?: FilterFieldConfig["extra"];
-}
 
 export type EntityFilterOptions =
   | FindEntityRelationalFilterOptions

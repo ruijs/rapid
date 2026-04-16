@@ -808,6 +808,7 @@ export interface FindEntityOrderByOptions {
 export interface CountEntityOptions {
   routeContext?: RouteContext;
   filters?: EntityFilterOptions[];
+  includingSoftDeleted?: boolean;
 }
 
 export interface CountEntityResult {

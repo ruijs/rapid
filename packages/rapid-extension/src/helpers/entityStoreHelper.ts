@@ -1,7 +1,6 @@
 import { uniq, map, filter } from "lodash";
 import { EntityStoreConfig } from "../stores/entity-store";
-import { FindEntityFindRelationEntitiesOptions, RapidEntity } from "../types/rapid-entity-types";
-import { EventLogConfig } from "../types/rapid-event-log-type";
+import { FindEntityFindRelationEntitiesOptions, RapidEntity, EventLogConfig } from "@ruiapp/rapid-common";
 
 export interface GetEntityDetailStoreConfigOptions {
   entityModel: RapidEntity;

@@ -1,9 +1,7 @@
 import type { RockConfig, RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
-import { EntityFilterOptions, FindEntityOrderByOptions, FindEntityFindRelationEntitiesOptions } from "@ruiapp/rapid-common";
+import { EntityFilterOptions, FindEntityOrderByOptions, FindEntityFindRelationEntitiesOptions, EventLogConfig } from "@ruiapp/rapid-common";
 import { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
 import { RapidRecordAction } from "../../types/rapid-action-types";
-import { EventLogConfig } from "../../types/rapid-event-log-type";
-
 export interface RapidEntityListConfig {
   /**
    * 实体类型
