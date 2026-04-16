@@ -62,6 +62,10 @@ export type RapidPage = {
   $locales?: RockLocalesConfig;
 
   functions?: FunctionConfig[];
+  /**
+   * 指定StoreName未加载完成页面 loading
+   */
+  loadingStoreName?: string;
 };
 
 export type RapidPageGenerator = {

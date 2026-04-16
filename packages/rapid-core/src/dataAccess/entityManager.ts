@@ -18,6 +18,7 @@ import {
   UpdateEntityByIdOptions,
   FindEntityFindOneRelationEntitiesOptions,
   FindEntityFindManyRelationEntitiesOptions,
+  UpdateRelationPropertyOptions,
 } from "~/types";
 import { isNullOrUndefined } from "~/utilities/typeUtility";
 import { mapDbRowToEntity, mapEntityToDbRow } from "./entityMapper";
@@ -1227,6 +1228,15 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
       singularCode: property.targetSingularCode!,
     });
 
+    const beforeValue: number | { id: number } | null = entity[property.code] || entity[property.targetIdColumnName];
+    if (beforeValue) {
+      const beforeEntity = await findById(server, targetDataAccessor, {
+        id: beforeValue,
+        routeContext,
+      });
+      entity[property.code] = beforeEntity;
+    }
+
     if (isObject(relatedEntityToBeSaved)) {
       const relatedEntityId = relatedEntityToBeSaved["id"];
       if (!relatedEntityId) {
@@ -1266,14 +1276,14 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
           subRelationPropertiesToUpdate = updateRelationPropertiesOptions.relationPropertiesToUpdate;
         }
         if (relationEntityToUpdate) {
-          targetEntity = await updateEntityById(server, targetDataAccessor, {
+          const updatedRelationEntity = await updateEntityById(server, targetDataAccessor, {
             routeContext: routeContext,
             id: relatedEntityId,
             entityToSave: relationEntityToUpdate,
             relationPropertiesToUpdate: subRelationPropertiesToUpdate,
           });
+          targetEntity = updatedRelationEntity;
         }
-
         updatedEntityOneRelationProps[property.code] = targetEntity;
         rowToBeSaved[property.targetIdColumnName!] = relatedEntityId;
       }
@@ -1412,6 +1422,12 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
       currentTargetIds = targetRows.map((item) => item.id);
     }
 
+    const before = await findEntities(server, targetDataAccessor, {
+      routeContext,
+      filters: [{ field: "id", operator: "in", value: currentTargetIds }],
+    });
+    entity[property.code] = before;
+
     const targetIdsToRemove = currentTargetIds.filter((currentId) => !targetIdsToKeep.includes(currentId));
     if (targetIdsToRemove.length) {
       if (property.linkTableName) {
@@ -1503,12 +1519,13 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
             subRelationPropertiesToUpdate = updateRelationPropertiesOptions.relationPropertiesToUpdate;
           }
           if (relationEntityToUpdate) {
-            targetEntity = await updateEntityById(server, targetDataAccessor, {
+            const updatedRelationEntity = await updateEntityById(server, targetDataAccessor, {
               routeContext: routeContext,
               id: relatedEntityId,
               entityToSave: relationEntityToUpdate,
               relationPropertiesToUpdate: subRelationPropertiesToUpdate,
             });
+            targetEntity = updatedRelationEntity;
           }
 
           if (!currentTargetIds.includes(relatedEntityId)) {
@@ -1554,19 +1571,21 @@ async function updateEntityById(server: IRpdServer, dataAccessor: IRpdDataAccess
     updatedEntity[property.code] = relatedEntities;
   }
 
+  const payload = {
+    namespace: model.namespace,
+    modelSingularCode: model.singularCode,
+    // TODO: should not emit event on base model if it's not effected.
+    baseModelSingularCode: model.base,
+    before: entity,
+    after: updatedEntity,
+    changes: changes,
+    operation: options.operation,
+    stateProperties: options.stateProperties,
+  };
+
   await server.emitEvent({
     eventName: "entity.update",
-    payload: {
-      namespace: model.namespace,
-      modelSingularCode: model.singularCode,
-      // TODO: should not emit event on base model if it's not effected.
-      baseModelSingularCode: model.base,
-      before: entity,
-      after: updatedEntity,
-      changes: changes,
-      operation: options.operation,
-      stateProperties: options.stateProperties,
-    },
+    payload: payload,
     sender: plugin,
     routeContext: options.routeContext,
   });
@@ -1941,13 +1960,11 @@ export default class EntityManager<TEntity = any> {
         const targetId = relation[relationProperty.targetIdColumnName!] || relation.id;
         const params = [selfId, targetId];
         const result = await server.queryDatabaseObject(command, params, routeContext?.getDbTransactionClient());
-        if (result?.length > 0) {
-          const targetEntity = await targetEntityManager.findById({
-            routeContext,
-            id: targetId,
-          });
-          relationTargetEntities.push(targetEntity);
-        }
+        const targetEntity = await targetEntityManager.findById({
+          routeContext,
+          id: targetId,
+        });
+        relationTargetEntities.push(targetEntity);
       }
     } else {
       for (const relation of relations) {
@@ -1967,8 +1984,7 @@ export default class EntityManager<TEntity = any> {
         modelSingularCode: model.singularCode,
         entity,
         property,
-        relations,
-        relationTargetEntities,
+        relations: relationTargetEntities,
       },
       sender: plugin,
       routeContext: options.routeContext,
@@ -1977,8 +1993,7 @@ export default class EntityManager<TEntity = any> {
     return {
       entity,
       property,
-      relations,
-      relationTargetEntities,
+      relations: relationTargetEntities,
     };
   }
 
@@ -2012,13 +2027,11 @@ export default class EntityManager<TEntity = any> {
     WHERE ${queryBuilder.quoteObject(relationProperty.selfIdColumnName!)}=$1 AND ${queryBuilder.quoteObject(relationProperty.targetIdColumnName!)}=$2;`;
         const params = [id, relation.id];
         const result = await server.queryDatabaseObject(command, params, routeContext?.getDbTransactionClient());
-        if (result?.length > 0) {
-          const targetEntity = await targetEntityManager.findById({
-            routeContext,
-            id: relation.id,
-          });
-          relationTargetEntities.push(targetEntity);
-        }
+        const targetEntity = await targetEntityManager.findById({
+          routeContext,
+          id: relation.id,
+        });
+        relationTargetEntities.push(targetEntity);
       }
     }
 
@@ -2029,8 +2042,7 @@ export default class EntityManager<TEntity = any> {
         modelSingularCode: model.singularCode,
         entity,
         property,
-        relations,
-        relationTargetEntities,
+        relations: relationTargetEntities,
       },
       sender: plugin,
       routeContext: options.routeContext,
@@ -2039,8 +2051,7 @@ export default class EntityManager<TEntity = any> {
     return {
       entity,
       property,
-      relations,
-      relationTargetEntities,
+      relations: relationTargetEntities,
     };
   }
 }

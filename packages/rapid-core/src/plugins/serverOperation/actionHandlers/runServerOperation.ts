@@ -14,7 +14,9 @@ export async function handler(
 ) {
   const { operation } = options;
 
-  await executeInRouteContext(ctx.routerContext, options.executeInDbTransaction, async () => {
-    await operation(ctx);
-  });
+  // 事务在 executeHandlerOfActions 中处理了
+  await operation(ctx);
+  // await executeInRouteContext(ctx.routerContext, options.executeInDbTransaction, async () => {
+  //   await operation(ctx);
+  // });
 }

@@ -126,13 +126,20 @@ export default {
     const { framework, logger, page, scope } = context;
 
     const tableRef = useRef<any>(null);
+
     const [tableHeight, setTableHeight] = useState<number | undefined>(undefined);
 
     const { window, document } = global;
     const viewPortHeight = window?.innerHeight || document?.documentElement.clientHeight || document?.body.clientHeight;
+    const tableHeader = document.querySelector(".ant-table-thead");
+    let headerBottom = 0;
+    if (tableHeader) {
+      headerBottom = tableHeader.getBoundingClientRect().bottom;
+    }
+
     useEffect(() => {
       if (tableRef.current && props.tableAutoHeight) {
-        setTableHeight(tableRef.current?.offsetHeight);
+        setTableHeight(viewPortHeight - headerBottom - 88);
       }
     }, [tableRef.current, viewPortHeight]);
 
