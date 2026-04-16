@@ -1,6 +1,6 @@
 import { CreateEntityOptions, RpdApplicationConfig, RpdDataModel, RpdRouteActionConfig, UpdateEntityByIdOptions } from "~/types";
 import { IRpdServer, RapidPlugin } from "./server";
-import { RouteContext } from "./routeContext";
+import { Next, RouteContext } from "./routeContext";
 import { ActionHandlerContext } from "./actionHandler";
 
 class PluginManager {
@@ -173,11 +173,38 @@ class PluginManager {
 
   /** 在执行 action handler 后调用。 */
   async afterRunActionHandler(handlerContext: ActionHandlerContext, actionConfig: RpdRouteActionConfig, error?: Error) {
-    for (const plugin of this.#plugins) {
+    //after 需要反向 plugin before after 遵循 先进后出
+    for (let i = this.#plugins?.length - 1; i >= 0; i--) {
+      const plugin = this.#plugins[i];
       if (plugin.afterRunActionHandler) {
         await plugin.afterRunActionHandler(this.#server, handlerContext, actionConfig, error);
       }
     }
+  }
+
+  /** 在执行 action handler 前后调用。 */
+  async aroundRunActionHandler(handlerContext: ActionHandlerContext, actionConfig: RpdRouteActionConfig, next: Next) {
+    const aroundRunActionHandler = async () => {
+      let executed = false;
+      let result;
+
+      const guardedNext = async () => {
+        if (!executed) {
+          executed = true;
+          result = await next();
+        }
+        return result; // 后续调用返回缓存结果
+      };
+
+      for (const plugin of this.#plugins) {
+        if (plugin.aroundRunActionHandler) {
+          await plugin.aroundRunActionHandler(this.#server, handlerContext, actionConfig, guardedNext);
+        }
+      }
+      await guardedNext();
+      return result;
+    };
+    return await aroundRunActionHandler();
   }
 
   /** 在创建实体前调用。 */

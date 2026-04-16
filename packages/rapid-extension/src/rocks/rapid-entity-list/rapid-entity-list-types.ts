@@ -1,8 +1,7 @@
 import type { RockConfig, RockEventHandlerConfig, SimpleRockConfig } from "@ruiapp/move-style";
-import { EntityFilterOptions, FindEntityOrderByOptions, FindEntityFindRelationEntitiesOptions } from "@ruiapp/rapid-common";
+import { EntityFilterOptions, FindEntityOrderByOptions, FindEntityFindRelationEntitiesOptions, EventLogConfig } from "@ruiapp/rapid-common";
 import { RapidTableColumnConfig } from "../rapid-table-column/rapid-table-column-types";
 import { RapidRecordAction } from "../../types/rapid-action-types";
-
 export interface RapidEntityListConfig {
   /**
    * 实体类型
@@ -142,6 +141,10 @@ export interface RapidEntityListConfig {
    * 是否开启虚拟表格模式
    */
   virtual?: boolean;
+  /**
+   * 事件日志配置
+   */
+  eventLog?: EventLogConfig;
 }
 
 export interface RapidEntityListRockConfig extends SimpleRockConfig, RapidEntityListConfig {}

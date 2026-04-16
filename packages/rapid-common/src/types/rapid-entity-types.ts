@@ -1,3 +1,5 @@
+import { EventLogConfig } from "./rapid-event-log-type";
+
 /**
  * 数据字典
  */
@@ -291,6 +293,10 @@ export interface PermissionPolicy {
 
 export interface RapidEntityEventTypePolicy {
   /**
+   * 日志类型
+   */
+  logType?: string;
+  /**
    * 区分事件类型属性code
    */
   propertyCode?: string;
@@ -492,6 +498,7 @@ export interface FindEntityOptions {
   relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
   keepNonPropertyFields?: boolean | null;
   includingSoftDeleted?: boolean | null;
+  eventLog?: EventLogConfig;
 }
 
 export type FindEntityFindRelationEntitiesOptions = FindEntityFindOneRelationEntitiesOptions | FindEntityFindManyRelationEntitiesOptions;

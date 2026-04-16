@@ -1,6 +1,6 @@
 import { uniq, map, filter } from "lodash";
 import { EntityStoreConfig } from "../stores/entity-store";
-import { FindEntityFindRelationEntitiesOptions, RapidEntity } from "@ruiapp/rapid-common";
+import { FindEntityFindRelationEntitiesOptions, RapidEntity, EventLogConfig } from "@ruiapp/rapid-common";
 
 export interface GetEntityDetailStoreConfigOptions {
   entityModel: RapidEntity;
@@ -29,6 +29,11 @@ export interface GetEntityDetailStoreConfigOptions {
   relations?: Record<string, FindEntityFindRelationEntitiesOptions>;
 
   keepNonPropertyFields?: boolean;
+
+  /**
+   * 事件日志配置
+   */
+  eventLog?: EventLogConfig;
 }
 
 export function generateEntityDetailStoreConfig(props: GetEntityDetailStoreConfigOptions) {
@@ -60,6 +65,7 @@ export function generateEntityDetailStoreConfig(props: GetEntityDetailStoreConfi
       },
     ],
     relations: props.relations,
+    eventLog: props.eventLog,
     // TODO: Expression should be a static string, so that we can configure it at design time.
     $exps: {
       frozon: `!(${props.entityIdExpression || `${props.entityId}`})`,

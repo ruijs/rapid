@@ -24,35 +24,44 @@ export default async function runCollectionEntityActionHandler(
 
   const entityManager = server.getEntityManager(options.singularCode);
 
-  if (runInTransaction) {
-    let transactionDbClient: IDatabaseClient;
-
-    try {
-      transactionDbClient = await routeContext.initDbTransactionClient();
-      await routeContext.beginDbTransaction();
-
-      const result = handleEntityAction(entityManager, autoMergeInput ? mergedInput : input);
-      if (result instanceof Promise) {
-        ctx.output = await result;
-      } else {
-        ctx.output = result;
-      }
-
-      await routeContext.commitDbTransaction();
-    } catch (ex) {
-      await routeContext.rollbackDbTransaction();
-      throw ex;
-    } finally {
-      if (transactionDbClient) {
-        transactionDbClient.release();
-      }
-    }
+  const result = handleEntityAction(entityManager, mergedInput);
+  if (result instanceof Promise) {
+    ctx.output = await result;
   } else {
-    const result = handleEntityAction(entityManager, mergedInput);
-    if (result instanceof Promise) {
-      ctx.output = await result;
-    } else {
-      ctx.output = result;
-    }
+    ctx.output = result;
   }
+
+  // 事务在 executeHandlerOfActions 中处理了
+  // routeContext.getDbTransactionClient() 存在 外部已经启动事务，这里不再启动事务 事务上层方法接管
+  // if (runInTransaction && !routeContext.getDbTransactionClient()) {
+  //   let transactionDbClient: IDatabaseClient;
+
+  //   try {
+  //     transactionDbClient = await routeContext.initDbTransactionClient();
+  //     await routeContext.beginDbTransaction();
+
+  //     const result = handleEntityAction(entityManager, autoMergeInput ? mergedInput : input);
+  //     if (result instanceof Promise) {
+  //       ctx.output = await result;
+  //     } else {
+  //       ctx.output = result;
+  //     }
+
+  //     await routeContext.commitDbTransaction();
+  //   } catch (ex) {
+  //     await routeContext.rollbackDbTransaction();
+  //     throw ex;
+  //   } finally {
+  //     if (transactionDbClient) {
+  //       transactionDbClient.release();
+  //     }
+  //   }
+  // } else {
+  //   const result = handleEntityAction(entityManager, mergedInput);
+  //   if (result instanceof Promise) {
+  //     ctx.output = await result;
+  //   } else {
+  //     ctx.output = result;
+  //   }
+  // }
 }

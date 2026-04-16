@@ -1,9 +1,8 @@
 import type { RockConfig, SimpleRockConfig } from "@ruiapp/move-style";
 import { RapidDescriptionsItemConfig } from "../rapid-entity-descriptions/rapid-entity-descriptions-types";
-import { FindEntityFindRelationEntitiesOptions } from "@ruiapp/rapid-common";
+import { EventLogConfig, FindEntityFindRelationEntitiesOptions } from "@ruiapp/rapid-common";
 import { CSSProperties } from "react";
 import { RapidEntityFormConfig } from "../rapid-entity-form/rapid-entity-form-types";
-
 export interface SonicEntityDetailsConfig {
   mode?: "view" | "edit";
 
@@ -125,6 +124,14 @@ export interface SonicEntityDetailsConfig {
   formItems?: RapidEntityFormConfig["items"];
 
   form?: Partial<RapidEntityFormConfig>;
+  /**
+   * 事件日志配置
+   */
+  eventLog?: EventLogConfig;
+  /**
+   * 是否显示加载中
+   */
+  showLoading?: boolean;
 }
 
 export interface SonicEntityDetailsRockConfig extends SimpleRockConfig, SonicEntityDetailsConfig {}
