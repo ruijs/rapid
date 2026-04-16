@@ -31,13 +31,21 @@ async function executeHandlerOfActions(server: IRpdServer, routeConfig: RpdRoute
         throw new Error("Unknown handler: " + actionCode);
       }
 
-      await server.beforeRunActionHandler(handlerContext, actionConfig);
       let err: any;
       try {
-        const result = handler(handlerContext, actionConfig.config);
-        if (result instanceof Promise) {
-          await result;
-        }
+        await server.beforeRunActionHandler(handlerContext, actionConfig);
+        const next = async () => {
+          const result = handler(handlerContext, actionConfig.config);
+          if (result instanceof Promise) {
+            await result;
+          }
+        };
+        await server.aroundRunActionHandler(handlerContext, actionConfig, next);
+
+        // const result = handler(handlerContext, actionConfig.config);
+        // if (result instanceof Promise) {
+        //   await result;
+        // }
       } catch (error) {
         err = error;
         throw error;

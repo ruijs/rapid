@@ -20,6 +20,7 @@ import {
   IDatabaseClient,
   RpdRouteActionConfig,
   RunActionHandlersOptions,
+  RpdEntityUpdateEventPayload,
 } from "./types";
 
 import QueryBuilder from "./queryBuilder/queryBuilder";
@@ -457,6 +458,7 @@ export class RapidServer implements IRpdServer {
       await this.#buildedRoutes(routeContext, next);
     } catch (ex) {
       let error: any;
+      const status = ex.status || 500;
       if (isString(ex)) {
         error = {
           message: ex,
@@ -465,7 +467,7 @@ export class RapidServer implements IRpdServer {
         error = { name: ex.name, message: ex.message, stack: ex.stack };
       }
       this.#logger.error("handle request error.", { error });
-      response.json({ error }, 500);
+      response.json({ error }, status);
     }
 
     if (!response.status && !response.body) {
@@ -494,16 +496,16 @@ export class RapidServer implements IRpdServer {
       if (!handler) {
         throw new Error("Unknown handler: " + actionCode);
       }
-      let err: any;
-      await this.beforeRunActionHandler(handlerContext, action);
-      try {
-        await handler(handlerContext, action.config);
-      } catch (error) {
-        err = error;
-        throw error;
-      } finally {
-        await this.afterRunActionHandler(handlerContext, action);
-      }
+      await handler(handlerContext, action.config);
+      // let err: any;
+      // try {
+      //   // await handler(handlerContext, action.config);
+      // } catch (error) {
+      //   err = error;
+      //   throw error;
+      // } finally {
+      //   await this.afterRunActionHandler(handlerContext, action, err);
+      // }
     }
   }
 
@@ -517,6 +519,10 @@ export class RapidServer implements IRpdServer {
 
   async afterRunActionHandler(handlerContext: ActionHandlerContext, actionConfig: RpdRouteActionConfig, error?: Error) {
     await this.#pluginManager.afterRunActionHandler(handlerContext, actionConfig, error);
+  }
+
+  async aroundRunActionHandler(handlerContext: ActionHandlerContext, actionConfig: RpdRouteActionConfig, next: Next) {
+    await this.#pluginManager.aroundRunActionHandler(handlerContext, actionConfig, next);
   }
 
   async beforeCreateEntity(model: RpdDataModel, options: CreateEntityOptions) {

@@ -172,7 +172,6 @@ export interface RpdEntityAddRelationsEventPayload {
   entity: any;
   property: string;
   relations: any[];
-  relationTargetEntities: any[];
 }
 
 export interface RpdEntityRemoveRelationsEventPayload {
@@ -182,7 +181,6 @@ export interface RpdEntityRemoveRelationsEventPayload {
   entity: any;
   property: string;
   relations: any[];
-  relationTargetEntities: any[];
 }
 
 export interface RpdEntityBeforeResponseEventPayload {
@@ -308,6 +306,10 @@ export interface PermissionPolicy {
 }
 
 export interface RapidEntityEventTypePolicy {
+  /**
+   * 日志类型
+   */
+  logType?: string;
   /**
    * 区分事件类型属性code
    */
@@ -806,7 +808,6 @@ export interface FindEntityOrderByOptions {
 export interface CountEntityOptions {
   routeContext?: RouteContext;
   filters?: EntityFilterOptions[];
-  includingSoftDeleted?: boolean;
 }
 
 export interface CountEntityResult {
