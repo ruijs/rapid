@@ -48,8 +48,6 @@ export interface RunEntityActionHandlerOptions {
   defaultInput: Record<string, any>;
   /** 固定输入 */
   fixedInput: Record<string, any>;
-  /** 是否在数据库事务中执行 */
-  executeInDbTransaction?: boolean;
 }
 
 export interface RunQueryDatabaseHandlerOptions {

@@ -162,10 +162,10 @@ class DataManager implements RapidPlugin {
               config: {
                 namespace,
                 singularCode,
-                executeInDbTransaction: entityOperationConfig.executeInDbTransaction,
               } as RunEntityActionHandlerOptions,
             },
           ],
+          executeInDbTransaction: entityOperationConfig.executeInDbTransaction,
         });
       });
     });
