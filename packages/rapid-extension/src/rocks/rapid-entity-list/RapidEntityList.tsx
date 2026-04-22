@@ -224,7 +224,7 @@ export default {
 
     const dataSourceCode = props.dataSourceCode || "list";
     const tableColumnRocks: RockConfig[] = [];
-
+    const storeScopeVarExp = props.useStoreInPageScope ? "$page.scope" : "$scope";
     if (props.showRowNumColumn) {
       const tableRowNumColumnRock: RockConfig = {
         $type: "rapidTableColumn",
@@ -236,7 +236,7 @@ export default {
         cell: {
           $type: "text",
           $exps: {
-            text: "($slot.index + 1).toString()",
+            text: `(((${storeScopeVarExp}.vars["${`stores-${dataSourceCode}-pageNum`}"] || 1) - 1) * ${props.pageSize} + $slot.index + 1).toString()`,
           },
         },
       };
@@ -295,7 +295,7 @@ export default {
     }
 
     const dataSourceTotal = (props.dataSource || []).length;
-    const storeScopeVarExp = props.useStoreInPageScope ? "$page.scope" : "$scope";
+
     const scopeVarExp = "$scope";
     let tableExps: Record<string, string> = {
       pagination:
