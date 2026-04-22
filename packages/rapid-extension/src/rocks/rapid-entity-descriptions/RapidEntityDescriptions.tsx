@@ -9,6 +9,7 @@ import { generateRockConfigOfError } from "../../rock-generators/generateRockCon
 import { RapidOptionFieldRendererConfig } from "../rapid-option-field-renderer/rapid-option-field-renderer-types";
 import RapidExtensionSetting from "../../RapidExtensionSetting";
 import { generateEntityDetailStoreConfig } from "../../helpers/entityStoreHelper";
+import { getMetaPropertyLocaleName } from "~/helpers/i18nHelper";
 
 export interface GenerateEntityDescriptionItemOption {
   descriptionItemConfig: RapidDescriptionsItemConfig;
@@ -96,6 +97,7 @@ function generateDataDescriptionItem(logger: RuiRockLogger, entityDescriptionsPr
 
 export default {
   onInit(context, props) {
+    const { framework } = context;
     const mainEntityCode = props.entityCode;
     const mainEntity = rapidAppDefinition.getEntityByCode(mainEntityCode);
     if (!mainEntity) {
@@ -107,7 +109,8 @@ export default {
       if (field) {
         // 使用字段名称作为表单项的标签
         if (isUndefined(descriptionItem.label)) {
-          descriptionItem.label = field?.name;
+          const fieldLabel = getMetaPropertyLocaleName(framework, mainEntity, field);
+          descriptionItem.label = fieldLabel;
         }
 
         if (!descriptionItem.valueFieldType) {
@@ -143,7 +146,7 @@ export default {
   },
 
   Renderer(context, props, state) {
-    const { logger, page, scope } = context;
+    const { logger, framework, page, scope } = context;
     const dataDictionaries = rapidAppDefinition.getDataDictionaries();
     const descriptionsConfig = props;
     const mainEntityCode = descriptionsConfig.entityCode;
@@ -172,6 +175,8 @@ export default {
 
     if (descriptionsConfig && descriptionsConfig.items) {
       descriptionsConfig.items.forEach((descriptionItemConfig) => {
+        const rpdField = rapidAppDefinition.getEntityFieldByCode(mainEntity, descriptionItemConfig.code);
+
         const propValue = get(dataSource, descriptionItemConfig.valueFieldName || descriptionItemConfig.code);
 
         const descriptionItem = generateDataDescriptionItem(

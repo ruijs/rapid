@@ -15,7 +15,7 @@ import dayjs from "dayjs";
 
 import "../rapid-table-select/rapid-table-select-style.css";
 import { getEntityPropertyByCode } from "../../helpers/metaHelper";
-import { getExtensionLocaleStringResource } from "../../helpers/i18nHelper";
+import { getExtensionLocaleStringResource, getMetaPropertyLocaleName } from "../../helpers/i18nHelper";
 import { calculateColumnsTotalWidth, convertRapidTableColumnToAntdTableColumn } from "../rapid-table/RapidTable";
 
 const bus = new EventEmitter();
@@ -52,7 +52,7 @@ export default {
     let defaultDisplayTitle = getExtensionLocaleStringResource(framework, "name");
     if (displayProperty) {
       defaultDisplayField = displayProperty.code;
-      defaultDisplayTitle = displayProperty.name;
+      defaultDisplayTitle = getMetaPropertyLocaleName(framework, entity, displayProperty) || displayProperty.name;
     }
 
     const {
@@ -206,12 +206,18 @@ export default {
 
     const eventHandlers = convertToEventHandlers({ context, rockConfig: props }) as any;
 
-    const tableColumns = map(columns, (column) =>
-      convertRapidTableColumnToAntdTableColumn(logger, framework, context, {
+    const tableColumns = map(columns, (column) => {
+      if (!column.title) {
+        const rpdField = rapidAppDefinition.getEntityFieldByCode(entity, column.code);
+        if (rpdField) {
+          column.title = getMetaPropertyLocaleName(framework, entity, rpdField) || rpdField.name;
+        }
+      }
+      return convertRapidTableColumnToAntdTableColumn(logger, framework, context, {
         $type: "rapidTableColumn",
         ...column,
-      }),
-    );
+      });
+    });
     const columnsTotalWidth = calculateColumnsTotalWidth(columns);
 
     const current = isMultiple ? selectedKeys : last(selectedKeys);
