@@ -464,7 +464,7 @@ export class RapidServer implements IRpdServer {
           message: ex,
         };
       } else {
-        error = { name: ex.name, message: ex.message, stack: ex.stack };
+        error = { name: ex.name, message: ex.message, code: ex.code, data: ex.data, stack: ex.stack, constraint: ex.constraint };
       }
       this.#logger.error("handle request error.", { error });
       response.json({ error }, status);
