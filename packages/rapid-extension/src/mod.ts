@@ -14,6 +14,7 @@ export default {
   locales,
 } as RuiExtension;
 
+export * from "./rapidApi";
 export { default as rapidAppDefinition } from "./rapidAppDefinition";
 
 export * from "./helpers/entityStoreHelper";
