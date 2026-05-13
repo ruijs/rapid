@@ -8,14 +8,24 @@ import { formatFileSize } from "../../utils/format-utility";
 import rapidAppDefinition from "../../rapidAppDefinition";
 
 import { Button, Image, Modal, Space, message } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EyeOutlined, FilePdfOutlined, FileExcelOutlined, FileWordOutlined, FilePptOutlined, FileImageOutlined } from "@ant-design/icons";
+async function sha256Hash(input: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(input);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hash))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
 
 export default {
   $type: "rapidFileInfoRenderer",
 
   Renderer(context, props: RapidFileInfoRendererRockConfig) {
+    const { framework, scope, page } = context;
     const { value, showFileSize, fileSizeDecimalPlaces } = props;
+    const me = framework.getExpressionVars().me;
     if (!value) {
       return null;
     }
@@ -47,21 +57,52 @@ export default {
         },
       });
     } else {
-      return renderFileInfo(value, showFileSize, fileSizeDecimalPlaces, props);
+      return <RenderFileInfo fileInfo={value} showFileSize={showFileSize} fileSizeDecimalPlaces={fileSizeDecimalPlaces} props={props} me={me} />;
     }
   },
 
   ...RapidFileInfoRendererMeta,
 } as Rock;
 
-function renderFileInfo(
-  fileInfo: RapidFileInfo,
-  showFileSize: boolean | undefined,
-  fileSizeDecimalPlaces: number | undefined,
-  props?: RapidFileInfoRendererRockConfig,
-) {
-  const apiBaseUrl = rapidAppDefinition.getApiBaseUrl();
-  const downloadUrl = `${apiBaseUrl}/download/file?fileKey=${encodeURIComponent(fileInfo.key)}&fileName=${encodeURIComponent(fileInfo.name)}`;
+function RenderFileInfo({
+  fileInfo,
+  showFileSize,
+  fileSizeDecimalPlaces,
+  props,
+  me,
+}: {
+  fileInfo: RapidFileInfo;
+  showFileSize: boolean | undefined;
+  fileSizeDecimalPlaces: number | undefined;
+  props?: RapidFileInfoRendererRockConfig;
+  me?: any;
+}) {
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  if (fileInfo && !fileInfo.key) {
+    return (
+      <>
+        <Space>
+          {fileInfo.name.toString()}
+          {showFileSize ? <span style={{ color: "#999", fontSize: "12px" }}>({formatFileSize(fileInfo.size, fileSizeDecimalPlaces)})</span> : null}
+        </Space>
+      </>
+    );
+  }
+
+  useEffect(() => {
+    const generateUrl = async () => {
+      const userId = me?.profile?.id || 0;
+      const sign = await sha256Hash(`${fileInfo.key}-${userId}`);
+      const apiBaseUrl = rapidAppDefinition.getApiBaseUrl();
+      const url = `${apiBaseUrl}/download/file?fileKey=${encodeURIComponent(fileInfo.key)}&fileName=${encodeURIComponent(fileInfo.name)}&sign=${sign}`;
+      setDownloadUrl(url);
+    };
+    generateUrl();
+  }, [fileInfo.key, fileInfo.name, me?.profile?.id]);
+
+  if (!downloadUrl) {
+    return null;
+  }
 
   // Determine file type for icon selection
   const fileExt = fileInfo.name.split(".").pop()?.toLowerCase() || "";
@@ -147,8 +188,8 @@ function FileItemWithPreview(props: FileItemWithPreviewProps) {
   };
 
   const getPreviewContent = () => {
-    const apiBaseUrl = rapidAppDefinition.getApiBaseUrl();
-    const previewUrl = `${apiBaseUrl}/download/file?fileKey=${encodeURIComponent(fileInfo.key)}&fileName=${encodeURIComponent(fileInfo.name)}&inline=true`;
+    // const apiBaseUrl = rapidAppDefinition.getApiBaseUrl();
+    const previewUrl = `${downloadUrl}&inline=true`;
 
     if (isImage) {
       return (
