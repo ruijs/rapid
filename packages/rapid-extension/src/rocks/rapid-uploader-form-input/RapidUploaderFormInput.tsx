@@ -56,8 +56,10 @@ export default {
         }
 
         if (isArray(value)) {
-          const fileKey = file.uid;
-          remove(value, (item) => item.key === fileKey);
+          const fileKey = file.response?.fileKey;
+          if (fileKey) {
+            remove(value, (item) => item.key === fileKey);
+          }
         } else {
           value = null;
         }
