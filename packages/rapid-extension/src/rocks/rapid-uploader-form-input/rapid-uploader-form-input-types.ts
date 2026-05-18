@@ -10,6 +10,7 @@ export type RapidUploaderFormInputConfig = {
 };
 
 export type RapidFileInfo = {
+  id: string;
   key: string;
   name: string;
   size: number;
