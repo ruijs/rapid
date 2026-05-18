@@ -10,14 +10,6 @@ import rapidAppDefinition from "../../rapidAppDefinition";
 import { Button, Image, Modal, Space, message } from "antd";
 import { useEffect, useState } from "react";
 import { EyeOutlined, FilePdfOutlined, FileExcelOutlined, FileWordOutlined, FilePptOutlined, FileImageOutlined } from "@ant-design/icons";
-async function sha256Hash(input: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(input);
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(hash))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
 
 export default {
   $type: "rapidFileInfoRenderer",
@@ -92,9 +84,10 @@ function RenderFileInfo({
   useEffect(() => {
     const generateUrl = async () => {
       const userId = me?.profile?.id || 0;
-      const sign = await sha256Hash(`${fileInfo.key}-${userId}`);
       const apiBaseUrl = rapidAppDefinition.getApiBaseUrl();
-      const url = `${apiBaseUrl}/download/file?fileKey=${encodeURIComponent(fileInfo.key)}&fileName=${encodeURIComponent(fileInfo.name)}&sign=${sign}`;
+      const url = `${apiBaseUrl}/download/file?${fileInfo.id ? `fileId=${fileInfo.id}&` : ``}fileKey=${encodeURIComponent(
+        fileInfo.key,
+      )}&fileName=${encodeURIComponent(fileInfo.name)}`;
       setDownloadUrl(url);
     };
     generateUrl();
